@@ -1,16 +1,19 @@
-# spacemoon
+<p align="center">
+  <img src="./assets/SpaceMoon.webp" style="background-color: #550E65; border-radius:300px;" />
+</p>
+<h1 align="center">SpaceMoon</h1>
 
-A new Flutter project.
+A Flutter Firebase project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Step 1 : Creating Project and Configuring Firebase
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter create --org run.shark spacemoon
+flutterfire configure --project=spacemoonfire
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+#### Attribution
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[Image by catalyststuff on Freepik](https://www.freepik.com/free-vector/cute-astronaut-walking-moon-cartoon-vector-icon-illustration-science-technology-icon-isolated_31789069.htm#page=3&position=24&from_view=author)
