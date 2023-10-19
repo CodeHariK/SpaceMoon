@@ -3,16 +3,15 @@
 </p>
 <h1 align="center">SpaceMoon</h1>
 
-A Flutter Firebase project.
+A Step by step guide on how to create and publish Flutter Firebase app to Google play store and Apple app store.
 
 ## Getting Started
 
-### Step 1 : Creating Project and Configuring Firebase
+### Step 1 : [Creating Project and Configuring Firebase](./docs/steps/Create.md)
 
-```bash
-flutter create --org run.shark spacemoon
-flutterfire configure --project=spacemoonfire
-```
+### Step 2 : [Creating Apple Certificates, Identifiers & Profiles](./docs/steps/AppleCodeSigning.md)
+
+### Step 3 : [App Check : Protect your APIs](./docs/steps/AppCheck.md)
 
 #### Attribution
 
