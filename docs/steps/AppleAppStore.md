@@ -41,8 +41,13 @@ Create a distribution provisioning profile to submit your app to the App Store.
 
 * Disable automatically manage singing
 * select provisioning profile
+* Add Capabilities in XCode
 
 ![Register](../images/Certificate/xcode.png)
+
+## Create App in AppStoreConnect
+
+![AppStoreConnect](../images/Certificate/appstoreconnect.png)
 
 ## More Links
 

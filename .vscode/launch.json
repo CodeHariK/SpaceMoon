@@ -1,0 +1,46 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "SpaceMoon",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "SpaceMoon (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "SpaceMoon (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "iPhone 15 Pro",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "35D488B9-5392-4CCB-B8C4-C8B39C7CC688",
+        },
+        {
+            "name": "Chrome",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "chrome",
+        },
+    ],
+    "compounds": [
+        {
+            "name": "All Devices",
+            "configurations": [
+                "iPhone 15 Pro",
+                "Chrome",
+            ]
+        }
+    ]
+}

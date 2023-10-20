@@ -5,3 +5,6 @@
 [Build and release an Android app](https://docs.flutter.dev/deployment/android)
 
 [Sign your app](https://developer.android.com/studio/publish/app-signing)
+
+* Privacy Policy
+* Release Notes
