@@ -47,6 +47,8 @@ compatibilityVersion = "Xcode 15.0";
 <string>Spacemoon</string>
 ```
 
+### Open Xcode > TARGETS Runner > General : Change Display Name to `Spacemoon` and add App Category
+
 ## Upgrade Project Defaults For Android
 
 ### Change App Name and ask Internet Permisson : `android/app/src/main/AndroidManifest.xml`
