@@ -1,22 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:moonspace/moonspace.dart';
-import 'package:spacemoon/initializers/firebase.dart';
+import 'package:spacemoon/Auth/login_screen.dart';
+import 'package:spacemoon/Init/firebase.dart';
+import 'package:spacemoon/MoonSpace/moonspace.dart';
 
 void main() {
   moonspace(
     title: 'Spacemoon',
-    home: const MyHomePage(),
-    initializers: [
-      initFirebase,
-    ],
+    home: const LoginScreen(),
+    init: initFirebase,
   );
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
 }
