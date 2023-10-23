@@ -1,53 +1,102 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-@immutable
+extension AppThemeNumber on num {
+  double get a => (this * AppTheme.a).toDouble();
+  double get s => (this * AppTheme.s).toDouble();
+  double get m => (this * AppTheme.m).toDouble();
+  double get c => (this * AppTheme.c).toDouble();
+  double get mins => max(this, s).toDouble();
+  double get maxs => min(this, s).toDouble();
+}
+
+extension AppThemeRange on ({num ss, num ee}) {
+  double get s => (ss + (ee - ss) * AppTheme.rs).toDouble();
+}
+
 class AppTheme {
+  final Size size;
+  final Size maxSize;
+  final Size designSize;
+
+  final bool dark;
+
+  static AppTheme currentAppTheme = AppTheme(
+    size: const Size(360, 780),
+    maxSize: const Size(1000, 1000),
+    designSize: const Size(360, 780),
+    dark: false,
+  );
+  static double get w => currentAppTheme.size.width;
+  static double get dw => currentAppTheme.designSize.width;
+  static double get mw => currentAppTheme.maxSize.width;
+  static double get h => currentAppTheme.size.height;
+  static double get dh => currentAppTheme.designSize.height;
+  static double get mh => currentAppTheme.maxSize.height;
+
+  static num get a => (AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh);
+  static num get m => min((AppTheme.w / AppTheme.dw), (AppTheme.h / AppTheme.dh));
+  static num get s => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 1 / 2);
+  static num get c => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 1 / 4);
+  static num get maxs => sqrt((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh));
+  static num get rs => min(1, max(0, AppTheme.s - 0) / AppTheme.maxs);
+
+  static TextTheme get tx => currentAppTheme.textTheme;
+
+  AppTheme({
+    required this.size,
+    required this.maxSize,
+    required this.designSize,
+    required this.dark,
+  });
+
   // static TextStyle get poppins => GoogleFonts.poppins();
   static TextStyle get poppins => const TextStyle();
 
   static Color get seedColor => const Color.fromARGB(255, 255, 72, 121);
 
-  static TextTheme textTheme({required bool dark}) => TextTheme(
-        displayLarge: AppTheme.poppins.copyWith(color: Colors.orange),
-        displayMedium: AppTheme.poppins.copyWith(color: Color.fromARGB(255, 226, 32, 32)),
-        displaySmall: AppTheme.poppins.copyWith(color: Colors.teal),
-        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.spMin),
-        headlineMedium: AppTheme.poppins.copyWith(color: Color.fromARGB(255, 237, 255, 157)),
-        headlineSmall: AppTheme.poppins.copyWith(color: Color.fromARGB(255, 211, 123, 255)),
-        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.spMin),
-        titleMedium: AppTheme.poppins.copyWith(color: dark ? Colors.white : Colors.black),
-        titleSmall: AppTheme.poppins.copyWith(color: Color.fromARGB(255, 255, 86, 131)),
+  TextTheme get textTheme => TextTheme(
+        displayLarge: poppins.copyWith(color: Colors.orange),
+        displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
+        displaySmall: poppins.copyWith(color: Colors.teal),
+        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 32.c),
+        headlineMedium: poppins.copyWith(color: const Color.fromARGB(255, 237, 255, 157), fontSize: 28.c),
+        headlineSmall: poppins.copyWith(color: const Color.fromARGB(255, 211, 123, 255), fontSize: 24.c),
+        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 18.c),
+        titleMedium: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: 14.c),
+        titleSmall: poppins.copyWith(color: const Color.fromARGB(255, 255, 86, 131), fontSize: 12.c),
         // bodyLarge: AppTheme.poppins.copyWith(color: Colors.purple), //Textfield font
-        bodyMedium: AppTheme.poppins.copyWith(color: Color.fromARGB(255, 189, 5, 66)),
-        bodySmall: AppTheme.poppins.copyWith(color: Colors.green),
-        labelLarge: AppTheme.poppins.copyWith(color: Colors.orange),
-        labelMedium: AppTheme.poppins.copyWith(color: Colors.blue),
-        labelSmall: AppTheme.poppins.copyWith(color: Colors.teal),
+        bodyMedium: poppins.copyWith(color: const Color.fromARGB(255, 189, 5, 66)),
+        bodySmall: poppins.copyWith(color: Colors.green),
+        labelLarge: poppins.copyWith(color: Colors.orange),
+        labelMedium: poppins.copyWith(color: Colors.blue),
+        labelSmall: poppins.copyWith(color: Colors.teal),
       );
 
-  static FilledButtonThemeData get filledButton => FilledButtonThemeData(
+  FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0.spMin)),
-          backgroundColor: AppTheme.seedColor,
-          padding: EdgeInsets.all(12.spMin),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0.c)),
+          backgroundColor: seedColor,
+          padding: EdgeInsets.all(8.c),
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          textStyle: AppTheme.poppins.copyWith(fontSize: 18.spMin),
+          // textStyle: AppTheme.poppins.copyWith(fontSize: 14.c),
+          textStyle: TextStyle(fontSize: 16.c),
         ),
       );
 
-  static OutlinedButtonThemeData get outlinedButton => OutlinedButtonThemeData(
+  OutlinedButtonThemeData get outlinedButton => OutlinedButtonThemeData(
         style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0.spMin)),
-          padding: EdgeInsets.all(12.spMin),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0.c)),
+          padding: EdgeInsets.all(12.c),
           // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
       );
 
-  static colorScheme({required bool dark}) => ColorScheme.fromSeed(
+  ColorScheme get colorScheme => ColorScheme.fromSeed(
         brightness: dark ? Brightness.dark : Brightness.light,
-        seedColor: AppTheme.seedColor,
+        seedColor: seedColor,
 
         //
         // primary: Colors.yellow, //filledbutton
@@ -69,7 +118,7 @@ class AppTheme {
         //
         // surface: Colors.yellow, //card
         // onSurface: Colors.yellow, //font, underline
-        surfaceTint: Color.fromARGB(0, 255, 255, 255), //card tint
+        surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
         inverseSurface: Colors.red,
         onInverseSurface: Colors.blue[900],
         surfaceVariant: Colors.blue,
@@ -85,7 +134,7 @@ class AppTheme {
         error: Colors.green,
         onError: Colors.lime,
         errorContainer: const Color.fromARGB(255, 167, 242, 170),
-        onErrorContainer: Color.fromARGB(255, 2, 135, 7),
+        onErrorContainer: const Color.fromARGB(255, 2, 135, 7),
 
         //
         // outline: Colors.yellow, //textfield border
@@ -94,32 +143,77 @@ class AppTheme {
         scrim: Colors.orange,
       );
 
-  static ThemeData theme({required bool dark}) => ThemeData(
+  ThemeData get theme => ThemeData(
         //
         brightness: dark ? Brightness.dark : Brightness.light,
         useMaterial3: true,
-        colorScheme: AppTheme.colorScheme(dark: dark),
+        colorScheme: colorScheme,
 
         //
-        dividerTheme: DividerThemeData(color: AppTheme.seedColor),
+        dividerTheme: DividerThemeData(color: seedColor),
 
         //
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppTheme.seedColor),
+            borderSide: BorderSide(color: seedColor),
           ),
+          labelStyle: AppTheme.tx.titleMedium,
+          contentPadding: EdgeInsets.all(12.c),
         ),
 
         //
-        outlinedButtonTheme: AppTheme.outlinedButton,
-        filledButtonTheme: AppTheme.filledButton,
+        outlinedButtonTheme: outlinedButton,
+        filledButtonTheme: filledButton,
 
         //
-        textTheme: AppTheme.textTheme(dark: dark),
+        textTheme: textTheme,
       );
+
+  @override
+  String toString() {
+    return 'AppTheme(size: $size, maxSize: $maxSize, designSize: $designSize, dark: $dark)';
+  }
 }
 
-ThemeData get darkTheme => AppTheme.theme(dark: true);
+@immutable
+class AppThemeWidget extends InheritedWidget {
+  bool dark;
+  final Size size;
+  final Size maxSize;
+  final Size designSize;
 
-ThemeData get lightTheme => AppTheme.theme(dark: false);
+  AppThemeWidget({
+    super.key,
+    required this.dark,
+    required this.size,
+    required this.maxSize,
+    required super.child,
+    required this.designSize,
+  });
+
+  @override
+  bool updateShouldNotify(covariant AppThemeWidget oldWidget) {
+    print('AppTheme Rebuild');
+    AppTheme.currentAppTheme = AppTheme(dark: dark, maxSize: maxSize, designSize: designSize, size: size);
+    return oldWidget.dark != dark || oldWidget.size != size || oldWidget.designSize != designSize;
+  }
+
+  static AppThemeWidget? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppThemeWidget>();
+  }
+
+  static AppThemeWidget of(BuildContext context) {
+    final AppThemeWidget? result = maybeOf(context);
+    assert(result != null, 'No AppTheme found in context');
+    return result!;
+  }
+
+  @override
+  InheritedElement createElement() {
+    AppTheme.currentAppTheme = AppTheme(dark: dark, maxSize: maxSize, designSize: designSize, size: size);
+    print('AppTheme Create');
+
+    return super.createElement();
+  }
+}

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:spacemoon/Constants/theme.dart';
 
 void moonspace({
@@ -37,21 +36,20 @@ class SpaceMoonHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('SpaceMoon Rebuild');
-    return ScreenUtilInit(
+    debugPrint('SpaceMoon Rebuild \n');
+    return AppThemeWidget(
+      dark: false,
       designSize: const Size(360, 780),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (BuildContext context, Widget? child) {
+      maxSize: const Size(1000, 1000),
+      size: MediaQuery.of(context).size,
+      child: Builder(builder: (context) {
         return MaterialApp(
           title: title,
-          theme: lightTheme,
-          darkTheme: darkTheme,
-          themeMode: ThemeMode.light,
+          theme: AppTheme.currentAppTheme.theme,
           home: home,
           debugShowCheckedModeBanner: kDebugMode,
         );
-      },
+      }),
     );
   }
 }

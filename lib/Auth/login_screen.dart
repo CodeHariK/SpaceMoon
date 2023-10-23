@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:spacemoon/Constants/assets.dart';
+
 import 'dart:convert';
+
+import 'package:spacemoon/Constants/theme.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -11,17 +13,17 @@ class LoginScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        body: SafeArea(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(16.spMin),
+                        padding: EdgeInsets.all(16.c),
                         child: Text(
                           'Spacemoon',
                           style: Theme.of(context).textTheme.headlineLarge,
@@ -29,8 +31,8 @@ class LoginScreen extends StatelessWidget {
                       ),
                       Image.asset(
                         Asset.spaceMoon,
-                        width: 200.spMin,
-                        height: 200.spMin,
+                        width: 200.c,
+                        height: 200.c,
                       ),
                     ],
                   ),
@@ -82,8 +84,8 @@ class _SignInState extends State<SignIn> {
     return Card(
       elevation: 5,
       child: Container(
-        width: 360.spMin,
-        padding: EdgeInsets.all(6.spMin),
+        width: 320.c,
+        padding: EdgeInsets.all(6.c),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -92,11 +94,17 @@ class _SignInState extends State<SignIn> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             //
+            FilledButton(
+              onPressed: () {},
+              child: const Text('Change Theme'),
+            ),
+
+            //
             Padding(
-              padding: EdgeInsets.all(8.spMin),
+              padding: EdgeInsets.all(8.c),
               child: TextFormField(
                 controller: emailCon,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   label: Text('Mobile number or email address'),
                   border: OutlineInputBorder(),
                 ),
@@ -107,11 +115,9 @@ class _SignInState extends State<SignIn> {
             AnimatedYHide(
               show: type != signIn,
               child: Padding(
-                padding: EdgeInsets.all(
-                  8.spMin,
-                ),
+                padding: EdgeInsets.all(8.c),
                 child: TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     label: Text('Full Name'),
                     border: OutlineInputBorder(),
                   ),
@@ -120,9 +126,9 @@ class _SignInState extends State<SignIn> {
             ),
 
             Padding(
-              padding: EdgeInsets.all(8.spMin),
+              padding: EdgeInsets.all(8.c),
               child: TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   label: Text('Password'),
                   border: OutlineInputBorder(),
                 ),
@@ -130,7 +136,7 @@ class _SignInState extends State<SignIn> {
             ),
 
             Padding(
-              padding: EdgeInsets.all(8.spMin),
+              padding: EdgeInsets.all(8.c),
               child: FilledButton(
                 onPressed: () {},
                 child: Row(
@@ -147,14 +153,14 @@ class _SignInState extends State<SignIn> {
             ),
 
             Padding(
-              padding: EdgeInsets.all(10.spMin),
+              padding: EdgeInsets.all(10.c),
               child: const Divider(),
             ),
 
             AnimatedYHide(
               show: type == signIn,
               child: Padding(
-                padding: EdgeInsets.all(8.spMin),
+                padding: EdgeInsets.all(8.c),
                 child: FilledButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
@@ -167,9 +173,9 @@ class _SignInState extends State<SignIn> {
                     children: [
                       Icon(
                         Icons.apple,
-                        size: 30.spMin,
+                        size: 30.c,
                       ),
-                      SizedBox(width: 5.spMin),
+                      SizedBox(width: 5.c),
                       const Text('Sign in with Apple'),
                     ],
                   ),
@@ -180,19 +186,19 @@ class _SignInState extends State<SignIn> {
             AnimatedYHide(
               show: type == signIn,
               child: Padding(
-                padding: EdgeInsets.all(8.spMin),
+                padding: EdgeInsets.all(8.c),
                 child: FilledButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black,
-                    backgroundColor: Color.fromARGB(255, 238, 238, 238),
+                    backgroundColor: const Color.fromARGB(255, 238, 238, 238),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      GoogleLogo(),
-                      SizedBox(width: 10.spMin),
+                      const GoogleLogo(),
+                      SizedBox(width: 10.c),
                       const Text('Continue with Google'),
                     ],
                   ),
@@ -201,6 +207,7 @@ class _SignInState extends State<SignIn> {
             ),
 
             AnimatedYHide(
+              show: type == signUp,
               child: RichText(
                 text: TextSpan(
                   text: "By signing up, you agree to our ",
@@ -218,7 +225,7 @@ class _SignInState extends State<SignIn> {
                         ),
                       ),
                     ),
-                    TextSpan(text: ', '),
+                    const TextSpan(text: ', '),
                     WidgetSpan(
                       child: InkWell(
                         // onTap: () => setState(() => type = type == signIn ? signUp : signIn),
@@ -231,16 +238,15 @@ class _SignInState extends State<SignIn> {
                         ),
                       ),
                     ),
-                    TextSpan(text: '.'),
+                    const TextSpan(text: '.'),
                   ],
                 ),
                 textAlign: TextAlign.center,
               ),
-              show: type == signUp,
             ),
 
             //
-            SizedBox(height: 10.spMin),
+            SizedBox(height: 10.c),
 
             AnimatedYHide(
               show: type == signIn,
@@ -261,7 +267,7 @@ class _SignInState extends State<SignIn> {
               ),
             ),
             //
-            SizedBox(height: 10.spMin),
+            SizedBox(height: 10.c),
 
             //
             RichText(
@@ -270,6 +276,7 @@ class _SignInState extends State<SignIn> {
                 style: Theme.of(context).textTheme.titleSmall,
                 children: [
                   WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
                     child: InkWell(
                       onTap: () => setState(() => type = type == signIn ? signUp : signIn),
                       child: Text(
@@ -352,8 +359,8 @@ class GoogleLogo extends StatelessWidget {
     return Image.memory(
       base64Decode(google),
       semanticLabel: 'Google Login',
-      width: 35.spMin,
-      height: 35.spMin,
+      width: 35.c,
+      height: 35.c,
     );
   }
 }

@@ -39,7 +39,6 @@ dependencies:
 
   cloud_firestore: ^4.11.0
   google_fonts: ^6.1.0
-  flutter_screenutil: ^5.9.0
 
 dev_dependencies:
   flutter_test:

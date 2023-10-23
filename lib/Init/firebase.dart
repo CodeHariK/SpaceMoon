@@ -9,6 +9,7 @@ Future<void> initFirebase() async {
   );
 
   await FirebaseAppCheck.instance.activate(
+    webProvider: ReCaptchaEnterpriseProvider('recaptcha-v3-site-key'),
     androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
