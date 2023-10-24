@@ -9,7 +9,9 @@ A Step by step guide on how to create and publish Flutter Firebase app to Google
 
 ### Step 1 : [Creating Project and Configuring Firebase](./docs/steps/Create.md)
 
-### Step  : [App Check : Protect your APIs](./docs/steps/AppCheck.md)
+### Step 2  : [App Check : Protect your APIs](./docs/steps/AppCheck.md)
+
+### Step 3 : [State Management with Riverpod](./docs/steps/StateManagement.md)
 
 ### Step  : [Creating Apple Certificates, Identifiers & Profiles](./docs/steps/AppleAppStore.md)
 

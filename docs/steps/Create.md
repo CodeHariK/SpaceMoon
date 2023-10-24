@@ -15,7 +15,7 @@ flutterfire configure --project=spacemoonfire
 ## Add Firebase Core
 
 ```bash
-flutter pub add firebase_core, google_fonts, flutter_screenutil
+flutter pub add firebase_core, google_fonts
 ```
 
 ## Upgrade Project Defaults For IOS

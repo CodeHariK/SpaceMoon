@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spacemoon/Constants/theme.dart';
+import 'package:spacemoon/Providers/global_theme.dart';
 
 void moonspace({
   required String title,
@@ -12,19 +14,22 @@ void moonspace({
 
   // debugPaintSizeEnabled = true;
 
+// ignore: missing_provider_scope
   runApp(const Center(child: CircularProgressIndicator()));
 
   await init();
 
   runApp(
-    SpaceMoonHome(
-      title: title,
-      home: home,
+    ProviderScope(
+      child: SpaceMoonHome(
+        title: title,
+        home: home,
+      ),
     ),
   );
 }
 
-class SpaceMoonHome extends StatelessWidget {
+class SpaceMoonHome extends ConsumerWidget {
   const SpaceMoonHome({
     super.key,
     required this.title,
@@ -35,21 +40,39 @@ class SpaceMoonHome extends StatelessWidget {
   final Widget home;
 
   @override
-  Widget build(BuildContext context) {
-    debugPrint('SpaceMoon Rebuild \n');
-    return AppThemeWidget(
-      dark: false,
+  Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('SpaceMoon Rebuild ${MediaQuery.of(context).size} \n');
+    // return AppThemeWidget(
+    //   dark: false,
+    //   designSize: const Size(430, 932),
+    //   maxSize: const Size(1366, 1024),
+    //   size: MediaQuery.of(context).size,
+    //   child: Builder(builder: (context) {
+    //     return MaterialApp(
+    //       title: title,
+    //       theme: AppTheme.currentAppTheme.theme,
+    //       home: home,
+    //       debugShowCheckedModeBanner: kDebugMode,
+    //     );
+    //   }),
+    // );
+
+    final brightness = ref.watch(globalThemeProvider);
+
+    AppTheme.currentAppTheme = AppTheme(
+      dark: brightness == Brightness.dark,
       designSize: const Size(360, 780),
-      maxSize: const Size(1000, 1000),
+      maxSize: const Size(1366, 1024),
       size: MediaQuery.of(context).size,
-      child: Builder(builder: (context) {
-        return MaterialApp(
-          title: title,
-          theme: AppTheme.currentAppTheme.theme,
-          home: home,
-          debugShowCheckedModeBanner: kDebugMode,
-        );
-      }),
     );
+
+    return Builder(builder: (context) {
+      return MaterialApp(
+        title: title,
+        theme: AppTheme.currentAppTheme.theme,
+        home: home,
+        debugShowCheckedModeBanner: kDebugMode,
+      );
+    });
   }
 }

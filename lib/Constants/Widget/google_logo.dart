@@ -1,0 +1,24 @@
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+class GoogleLogo extends StatelessWidget {
+  const GoogleLogo({super.key, required this.width});
+
+  final double width;
+
+  static const String _google =
+      "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAABP5JREFUaEPtmF1sFFUUx//nzm7ZhdZ2CwW61SgKUaAkkLKtSRUr1GD9gFqsH4m0Dyom2vIiiQ8m7SAxGh8JvqEQhMYWa8UPKNJ2Fwk2KRUCETHEpH4ANS0t5aNLt925xwyw2HQ77czsNIRk93XO+f/P75x779xZwl3+o7u8fiQB7vQEkxNITiDBDiSXUIINTDjd8Qn8U5y3REilgIlzQZRJUpsGEr1g7iUSJ91D7taso0evJlz5LQFHALqKlma4Xe4qkrICJBZMVBwBIyxxGII/yWntPJQoSEIADFD3qsBGZq7Ru221GGYcVRhvZQePnbaaG4u3DdBdsixLDrnqIFBs11zPY8agELTB39JRZ0fHFsDfTy3zC01pIaKFdkzH5hDR/mzf/Wto717Nqp5lgN7CwrRhT6QdoMVWzcaNl9wc9gyULjjwR8SOnmWAC8WBBmaUG5kxI0wC9ZB8iFg5C3d0EBKzWIpHiVDOQP6o3IPD2ozSeaHQkJ3i9RxLAOdW5T9H4O+MzAi8Cxq/6w/9ctEoRtcA5HYmnIxGU9cmUrwlAFYhes7kNkYvekvHFscAE/PGnLbObWY6+efqvGzlSsrAfe3t183ET3Ism5MYPKCsIdC+cJu/ffj4nOUMuG9nEm3OaelQzSk5G2V6CYUPuBsAvrH2o11pp640zp9LwGwGjudkPpBv5wRxAsUUADdAGUp19TEhPWbKg66eyzsWnsOQe4u/teMbJ4qxo2EKIHIw5RFNyjNxBhr1eTsL55IaihqZr9x8qZqYc60WJ6BtPqRmXZgszxTA4H7leSL6Nu4FBDR7S6IlE5msVAd+APiZyQqJ0xa8orUm88hkeaYArjcr65lpVzwAb/eWaG9OBQATvRiszWicUgAGfzajRHtjSgCA14Oq73NHAO7IEiJ6pbU2o94RAMNNzOirvPbCnL0vGV/C7O4BFigK1vgOOwKgH6PhNFc/AffEBCVTT83VwF8/Dfk/7Kz8ap+RUZHakxqdlvL/S29U4IwI0Qi03wHKGps/4o76j7yf1e0IgC4y+kV2TbpPVg4Uze6V07PBOD7PI/InmoLhEateWgEgrssM7gqqmQ9OVrz+3NQppAfG9sHpaPrP1ZcfD0RZud1VItQee63xAzOGsZjyBlYu/jYQIuCxsXkS2BZSfdVm9EwD6Je5jxYtbfw68lDcZQ4MBlDdWdH4qRlT/e5XpA5sFUDV+PGioE1N7zCjZRpAF8v7ouxZAn1vJMyEnYomN3VUNvUZxRTsLrtX9K99z9u/ZtziJTgYUjNXmine0hKKCS7fte5LEF42NuBBZqoToGaGdpYUCkuJDGIsJtDTkriMQB7l+vygp3tTocKulJgWgzVFUKClxndiygAWNZSneiOynQDL95uxRZHm+XX6edWnjMzK0Z8xoSZY69titnhbE9CTAjvK57IifwRhiRWz8WKZ0e/9d8N5dzj/1BPIqFBVklY0Le2B0cJ5da/OEnJ4NzNWWzGMj2UJ6fo4tau+NqSS4a3WyMM2wA1BBuXtKasCUy0BM62C6Oe9AL99bH1Ts9XcWHxiALdU8hrK0ynC7zBrFUTi4QmLuXnknmCBrWk5fXtCTxp/S5iBcgRgtFFg57rF7EIBWN/kPJMle0i5+ecuQGeHWbaeqmjqMVOcmRjHAcyYOhmTBHCym3a0khOw0zUnc5ITcLKbdrSSE7DTNSdz/gMy7d9ATzNDsgAAAABJRU5ErkJggg==";
+
+  static final Uint8List google = base64Decode(_google);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.memory(
+      google,
+      semanticLabel: 'Google Login',
+      width: width,
+      height: width,
+    );
+  }
+}

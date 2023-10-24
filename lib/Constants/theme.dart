@@ -10,10 +10,13 @@ extension AppThemeNumber on num {
   double get c => (this * AppTheme.c).toDouble();
   double get mins => max(this, s).toDouble();
   double get maxs => min(this, s).toDouble();
+  double get minc => max(this, c).toDouble();
+  double get maxc => min(this, c).toDouble();
 }
 
-extension AppThemeRange on ({num ss, num ee}) {
-  double get s => (ss + (ee - ss) * AppTheme.rs).toDouble();
+extension AppThemeRange on (num, num) {
+  double get s => ($1 + ($2 - $1) * AppTheme.rs).toDouble();
+  double get c => ($1 + ($2 - $1) * AppTheme.rc).toDouble();
 }
 
 class AppTheme {
@@ -25,7 +28,7 @@ class AppTheme {
 
   static AppTheme currentAppTheme = AppTheme(
     size: const Size(360, 780),
-    maxSize: const Size(1000, 1000),
+    maxSize: const Size(1366, 1024),
     designSize: const Size(360, 780),
     dark: false,
   );
@@ -39,9 +42,11 @@ class AppTheme {
   static num get a => (AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh);
   static num get m => min((AppTheme.w / AppTheme.dw), (AppTheme.h / AppTheme.dh));
   static num get s => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 1 / 2);
-  static num get c => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 1 / 4);
-  static num get maxs => sqrt((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh));
-  static num get rs => min(1, max(0, AppTheme.s - 0) / AppTheme.maxs);
+  static num get c => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 0.2);
+  static num get maxs => pow((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh), 1 / 2);
+  static num get maxc => pow((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh), 0.2);
+  static num get rs => min(1, max(0, AppTheme.s - 1) / (AppTheme.maxs - 1));
+  static num get rc => min(1, max(0, AppTheme.c - 1) / (AppTheme.maxc - 1));
 
   static TextTheme get tx => currentAppTheme.textTheme;
 
@@ -53,21 +58,22 @@ class AppTheme {
   });
 
   // static TextStyle get poppins => GoogleFonts.poppins();
-  static TextStyle get poppins => const TextStyle();
+  TextStyle get poppins => const TextStyle();
 
-  static Color get seedColor => const Color.fromARGB(255, 255, 72, 121);
+  Color get seedColor => const Color.fromARGB(255, 255, 72, 121);
 
   TextTheme get textTheme => TextTheme(
         displayLarge: poppins.copyWith(color: Colors.orange),
         displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
         displaySmall: poppins.copyWith(color: Colors.teal),
-        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 32.c),
-        headlineMedium: poppins.copyWith(color: const Color.fromARGB(255, 237, 255, 157), fontSize: 28.c),
-        headlineSmall: poppins.copyWith(color: const Color.fromARGB(255, 211, 123, 255), fontSize: 24.c),
-        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 18.c),
-        titleMedium: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: 14.c),
-        titleSmall: poppins.copyWith(color: const Color.fromARGB(255, 255, 86, 131), fontSize: 12.c),
-        // bodyLarge: AppTheme.poppins.copyWith(color: Colors.purple), //Textfield font
+        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
+        headlineMedium: poppins.copyWith(color: const Color.fromARGB(255, 237, 255, 157), fontSize: 26.c),
+        headlineSmall: poppins.copyWith(color: const Color.fromARGB(255, 211, 123, 255), fontSize: 21.c),
+        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
+        titleMedium:
+            poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
+        titleSmall: poppins.copyWith(color: seedColor, fontSize: (13, 16).c),
+        bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
         bodyMedium: poppins.copyWith(color: const Color.fromARGB(255, 189, 5, 66)),
         bodySmall: poppins.copyWith(color: Colors.green),
         labelLarge: poppins.copyWith(color: Colors.orange),
@@ -77,12 +83,11 @@ class AppTheme {
 
   FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0.c)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.c)),
           backgroundColor: seedColor,
           padding: EdgeInsets.all(8.c),
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          // textStyle: AppTheme.poppins.copyWith(fontSize: 14.c),
-          textStyle: TextStyle(fontSize: 16.c),
+          textStyle: poppins.copyWith(fontSize: (16, 20).c),
         ),
       );
 
@@ -138,7 +143,7 @@ class AppTheme {
 
         //
         // outline: Colors.yellow, //textfield border
-        outlineVariant: Colors.pink,
+        outlineVariant: Colors.green,
         // shadow: Colors.blue, //Shadow, elevation
         scrim: Colors.orange,
       );
@@ -176,44 +181,44 @@ class AppTheme {
   }
 }
 
-@immutable
-class AppThemeWidget extends InheritedWidget {
-  bool dark;
-  final Size size;
-  final Size maxSize;
-  final Size designSize;
+// @immutable
+// class AppThemeWidget extends InheritedWidget {
+//   final bool dark;
+//   final Size size;
+//   final Size maxSize;
+//   final Size designSize;
 
-  AppThemeWidget({
-    super.key,
-    required this.dark,
-    required this.size,
-    required this.maxSize,
-    required super.child,
-    required this.designSize,
-  });
+//   const AppThemeWidget({
+//     super.key,
+//     required this.dark,
+//     required this.size,
+//     required this.maxSize,
+//     required super.child,
+//     required this.designSize,
+//   });
 
-  @override
-  bool updateShouldNotify(covariant AppThemeWidget oldWidget) {
-    print('AppTheme Rebuild');
-    AppTheme.currentAppTheme = AppTheme(dark: dark, maxSize: maxSize, designSize: designSize, size: size);
-    return oldWidget.dark != dark || oldWidget.size != size || oldWidget.designSize != designSize;
-  }
+//   @override
+//   bool updateShouldNotify(covariant AppThemeWidget oldWidget) {
+//     print('AppTheme Rebuild');
+//     AppTheme.currentAppTheme = AppTheme(dark: dark, maxSize: maxSize, designSize: designSize, size: size);
+//     return oldWidget.dark != dark || oldWidget.size != size || oldWidget.designSize != designSize;
+//   }
 
-  static AppThemeWidget? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AppThemeWidget>();
-  }
+//   static AppThemeWidget? maybeOf(BuildContext context) {
+//     return context.dependOnInheritedWidgetOfExactType<AppThemeWidget>();
+//   }
 
-  static AppThemeWidget of(BuildContext context) {
-    final AppThemeWidget? result = maybeOf(context);
-    assert(result != null, 'No AppTheme found in context');
-    return result!;
-  }
+//   static AppThemeWidget of(BuildContext context) {
+//     final AppThemeWidget? result = maybeOf(context);
+//     assert(result != null, 'No AppTheme found in context');
+//     return result!;
+//   }
 
-  @override
-  InheritedElement createElement() {
-    AppTheme.currentAppTheme = AppTheme(dark: dark, maxSize: maxSize, designSize: designSize, size: size);
-    print('AppTheme Create');
+//   @override
+//   InheritedElement createElement() {
+//     AppTheme.currentAppTheme = AppTheme(dark: dark, maxSize: maxSize, designSize: designSize, size: size);
+//     print('AppTheme Create');
 
-    return super.createElement();
-  }
-}
+//     return super.createElement();
+//   }
+// }

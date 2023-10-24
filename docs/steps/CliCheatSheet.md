@@ -13,6 +13,9 @@ flutter pub add <dependency>
 flutter run
 flutter build
 
+### Run Build Runner
+dart run build_runner watch --delete-conflicting-outputs
+
 ### Generate localizations for the Flutter project
 flutter gen-l10n <DIRECTORY>
 
