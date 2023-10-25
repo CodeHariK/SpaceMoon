@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spacemoon/Constants/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
+import 'package:spacemoon/Providers/router.dart';
 
 void moonspace({
   required String title,
@@ -67,10 +68,10 @@ class SpaceMoonHome extends ConsumerWidget {
     );
 
     return Builder(builder: (context) {
-      return MaterialApp(
+      return MaterialApp.router(
+        routerConfig: router,
         title: title,
         theme: AppTheme.currentAppTheme.theme,
-        home: home,
         debugShowCheckedModeBanner: kDebugMode,
       );
     });

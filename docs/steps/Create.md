@@ -2,7 +2,7 @@
 
 ```bash
 flutter create --org run.shark spacemoon
-flutterfire configure --project=spacemoonfire
+flutterfire configure
 ```
 
 ## Add to .gitignore
