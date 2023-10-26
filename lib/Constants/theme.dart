@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:spacemoon/Helpers/extensions.dart';
 
 extension AppThemeNumber on num {
   double get a => (this * AppTheme.a).toDouble();
@@ -58,9 +59,9 @@ class AppTheme {
   });
 
   // static TextStyle get poppins => GoogleFonts.poppins();
-  TextStyle get poppins => const TextStyle();
+  static TextStyle get poppins => const TextStyle();
 
-  Color get seedColor => const Color.fromARGB(255, 255, 72, 121);
+  static Color get seedColor => Colors.deepPurple;
 
   TextTheme get textTheme => TextTheme(
         displayLarge: poppins.copyWith(color: Colors.orange),
@@ -68,14 +69,14 @@ class AppTheme {
         displaySmall: poppins.copyWith(color: Colors.teal),
         headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
         headlineMedium: poppins.copyWith(color: const Color.fromARGB(255, 237, 255, 157), fontSize: 26.c),
-        headlineSmall: poppins.copyWith(color: const Color.fromARGB(255, 211, 123, 255), fontSize: 21.c),
+        // headlineSmall: poppins.copyWith(fontSize: 22.5.c),
         titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
         titleMedium:
             poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
         titleSmall: poppins.copyWith(color: seedColor, fontSize: (13, 16).c),
         bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
-        bodyMedium: poppins.copyWith(color: const Color.fromARGB(255, 189, 5, 66)),
-        bodySmall: poppins.copyWith(color: Colors.green),
+        bodyMedium: const TextStyle(),
+        bodySmall: const TextStyle(),
         labelLarge: poppins.copyWith(color: Colors.orange),
         labelMedium: poppins.copyWith(color: Colors.blue),
         labelSmall: poppins.copyWith(color: Colors.teal),
@@ -83,20 +84,45 @@ class AppTheme {
 
   FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.c)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           backgroundColor: seedColor,
-          padding: EdgeInsets.all(8.c),
-          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          textStyle: poppins.copyWith(fontSize: (16, 20).c),
+          padding: EdgeInsets.all(12.c),
+          // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+          textStyle: poppins.copyWith(fontSize: (14, 18).c),
+        ),
+      );
+
+  ElevatedButtonThemeData get elevatedButton => ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
+          padding: EdgeInsets.all(12.c),
+          // textStyle: poppins.copyWith(fontSize: (14, 18).c),
         ),
       );
 
   OutlinedButtonThemeData get outlinedButton => OutlinedButtonThemeData(
-        style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0.c)),
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           padding: EdgeInsets.all(12.c),
+          textStyle: poppins.copyWith(fontSize: (14, 18).c),
           // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
+      );
+
+  TextButtonThemeData get textButton => TextButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          textStyle: AppTheme.tx.bodySmall.under,
+          padding: EdgeInsets.zero,
+        ),
+      );
+
+  InputDecorationTheme get inputDecoration => InputDecorationTheme(
+        border: const OutlineInputBorder(),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: seedColor),
+        ),
+        // labelStyle: AppTheme.tx.titleMedium,
+        // contentPadding: EdgeInsets.all(12.c),
       );
 
   ColorScheme get colorScheme => ColorScheme.fromSeed(
@@ -107,7 +133,7 @@ class AppTheme {
         // primary: Colors.yellow, //filledbutton
         // onPrimary: Colors.yellow, //filledbuttonfont
         primaryContainer: Colors.purple,
-        onPrimaryContainer: Colors.white, //text font,
+        // onPrimaryContainer: Colors.white, //text font,
         inversePrimary: Colors.cyan,
 
         //
@@ -123,7 +149,7 @@ class AppTheme {
         //
         // surface: Colors.yellow, //card
         // onSurface: Colors.yellow, //font, underline
-        surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
+        // surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
         inverseSurface: Colors.red,
         onInverseSurface: Colors.blue[900],
         surfaceVariant: Colors.blue,
@@ -158,18 +184,13 @@ class AppTheme {
         dividerTheme: DividerThemeData(color: seedColor),
 
         //
-        inputDecorationTheme: InputDecorationTheme(
-          border: const OutlineInputBorder(),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: seedColor),
-          ),
-          labelStyle: AppTheme.tx.titleMedium,
-          contentPadding: EdgeInsets.all(12.c),
-        ),
+        inputDecorationTheme: inputDecoration,
 
         //
         outlinedButtonTheme: outlinedButton,
         filledButtonTheme: filledButton,
+        elevatedButtonTheme: elevatedButton,
+        textButtonTheme: textButton,
 
         //
         textTheme: textTheme,

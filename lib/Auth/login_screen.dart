@@ -5,7 +5,6 @@ import 'package:spacemoon/Constants/assets.dart';
 
 import 'package:spacemoon/Constants/theme.dart';
 import 'package:spacemoon/Helpers/extensions.dart';
-import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Widget/Animated/animated_text.dart';
 import 'package:spacemoon/Widget/Animated/animated_y_hide.dart';
 
@@ -27,18 +26,7 @@ class LoginScreen extends ConsumerWidget {
                     children: [
                       Padding(
                         padding: EdgeInsets.all(8.c),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text('Spacemoon', style: context.hl),
-                            IconButton(
-                              onPressed: () {
-                                ref.read(globalThemeProvider.notifier).toggle();
-                              },
-                              icon: const Icon(Icons.sunny),
-                            ),
-                          ],
-                        ),
+                        child: Text('Spacemoon', style: context.hl),
                       ),
                       Image.asset(
                         Asset.spaceMoon,
@@ -250,8 +238,6 @@ class _SignInState extends State<SignIn> {
             AnimatedYHide(
               show: type == signIn,
               child: InkWell(
-                //TODO : Password Reset Screen
-                // onTap: () => ,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

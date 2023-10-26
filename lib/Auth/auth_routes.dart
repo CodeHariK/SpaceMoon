@@ -1,92 +1,278 @@
+import 'dart:developer';
+
+// ignore: depend_on_referenced_packages
+import 'package:firebase_auth/firebase_auth.dart' hide PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spacemoon/Auth/fire.dart';
 import 'package:spacemoon/Constants/assets.dart';
+import 'package:spacemoon/Page/home.dart';
+import 'package:spacemoon/Page/profile.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 part 'auth_routes.g.dart';
 
 class Auth {
   static final routes = $appRoutes;
 }
 
-@TypedGoRoute<LoginRoute>(path: LoginRoute.path)
+@TypedGoRoute<LoginRoute>(path: AppRouter.login)
 @immutable
 class LoginRoute extends GoRouteData {
-  static const String path = '/login';
-
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    final buttonStyle = ButtonStyle(
-      padding: MaterialStateProperty.all(const EdgeInsets.all(12)),
-      shape: MaterialStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
+    return SignInScreen(
+      styles: const {EmailFormStyle(signInButtonVariant: ButtonVariant.filled)},
+      headerBuilder: headerImage(Asset.spaceMoon),
+      sideBuilder: sideImage(Asset.spaceMoon),
+      subtitleBuilder: (context, action) {
+        final actionText = switch (action) {
+          AuthAction.signIn => 'Please sign in to continue.',
+          AuthAction.signUp => 'Please create an account to continue',
+          _ => throw Exception('Invalid action: $action'),
+        };
 
-    return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.light,
-        visualDensity: VisualDensity.standard,
-        useMaterial3: true,
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(style: buttonStyle),
-        textButtonTheme: TextButtonThemeData(style: buttonStyle),
-        outlinedButtonTheme: OutlinedButtonThemeData(style: buttonStyle),
-      ),
-      title: 'Spacemoon',
-      debugShowCheckedModeBanner: false,
-      locale: const Locale('en'),
-      localizationsDelegates: [
-        FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides()),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        FirebaseUILocalizations.delegate,
-      ],
-      home: SignInScreen(
-        styles: const {
-          EmailFormStyle(signInButtonVariant: ButtonVariant.filled),
-        },
-        headerBuilder: headerImage(Asset.spaceMoon),
-        sideBuilder: sideImage(Asset.spaceMoon),
-        subtitleBuilder: (context, action) {
-          final actionText = switch (action) {
-            AuthAction.signIn => 'Please sign in to continue.',
-            AuthAction.signUp => 'Please create an account to continue',
-            _ => throw Exception('Invalid action: $action'),
-          };
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text('Welcome to Firebase UI! $actionText.'),
+        );
+      },
+      footerBuilder: (context, action) {
+        final actionText = switch (action) {
+          AuthAction.signIn => 'signing in',
+          AuthAction.signUp => 'registering',
+          _ => throw Exception('Invalid action: $action'),
+        };
 
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text('Welcome to Firebase UI! $actionText.'),
-          );
-        },
-        footerBuilder: (context, action) {
-          final actionText = switch (action) {
-            AuthAction.signIn => 'signing in',
-            AuthAction.signUp => 'registering',
-            _ => throw Exception('Invalid action: $action'),
-          };
-
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text(
-                'By $actionText, you agree to our terms and conditions.',
-                style: const TextStyle(color: Colors.grey),
-              ),
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              'By $actionText, you agree to our terms and conditions.',
+              style: const TextStyle(color: Colors.grey),
             ),
-          );
-        },
+          ),
+        );
+      },
+      actions: [
+        VerifyPhoneAction((context, _) {
+          log('Phone');
+          PhoneRoute().push(context);
+        }),
+        ForgotPasswordAction((context, email) {
+          ForgotPasswordRoute(email: email).push(context);
+        }),
+        EmailLinkSignInAction((context) {
+          EmailLinkRoute().pushReplacement(context);
+        }),
+        AuthStateChangeAction<MFARequired>(
+          (context, state) async {
+            await startMFAVerification(
+              resolver: state.resolver,
+              context: context,
+            );
+
+            if (context.mounted) ProfileRoute().pushReplacement(context);
+          },
+        ),
+        AuthStateChangeAction((context, state) {
+          final user = switch (state) {
+            SignedIn(user: final user) => user,
+            CredentialLinked(user: final user) => user,
+            UserCreated(credential: final cred) => cred.user,
+            _ => null,
+          };
+
+          switch (user) {
+            case User(emailVerified: true):
+              ProfileRoute().pushReplacement(context);
+            case User(emailVerified: false, email: final String _):
+              VerifyEmailRoute().push(context);
+          }
+        }),
+      ],
+    );
+  }
+}
+
+@TypedGoRoute<PhoneRoute>(path: AppRouter.phone)
+@immutable
+class PhoneRoute extends GoRouteData {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return PhoneInputScreen(
+      actions: [
+        SMSCodeRequestedAction((context, AuthAction? action, Object flowKey, String phone) {
+          log('Sms');
+          SmsRoute(
+            $extra: SmsObject(
+              action: action,
+              flowKey: flowKey,
+              phone: phone,
+            ),
+          ).pushReplacement(context);
+        }),
+      ],
+      headerBuilder: headerIcon(Icons.phone),
+      sideBuilder: sideIcon(Icons.phone),
+    );
+  }
+}
+
+class SmsObject {
+  final AuthAction? action;
+  final Object flowKey;
+  final String phone;
+
+  SmsObject({
+    required this.action,
+    required this.flowKey,
+    required this.phone,
+  });
+}
+
+@TypedGoRoute<SmsRoute>(path: AppRouter.sms)
+@immutable
+class SmsRoute extends GoRouteData {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+
+  final SmsObject $extra;
+
+  const SmsRoute({required this.$extra});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return SMSCodeInputScreen(
+      actions: [
+        AuthStateChangeAction<SignedIn>((context, state) {
+          log('Sms SignedIn');
+          context.go('/');
+        }),
+      ],
+      flowKey: $extra.flowKey,
+      action: $extra.action,
+      headerBuilder: headerIcon(Icons.sms_outlined),
+      sideBuilder: sideIcon(Icons.sms_outlined),
+    );
+  }
+}
+
+@TypedGoRoute<ForgotPasswordRoute>(path: AppRouter.forgotPassword)
+@immutable
+class ForgotPasswordRoute extends GoRouteData {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+
+  final String? email;
+
+  const ForgotPasswordRoute({required this.email});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return ForgotPasswordScreen(
+      email: email,
+      headerMaxExtent: 200,
+      headerBuilder: headerIcon(Icons.lock),
+      sideBuilder: sideIcon(Icons.lock),
+    );
+  }
+}
+
+@TypedGoRoute<VerifyEmailRoute>(path: AppRouter.verifyEmail)
+@immutable
+class VerifyEmailRoute extends GoRouteData {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return EmailVerificationScreen(
+      headerBuilder: headerIcon(Icons.verified),
+      sideBuilder: sideIcon(Icons.verified),
+      actionCodeSettings: ActionCodeSettings(
+        url: 'https://spacemoon.shark.run',
+        handleCodeInApp: true,
+        androidMinimumVersion: '27',
+        androidPackageName: 'run.shark.spacemoon',
+        iOSBundleId: 'run.shark.spacemoon',
+      ),
+      actions: [
+        EmailVerifiedAction(() {
+          ProfileRoute().pushReplacement(context);
+        }),
+        AuthCancelledAction((context) {
+          FirebaseUIAuth.signOut(context: context);
+          HomeRoute().pushReplacement(context);
+        }),
+      ],
+    );
+  }
+}
+
+@TypedGoRoute<EmailLinkRoute>(path: AppRouter.emailLinkSignIn)
+@immutable
+class EmailLinkRoute extends GoRouteData {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return EmailLinkSignInScreen(
+      actions: [
+        AuthStateChangeAction<SignedIn>((context, state) {
+          HomeRoute().pushReplacement(context);
+        }),
+      ],
+      headerMaxExtent: 200,
+      headerBuilder: headerIcon(Icons.link),
+      sideBuilder: sideIcon(Icons.link),
+    );
+  }
+}
+
+HeaderBuilder headerImage(String assetName) {
+  return (context, constraints, _) {
+    return Container(
+      padding: const EdgeInsets.only(top: 10),
+      child: Image.asset(assetName),
+    );
+  };
+}
+
+HeaderBuilder headerIcon(IconData icon) {
+  return (context, constraints, shrinkOffset) {
+    return Padding(
+      padding: const EdgeInsets.all(20).copyWith(top: 40),
+      child: Icon(
+        icon,
+        color: Colors.blue,
+        size: constraints.maxWidth / 4 * (1 - shrinkOffset),
       ),
     );
-    // return const SnapAuth();
-  }
+  };
+}
+
+SideBuilder sideImage(String assetName) {
+  return (context, constraints) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(constraints.maxWidth / 4),
+        child: Image.asset(assetName),
+      ),
+    );
+  };
+}
+
+SideBuilder sideIcon(IconData icon) {
+  return (context, constraints) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Icon(
+        icon,
+        color: Colors.blue,
+        size: constraints.maxWidth / 3,
+      ),
+    );
+  };
 }

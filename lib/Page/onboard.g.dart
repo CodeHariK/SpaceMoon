@@ -37,7 +37,7 @@ extension $OnboardRouteExtension on OnboardRoute {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$onboardedHash() => r'78d50b2f180227a0e3868bf79cf1fe814dd5a84a';
+String _$onboardedHash() => r'dbb444886946d3b874e4869f496eb4f5dc03b9d8';
 
 /// See also [Onboarded].
 @ProviderFor(Onboarded)

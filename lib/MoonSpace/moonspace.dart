@@ -1,27 +1,51 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spacemoon/Constants/theme.dart';
+import 'package:spacemoon/Page/splash.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
+import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
+// ignore: depend_on_referenced_packages
+import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void moonspace({
   required String title,
   required Widget home,
   required AsyncCallback init,
 }) async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
   // debugPaintSizeEnabled = true;
 
-// ignore: missing_provider_scope
-  runApp(const Center(child: CircularProgressIndicator()));
+  //
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // ignore: missing_provider_scope
+  runApp(const SplashPage());
+
+  final container = ProviderContainer();
+
+  container.listen(prefProvider, (prev, next) {
+    log('Pref ${prev?.value != null}');
+    log('Pref ${next.value != null}');
+  });
 
   await init();
 
+  container.listen(routerRedirectorProvider, (prev, next) {
+    log('Router ${prev?.value != null}');
+    log('Router ${next.value != null}');
+  });
+
+  // await Future.delayed(const Duration(seconds: 2));
+
   runApp(
     ProviderScope(
+      parent: container,
       child: SpaceMoonHome(
         title: title,
         home: home,
@@ -58,7 +82,7 @@ class SpaceMoonHome extends ConsumerWidget {
     //   }),
     // );
 
-    final brightness = ref.watch(globalThemeProvider);
+    final brightness = ref.watch(globalThemeProvider).brightness;
 
     AppTheme.currentAppTheme = AppTheme(
       dark: brightness == Brightness.dark,
@@ -71,6 +95,12 @@ class SpaceMoonHome extends ConsumerWidget {
       return MaterialApp.router(
         routerConfig: router,
         title: title,
+        locale: const Locale('en'),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          FirebaseUILocalizations.delegate,
+        ],
         theme: AppTheme.currentAppTheme.theme,
         debugShowCheckedModeBanner: kDebugMode,
       );

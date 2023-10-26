@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
 
 part 'onboard.g.dart';
@@ -11,11 +14,9 @@ class Onboard {
   static final routes = $appRoutes;
 }
 
-@TypedGoRoute<OnboardRoute>(path: OnboardRoute.path)
+@TypedGoRoute<OnboardRoute>(path: AppRouter.onboard)
 @immutable
 class OnboardRoute extends GoRouteData {
-  static const String path = '/onboard';
-
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
   @override
@@ -28,13 +29,14 @@ class OnboardRoute extends GoRouteData {
 class Onboarded extends _$Onboarded {
   @override
   bool build() {
-    return false;
+    log('=========================onboard');
+    ref.watch(prefProvider);
+    return ref.read(prefProvider.notifier).getOnboard();
   }
 
   void set(bool onboarded) {
     state = onboarded;
-    // unicorn('Set Onboarded $onboarded');
-    // ref.read(localCacheProvider.notifier).save(onboarded: state);
+    ref.read(prefProvider.notifier).saveOnboard(state);
   }
 }
 
