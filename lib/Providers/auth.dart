@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 // ignore: depend_on_referenced_packages
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,7 +8,6 @@ part 'auth.g.dart';
 Stream<User?> currentUser(CurrentUserRef ref) {
   return FirebaseAuth.instance.authStateChanges().map(
     (User? u) {
-      log('Auth Change ${DateTime.now()}');
       return u;
       // return u != null
       //     ? User(

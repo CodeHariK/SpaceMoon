@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,24 +32,41 @@ class SettingsPage extends ConsumerWidget {
     ThemeType theme = ref.watch(globalThemeProvider);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
       body: Column(
         children: [
-          DropdownButton<ThemeType>(
-            hint: Text(ThemeType.values.where((t) => t == theme).first.name.toUpperCase()),
-            items: ThemeType.values
-                .map(
-                  (e) => DropdownMenuItem(
-                    value: e,
-                    child: Text(e.name.toUpperCase()),
-                  ),
-                )
-                .toList(),
-            onChanged: (ThemeType? v) {
-              if (v != null) {
-                ref.read(globalThemeProvider.notifier).set(v);
-              }
-            },
+          CupertinoFormSection.insetGrouped(
+            header: Text('Theme'),
+            children: [
+              PopupMenuButton<ThemeType>(
+                itemBuilder: (context) {
+                  return ThemeType.values
+                      .map<PopupMenuEntry<ThemeType>>(
+                        (e) => PopupMenuItem(
+                          value: e,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [Text(e.name.toUpperCase()), e.icon],
+                          ),
+                        ),
+                      )
+                      .toList();
+                },
+                onSelected: (v) {
+                  ref.read(globalThemeProvider.notifier).set(v);
+                },
+                position: PopupMenuPosition.under,
+                offset: const Offset(1, -120),
+                child: ListTile(
+                  visualDensity: VisualDensity.compact,
+                  title: const Text('Theme'),
+                  subtitle: Text(theme.name),
+                  trailing: theme.icon,
+                ),
+              ),
+            ],
           ),
         ],
       ),

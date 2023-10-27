@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,23 +23,17 @@ void moonspace({
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   // ignore: missing_provider_scope
-  runApp(const SplashPage());
+  // runApp(const SplashPage());
 
   final container = ProviderContainer();
 
-  container.listen(prefProvider, (prev, next) {
-    log('Pref ${prev?.value != null}');
-    log('Pref ${next.value != null}');
-  });
+  container.listen(prefProvider, (prev, next) {});
 
   await init();
 
-  container.listen(routerRedirectorProvider, (prev, next) {
-    log('Router ${prev?.value != null}');
-    log('Router ${next.value != null}');
-  });
+  container.listen(routerRedirectorProvider, (prev, next) {});
 
-  // await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(milliseconds: 100));
 
   runApp(
     ProviderScope(

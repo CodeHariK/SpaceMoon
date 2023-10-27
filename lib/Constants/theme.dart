@@ -150,7 +150,7 @@ class AppTheme {
         // surface: Colors.yellow, //card
         // onSurface: Colors.yellow, //font, underline
         // surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
-        inverseSurface: Colors.red,
+        // inverseSurface: Colors.red,//Snackbar background
         onInverseSurface: Colors.blue[900],
         surfaceVariant: Colors.blue,
         // onSurfaceVariant: Colors.yellow, //Textfield lable font

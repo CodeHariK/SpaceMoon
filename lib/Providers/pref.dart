@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
@@ -12,9 +10,7 @@ class Pref extends _$Pref {
 
   @override
   Future<SharedPreferences> build() async {
-    log('Pref Init');
     SharedPreferences pref = await SharedPreferences.getInstance();
-    log('Pref');
 
     return pref;
   }

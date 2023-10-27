@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 // ignore: depend_on_referenced_packages
+
 import 'package:firebase_auth/firebase_auth.dart' hide PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
@@ -58,14 +57,13 @@ class LoginRoute extends GoRouteData {
       },
       actions: [
         VerifyPhoneAction((context, _) {
-          log('Phone');
           PhoneRoute().push(context);
         }),
         ForgotPasswordAction((context, email) {
           ForgotPasswordRoute(email: email).push(context);
         }),
         EmailLinkSignInAction((context) {
-          EmailLinkRoute().pushReplacement(context);
+          EmailLinkRoute().push(context);
         }),
         AuthStateChangeAction<MFARequired>(
           (context, state) async {
@@ -77,7 +75,7 @@ class LoginRoute extends GoRouteData {
             if (context.mounted) ProfileRoute().pushReplacement(context);
           },
         ),
-        AuthStateChangeAction((context, state) {
+        AuthStateChangeAction((context, AuthState state) {
           final user = switch (state) {
             SignedIn(user: final user) => user,
             CredentialLinked(user: final user) => user,
@@ -107,7 +105,6 @@ class PhoneRoute extends GoRouteData {
     return PhoneInputScreen(
       actions: [
         SMSCodeRequestedAction((context, AuthAction? action, Object flowKey, String phone) {
-          log('Sms');
           SmsRoute(
             $extra: SmsObject(
               action: action,
@@ -149,7 +146,6 @@ class SmsRoute extends GoRouteData {
     return SMSCodeInputScreen(
       actions: [
         AuthStateChangeAction<SignedIn>((context, state) {
-          log('Sms SignedIn');
           context.go('/');
         }),
       ],
@@ -192,7 +188,7 @@ class VerifyEmailRoute extends GoRouteData {
       headerBuilder: headerIcon(Icons.verified),
       sideBuilder: sideIcon(Icons.verified),
       actionCodeSettings: ActionCodeSettings(
-        url: 'https://spacemoon.shark.run',
+        url: 'https://spacemoonfire.firebaseapp.com',
         handleCodeInApp: true,
         androidMinimumVersion: '27',
         androidPackageName: 'run.shark.spacemoon',

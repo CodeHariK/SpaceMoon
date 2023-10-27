@@ -29,7 +29,6 @@ class OnboardRoute extends GoRouteData {
 class Onboarded extends _$Onboarded {
   @override
   bool build() {
-    log('=========================onboard');
     ref.watch(prefProvider);
     return ref.read(prefProvider.notifier).getOnboard();
   }

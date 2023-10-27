@@ -1,6 +1,4 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Providers/pref.dart';
@@ -8,9 +6,13 @@ import 'package:spacemoon/Providers/pref.dart';
 part 'global_theme.g.dart';
 
 enum ThemeType {
-  system,
-  dark,
-  light;
+  system(Icon(CupertinoIcons.cloud_sun_rain)),
+  dark(Icon(CupertinoIcons.moon_stars)),
+  light(Icon(CupertinoIcons.sun_min));
+
+  final Icon icon;
+
+  const ThemeType(this.icon);
 
   static ThemeType from(String? v) {
     v = v ?? ThemeType.system.toString();
@@ -35,7 +37,6 @@ class GlobalTheme extends _$GlobalTheme {
   ThemeType build() {
     ref.watch(prefProvider);
     ThemeType theme = ref.read(prefProvider.notifier).getTheme();
-    log('GlobalTheme : $theme');
     return theme;
   }
 

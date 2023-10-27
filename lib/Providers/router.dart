@@ -85,10 +85,9 @@ Future routerRedirector(RouterRedirectorRef ref) async {
   final user = ref.watch(currentUserProvider).value;
 
   log(user?.uid ?? '-');
-  // user?.emailVerified;
 
   myConfig.value = _generateRoutingConfig(
-    authenticated: user != null,
+    authenticated: user != null, // && ((user.emailVerified == true) && verifyEmail),
     onboarded: onboarded,
   );
 

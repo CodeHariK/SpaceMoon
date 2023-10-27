@@ -45,6 +45,7 @@ app.*.map.json
 
 #######################
 
+*.g.dart
 firebase_options.dart
 google-services.json
 firebase_app_id_file.json

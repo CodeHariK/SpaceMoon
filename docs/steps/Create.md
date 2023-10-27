@@ -70,7 +70,7 @@ minSdkVersion 27
 ```code
 ext.kotlin_version = '1.9.10'
 
-classpath 'com.android.tools.build:gradle:8.1.2'
+classpath 'com.android.tools.build:gradle:7.4.2'
 classpath 'com.google.gms:google-services:4.4.0'
 ```
 
