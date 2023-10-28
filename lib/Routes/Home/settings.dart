@@ -4,14 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Routes/Home/account.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
 
-part 'settings.g.dart';
-
-class Settings {
-  static final routes = $appRoutes;
-}
-
-@TypedGoRoute<SettingsRoute>(path: AppRouter.settings)
 @immutable
 class SettingsRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
@@ -38,7 +33,7 @@ class SettingsPage extends ConsumerWidget {
       body: Column(
         children: [
           CupertinoFormSection.insetGrouped(
-            header: Text('Theme'),
+            header: const Text('Theme'),
             children: [
               PopupMenuButton<ThemeType>(
                 itemBuilder: (context) {
@@ -67,6 +62,12 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ),
             ],
+          ),
+          CupertinoListTile.notched(
+            onTap: () {
+              AccountRoute().push(context);
+            },
+            title: Text('Account Management'),
           ),
         ],
       ),

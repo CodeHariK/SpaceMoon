@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:spacemoon/Constants/assets.dart';
+import 'package:spacemoon/Static/assets.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});

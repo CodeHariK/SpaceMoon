@@ -2,8 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:spacemoon/Constants/theme.dart';
-import 'package:spacemoon/Page/splash.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void moonspace({
   required String title,
-  required Widget home,
   required AsyncCallback init,
 }) async {
   // debugPaintSizeEnabled = true;
@@ -40,7 +38,6 @@ void moonspace({
       parent: container,
       child: SpaceMoonHome(
         title: title,
-        home: home,
       ),
     ),
   );
@@ -50,11 +47,9 @@ class SpaceMoonHome extends ConsumerWidget {
   const SpaceMoonHome({
     super.key,
     required this.title,
-    required this.home,
   });
 
   final String title;
-  final Widget home;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -68,7 +63,6 @@ class SpaceMoonHome extends ConsumerWidget {
     //     return MaterialApp(
     //       title: title,
     //       theme: AppTheme.currentAppTheme.theme,
-    //       home: home,
     //       debugShowCheckedModeBanner: kDebugMode,
     //     );
     //   }),

@@ -162,10 +162,10 @@ class AppTheme {
         onTertiaryContainer: Colors.green,
 
         //
-        error: Colors.green,
-        onError: Colors.lime,
-        errorContainer: const Color.fromARGB(255, 167, 242, 170),
-        onErrorContainer: const Color.fromARGB(255, 2, 135, 7),
+        // error: Colors.green,
+        // onError: Colors.lime,
+        // errorContainer: const Color.fromARGB(255, 167, 242, 170),
+        // onErrorContainer: const Color.fromARGB(255, 2, 135, 7),
 
         //
         // outline: Colors.yellow, //textfield border

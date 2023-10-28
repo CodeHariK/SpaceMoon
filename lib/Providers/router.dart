@@ -3,12 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:spacemoon/Auth/auth_routes.dart';
-import 'package:spacemoon/Page/error_page.dart';
-import 'package:spacemoon/Page/home.dart';
-import 'package:spacemoon/Page/onboard.dart';
-import 'package:spacemoon/Page/profile.dart';
-import 'package:spacemoon/Page/settings.dart';
+import 'package:spacemoon/Routes/Auth/auth_routes.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Special/error_page.dart';
+import 'package:spacemoon/Routes/Special/onboard.dart';
 import 'package:spacemoon/Providers/auth.dart';
 
 part 'router.g.dart';
@@ -20,7 +18,7 @@ extension ValidateRouterState on GoRouterState {
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
-  // static final GlobalKey<NavigatorState> shellNavigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> homeShellNavigatorKey = GlobalKey<NavigatorState>();
 
   //Auth
   static const String login = '/auth/login';
@@ -30,17 +28,16 @@ class AppRouter {
   static const String verifyEmail = '/auth/verify-email';
   static const String emailLinkSignIn = '/auth/email-link-sign-in';
 
-  //
+  //HomeShell
   static const String home = '/';
-
-  //
+  /*-*/ static const String account = 'account';
+  /*-*/ static const String settings = 'settings';
+  /*-*/ static const String chat = 'chat/:chatId';
   static const String profile = '/profile';
+  static const String search = '/search';
 
   //
   static const String onboard = '/onboard';
-
-  //
-  static const String settings = '/settings';
 }
 
 final ValueNotifier<RoutingConfig> myConfig = ValueNotifier<RoutingConfig>(const RoutingConfig(routes: []));
@@ -71,8 +68,6 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
     },
     routes: <RouteBase>[
       if (authenticated) ...Home.routes,
-      if (authenticated) ...Profile.routes,
-      if (authenticated) ...Settings.routes,
       if (!authenticated) ...Auth.routes,
       if (!onboarded) ...Onboard.routes,
     ],

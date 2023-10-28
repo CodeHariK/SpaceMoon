@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart' hide PhoneAuthProvider, EmailA
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spacemoon/Constants/assets.dart';
-import 'package:spacemoon/Page/home.dart';
-import 'package:spacemoon/Page/profile.dart';
+import 'package:spacemoon/Static/assets.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Providers/router.dart';
 
 part 'auth_routes.g.dart';
@@ -72,7 +72,7 @@ class LoginRoute extends GoRouteData {
               context: context,
             );
 
-            if (context.mounted) ProfileRoute().pushReplacement(context);
+            if (context.mounted) AccountRoute().pushReplacement(context);
           },
         ),
         AuthStateChangeAction((context, AuthState state) {
@@ -85,7 +85,7 @@ class LoginRoute extends GoRouteData {
 
           switch (user) {
             case User(emailVerified: true):
-              ProfileRoute().pushReplacement(context);
+              AccountRoute().pushReplacement(context);
             case User(emailVerified: false, email: final String _):
               VerifyEmailRoute().push(context);
           }
@@ -196,7 +196,7 @@ class VerifyEmailRoute extends GoRouteData {
       ),
       actions: [
         EmailVerifiedAction(() {
-          ProfileRoute().pushReplacement(context);
+          AccountRoute().pushReplacement(context);
         }),
         AuthCancelledAction((context) {
           FirebaseUIAuth.signOut(context: context);
