@@ -645,6 +645,10 @@ PODS:
     - firebase_core
     - Flutter
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - cloud_functions (4.5.2):
+    - Firebase/Functions (= 10.16.0)
+    - firebase_core
+    - Flutter
   - desktop_webview_auth (0.0.1):
     - Flutter
   - Firebase/Auth (10.16.0):
@@ -658,6 +662,9 @@ PODS:
   - Firebase/Firestore (10.16.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 10.16.0)
+  - Firebase/Functions (10.16.0):
+    - Firebase/CoreOnly
+    - FirebaseFunctions (~> 10.16.0)
   - Firebase/Storage (10.16.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.16.0)
@@ -718,6 +725,16 @@ PODS:
     - "gRPC-C++ (~> 1.49.1)"
     - leveldb-library (~> 1.22)
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - FirebaseFunctions (10.16.0):
+    - FirebaseAppCheckInterop (~> 10.10)
+    - FirebaseAuthInterop (~> 10.0)
+    - FirebaseCore (~> 10.0)
+    - FirebaseCoreExtension (~> 10.0)
+    - FirebaseMessagingInterop (~> 10.0)
+    - FirebaseSharedSwift (~> 10.0)
+    - GTMSessionFetcher/Core (< 4.0, >= 2.1)
+  - FirebaseMessagingInterop (10.16.0)
+  - FirebaseSharedSwift (10.16.0)
   - FirebaseStorage (10.16.0):
     - FirebaseAppCheckInterop (~> 10.0)
     - FirebaseAuthInterop (~> 10.0)
@@ -829,6 +846,7 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - desktop_webview_auth (from `.symlinks/plugins/desktop_webview_auth/ios`)
   - firebase_app_check (from `.symlinks/plugins/firebase_app_check/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -855,6 +873,9 @@ SPEC REPOS:
     - FirebaseCoreInternal
     - FirebaseDynamicLinks
     - FirebaseFirestore
+    - FirebaseFunctions
+    - FirebaseMessagingInterop
+    - FirebaseSharedSwift
     - FirebaseStorage
     - GoogleSignIn
     - GoogleUtilities
@@ -870,6 +891,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
+  cloud_functions:
+    :path: ".symlinks/plugins/cloud_functions/ios"
   desktop_webview_auth:
     :path: ".symlinks/plugins/desktop_webview_auth/ios"
   firebase_app_check:
@@ -896,6 +919,7 @@ SPEC CHECKSUMS:
   AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: abc819b936be92e6167aec1a8983d1e48ded2674
+  cloud_functions: 784f85b51d386b7546960f1f168fa3df0675c21e
   desktop_webview_auth: d645139460ef203d50bd0cdb33356785dd939cce
   Firebase: 25899099b77d255a636e3579c3d9dce10ec150d5
   firebase_app_check: acb38ffa7bcf770c6434cd3b44847bc60aff783d
@@ -912,6 +936,9 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: 26233f705cc4531236818a07ac84d20c333e505a
   FirebaseDynamicLinks: 3e8137f118af9b797451734d3340c843d37f6c53
   FirebaseFirestore: 17bd5c8a0ea4be0fcae5a6f95f817983623adb4a
+  FirebaseFunctions: f7c3a837beb8d747a1949b167fb18d219f281c7c
+  FirebaseMessagingInterop: 9399279d03dfdd931c5e90358263d6a16a539a7b
+  FirebaseSharedSwift: 82b618801ddd76ea2ab54c5746bcd48854272232
   FirebaseStorage: d664834746c0274d267072c6bfa100960f90654a
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   google_sign_in_ios: 1256ff9d941db546373826966720b0c24804bcdd

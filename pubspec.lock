@@ -185,6 +185,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.8.2"
+  cloud_functions:
+    dependency: "direct main"
+    description:
+      name: cloud_functions
+      sha256: "928970852bb8011d4a8d7427541acdde6b60ffa385761b75f63d4b11b3123a15"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.2"
+  cloud_functions_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_functions_platform_interface
+      sha256: "7b4a87acf99c262be01b2e0a15265cfd6c02551d2e7923ded0e3567679cae70f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.5.5"
+  cloud_functions_web:
+    dependency: transitive
+    description:
+      name: cloud_functions_web
+      sha256: "3e379bf1a4187823b8d294f375af934c32c5efe1183c236fbd1dc31fa9d75e0e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.5"
   code_builder:
     dependency: transitive
     description:
@@ -470,6 +494,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_adaptive_scaffold:
+    dependency: "direct main"
+    description:
+      name: flutter_adaptive_scaffold
+      sha256: "3e78be8b9c95b1c9832b2f8ec4a845adac205c4bb5e7bd3fb204b07990229167"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.7+1"
   flutter_hooks:
     dependency: "direct main"
     description:

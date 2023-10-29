@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spacemoon/Helpers/shell_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
+import 'package:spacemoon/Routes/Home/TabShell/tabhome.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
@@ -17,50 +18,25 @@ class Home {
   static final routes = $appRoutes;
 }
 
-class ShellData {
-  final String name;
-  final String location;
-  final Icon icon;
-
-  ShellData({
-    required this.name,
-    required this.location,
-    required this.icon,
-  });
-}
-
-extension SuperShellData on List<ShellData> {
-  BottomNavigationBar bottomNavigationBar(BuildContext context) => BottomNavigationBar(
-        currentIndex: getCurrentIndex(context),
-        onTap: (v) {
-          context.go(this[v].location);
-        },
-        items: map(
-          (e) => BottomNavigationBarItem(
-            icon: e.icon,
-            label: e.name,
-          ),
-        ).toList(),
-      );
-
-  int getCurrentIndex(BuildContext context) {
-    try {
-      final String location = GoRouterState.of(context).uri.toString();
-      final i = indexWhere((e) {
-        return location.endsWith(e.location);
-      });
-      return i == -1 ? 0 : i;
-    } catch (e) {
-      log('Error : $e');
-    }
-    return 0;
-  }
-}
-
 @TypedShellRoute<HomeShellRoute>(
   routes: [
     TypedGoRoute<SearchRoute>(path: AppRouter.search),
     TypedGoRoute<ProfileRoute>(path: AppRouter.profile),
+
+    // TypedGoRoute<TabHomeRoute>(path: '/tabhome', routes: [
+    //   //
+    //   TypedShellRoute<TabShellRoute>(routes: [
+    //     TypedGoRoute<Tab1Route>(path: 'tab1'),
+    //     TypedGoRoute<Tab2Route>(path: 'tab2'),
+    //   ]),
+    // ]),
+
+    TypedShellRoute<TabShellRoute>(routes: [
+      TypedGoRoute<Tab1Route>(path: '/tabhome/tab1'),
+      TypedGoRoute<Tab2Route>(path: '/tabhome/tab2'),
+    ]),
+
+    //
     TypedGoRoute<HomeRoute>(
       path: AppRouter.home,
       routes: [
@@ -80,6 +56,7 @@ class HomeShellRoute extends ShellRouteData {
   static final GlobalKey<NavigatorState> $navigatorKey = AppRouter.homeShellNavigatorKey;
 
   static List<ShellData> data = [
+    ShellData(name: 'TabHome', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
     ShellData(name: 'Chat', location: AppRouter.home, icon: const Icon(Icons.chat_bubble_outline)),
     ShellData(name: 'Search', location: AppRouter.search, icon: const Icon(Icons.search)),
     ShellData(name: 'Profile', location: AppRouter.profile, icon: const Icon(Icons.face_2_outlined)),
@@ -100,7 +77,7 @@ class HomeShellRoute extends ShellRouteData {
         ],
       ),
       body: navigator,
-      bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context),
+      bottomNavigationBar: HomeShellRoute.data.navigationBar(context),
     );
   }
 }

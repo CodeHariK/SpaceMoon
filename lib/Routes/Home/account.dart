@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +8,6 @@ import 'package:spacemoon/Providers/router.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
-import 'package:spacemoon/Static/theme.dart';
 
 @immutable
 class AccountRoute extends GoRouteData {
@@ -34,38 +31,30 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     final platform = Theme.of(context).platform;
 
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
-          SliverAppBar(
-            expandedHeight: 300.c,
-            flexibleSpace: FlexibleSpaceBar(
-              background: InkWell(
-                splashFactory: InkSplash.splashFactory,
-                onTap: () async {
-                  await FirebaseAuth.instance.currentUser
-                      ?.updatePhotoURL('https://avatars.githubusercontent.com/u/144345505?v=4');
-                },
-                child: FirebaseAuth.instance.currentUser?.photoURL == null
-                    ? const Icon(CupertinoIcons.person_crop_circle_badge_plus)
-                    : ClipRRect(
-                        child: Image.network(
-                          FirebaseAuth.instance.currentUser!.photoURL!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Divider(),
-          )),
-        ];
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Account'),
+      ),
       body: ProfileScreen(
-        avatar: const SizedBox(),
+        avatar: Container(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            splashFactory: InkSplash.splashFactory,
+            onTap: () async {
+              await FirebaseAuth.instance.currentUser
+                  ?.updatePhotoURL('https://avatars.githubusercontent.com/u/144345505?v=4');
+            },
+            child: FirebaseAuth.instance.currentUser?.photoURL == null
+                ? const Icon(CupertinoIcons.person_crop_circle_badge_plus)
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(250),
+                    child: Image.network(
+                      FirebaseAuth.instance.currentUser!.photoURL!,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+          ),
+        ),
         actions: [
           SignedOutAction((context) {
             LoginRoute().pushReplacement(context);
@@ -96,92 +85,6 @@ class _AccountPageState extends State<AccountPage> {
         children: [
           Text('Email  ${FirebaseAuth.instance.currentUser?.email}'),
           Text('Phone  ${FirebaseAuth.instance.currentUser?.phoneNumber}'),
-        ],
-      ),
-    );
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Account')),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: InkWell(
-              splashFactory: InkSplash.splashFactory,
-              onTap: () async {
-                await FirebaseAuth.instance.currentUser
-                    ?.updatePhotoURL('https://avatars.githubusercontent.com/u/144345505?v=4');
-              },
-              child: FirebaseAuth.instance.currentUser?.photoURL == null
-                  ? const Icon(CupertinoIcons.person_crop_circle_badge_plus)
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(250),
-                      child: Image.network(
-                        FirebaseAuth.instance.currentUser!.photoURL!,
-                        fit: BoxFit.cover,
-                        height: 120.c,
-                        width: 120.c,
-                      ),
-                    ),
-            ),
-          ),
-          Expanded(
-            child: ProfileScreen(
-              // avatar: Container(
-              //   padding: const EdgeInsets.all(8),
-              //   child: InkWell(
-              //     splashFactory: InkSplash.splashFactory,
-              //     onTap: () async {
-              //       await FirebaseAuth.instance.currentUser
-              //           ?.updatePhotoURL('https://avatars.githubusercontent.com/u/144345505?v=4');
-              //     },
-              //     child: FirebaseAuth.instance.currentUser?.photoURL == null
-              //         ? const Icon(CupertinoIcons.person_crop_circle_badge_plus)
-              //         : ClipRRect(
-              //             borderRadius: BorderRadius.circular(250),
-              //             child: Image.network(
-              //               FirebaseAuth.instance.currentUser!.photoURL!,
-              //               fit: BoxFit.cover,
-              //               height: 120.c,
-              //               width: 120.c,
-              //             ),
-              //           ),
-              //   ),
-              // ),
-              avatar: const SizedBox(),
-              actions: [
-                SignedOutAction((context) {
-                  LoginRoute().pushReplacement(context);
-                  context.pushReplacement(AppRouter.login);
-                }),
-                AuthStateChangeAction<MFARequired>(
-                  (context, state) async {
-                    await startMFAVerification(
-                      resolver: state.resolver,
-                      context: context,
-                    );
-
-                    if (context.mounted) AccountRoute().pushReplacement(context);
-                  },
-                ),
-              ],
-              actionCodeSettings: ActionCodeSettings(
-                url: 'https://spacemoonfire.firebaseapp.com',
-                handleCodeInApp: true,
-                androidMinimumVersion: '27',
-                androidPackageName: 'run.shark.spacemoon',
-                iOSBundleId: 'run.shark.spacemoon',
-              ),
-              showMFATile: kIsWeb || platform == TargetPlatform.iOS || platform == TargetPlatform.android,
-              showUnlinkConfirmationDialog: true,
-
-              //
-              children: [
-                Text('Email  ${FirebaseAuth.instance.currentUser?.email}'),
-                Text('Phone  ${FirebaseAuth.instance.currentUser?.phoneNumber}'),
-              ],
-            ),
-          ),
         ],
       ),
     );

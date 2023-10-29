@@ -61,7 +61,7 @@ class AppTheme {
   // static TextStyle get poppins => GoogleFonts.poppins();
   static TextStyle get poppins => const TextStyle();
 
-  static Color get seedColor => Colors.deepPurple;
+  static Color get seedColor => const Color(0xff6750a4);
 
   TextTheme get textTheme => TextTheme(
         displayLarge: poppins.copyWith(color: Colors.orange),
@@ -143,8 +143,8 @@ class AppTheme {
         //
         secondary: Colors.purple,
         onSecondary: Colors.blue,
-        secondaryContainer: Colors.pink,
-        onSecondaryContainer: Colors.green,
+        // secondaryContainer: Colors.pink, //NavigationRail
+        // onSecondaryContainer: Colors.green, //NavigationRail
 
         //
         // surface: Colors.yellow, //card
@@ -152,7 +152,7 @@ class AppTheme {
         // surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
         // inverseSurface: Colors.red,//Snackbar background
         onInverseSurface: Colors.blue[900],
-        surfaceVariant: Colors.blue,
+        // surfaceVariant: Colors.blue,//tabBarDivider
         // onSurfaceVariant: Colors.yellow, //Textfield lable font
 
         //

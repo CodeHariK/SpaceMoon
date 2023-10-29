@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -76,7 +77,6 @@ class SpaceMoonHome extends ConsumerWidget {
       maxSize: const Size(1366, 1024),
       size: MediaQuery.of(context).size,
     );
-
     return Builder(builder: (context) {
       return MaterialApp.router(
         routerConfig: router,
@@ -89,6 +89,12 @@ class SpaceMoonHome extends ConsumerWidget {
         ],
         theme: AppTheme.currentAppTheme.theme,
         debugShowCheckedModeBanner: kDebugMode,
+        builder: (context, child) {
+          return CupertinoTheme(
+            data: CupertinoThemeData(brightness: brightness),
+            child: child ?? const Scaffold(backgroundColor: Colors.pink, body: Placeholder()),
+          );
+        },
       );
     });
   }

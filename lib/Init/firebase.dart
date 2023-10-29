@@ -4,6 +4,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart' as auth;
 import 'package:flutter/foundation.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:spacemoon/firebase_options.dart';
 
 Future<void> initFirebase() async {
@@ -17,8 +18,6 @@ Future<void> initFirebase() async {
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
 
-  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9098);
-
   const GOOGLE_CLIENT_ID = '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com';
 
   FirebaseUIAuth.configureProviders([
@@ -27,4 +26,7 @@ Future<void> initFirebase() async {
     GoogleProvider(clientId: GOOGLE_CLIENT_ID),
     auth.AppleProvider(),
   ]);
+
+  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9098);
+  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
 }
