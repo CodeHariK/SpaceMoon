@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package user;
+
+enum Active {
+    OFFLINE = 0;
+    ONLINE = 10;
+    TYPING = 20;
+}
+
+enum Visible {
+    CLOSE = 0;
+    MODERATED = 10;
+    OPEN = 20;
+}
+
+message User {
+    string id = 100;
+    string nam = 200;
+    string nick = 210;
+    string email = 300;
+    string phone = 400;
+    string avatar = 500;
+    Active status = 600;
+    repeated string rooms = 700;
+    repeated string roomRequest = 800;
+    // repeated string rooms = 8 [json_name = "dinosaur"];
+    // int32 level = 9;
+    string created = 900;
+    // google.protobuf.Timestamp updatedAt = 11;
+    Visible open = 1000;
+
+    //-------------------
+    string fcmToken = 1100;
+}

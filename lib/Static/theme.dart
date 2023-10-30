@@ -110,7 +110,7 @@ class AppTheme {
       );
 
   TextButtonThemeData get textButton => TextButtonThemeData(
-        style: OutlinedButton.styleFrom(
+        style: TextButton.styleFrom(
           textStyle: AppTheme.tx.bodySmall.under,
           padding: EdgeInsets.zero,
         ),

@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart' as auth;
@@ -27,6 +30,13 @@ Future<void> initFirebase() async {
     auth.AppleProvider(),
   ]);
 
-  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9098);
+  FirebaseFirestore.instance.settings = const Settings(
+    host: 'localhost:8080',
+    sslEnabled: false,
+    persistenceEnabled: false,
+  );
+  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
+  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
 }

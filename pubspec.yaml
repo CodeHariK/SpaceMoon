@@ -38,10 +38,13 @@ dependencies:
   firebase_core: ^2.18.0
   firebase_app_check: ^0.2.1+1
   cloud_firestore: ^4.11.0
+  cloud_functions: ^4.5.2
   firebase_storage: ^11.4.0
   firebase_ui_auth: ^1.9.1
   firebase_ui_oauth_google: ^1.2.13
   firebase_ui_oauth_apple: ^1.2.13
+
+  protobuf: ^3.1.0
 
   google_fonts: ^6.1.0
 
@@ -55,7 +58,6 @@ dependencies:
   shared_preferences: ^2.2.2
 
   flutter_adaptive_scaffold: ^0.1.7+1
-  cloud_functions: ^4.5.2
 
 dev_dependencies:
   flutter_test:
