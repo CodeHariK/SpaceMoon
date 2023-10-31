@@ -15,12 +15,12 @@ enum Visible {
 }
 
 message User {
-    string id = 100;
-    string nam = 200;
+    string uid = 100;
+    string displayName = 200;
     string nick = 210;
     string email = 300;
-    string phone = 400;
-    string avatar = 500;
+    string phoneNumber = 400;
+    string photoURL = 500;
     Active status = 600;
     repeated string rooms = 700;
     repeated string roomRequest = 800;
@@ -32,4 +32,25 @@ message User {
 
     //-------------------
     string fcmToken = 1100;
+}
+
+enum Const {
+    users = 0;
+    rooms = 10;
+    tweets = 20;
+
+    uid = 100;
+    nick = 110;
+    displayName = 150;
+    email = 200;
+    phoneNumber = 250;
+    photoURL = 350;
+    
+    status = 400;
+    created = 600;
+    open = 700;
+
+    members = 800;
+    tweet_count = 900;
+    description = 1000;
 }

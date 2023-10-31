@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: user.proto
+//  source: data.proto
 //
 // @dart = 2.12
 
@@ -13,18 +13,18 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'user.pbenum.dart';
+import 'data.pbenum.dart';
 
-export 'user.pbenum.dart';
+export 'data.pbenum.dart';
 
 class User extends $pb.GeneratedMessage {
   factory User({
-    $core.String? id,
-    $core.String? nam,
+    $core.String? uid,
+    $core.String? displayName,
     $core.String? nick,
     $core.String? email,
-    $core.String? phone,
-    $core.String? avatar,
+    $core.String? phoneNumber,
+    $core.String? photoURL,
     Active? status,
     $core.Iterable<$core.String>? rooms,
     $core.Iterable<$core.String>? roomRequest,
@@ -33,11 +33,11 @@ class User extends $pb.GeneratedMessage {
     $core.String? fcmToken,
   }) {
     final $result = create();
-    if (id != null) {
-      $result.id = id;
+    if (uid != null) {
+      $result.uid = uid;
     }
-    if (nam != null) {
-      $result.nam = nam;
+    if (displayName != null) {
+      $result.displayName = displayName;
     }
     if (nick != null) {
       $result.nick = nick;
@@ -45,11 +45,11 @@ class User extends $pb.GeneratedMessage {
     if (email != null) {
       $result.email = email;
     }
-    if (phone != null) {
-      $result.phone = phone;
+    if (phoneNumber != null) {
+      $result.phoneNumber = phoneNumber;
     }
-    if (avatar != null) {
-      $result.avatar = avatar;
+    if (photoURL != null) {
+      $result.photoURL = photoURL;
     }
     if (status != null) {
       $result.status = status;
@@ -76,12 +76,12 @@ class User extends $pb.GeneratedMessage {
   factory User.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'User', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(100, _omitFieldNames ? '' : 'id')
-    ..aOS(200, _omitFieldNames ? '' : 'nam')
+    ..aOS(100, _omitFieldNames ? '' : 'uid')
+    ..aOS(200, _omitFieldNames ? '' : 'displayName', protoName: 'displayName')
     ..aOS(210, _omitFieldNames ? '' : 'nick')
     ..aOS(300, _omitFieldNames ? '' : 'email')
-    ..aOS(400, _omitFieldNames ? '' : 'phone')
-    ..aOS(500, _omitFieldNames ? '' : 'avatar')
+    ..aOS(400, _omitFieldNames ? '' : 'phoneNumber', protoName: 'phoneNumber')
+    ..aOS(500, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
     ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.OFFLINE, valueOf: Active.valueOf, enumValues: Active.values)
     ..pPS(700, _omitFieldNames ? '' : 'rooms')
     ..pPS(800, _omitFieldNames ? '' : 'roomRequest', protoName: 'roomRequest')
@@ -113,22 +113,22 @@ class User extends $pb.GeneratedMessage {
   static User? _defaultInstance;
 
   @$pb.TagNumber(100)
-  $core.String get id => $_getSZ(0);
+  $core.String get uid => $_getSZ(0);
   @$pb.TagNumber(100)
-  set id($core.String v) { $_setString(0, v); }
+  set uid($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(100)
-  $core.bool hasId() => $_has(0);
+  $core.bool hasUid() => $_has(0);
   @$pb.TagNumber(100)
-  void clearId() => clearField(100);
+  void clearUid() => clearField(100);
 
   @$pb.TagNumber(200)
-  $core.String get nam => $_getSZ(1);
+  $core.String get displayName => $_getSZ(1);
   @$pb.TagNumber(200)
-  set nam($core.String v) { $_setString(1, v); }
+  set displayName($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(200)
-  $core.bool hasNam() => $_has(1);
+  $core.bool hasDisplayName() => $_has(1);
   @$pb.TagNumber(200)
-  void clearNam() => clearField(200);
+  void clearDisplayName() => clearField(200);
 
   @$pb.TagNumber(210)
   $core.String get nick => $_getSZ(2);
@@ -149,22 +149,22 @@ class User extends $pb.GeneratedMessage {
   void clearEmail() => clearField(300);
 
   @$pb.TagNumber(400)
-  $core.String get phone => $_getSZ(4);
+  $core.String get phoneNumber => $_getSZ(4);
   @$pb.TagNumber(400)
-  set phone($core.String v) { $_setString(4, v); }
+  set phoneNumber($core.String v) { $_setString(4, v); }
   @$pb.TagNumber(400)
-  $core.bool hasPhone() => $_has(4);
+  $core.bool hasPhoneNumber() => $_has(4);
   @$pb.TagNumber(400)
-  void clearPhone() => clearField(400);
+  void clearPhoneNumber() => clearField(400);
 
   @$pb.TagNumber(500)
-  $core.String get avatar => $_getSZ(5);
+  $core.String get photoURL => $_getSZ(5);
   @$pb.TagNumber(500)
-  set avatar($core.String v) { $_setString(5, v); }
+  set photoURL($core.String v) { $_setString(5, v); }
   @$pb.TagNumber(500)
-  $core.bool hasAvatar() => $_has(5);
+  $core.bool hasPhotoURL() => $_has(5);
   @$pb.TagNumber(500)
-  void clearAvatar() => clearField(500);
+  void clearPhotoURL() => clearField(500);
 
   @$pb.TagNumber(600)
   Active get status => $_getN(6);

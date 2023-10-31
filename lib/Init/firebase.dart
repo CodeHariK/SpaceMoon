@@ -16,7 +16,7 @@ Future<void> initFirebase() async {
   );
 
   await FirebaseAppCheck.instance.activate(
-    webProvider: ReCaptchaEnterpriseProvider('recaptcha-v3-site-key'),
+    webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
     androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
@@ -30,13 +30,15 @@ Future<void> initFirebase() async {
     auth.AppleProvider(),
   ]);
 
-  FirebaseFirestore.instance.settings = const Settings(
-    host: 'localhost:8080',
-    sslEnabled: false,
-    persistenceEnabled: false,
-  );
-  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-  FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
-  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  if (kDebugMode) {
+    FirebaseFirestore.instance.settings = const Settings(
+      host: 'localhost:8080',
+      sslEnabled: false,
+      persistenceEnabled: false,
+    );
+    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+    FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+    FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
+    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  }
 }

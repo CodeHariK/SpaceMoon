@@ -81,13 +81,124 @@ export function visibleToJSON(object: Visible): string {
   }
 }
 
+export enum Const {
+  users = 0,
+  rooms = 10,
+  tweets = 20,
+  uid = 100,
+  nick = 110,
+  displayName = 150,
+  email = 200,
+  phoneNumber = 250,
+  photoURL = 350,
+  status = 400,
+  created = 600,
+  open = 700,
+  members = 800,
+  tweet_count = 900,
+  description = 1000,
+  UNRECOGNIZED = -1,
+}
+
+export function constFromJSON(object: any): Const {
+  switch (object) {
+    case 0:
+    case "users":
+      return Const.users;
+    case 10:
+    case "rooms":
+      return Const.rooms;
+    case 20:
+    case "tweets":
+      return Const.tweets;
+    case 100:
+    case "uid":
+      return Const.uid;
+    case 110:
+    case "nick":
+      return Const.nick;
+    case 150:
+    case "displayName":
+      return Const.displayName;
+    case 200:
+    case "email":
+      return Const.email;
+    case 250:
+    case "phoneNumber":
+      return Const.phoneNumber;
+    case 350:
+    case "photoURL":
+      return Const.photoURL;
+    case 400:
+    case "status":
+      return Const.status;
+    case 600:
+    case "created":
+      return Const.created;
+    case 700:
+    case "open":
+      return Const.open;
+    case 800:
+    case "members":
+      return Const.members;
+    case 900:
+    case "tweet_count":
+      return Const.tweet_count;
+    case 1000:
+    case "description":
+      return Const.description;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Const.UNRECOGNIZED;
+  }
+}
+
+export function constToJSON(object: Const): string {
+  switch (object) {
+    case Const.users:
+      return "users";
+    case Const.rooms:
+      return "rooms";
+    case Const.tweets:
+      return "tweets";
+    case Const.uid:
+      return "uid";
+    case Const.nick:
+      return "nick";
+    case Const.displayName:
+      return "displayName";
+    case Const.email:
+      return "email";
+    case Const.phoneNumber:
+      return "phoneNumber";
+    case Const.photoURL:
+      return "photoURL";
+    case Const.status:
+      return "status";
+    case Const.created:
+      return "created";
+    case Const.open:
+      return "open";
+    case Const.members:
+      return "members";
+    case Const.tweet_count:
+      return "tweet_count";
+    case Const.description:
+      return "description";
+    case Const.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface User {
-  id: string;
-  nam: string;
+  uid: string;
+  displayName: string;
   nick: string;
   email: string;
-  phone: string;
-  avatar: string;
+  phoneNumber: string;
+  photoURL: string;
   status: Active;
   rooms: string[];
   roomRequest: string[];
@@ -104,12 +215,12 @@ export interface User {
 
 function createBaseUser(): User {
   return {
-    id: "",
-    nam: "",
+    uid: "",
+    displayName: "",
     nick: "",
     email: "",
-    phone: "",
-    avatar: "",
+    phoneNumber: "",
+    photoURL: "",
     status: 0,
     rooms: [],
     roomRequest: [],
@@ -121,11 +232,11 @@ function createBaseUser(): User {
 
 export const User = {
   encode(message: User, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== "") {
-      writer.uint32(802).string(message.id);
+    if (message.uid !== "") {
+      writer.uint32(802).string(message.uid);
     }
-    if (message.nam !== "") {
-      writer.uint32(1602).string(message.nam);
+    if (message.displayName !== "") {
+      writer.uint32(1602).string(message.displayName);
     }
     if (message.nick !== "") {
       writer.uint32(1682).string(message.nick);
@@ -133,11 +244,11 @@ export const User = {
     if (message.email !== "") {
       writer.uint32(2402).string(message.email);
     }
-    if (message.phone !== "") {
-      writer.uint32(3202).string(message.phone);
+    if (message.phoneNumber !== "") {
+      writer.uint32(3202).string(message.phoneNumber);
     }
-    if (message.avatar !== "") {
-      writer.uint32(4002).string(message.avatar);
+    if (message.photoURL !== "") {
+      writer.uint32(4002).string(message.photoURL);
     }
     if (message.status !== 0) {
       writer.uint32(4800).int32(message.status);
@@ -172,14 +283,14 @@ export const User = {
             break;
           }
 
-          message.id = reader.string();
+          message.uid = reader.string();
           continue;
         case 200:
           if (tag !== 1602) {
             break;
           }
 
-          message.nam = reader.string();
+          message.displayName = reader.string();
           continue;
         case 210:
           if (tag !== 1682) {
@@ -200,14 +311,14 @@ export const User = {
             break;
           }
 
-          message.phone = reader.string();
+          message.phoneNumber = reader.string();
           continue;
         case 500:
           if (tag !== 4002) {
             break;
           }
 
-          message.avatar = reader.string();
+          message.photoURL = reader.string();
           continue;
         case 600:
           if (tag !== 4800) {
@@ -262,12 +373,12 @@ export const User = {
 
   fromJSON(object: any): User {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      nam: isSet(object.nam) ? globalThis.String(object.nam) : "",
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+      displayName: isSet(object.displayName) ? globalThis.String(object.displayName) : "",
       nick: isSet(object.nick) ? globalThis.String(object.nick) : "",
       email: isSet(object.email) ? globalThis.String(object.email) : "",
-      phone: isSet(object.phone) ? globalThis.String(object.phone) : "",
-      avatar: isSet(object.avatar) ? globalThis.String(object.avatar) : "",
+      phoneNumber: isSet(object.phoneNumber) ? globalThis.String(object.phoneNumber) : "",
+      photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
       status: isSet(object.status) ? activeFromJSON(object.status) : 0,
       rooms: globalThis.Array.isArray(object?.rooms) ? object.rooms.map((e: any) => globalThis.String(e)) : [],
       roomRequest: globalThis.Array.isArray(object?.roomRequest)
@@ -281,11 +392,11 @@ export const User = {
 
   toJSON(message: User): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.uid !== "") {
+      obj.uid = message.uid;
     }
-    if (message.nam !== "") {
-      obj.nam = message.nam;
+    if (message.displayName !== "") {
+      obj.displayName = message.displayName;
     }
     if (message.nick !== "") {
       obj.nick = message.nick;
@@ -293,11 +404,11 @@ export const User = {
     if (message.email !== "") {
       obj.email = message.email;
     }
-    if (message.phone !== "") {
-      obj.phone = message.phone;
+    if (message.phoneNumber !== "") {
+      obj.phoneNumber = message.phoneNumber;
     }
-    if (message.avatar !== "") {
-      obj.avatar = message.avatar;
+    if (message.photoURL !== "") {
+      obj.photoURL = message.photoURL;
     }
     if (message.status !== 0) {
       obj.status = activeToJSON(message.status);
@@ -325,12 +436,12 @@ export const User = {
   },
   fromPartial<I extends Exact<DeepPartial<User>, I>>(object: I): User {
     const message = createBaseUser();
-    message.id = object.id ?? "";
-    message.nam = object.nam ?? "";
+    message.uid = object.uid ?? "";
+    message.displayName = object.displayName ?? "";
     message.nick = object.nick ?? "";
     message.email = object.email ?? "";
-    message.phone = object.phone ?? "";
-    message.avatar = object.avatar ?? "";
+    message.phoneNumber = object.phoneNumber ?? "";
+    message.photoURL = object.photoURL ?? "";
     message.status = object.status ?? 0;
     message.rooms = object.rooms?.map((e) => e) || [];
     message.roomRequest = object.roomRequest?.map((e) => e) || [];

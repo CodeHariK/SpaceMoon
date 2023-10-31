@@ -1,12 +1,4 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
+import * as admin from "firebase-admin";
 import { firestore } from "firebase-functions";
 import { onCall, onRequest } from "firebase-functions/v2/https";
 import { beforeUserCreated, AuthBlockingEvent } from "firebase-functions/v2/identity";
@@ -14,6 +6,7 @@ import { onDocumentWritten, onDocumentCreated, onDocumentDeleted } from "firebas
 import { FieldValue } from "firebase-admin/firestore";
 import * as users from "./users";
 
+admin.initializeApp({ projectId: "spacemoonfire" });
 
 export const helloWorld = onRequest((request, response) => {
     response.set("Access-Control-Allow-Origin", "*");
@@ -22,14 +15,19 @@ export const helloWorld = onRequest((request, response) => {
 });
 
 export const onUserCreate = users.onUserCreate;
+export const callUserUpdate = users.callUserUpdate;
+export const userHi = users.userHi;
 
-// export const sayHello = onCall((request) => {
-//     return {
-//         message: "Hello from the emulator",
-//         data: request.data,
-//         auth: request.auth,
-//     };
-// });
+export const sayHello = onCall((request) => {
+
+    console.log(request.data);
+
+    return {
+        message: "Hello from the emulator",
+        data: request.data,
+        auth: request.auth,
+    };
+});
 
 // export const docWrite = onDocumentWritten('counter/{spider}/{giraffe}/{deer}', (change) => {
 //     console.log(change)

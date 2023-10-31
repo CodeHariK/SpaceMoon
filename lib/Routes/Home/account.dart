@@ -1,13 +1,16 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spacemoon/Data/data.pb.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Providers/router.dart';
 // ignore: depend_on_referenced_packages
-import 'package:firebase_auth/firebase_auth.dart' hide PhoneAuthProvider, EmailAuthProvider;
+import 'package:firebase_auth/firebase_auth.dart' hide User, PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Static/theme.dart';
 
 @immutable
 class AccountRoute extends GoRouteData {
@@ -41,11 +44,17 @@ class _AccountPageState extends State<AccountPage> {
           child: InkWell(
             splashFactory: InkSplash.splashFactory,
             onTap: () async {
-              await FirebaseAuth.instance.currentUser
-                  ?.updatePhotoURL('https://avatars.githubusercontent.com/u/144345505?v=4');
+              FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(
+                    User(
+                      photoURL: 'https://avatars.githubusercontent.com/u/144345505?v=4',
+                    ),
+                  );
             },
             child: FirebaseAuth.instance.currentUser?.photoURL == null
-                ? const Icon(CupertinoIcons.person_crop_circle_badge_plus)
+                ? Icon(
+                    CupertinoIcons.person_crop_circle_badge_plus,
+                    size: 120.c,
+                  )
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(250),
                     child: Image.network(

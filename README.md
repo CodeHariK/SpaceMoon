@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/SpaceMoon.webp" style="background-color: #550E65; border-radius:300px;" />
+  <img src="./assets/images/SpaceMoon.webp" style="background-color: #550E65; border-radius:300px;" />
 </p>
 <h1 align="center">SpaceMoon</h1>
 
