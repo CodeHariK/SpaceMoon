@@ -1,7 +1,128 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "user";
+
+export enum Role {
+  BLOCKED = 0,
+  DENIED = 10,
+  REQUEST = 20,
+  USER = 30,
+  MODERATOR = 40,
+  ADMIN = 50,
+  UNRECOGNIZED = -1,
+}
+
+export function roleFromJSON(object: any): Role {
+  switch (object) {
+    case 0:
+    case "BLOCKED":
+      return Role.BLOCKED;
+    case 10:
+    case "DENIED":
+      return Role.DENIED;
+    case 20:
+    case "REQUEST":
+      return Role.REQUEST;
+    case 30:
+    case "USER":
+      return Role.USER;
+    case 40:
+    case "MODERATOR":
+      return Role.MODERATOR;
+    case 50:
+    case "ADMIN":
+      return Role.ADMIN;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Role.UNRECOGNIZED;
+  }
+}
+
+export function roleToJSON(object: Role): string {
+  switch (object) {
+    case Role.BLOCKED:
+      return "BLOCKED";
+    case Role.DENIED:
+      return "DENIED";
+    case Role.REQUEST:
+      return "REQUEST";
+    case Role.USER:
+      return "USER";
+    case Role.MODERATOR:
+      return "MODERATOR";
+    case Role.ADMIN:
+      return "ADMIN";
+    case Role.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export enum MediaType {
+  TEXT = 0,
+  IMAGE = 5,
+  VIDEO = 10,
+  AUDIO = 15,
+  PDF = 20,
+  FILE = 30,
+  QR = 35,
+  UNRECOGNIZED = -1,
+}
+
+export function mediaTypeFromJSON(object: any): MediaType {
+  switch (object) {
+    case 0:
+    case "TEXT":
+      return MediaType.TEXT;
+    case 5:
+    case "IMAGE":
+      return MediaType.IMAGE;
+    case 10:
+    case "VIDEO":
+      return MediaType.VIDEO;
+    case 15:
+    case "AUDIO":
+      return MediaType.AUDIO;
+    case 20:
+    case "PDF":
+      return MediaType.PDF;
+    case 30:
+    case "FILE":
+      return MediaType.FILE;
+    case 35:
+    case "QR":
+      return MediaType.QR;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return MediaType.UNRECOGNIZED;
+  }
+}
+
+export function mediaTypeToJSON(object: MediaType): string {
+  switch (object) {
+    case MediaType.TEXT:
+      return "TEXT";
+    case MediaType.IMAGE:
+      return "IMAGE";
+    case MediaType.VIDEO:
+      return "VIDEO";
+    case MediaType.AUDIO:
+      return "AUDIO";
+    case MediaType.PDF:
+      return "PDF";
+    case MediaType.FILE:
+      return "FILE";
+    case MediaType.QR:
+      return "QR";
+    case MediaType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
 
 export enum Active {
   OFFLINE = 0,
@@ -90,7 +211,8 @@ export enum Const {
   displayName = 150,
   email = 200,
   phoneNumber = 250,
-  photoURL = 350,
+  photoURL = 300,
+  fcmToken = 350,
   status = 400,
   created = 600,
   open = 700,
@@ -126,9 +248,12 @@ export function constFromJSON(object: any): Const {
     case 250:
     case "phoneNumber":
       return Const.phoneNumber;
-    case 350:
+    case 300:
     case "photoURL":
       return Const.photoURL;
+    case 350:
+    case "fcmToken":
+      return Const.fcmToken;
     case 400:
     case "status":
       return Const.status;
@@ -174,6 +299,8 @@ export function constToJSON(object: Const): string {
       return "phoneNumber";
     case Const.photoURL:
       return "photoURL";
+    case Const.fcmToken:
+      return "fcmToken";
     case Const.status:
       return "status";
     case Const.created:
@@ -206,11 +333,41 @@ export interface User {
    * repeated string rooms = 8 [json_name = "dinosaur"];
    * int32 level = 9;
    */
-  created: string;
-  /** google.protobuf.Timestamp updatedAt = 11; */
+  created: Date | undefined;
   open: Visible;
   /** ------------------- */
   fcmToken: string;
+}
+
+export interface RoomUser {
+  uid: string;
+  role: Role;
+  created: Date | undefined;
+}
+
+export interface Room {
+  uid: string;
+  nick: string;
+  displayName: string;
+  photoURL: string;
+  description: string;
+  members: RoomUser[];
+  created:
+    | Date
+    | undefined;
+  /** open : true = Anyone can join, false = cant join, null = send request to join */
+  open: Visible;
+  tweetCount: number;
+}
+
+export interface Tweet {
+  uid: string;
+  senderId: string;
+  roomId: string;
+  created: Date | undefined;
+  mediaType: MediaType;
+  text: string;
+  link: string;
 }
 
 function createBaseUser(): User {
@@ -224,7 +381,7 @@ function createBaseUser(): User {
     status: 0,
     rooms: [],
     roomRequest: [],
-    created: "",
+    created: undefined,
     open: 0,
     fcmToken: "",
   };
@@ -259,8 +416,8 @@ export const User = {
     for (const v of message.roomRequest) {
       writer.uint32(6402).string(v!);
     }
-    if (message.created !== "") {
-      writer.uint32(7202).string(message.created);
+    if (message.created !== undefined) {
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(7202).fork()).ldelim();
     }
     if (message.open !== 0) {
       writer.uint32(8000).int32(message.open);
@@ -346,7 +503,7 @@ export const User = {
             break;
           }
 
-          message.created = reader.string();
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         case 1000:
           if (tag !== 8000) {
@@ -384,7 +541,7 @@ export const User = {
       roomRequest: globalThis.Array.isArray(object?.roomRequest)
         ? object.roomRequest.map((e: any) => globalThis.String(e))
         : [],
-      created: isSet(object.created) ? globalThis.String(object.created) : "",
+      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
       fcmToken: isSet(object.fcmToken) ? globalThis.String(object.fcmToken) : "",
     };
@@ -419,8 +576,8 @@ export const User = {
     if (message.roomRequest?.length) {
       obj.roomRequest = message.roomRequest;
     }
-    if (message.created !== "") {
-      obj.created = message.created;
+    if (message.created !== undefined) {
+      obj.created = message.created.toISOString();
     }
     if (message.open !== 0) {
       obj.open = visibleToJSON(message.open);
@@ -445,9 +602,436 @@ export const User = {
     message.status = object.status ?? 0;
     message.rooms = object.rooms?.map((e) => e) || [];
     message.roomRequest = object.roomRequest?.map((e) => e) || [];
-    message.created = object.created ?? "";
+    message.created = object.created ?? undefined;
     message.open = object.open ?? 0;
     message.fcmToken = object.fcmToken ?? "";
+    return message;
+  },
+};
+
+function createBaseRoomUser(): RoomUser {
+  return { uid: "", role: 0, created: undefined };
+}
+
+export const RoomUser = {
+  encode(message: RoomUser, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.uid !== "") {
+      writer.uint32(10).string(message.uid);
+    }
+    if (message.role !== 0) {
+      writer.uint32(80).int32(message.role);
+    }
+    if (message.created !== undefined) {
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(162).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RoomUser {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRoomUser();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+        case 10:
+          if (tag !== 80) {
+            break;
+          }
+
+          message.role = reader.int32() as any;
+          continue;
+        case 20:
+          if (tag !== 162) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RoomUser {
+    return {
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+      role: isSet(object.role) ? roleFromJSON(object.role) : 0,
+      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+    };
+  },
+
+  toJSON(message: RoomUser): unknown {
+    const obj: any = {};
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
+    if (message.role !== 0) {
+      obj.role = roleToJSON(message.role);
+    }
+    if (message.created !== undefined) {
+      obj.created = message.created.toISOString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RoomUser>, I>>(base?: I): RoomUser {
+    return RoomUser.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RoomUser>, I>>(object: I): RoomUser {
+    const message = createBaseRoomUser();
+    message.uid = object.uid ?? "";
+    message.role = object.role ?? 0;
+    message.created = object.created ?? undefined;
+    return message;
+  },
+};
+
+function createBaseRoom(): Room {
+  return {
+    uid: "",
+    nick: "",
+    displayName: "",
+    photoURL: "",
+    description: "",
+    members: [],
+    created: undefined,
+    open: 0,
+    tweetCount: 0,
+  };
+}
+
+export const Room = {
+  encode(message: Room, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.uid !== "") {
+      writer.uint32(10).string(message.uid);
+    }
+    if (message.nick !== "") {
+      writer.uint32(18).string(message.nick);
+    }
+    if (message.displayName !== "") {
+      writer.uint32(82).string(message.displayName);
+    }
+    if (message.photoURL !== "") {
+      writer.uint32(162).string(message.photoURL);
+    }
+    if (message.description !== "") {
+      writer.uint32(242).string(message.description);
+    }
+    for (const v of message.members) {
+      RoomUser.encode(v!, writer.uint32(322).fork()).ldelim();
+    }
+    if (message.created !== undefined) {
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(402).fork()).ldelim();
+    }
+    if (message.open !== 0) {
+      writer.uint32(480).int32(message.open);
+    }
+    if (message.tweetCount !== 0) {
+      writer.uint32(560).int32(message.tweetCount);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Room {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRoom();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.nick = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.displayName = reader.string();
+          continue;
+        case 20:
+          if (tag !== 162) {
+            break;
+          }
+
+          message.photoURL = reader.string();
+          continue;
+        case 30:
+          if (tag !== 242) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        case 40:
+          if (tag !== 322) {
+            break;
+          }
+
+          message.members.push(RoomUser.decode(reader, reader.uint32()));
+          continue;
+        case 50:
+          if (tag !== 402) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 60:
+          if (tag !== 480) {
+            break;
+          }
+
+          message.open = reader.int32() as any;
+          continue;
+        case 70:
+          if (tag !== 560) {
+            break;
+          }
+
+          message.tweetCount = reader.int32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Room {
+    return {
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+      nick: isSet(object.nick) ? globalThis.String(object.nick) : "",
+      displayName: isSet(object.displayName) ? globalThis.String(object.displayName) : "",
+      photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
+      description: isSet(object.description) ? globalThis.String(object.description) : "",
+      members: globalThis.Array.isArray(object?.members) ? object.members.map((e: any) => RoomUser.fromJSON(e)) : [],
+      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+      open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
+      tweetCount: isSet(object.tweetCount) ? globalThis.Number(object.tweetCount) : 0,
+    };
+  },
+
+  toJSON(message: Room): unknown {
+    const obj: any = {};
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
+    if (message.nick !== "") {
+      obj.nick = message.nick;
+    }
+    if (message.displayName !== "") {
+      obj.displayName = message.displayName;
+    }
+    if (message.photoURL !== "") {
+      obj.photoURL = message.photoURL;
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
+    if (message.members?.length) {
+      obj.members = message.members.map((e) => RoomUser.toJSON(e));
+    }
+    if (message.created !== undefined) {
+      obj.created = message.created.toISOString();
+    }
+    if (message.open !== 0) {
+      obj.open = visibleToJSON(message.open);
+    }
+    if (message.tweetCount !== 0) {
+      obj.tweetCount = Math.round(message.tweetCount);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Room>, I>>(base?: I): Room {
+    return Room.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Room>, I>>(object: I): Room {
+    const message = createBaseRoom();
+    message.uid = object.uid ?? "";
+    message.nick = object.nick ?? "";
+    message.displayName = object.displayName ?? "";
+    message.photoURL = object.photoURL ?? "";
+    message.description = object.description ?? "";
+    message.members = object.members?.map((e) => RoomUser.fromPartial(e)) || [];
+    message.created = object.created ?? undefined;
+    message.open = object.open ?? 0;
+    message.tweetCount = object.tweetCount ?? 0;
+    return message;
+  },
+};
+
+function createBaseTweet(): Tweet {
+  return { uid: "", senderId: "", roomId: "", created: undefined, mediaType: 0, text: "", link: "" };
+}
+
+export const Tweet = {
+  encode(message: Tweet, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.uid !== "") {
+      writer.uint32(10).string(message.uid);
+    }
+    if (message.senderId !== "") {
+      writer.uint32(82).string(message.senderId);
+    }
+    if (message.roomId !== "") {
+      writer.uint32(162).string(message.roomId);
+    }
+    if (message.created !== undefined) {
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(242).fork()).ldelim();
+    }
+    if (message.mediaType !== 0) {
+      writer.uint32(320).int32(message.mediaType);
+    }
+    if (message.text !== "") {
+      writer.uint32(402).string(message.text);
+    }
+    if (message.link !== "") {
+      writer.uint32(482).string(message.link);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Tweet {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTweet();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.senderId = reader.string();
+          continue;
+        case 20:
+          if (tag !== 162) {
+            break;
+          }
+
+          message.roomId = reader.string();
+          continue;
+        case 30:
+          if (tag !== 242) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 40:
+          if (tag !== 320) {
+            break;
+          }
+
+          message.mediaType = reader.int32() as any;
+          continue;
+        case 50:
+          if (tag !== 402) {
+            break;
+          }
+
+          message.text = reader.string();
+          continue;
+        case 60:
+          if (tag !== 482) {
+            break;
+          }
+
+          message.link = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Tweet {
+    return {
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+      senderId: isSet(object.senderId) ? globalThis.String(object.senderId) : "",
+      roomId: isSet(object.roomId) ? globalThis.String(object.roomId) : "",
+      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+      mediaType: isSet(object.mediaType) ? mediaTypeFromJSON(object.mediaType) : 0,
+      text: isSet(object.text) ? globalThis.String(object.text) : "",
+      link: isSet(object.link) ? globalThis.String(object.link) : "",
+    };
+  },
+
+  toJSON(message: Tweet): unknown {
+    const obj: any = {};
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
+    if (message.senderId !== "") {
+      obj.senderId = message.senderId;
+    }
+    if (message.roomId !== "") {
+      obj.roomId = message.roomId;
+    }
+    if (message.created !== undefined) {
+      obj.created = message.created.toISOString();
+    }
+    if (message.mediaType !== 0) {
+      obj.mediaType = mediaTypeToJSON(message.mediaType);
+    }
+    if (message.text !== "") {
+      obj.text = message.text;
+    }
+    if (message.link !== "") {
+      obj.link = message.link;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Tweet>, I>>(base?: I): Tweet {
+    return Tweet.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Tweet>, I>>(object: I): Tweet {
+    const message = createBaseTweet();
+    message.uid = object.uid ?? "";
+    message.senderId = object.senderId ?? "";
+    message.roomId = object.roomId ?? "";
+    message.created = object.created ?? undefined;
+    message.mediaType = object.mediaType ?? 0;
+    message.text = object.text ?? "";
+    message.link = object.link ?? "";
     return message;
   },
 };
@@ -463,6 +1047,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

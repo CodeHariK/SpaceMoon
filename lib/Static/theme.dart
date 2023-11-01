@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:spacemoon/Helpers/extensions.dart';
+import 'package:moonspace/Helper/extensions.dart';
 
 extension AppThemeNumber on num {
   double get a => (this * AppTheme.a).toDouble();

@@ -7,9 +7,7 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
-// ignore: depend_on_referenced_packages
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
-// ignore: depend_on_referenced_packages
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void moonspace({

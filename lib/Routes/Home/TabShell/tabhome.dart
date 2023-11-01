@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
@@ -29,7 +28,7 @@ class TabShellRoute extends ShellRouteData {
           children: [
             Container(
               height: 400,
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 children: [
                   TabShellRoute.data.tabBar(context),
@@ -39,7 +38,7 @@ class TabShellRoute extends ShellRouteData {
                 ],
               ),
             ),
-            Text('Shell'),
+            const Text('Shell'),
           ],
         ),
       ),
@@ -68,7 +67,7 @@ class TabHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('TabHome'),
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
     );
@@ -91,7 +90,7 @@ class Tab1Page extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tab1'),
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
     );
@@ -114,7 +113,7 @@ class Tab2Page extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tab2'),
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
     );

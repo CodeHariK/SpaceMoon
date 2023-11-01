@@ -4,7 +4,7 @@ import 'package:spacemoon/Static/Widget/google_logo.dart';
 import 'package:spacemoon/Static/assets.dart';
 
 import 'package:spacemoon/Static/theme.dart';
-import 'package:spacemoon/Helpers/extensions.dart';
+import 'package:moonspace/Helper/extensions.dart';
 import 'package:spacemoon/Widget/Animated/animated_text.dart';
 import 'package:spacemoon/Widget/Animated/animated_y_hide.dart';
 

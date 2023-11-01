@@ -1,22 +1,23 @@
 import * as admin from "firebase-admin";
-import { firestore } from "firebase-functions";
+// import { firestore } from "firebase-functions";
 import { onCall, onRequest } from "firebase-functions/v2/https";
-import { beforeUserCreated, AuthBlockingEvent } from "firebase-functions/v2/identity";
-import { onDocumentWritten, onDocumentCreated, onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { FieldValue } from "firebase-admin/firestore";
+// import { beforeUserCreated, AuthBlockingEvent } from "firebase-functions/v2/identity";
+// import { onDocumentWritten, onDocumentCreated, onDocumentDeleted } from "firebase-functions/v2/firestore";
+// import { FieldValue } from "firebase-admin/firestore";
 import * as users from "./users";
 
 admin.initializeApp({ projectId: "spacemoonfire" });
+
+export const onUserCreate = users.onUserCreate;
+export const callUserUpdate = users.callUserUpdate;
+export const addAdmin = users.addAdmin;
+export const userHi = users.userHi;
 
 export const helloWorld = onRequest((request, response) => {
     response.set("Access-Control-Allow-Origin", "*");
     console.log('Hello');
     response.send("Hello from Firebase!");
 });
-
-export const onUserCreate = users.onUserCreate;
-export const callUserUpdate = users.callUserUpdate;
-export const userHi = users.userHi;
 
 export const sayHello = onCall((request) => {
 
@@ -41,8 +42,3 @@ export const sayHello = onCall((request) => {
 //     return change;
 // })
 
-// export const upperCase = onDocumentCreated('/messages/{documentId}', (event) => {
-//     let m = event.data?.data()!;
-//     m['Counter'] = m['Counter'].toUpperCase();
-//     event.data?.ref.set(m, { merge: true });
-// })

@@ -17,7 +17,7 @@ class SearchPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Search'),
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
     );

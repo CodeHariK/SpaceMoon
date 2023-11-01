@@ -13,6 +13,54 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+class Role extends $pb.ProtobufEnum {
+  static const Role BLOCKED = Role._(0, _omitEnumNames ? '' : 'BLOCKED');
+  static const Role DENIED = Role._(10, _omitEnumNames ? '' : 'DENIED');
+  static const Role REQUEST = Role._(20, _omitEnumNames ? '' : 'REQUEST');
+  static const Role USER = Role._(30, _omitEnumNames ? '' : 'USER');
+  static const Role MODERATOR = Role._(40, _omitEnumNames ? '' : 'MODERATOR');
+  static const Role ADMIN = Role._(50, _omitEnumNames ? '' : 'ADMIN');
+
+  static const $core.List<Role> values = <Role> [
+    BLOCKED,
+    DENIED,
+    REQUEST,
+    USER,
+    MODERATOR,
+    ADMIN,
+  ];
+
+  static final $core.Map<$core.int, Role> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static Role? valueOf($core.int value) => _byValue[value];
+
+  const Role._($core.int v, $core.String n) : super(v, n);
+}
+
+class MediaType extends $pb.ProtobufEnum {
+  static const MediaType TEXT = MediaType._(0, _omitEnumNames ? '' : 'TEXT');
+  static const MediaType IMAGE = MediaType._(5, _omitEnumNames ? '' : 'IMAGE');
+  static const MediaType VIDEO = MediaType._(10, _omitEnumNames ? '' : 'VIDEO');
+  static const MediaType AUDIO = MediaType._(15, _omitEnumNames ? '' : 'AUDIO');
+  static const MediaType PDF = MediaType._(20, _omitEnumNames ? '' : 'PDF');
+  static const MediaType FILE = MediaType._(30, _omitEnumNames ? '' : 'FILE');
+  static const MediaType QR = MediaType._(35, _omitEnumNames ? '' : 'QR');
+
+  static const $core.List<MediaType> values = <MediaType> [
+    TEXT,
+    IMAGE,
+    VIDEO,
+    AUDIO,
+    PDF,
+    FILE,
+    QR,
+  ];
+
+  static final $core.Map<$core.int, MediaType> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static MediaType? valueOf($core.int value) => _byValue[value];
+
+  const MediaType._($core.int v, $core.String n) : super(v, n);
+}
+
 class Active extends $pb.ProtobufEnum {
   static const Active OFFLINE = Active._(0, _omitEnumNames ? '' : 'OFFLINE');
   static const Active ONLINE = Active._(10, _omitEnumNames ? '' : 'ONLINE');
@@ -56,7 +104,8 @@ class Const extends $pb.ProtobufEnum {
   static const Const displayName = Const._(150, _omitEnumNames ? '' : 'displayName');
   static const Const email = Const._(200, _omitEnumNames ? '' : 'email');
   static const Const phoneNumber = Const._(250, _omitEnumNames ? '' : 'phoneNumber');
-  static const Const photoURL = Const._(350, _omitEnumNames ? '' : 'photoURL');
+  static const Const photoURL = Const._(300, _omitEnumNames ? '' : 'photoURL');
+  static const Const fcmToken = Const._(350, _omitEnumNames ? '' : 'fcmToken');
   static const Const status = Const._(400, _omitEnumNames ? '' : 'status');
   static const Const created = Const._(600, _omitEnumNames ? '' : 'created');
   static const Const open = Const._(700, _omitEnumNames ? '' : 'open');
@@ -74,6 +123,7 @@ class Const extends $pb.ProtobufEnum {
     email,
     phoneNumber,
     photoURL,
+    fcmToken,
     status,
     created,
     open,

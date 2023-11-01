@@ -1,14 +1,13 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spacemoon/Data/data.pb.dart';
+import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Providers/router.dart';
-// ignore: depend_on_referenced_packages
 import 'package:firebase_auth/firebase_auth.dart' hide User, PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 
@@ -44,11 +43,11 @@ class _AccountPageState extends State<AccountPage> {
           child: InkWell(
             splashFactory: InkSplash.splashFactory,
             onTap: () async {
-              FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(
-                    User(
-                      photoURL: 'https://avatars.githubusercontent.com/u/144345505?v=4',
-                    ),
-                  );
+              callUserUpdate(
+                User(
+                  photoURL: 'https://avatars.githubusercontent.com/u/144345505?v=4',
+                ),
+              );
             },
             child: FirebaseAuth.instance.currentUser?.photoURL == null
                 ? Icon(

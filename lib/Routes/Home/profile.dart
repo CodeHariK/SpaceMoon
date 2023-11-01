@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Profile'),
       ),
-      body: Column(
+      body: const Column(
         children: [],
       ),
     );

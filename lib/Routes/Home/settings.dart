@@ -67,7 +67,7 @@ class SettingsPage extends ConsumerWidget {
             onTap: () {
               AccountRoute().push(context);
             },
-            title: Text('Account Management'),
+            title: const Text('Account Management'),
           ),
         ],
       ),
