@@ -36,17 +36,7 @@ Future<void> initFirebase() async {
     auth.AppleProvider(),
   ]);
 
-  if (kDebugMode) {
-    FirebaseFirestore.instance.settings = const Settings(
-      host: 'localhost:8080',
-      sslEnabled: false,
-      persistenceEnabled: false,
-    );
-    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-    FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-    FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
-    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  }
+  await emulator();
 
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -98,4 +88,23 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   dino("Handling a background message: ${message.messageId}");
+}
+
+Future<void> emulator() async {
+  if (kDebugMode) {
+    try {
+      FirebaseFirestore.instance.settings = const Settings(
+        host: 'localhost:8080',
+        sslEnabled: false,
+        persistenceEnabled: false,
+      );
+      await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+      FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+      FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
+      FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+    } catch (e, s) {
+      lava(e);
+      lava(s);
+    }
+  }
 }

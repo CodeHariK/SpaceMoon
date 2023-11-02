@@ -68,6 +68,27 @@ Future<List<Room>?> getRoom(GetRoomRef ref) async {
 }
 
 @Riverpod(keepAlive: true)
+Future<Room?> getRoomById(GetRoomByIdRef ref, String roomId) async {
+  Room? room = await FirebaseFirestore.instance
+      .collection(Const.rooms.name)
+      .doc(roomId)
+      // .doc(roomId)
+      .get()
+      .then(
+        (value) => fromDocSnap(Room(), value),
+      );
+  return room;
+}
+
+@Riverpod(keepAlive: true)
+Stream<List<String>?> getAllMyRooms(GetAllMyRoomsRef ref) {
+  final user = ref.watch(currentUserProvider).value;
+  return FirebaseFirestore.instance.collection(Const.users.name).doc(user?.uid).snapshots().map(
+        (value) => fromDocSnap(User(), value)?.rooms,
+      );
+}
+
+@Riverpod(keepAlive: true)
 Future<List<Room?>> getAllRooms(GetAllRoomsRef ref) async {
   List<Room?> rooms = await FirebaseFirestore.instance
       .collection(Const.rooms.name)

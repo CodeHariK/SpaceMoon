@@ -2,6 +2,7 @@ import { AuthBlockingEvent, beforeUserCreated } from "firebase-functions/v2/iden
 import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Const, User } from "./Gen/data";
+import { constName } from "./Helpers/const";
 
 export const onUserCreate = beforeUserCreated((event: AuthBlockingEvent) => {
     const { uid, email, displayName, phoneNumber, photoURL } = event.data;
@@ -42,6 +43,14 @@ export const userHi = onRequest((request, resp): void => {
     return;
 });
 
+export const checkUserExists = async (userId: string) => {
+    return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).exists;
+}
+
+export const getUserById = async (userId: string) => {
+    return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).data();
+}
+
 export const addAdmin = onCall(async (request) => {
     if (request.auth?.token.moderator !== true) {
         return {
@@ -69,10 +78,6 @@ async function grantModerateRole(uid: string) {
 
 // Helper Functions ___________________________________________
 
-export function constName(name: number) {
-    return (Object.entries(Const)[name][1] as string);
-}
-
-function userToMap(obj: any) {
+export function userToMap(obj: any) {
     return User.toJSON(User.create(obj)) as Map<string, any>;
 }

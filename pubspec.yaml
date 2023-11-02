@@ -63,6 +63,10 @@ dependencies:
 
   flutter_animate: ^4.2.0+1
 
+  image_picker: ^1.0.4
+
+  permission_handler: ^11.0.1
+
   moonspace:
     path: ../MoonSpace
 

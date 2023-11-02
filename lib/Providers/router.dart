@@ -46,7 +46,7 @@ final GoRouter router = GoRouter.routingConfig(
   navigatorKey: AppRouter.rootNavigatorKey,
   routingConfig: myConfig,
   initialLocation: AppRouter.onboard,
-  errorPageBuilder: (context, state) => MaterialPage(child: ErrorPage(state: state)),
+  errorPageBuilder: (context, state) => MaterialPage(child: Error404Page(state: state)),
   debugLogDiagnostics: true,
 );
 

@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/Helper/debug_functions.dart';
 import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/darkknight/extensions/string.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -18,26 +19,62 @@ import 'package:spacemoon/Routes/Home/home.dart';
 
 part 'all_chat.g.dart';
 
-class AllChatPage extends StatelessWidget {
+class AllChatPage extends ConsumerWidget {
   const AllChatPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return AllUsersPage();
-    return AllRoomsPage();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final allRooms = ref.watch(getAllMyRoomsProvider);
+    // return AllUsersPage();
+    // return AllRoomsPage();
     return Scaffold(
       appBar: AppBar(
         title: const Text('AllChat'),
       ),
-      body: Wrap(
-        children: [
-          TextButton(
-            onPressed: () {
-              const ChatRoute('39dksc').go(context);
+      body: allRooms.when(
+        data: (data) {
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              return Consumer(builder: (context, ref, child) {
+                final room = ref.watch(GetRoomByIdProvider(data![index])).value;
+                if (room == null) return CircularProgressIndicator();
+                return ListTile(
+                  title: Text(room.uid),
+                  subtitle: Text(room.displayName),
+                  leading: Icon(Icons.panorama_fish_eye_sharp),
+                  trailing: Text(room.open.name),
+                  onTap: () {
+                    ChatRoute(room.uid).go(context);
+                  },
+                );
+              });
             },
-            child: const Text('Chat'),
-          ),
-        ],
+            itemCount: data?.length,
+          );
+        },
+        error: (error, stackTrace) {
+          return Text(error.toString());
+        },
+        loading: () => CircularProgressIndicator(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await FirebaseFunctions.instance.httpsCallable('callCreateRoom').call(
+            {
+              'room': Room(
+                displayName: randomString(5),
+              ).toMap(),
+              'users': [
+                randomString(3),
+                randomString(3),
+                randomString(3),
+              ],
+            },
+          );
+
+          dino(result.data);
+        },
+        child: Icon(Icons.pest_control_rodent_outlined),
       ),
     );
   }
