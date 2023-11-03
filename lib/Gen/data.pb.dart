@@ -28,6 +28,7 @@ class User extends $pb.GeneratedMessage {
     $core.String? photoURL,
     Active? status,
     $core.Iterable<$core.String>? rooms,
+    $core.Iterable<$core.String>? friends,
     $core.Iterable<$core.String>? roomRequest,
     $0.Timestamp? created,
     Visible? open,
@@ -58,6 +59,9 @@ class User extends $pb.GeneratedMessage {
     if (rooms != null) {
       $result.rooms.addAll(rooms);
     }
+    if (friends != null) {
+      $result.friends.addAll(friends);
+    }
     if (roomRequest != null) {
       $result.roomRequest.addAll(roomRequest);
     }
@@ -85,6 +89,7 @@ class User extends $pb.GeneratedMessage {
     ..aOS(500, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
     ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.OFFLINE, valueOf: Active.valueOf, enumValues: Active.values)
     ..pPS(700, _omitFieldNames ? '' : 'rooms')
+    ..pPS(750, _omitFieldNames ? '' : 'friends')
     ..pPS(800, _omitFieldNames ? '' : 'roomRequest', protoName: 'roomRequest')
     ..aOM<$0.Timestamp>(900, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
@@ -179,38 +184,41 @@ class User extends $pb.GeneratedMessage {
   @$pb.TagNumber(700)
   $core.List<$core.String> get rooms => $_getList(7);
 
+  @$pb.TagNumber(750)
+  $core.List<$core.String> get friends => $_getList(8);
+
   @$pb.TagNumber(800)
-  $core.List<$core.String> get roomRequest => $_getList(8);
+  $core.List<$core.String> get roomRequest => $_getList(9);
 
   /// repeated string rooms = 8 [json_name = "dinosaur"];
   /// int32 level = 9;
   @$pb.TagNumber(900)
-  $0.Timestamp get created => $_getN(9);
+  $0.Timestamp get created => $_getN(10);
   @$pb.TagNumber(900)
   set created($0.Timestamp v) { setField(900, v); }
   @$pb.TagNumber(900)
-  $core.bool hasCreated() => $_has(9);
+  $core.bool hasCreated() => $_has(10);
   @$pb.TagNumber(900)
   void clearCreated() => clearField(900);
   @$pb.TagNumber(900)
-  $0.Timestamp ensureCreated() => $_ensure(9);
+  $0.Timestamp ensureCreated() => $_ensure(10);
 
   @$pb.TagNumber(1000)
-  Visible get open => $_getN(10);
+  Visible get open => $_getN(11);
   @$pb.TagNumber(1000)
   set open(Visible v) { setField(1000, v); }
   @$pb.TagNumber(1000)
-  $core.bool hasOpen() => $_has(10);
+  $core.bool hasOpen() => $_has(11);
   @$pb.TagNumber(1000)
   void clearOpen() => clearField(1000);
 
   /// -------------------
   @$pb.TagNumber(1100)
-  $core.String get fcmToken => $_getSZ(11);
+  $core.String get fcmToken => $_getSZ(12);
   @$pb.TagNumber(1100)
-  set fcmToken($core.String v) { $_setString(11, v); }
+  set fcmToken($core.String v) { $_setString(12, v); }
   @$pb.TagNumber(1100)
-  $core.bool hasFcmToken() => $_has(11);
+  $core.bool hasFcmToken() => $_has(12);
   @$pb.TagNumber(1100)
   void clearFcmToken() => clearField(1100);
 }
@@ -218,12 +226,20 @@ class User extends $pb.GeneratedMessage {
 class RoomUser extends $pb.GeneratedMessage {
   factory RoomUser({
     $core.String? uid,
+    $core.String? user,
+    $core.String? room,
     Role? role,
     $0.Timestamp? created,
   }) {
     final $result = create();
     if (uid != null) {
       $result.uid = uid;
+    }
+    if (user != null) {
+      $result.user = user;
+    }
+    if (room != null) {
+      $result.room = room;
     }
     if (role != null) {
       $result.role = role;
@@ -239,6 +255,8 @@ class RoomUser extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'RoomUser', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'uid')
+    ..aOS(2, _omitFieldNames ? '' : 'user')
+    ..aOS(3, _omitFieldNames ? '' : 'room')
     ..e<Role>(10, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: Role.BLOCKED, valueOf: Role.valueOf, enumValues: Role.values)
     ..aOM<$0.Timestamp>(20, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..hasRequiredFields = false
@@ -274,25 +292,43 @@ class RoomUser extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearUid() => clearField(1);
 
+  @$pb.TagNumber(2)
+  $core.String get user => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set user($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasUser() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearUser() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get room => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set room($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasRoom() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearRoom() => clearField(3);
+
   @$pb.TagNumber(10)
-  Role get role => $_getN(1);
+  Role get role => $_getN(3);
   @$pb.TagNumber(10)
   set role(Role v) { setField(10, v); }
   @$pb.TagNumber(10)
-  $core.bool hasRole() => $_has(1);
+  $core.bool hasRole() => $_has(3);
   @$pb.TagNumber(10)
   void clearRole() => clearField(10);
 
   @$pb.TagNumber(20)
-  $0.Timestamp get created => $_getN(2);
+  $0.Timestamp get created => $_getN(4);
   @$pb.TagNumber(20)
   set created($0.Timestamp v) { setField(20, v); }
   @$pb.TagNumber(20)
-  $core.bool hasCreated() => $_has(2);
+  $core.bool hasCreated() => $_has(4);
   @$pb.TagNumber(20)
   void clearCreated() => clearField(20);
   @$pb.TagNumber(20)
-  $0.Timestamp ensureCreated() => $_ensure(2);
+  $0.Timestamp ensureCreated() => $_ensure(4);
 }
 
 class Room extends $pb.GeneratedMessage {

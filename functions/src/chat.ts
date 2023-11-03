@@ -1,16 +1,15 @@
-import { onCall } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Const, Role, Room, RoomUser } from "./Gen/data";
 import { constName } from "./Helpers/const";
-import { FieldValue } from "firebase-admin/firestore";
 import { checkUserExists } from "./users";
 
 export const callCreateRoom = onCall(async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;
 
-    const { r, users } = request.data;
+    const { room, users } = request.data;
 
-    let room = Room.fromJSON(r);
+    let _room = Room.fromJSON(room);
 
     const f = await Promise.all(
         ((users ?? []) as string[])
@@ -29,50 +28,111 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
 
     let members = m.map((e) => {
         return RoomUser.create({
-            uid: e,
+            user: e,
             role: (e == currentUID) ? Role.ADMIN : Role.USER,
             created: new Date(),
         });
     });
 
-    room.created = new Date()
-    room.members = members
+    _room.created = new Date()
+    // _room.members = members
 
     if (currentUID != null) {
-        let v = await admin.firestore().collection(constName(Const.rooms)).add(toMap(room),);
+        let v = await admin.firestore().collection(constName(Const.rooms)).add(toMap(_room),);
 
-        members.forEach((e) => {
-            addRoomIdToUser(e.uid, v.id, true);
-        });
 
         members.forEach(async (e) => {
-            await admin.firestore().collection(constName(Const.rooms))
-                .doc(v.id)
-                .collection('submembers')
-                .doc(e.uid)
-                .set(
-                    RoomUser.toJSON(RoomUser.create({
-                        created: e.created,
-                        role: e.role,
-                    })) as Map<string, any>
-                );
+            e.room = v.id;
+            await admin.firestore().collection(constName(Const.roomusers)).add(
+                RoomUser.toJSON(e) as Map<string, any>
+            );
         });
 
         return v.id;
     }
-    return undefined;
+    return;
+});
+
+export const requestAccessToRoom = onCall(async (request) => {
+    let userId = request.auth!.uid;
+    let roomId = request.data;
+
+    if (typeof roomId !== 'string') {
+        throw new HttpsError('invalid-argument', 'Invalid Room ID')
+    }
+
+    let user = RoomUser.create({
+        user: userId,
+        room: roomId,
+        created: new Date(),
+        role: Role.REQUEST,
+    });
+
+    let u = await getRoomUserById(userId, roomId)
+
+    if (!u) {
+        await admin.firestore().collection(constName(Const.roomusers)).add(
+            RoomUser.toJSON(user) as Map<string, any>
+        );
+    }
+
+    return;
+});
+
+export const acceptAccessToRoom = onCall(async (request) => {
+    let adminId = request.auth!.uid;
+    let { roomuser } = request.data;
+    let _roomuser = RoomUser.fromJSON(roomuser)
+
+    if (!_roomuser.room) {
+        throw new HttpsError('invalid-argument', 'You must provide a RoomUser to accept.');
+    }
+
+    _roomuser.role = Role.USER;
+
+    const adminUser = await getRoomUserById(adminId, _roomuser.room);
+
+    if (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)) {
+        await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid)
+            .set(RoomUser.toJSON(_roomuser) as Map<string, any>,
+                { merge: true }
+            );
+
+        return { message: 'The target user has been kicked from the room.' };
+    } else {
+        throw new HttpsError('permission-denied', 'You do not have permission to kick users from this room.');
+    }
+});
+
+export const removeUser = onCall(async (request) => {
+    let adminId = request.auth!.uid;
+    let { roomuser } = request.data;
+    let _roomuser = RoomUser.fromJSON(roomuser)
+
+    if (!_roomuser.room) {
+        throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
+    }
+
+    const adminUser = await getRoomUserById(adminId, _roomuser.room);
+
+    if ((adminId === _roomuser.user) || (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR))) {
+        await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid).delete();
+        return { message: 'The target user has been kicked from the room.' };
+    } else {
+        throw new HttpsError('permission-denied', 'You do not have permission to kick users from this room.');
+    }
 });
 
 export const updateRoomInfo = onCall(async (request): Promise<string> => {
-    let currentUID: string = request.auth!.uid;
+    let userId: string = request.auth!.uid;
 
     const { r } = request.data;
 
     let room = Room.fromJSON(r)
 
     try {
-        let roomUser = await getRoomUserById(currentUID, room.uid)
-        if (roomUser !== undefined && roomUser.role == Role.ADMIN) {
+        let roomUser = await getRoomUserById(userId, room.uid)
+        if (roomUser && roomUser.role == Role.ADMIN) {
             await admin.firestore().collection(constName(Const.rooms)).doc(room.uid).set(
                 toMap(Room.create({
                     description: room.description,
@@ -82,34 +142,36 @@ export const updateRoomInfo = onCall(async (request): Promise<string> => {
                     open: room.open,
                 })));
         }
+        return 'Done';
     }
     catch (e) {
-        console.log(e)
-
-        return (e as string);
+        throw new HttpsError('aborted', e as string);
     }
-    return 'Error';
 });
 
-const addRoomIdToUser = async (userId: string, roomId: string, add: boolean) => {
-    let roomConst = constName(Const.rooms)
-    let h: any = {}
-    h[roomConst] = (add) ? FieldValue.arrayUnion(...[roomId]) : FieldValue.arrayRemove(...[roomId])
-    await admin.firestore().collection(constName(Const.users)).doc(userId).update(
-        h
-    );
-}
 
 export const getRoomUserById = async (userId: string, roomId: string) => {
-    const r = (await admin.firestore().collection(constName(Const.rooms)).doc(roomId).get()).data();
-    let room = Room.fromJSON(r);
-    return room.members.find((v) => v.uid == userId);
+    const roomUserQuery = admin.firestore().collection(constName(Const.roomusers))
+        .where('user', '==', userId)
+        .where('room', '==', roomId).limit(1);
+
+    const roomUserDocs = await roomUserQuery.get();
+
+    if (roomUserDocs.size === 0) {
+        return null;
+    }
+
+    return RoomUser.fromJSON(roomUserDocs.docs.at(0)?.data());
 }
 
 // Helper Functions ___________________________________________
 
 export function roomToMap(obj: any) {
     return Room.toJSON(Room.create(obj)) as Map<string, any>;
+}
+
+export function roomUserToMap(obj: any) {
+    return RoomUser.toJSON(RoomUser.create(obj)) as Map<string, any>;
 }
 
 export function toMap(room: Room) {

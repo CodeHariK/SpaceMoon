@@ -6,11 +6,10 @@ export const protobufPackage = "user";
 
 export enum Role {
   BLOCKED = 0,
-  DENIED = 10,
-  REQUEST = 20,
-  USER = 30,
-  MODERATOR = 40,
-  ADMIN = 50,
+  REQUEST = 10,
+  USER = 20,
+  MODERATOR = 30,
+  ADMIN = 40,
   UNRECOGNIZED = -1,
 }
 
@@ -20,18 +19,15 @@ export function roleFromJSON(object: any): Role {
     case "BLOCKED":
       return Role.BLOCKED;
     case 10:
-    case "DENIED":
-      return Role.DENIED;
-    case 20:
     case "REQUEST":
       return Role.REQUEST;
-    case 30:
+    case 20:
     case "USER":
       return Role.USER;
-    case 40:
+    case 30:
     case "MODERATOR":
       return Role.MODERATOR;
-    case 50:
+    case 40:
     case "ADMIN":
       return Role.ADMIN;
     case -1:
@@ -45,8 +41,6 @@ export function roleToJSON(object: Role): string {
   switch (object) {
     case Role.BLOCKED:
       return "BLOCKED";
-    case Role.DENIED:
-      return "DENIED";
     case Role.REQUEST:
       return "REQUEST";
     case Role.USER:
@@ -206,6 +200,7 @@ export enum Const {
   users = 0,
   rooms = 10,
   tweets = 20,
+  roomusers = 30,
   uid = 100,
   nick = 110,
   displayName = 150,
@@ -233,6 +228,9 @@ export function constFromJSON(object: any): Const {
     case 20:
     case "tweets":
       return Const.tweets;
+    case 30:
+    case "roomusers":
+      return Const.roomusers;
     case 100:
     case "uid":
       return Const.uid;
@@ -287,6 +285,8 @@ export function constToJSON(object: Const): string {
       return "rooms";
     case Const.tweets:
       return "tweets";
+    case Const.roomusers:
+      return "roomusers";
     case Const.uid:
       return "uid";
     case Const.nick:
@@ -328,6 +328,7 @@ export interface User {
   photoURL: string;
   status: Active;
   rooms: string[];
+  friends: string[];
   roomRequest: string[];
   /**
    * repeated string rooms = 8 [json_name = "dinosaur"];
@@ -341,6 +342,8 @@ export interface User {
 
 export interface RoomUser {
   uid: string;
+  user: string;
+  room: string;
   role: Role;
   created: Date | undefined;
 }
@@ -380,6 +383,7 @@ function createBaseUser(): User {
     photoURL: "",
     status: 0,
     rooms: [],
+    friends: [],
     roomRequest: [],
     created: undefined,
     open: 0,
@@ -412,6 +416,9 @@ export const User = {
     }
     for (const v of message.rooms) {
       writer.uint32(5602).string(v!);
+    }
+    for (const v of message.friends) {
+      writer.uint32(6002).string(v!);
     }
     for (const v of message.roomRequest) {
       writer.uint32(6402).string(v!);
@@ -491,6 +498,13 @@ export const User = {
 
           message.rooms.push(reader.string());
           continue;
+        case 750:
+          if (tag !== 6002) {
+            break;
+          }
+
+          message.friends.push(reader.string());
+          continue;
         case 800:
           if (tag !== 6402) {
             break;
@@ -538,6 +552,7 @@ export const User = {
       photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
       status: isSet(object.status) ? activeFromJSON(object.status) : 0,
       rooms: globalThis.Array.isArray(object?.rooms) ? object.rooms.map((e: any) => globalThis.String(e)) : [],
+      friends: globalThis.Array.isArray(object?.friends) ? object.friends.map((e: any) => globalThis.String(e)) : [],
       roomRequest: globalThis.Array.isArray(object?.roomRequest)
         ? object.roomRequest.map((e: any) => globalThis.String(e))
         : [],
@@ -573,6 +588,9 @@ export const User = {
     if (message.rooms?.length) {
       obj.rooms = message.rooms;
     }
+    if (message.friends?.length) {
+      obj.friends = message.friends;
+    }
     if (message.roomRequest?.length) {
       obj.roomRequest = message.roomRequest;
     }
@@ -601,6 +619,7 @@ export const User = {
     message.photoURL = object.photoURL ?? "";
     message.status = object.status ?? 0;
     message.rooms = object.rooms?.map((e) => e) || [];
+    message.friends = object.friends?.map((e) => e) || [];
     message.roomRequest = object.roomRequest?.map((e) => e) || [];
     message.created = object.created ?? undefined;
     message.open = object.open ?? 0;
@@ -610,13 +629,19 @@ export const User = {
 };
 
 function createBaseRoomUser(): RoomUser {
-  return { uid: "", role: 0, created: undefined };
+  return { uid: "", user: "", room: "", role: 0, created: undefined };
 }
 
 export const RoomUser = {
   encode(message: RoomUser, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.uid !== "") {
       writer.uint32(10).string(message.uid);
+    }
+    if (message.user !== "") {
+      writer.uint32(18).string(message.user);
+    }
+    if (message.room !== "") {
+      writer.uint32(26).string(message.room);
     }
     if (message.role !== 0) {
       writer.uint32(80).int32(message.role);
@@ -640,6 +665,20 @@ export const RoomUser = {
           }
 
           message.uid = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.user = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.room = reader.string();
           continue;
         case 10:
           if (tag !== 80) {
@@ -667,6 +706,8 @@ export const RoomUser = {
   fromJSON(object: any): RoomUser {
     return {
       uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+      user: isSet(object.user) ? globalThis.String(object.user) : "",
+      room: isSet(object.room) ? globalThis.String(object.room) : "",
       role: isSet(object.role) ? roleFromJSON(object.role) : 0,
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
     };
@@ -676,6 +717,12 @@ export const RoomUser = {
     const obj: any = {};
     if (message.uid !== "") {
       obj.uid = message.uid;
+    }
+    if (message.user !== "") {
+      obj.user = message.user;
+    }
+    if (message.room !== "") {
+      obj.room = message.room;
     }
     if (message.role !== 0) {
       obj.role = roleToJSON(message.role);
@@ -692,6 +739,8 @@ export const RoomUser = {
   fromPartial<I extends Exact<DeepPartial<RoomUser>, I>>(object: I): RoomUser {
     const message = createBaseRoomUser();
     message.uid = object.uid ?? "";
+    message.user = object.user ?? "";
+    message.room = object.room ?? "";
     message.role = object.role ?? 0;
     message.created = object.created ?? undefined;
     return message;

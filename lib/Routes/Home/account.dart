@@ -1,15 +1,20 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User, PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
+
+void callUserUpdate(User user) {
+  FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
+}
 
 @immutable
 class AccountRoute extends GoRouteData {

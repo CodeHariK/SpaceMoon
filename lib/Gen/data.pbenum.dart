@@ -15,15 +15,13 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 class Role extends $pb.ProtobufEnum {
   static const Role BLOCKED = Role._(0, _omitEnumNames ? '' : 'BLOCKED');
-  static const Role DENIED = Role._(10, _omitEnumNames ? '' : 'DENIED');
-  static const Role REQUEST = Role._(20, _omitEnumNames ? '' : 'REQUEST');
-  static const Role USER = Role._(30, _omitEnumNames ? '' : 'USER');
-  static const Role MODERATOR = Role._(40, _omitEnumNames ? '' : 'MODERATOR');
-  static const Role ADMIN = Role._(50, _omitEnumNames ? '' : 'ADMIN');
+  static const Role REQUEST = Role._(10, _omitEnumNames ? '' : 'REQUEST');
+  static const Role USER = Role._(20, _omitEnumNames ? '' : 'USER');
+  static const Role MODERATOR = Role._(30, _omitEnumNames ? '' : 'MODERATOR');
+  static const Role ADMIN = Role._(40, _omitEnumNames ? '' : 'ADMIN');
 
   static const $core.List<Role> values = <Role> [
     BLOCKED,
-    DENIED,
     REQUEST,
     USER,
     MODERATOR,
@@ -99,6 +97,7 @@ class Const extends $pb.ProtobufEnum {
   static const Const users = Const._(0, _omitEnumNames ? '' : 'users');
   static const Const rooms = Const._(10, _omitEnumNames ? '' : 'rooms');
   static const Const tweets = Const._(20, _omitEnumNames ? '' : 'tweets');
+  static const Const roomusers = Const._(30, _omitEnumNames ? '' : 'roomusers');
   static const Const uid = Const._(100, _omitEnumNames ? '' : 'uid');
   static const Const nick = Const._(110, _omitEnumNames ? '' : 'nick');
   static const Const displayName = Const._(150, _omitEnumNames ? '' : 'displayName');
@@ -117,6 +116,7 @@ class Const extends $pb.ProtobufEnum {
     users,
     rooms,
     tweets,
+    roomusers,
     uid,
     nick,
     displayName,

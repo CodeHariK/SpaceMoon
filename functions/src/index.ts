@@ -15,6 +15,9 @@ export const addAdmin = users.addAdmin;
 export const userHi = users.userHi;
 
 export const callCreateRoom = chat.callCreateRoom;
+export const requestAccessToRoom = chat.requestAccessToRoom;
+export const removeUser = chat.removeUser;
+export const acceptAccessToRoom = chat.acceptAccessToRoom;
 
 export const helloWorld = onRequest((request, response) => {
     response.set("Access-Control-Allow-Origin", "*");

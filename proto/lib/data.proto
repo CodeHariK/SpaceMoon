@@ -6,11 +6,10 @@ package user;
 
 enum Role {
     BLOCKED = 0;
-    DENIED = 10;
-    REQUEST = 20;
-    USER = 30;
-    MODERATOR = 40;
-    ADMIN =50;
+    REQUEST = 10;
+    USER = 20;
+    MODERATOR = 30;
+    ADMIN = 40;
 }
 
 enum MediaType {
@@ -44,6 +43,7 @@ message User {
     string photoURL = 500;
     Active status = 600;
     repeated string rooms = 700;
+    repeated string friends = 750;
     repeated string roomRequest = 800;
     // repeated string rooms = 8 [json_name = "dinosaur"];
     // int32 level = 9;
@@ -56,6 +56,8 @@ message User {
 
 message RoomUser {
     string uid = 1;
+    string user = 2;
+    string room = 3;
     Role role = 10;
     google.protobuf.Timestamp created = 20;
 }
@@ -66,7 +68,7 @@ message Room {
     string displayName = 10;
     string photoURL = 20;
     string description = 30;
-    repeated RoomUser members = 40;
+    repeated RoomUser members = 40; 
     google.protobuf.Timestamp created = 50;
 
     Visible open = 60; // open : true = Anyone can join, false = cant join, null = send request to join
@@ -88,6 +90,7 @@ enum Const {
     users = 0;
     rooms = 10;
     tweets = 20;
+    roomusers = 30;
 
     uid = 100;
     nick = 110;
