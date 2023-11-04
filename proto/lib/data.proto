@@ -78,8 +78,8 @@ message Room {
 
 message Tweet {
     string uid = 1;
-    string sender_id = 10;
-    string room_id = 20;
+    string user = 10;
+    string room = 20;
     google.protobuf.Timestamp created = 30;
     MediaType media_type = 40;
     string text = 50;

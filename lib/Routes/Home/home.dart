@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
+import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/TabShell/tabhome.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
@@ -45,7 +46,12 @@ class Home {
         TypedGoRoute<AccountRoute>(path: AppRouter.account),
 
         //
-        TypedGoRoute<ChatRoute>(path: AppRouter.chat),
+        TypedGoRoute<ChatRoute>(
+          path: AppRouter.chat,
+          routes: [
+            TypedGoRoute<ChatInfoRoute>(path: AppRouter.chatInfo),
+          ],
+        ),
       ],
     )
   ],
@@ -57,7 +63,7 @@ class HomeShellRoute extends ShellRouteData {
 
   static List<ShellData> data = [
     ShellData(name: 'TabHome', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
-    ShellData(name: 'Chat', location: AppRouter.home, icon: const Icon(Icons.chat_bubble_outline)),
+    ShellData(name: 'AllChat', location: AppRouter.home, icon: const Icon(Icons.chat_bubble_outline)),
     ShellData(name: 'Search', location: AppRouter.search, icon: const Icon(Icons.search)),
     ShellData(name: 'Profile', location: AppRouter.profile, icon: const Icon(Icons.face_2_outlined)),
   ];
@@ -66,7 +72,7 @@ class HomeShellRoute extends ShellRouteData {
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(HomeShellRoute.data.title(context)),
         actions: [
           IconButton(
             onPressed: () {

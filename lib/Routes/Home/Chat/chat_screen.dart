@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moonspace/Helper/debug_functions.dart';
-import 'package:moonspace/Helper/extensions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:moonspace/widgets/anim_btn.dart';
+import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
 
 class ChatRoute extends GoRouteData {
   final String chatId;
@@ -37,12 +38,8 @@ class ChatPage extends HookConsumerWidget {
     final me = ref.watch(currentUserProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
 
-    lava('Build Chat Page');
-
     useEffect(() {
       ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
-
-      lava('useEffect');
 
       return null;
     }, [room]);
@@ -67,13 +64,20 @@ class ChatPage extends HookConsumerWidget {
         child: Scaffold(
           appBar: AppBar(),
           body: Center(
-            child: ListView(
+            child: Column(
               children: [
                 Text('Me : ${me?.uid}'),
                 Text('Me in room : $meInRoom'),
                 Text(room.toString()),
+                if (meInRoom?.role == Role.REQUEST)
+                  FilledButton(
+                    onPressed: () {
+                      ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
+                    },
+                    child: const Text('Leave Room'),
+                  ),
                 if (meInRoom == null && room.open == Visible.MODERATED)
-                  LoadingBtn(
+                  AsyncButton(
                     icon: Icons.mail,
                     asyncFn: () async {
                       await ref.read(currentRoomProvider.notifier).requestAccessToRoom();
@@ -96,65 +100,41 @@ class ChatPage extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Chat$chatId'),
+          title: ListTile(
+            onTap: () {
+              ChatInfoRoute(chatId).go(context);
+            },
+            title: Text('Chat$chatId'),
+          ),
         ),
         body: Column(
-          children: [
-            LimitedBox(
-              maxHeight: 200,
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final allUsers = ref.watch(getAllMyUsersProvider);
-                  return allUsers.when(
-                    data: (data) {
-                      lava(data.length);
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          final roomUser = data[index]!;
-                          return ListTile(
-                            title: Text(roomUser.user),
-                            subtitle: Text(roomUser.role.name),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (roomUser.isRequest)
-                                  IconButton.filledTonal(
-                                    onPressed: () {
-                                      ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
-                                    },
-                                    icon: const Icon(Icons.check),
-                                  ),
-                                if (roomUser.isAdminOrMod && roomUser != meInRoom)
-                                  IconButton(
-                                    onPressed: () {
-                                      ref.read(currentRoomProvider.notifier).removeUser(roomUser);
-                                    },
-                                    icon: const Icon(Icons.close),
-                                  )
-                              ],
-                            ),
-                          );
-                        },
-                        itemCount: data.length,
-                      );
-                    },
-                    error: (error, stackTrace) => Text(error.toString()),
-                    loading: () => const CircularProgressIndicator(),
-                  );
-                },
-              ),
-            ),
-            Text(room.toString()),
-            Text(meInRoom.toString()),
-            FilledButton(
-              onPressed: () {
-                ref.read(currentRoomProvider.notifier).removeUser(meInRoom!);
-              },
-              child: Text('Leave Room', style: context.hs),
-            ),
-          ],
+          children: [],
         ),
       ),
     );
   }
 }
+
+// FilledButton(
+//   onPressed: () {
+//     ref.read(tweetsProvider.notifier).sendTweet(
+//           tweet: Tweet(
+//             user: 's',
+//             mediaType: MediaType.IMAGE,
+//             room: 'roo',
+//           ),
+//         );
+//   },
+//   child: const Text('Send Tweet'),
+// ),
+// FilledButton(
+//   onPressed: () {
+//     ref.read(tweetsProvider.notifier).deleteTweet(
+//           tweet: Tweet(
+//             room: 'HRLGHohzAAGcQSAgbJSa',
+//             uid: 'Aqy0Xd73n36EFyvR3APU',
+//           ),
+//         );
+//   },
+//   child: const Text('Delete Tweet'),
+// ),

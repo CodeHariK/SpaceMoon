@@ -51,6 +51,7 @@ class RoomText extends _$RoomText {
 @riverpod
 Future<List<Room>?> getRoom(GetRoomRef ref) async {
   final roomId = ref.watch(roomTextProvider).value;
+
   if (roomId == null || roomId == '') return null;
 
   List<Room>? room = await FirebaseFirestore.instance
@@ -75,41 +76,42 @@ Future<Room?> getRoomById(GetRoomByIdRef ref, String roomId) async {
   return room;
 }
 
-@Riverpod(keepAlive: true)
-Stream<List<RoomUser?>> getAllMyUsers(GetAllMyUsersRef ref) {
+@riverpod
+Future<List<RoomUser?>> getAllMyUsers(GetAllMyUsersRef ref) async {
   final room = ref.watch(currentRoomProvider).value;
 
-  return FirebaseFirestore.instance
-      .collection(Const.roomusers.name)
-      .where('room', isEqualTo: room?.uid)
-      .snapshots()
-      .map(
-        (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
-      );
+  if (room == null) return [];
+
+  final t = (await FirebaseFirestore.instance.collection(Const.roomusers.name).where('room', isEqualTo: room.uid).get())
+      .docs
+      .map((value) => fromDocSnap(RoomUser(), value))
+      .toList();
+
+  return t;
 }
 
 @Riverpod(keepAlive: true)
 Stream<List<RoomUser?>> getAllMyRooms(GetAllMyRoomsRef ref) {
   final user = ref.watch(currentUserProvider).value;
 
-  return FirebaseFirestore.instance
-      .collection(Const.roomusers.name)
-      .where('user', isEqualTo: user?.uid)
-      .snapshots()
-      .map(
+  if (user == null) return const Stream.empty();
+
+  return FirebaseFirestore.instance.collection(Const.roomusers.name).where('user', isEqualTo: user.uid).snapshots().map(
         (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
       );
 }
 
 @Riverpod(keepAlive: true)
 Future<RoomUser?> currentRoomUser(CurrentRoomUserRef ref) async {
-  final user = ref.watch(currentUserProvider).value!;
+  final user = ref.watch(currentUserProvider).value;
   final room = ref.watch(currentRoomProvider).value;
+
+  if (room == null || user == null) return null;
 
   final s = await FirebaseFirestore.instance
       .collection(Const.roomusers.name)
       .where('user', isEqualTo: user.uid)
-      .where('room', isEqualTo: room?.uid)
+      .where('room', isEqualTo: room.uid)
       .limit(1)
       .get();
   if (s.docs.isNotEmpty) {
@@ -120,10 +122,10 @@ Future<RoomUser?> currentRoomUser(CurrentRoomUserRef ref) async {
 
 @Riverpod(keepAlive: true)
 Stream<Room?> roomStream(RoomStreamRef ref) {
-  final rrr = ref.watch(currentRoomProvider).value;
-  final hello = rrr?.roomDoc;
-  if (hello != null) {
-    return hello.snapshots().map((event) {
+  final room = ref.watch(currentRoomProvider).value;
+  final roomDoc = room?.roomDoc;
+  if (room != null && roomDoc != null) {
+    return roomDoc.snapshots().map((event) {
       if (ref.read(currentRoomProvider).value != event.data()) {
         ref.read(currentRoomProvider.notifier).updateRoom(room: event.data());
       }
@@ -194,21 +196,17 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> requestAccessToRoom() async {
     final room = state.value;
-    await FirebaseFunctions.instance.httpsCallable('requestAccessToRoom').call(room?.uid);
+    await FirebaseFunctions.instance.httpsCallable('requestAccessToRoom').call(RoomUser(room: room?.uid).toMap());
     ref.invalidate(currentRoomUserProvider);
   }
 
   void acceptAccessToRoom(RoomUser user) async {
-    await FirebaseFunctions.instance.httpsCallable('acceptAccessToRoom').call({
-      'roomuser': user.toMap(),
-    });
+    await FirebaseFunctions.instance.httpsCallable('acceptAccessToRoom').call(user.toMap());
     ref.invalidate(currentRoomUserProvider);
   }
 
-  void removeUser(RoomUser user) async {
-    await FirebaseFunctions.instance.httpsCallable('removeUser').call({
-      'roomuser': user.toMap(),
-    });
+  void deleteRoomUser(RoomUser user) async {
+    await FirebaseFunctions.instance.httpsCallable('deleteRoomUser').call(user.toMap());
     ref.invalidate(currentRoomUserProvider);
   }
 }

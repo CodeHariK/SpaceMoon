@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -29,47 +27,45 @@ class SearchPage extends HookConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AsyncTextFormField(
               con: roomCon,
+              autofocus: true,
               decoration: const InputDecoration(
-                hintText: 'Enter Unique Nick Name',
-                labelText: 'Nick Name',
+                hintText: 'Find Rooms',
+                labelText: 'Find Rooms',
               ),
+              milliseconds: 300,
               asyncFn: (v) async {
-                await 2.sec.delay();
+                await ref.read(roomTextProvider.notifier).change(v);
 
-                return Random().nextDouble() < .7;
+                return true;
               },
             ),
-            // AsyncTextFormField(
-            //   con: roomCon,
-            //   autofocus: true,
-            //   decoration: const InputDecoration(
-            //     hintText: 'Find Rooms',
-            //   ),
-            //   asyncFn: (v) async {
-            //     await ref.read(roomTextProvider.notifier).change(v);
-            //     return true;
-            //   },
-            // ),
+            if (searchRooms.value != null && searchRooms.value!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
+                child: Text(
+                  'Found ${searchRooms.value!.length} rooms',
+                  style: context.tl,
+                ),
+              ),
             Expanded(
               child: searchRooms.map(
                 data: (rooms) {
                   if (rooms.value == null || rooms.value?.isEmpty == true) {
                     return Center(
-                      child: Container(
-                        decoration: BoxDecoration(border: 1.bs.c(context.theme.csPri).border),
-                        child: context.hl.text('No Room'),
-                      ),
+                      child: Text('No Room Found', style: context.hl),
                     );
                   }
 
-                  return ListView.builder(
-                    itemCount: rooms.value?.length,
+                  return ListView.separated(
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemCount: rooms.value!.length,
                     itemBuilder: (context, i) {
                       final room = rooms.value?[i];
-                      return InkWell(
+                      return ListTile(
                         onTap: () {
                           if (room != null) {
                             if (context.mounted /*&& ref.read(isUserIsInRoomProvider)*/) {
@@ -77,14 +73,8 @@ class SearchPage extends HookConsumerWidget {
                             }
                           }
                         },
-                        child: Card(
-                          child: Column(
-                            children: [
-                              Text(room?.displayName ?? 'Name'),
-                              Text(room?.description ?? 'Description'),
-                            ],
-                          ),
-                        ),
+                        title: Text(room?.displayName ?? 'Name'),
+                        subtitle: Text(room?.description ?? 'Description'),
                       );
                     },
                   );

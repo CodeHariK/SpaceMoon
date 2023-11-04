@@ -14,12 +14,7 @@ class AllChatPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allRooms = ref.watch(getAllMyRoomsProvider);
-    // return AllUsersPage();
-    // return AllRoomsPage();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AllChat'),
-      ),
       body: Center(
         child: allRooms.when(
           data: (data) {
@@ -41,11 +36,11 @@ class AllChatPage extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         return Consumer(builder: (context, ref, child) {
                           final room = ref.watch(GetRoomByIdProvider(data[index]!.room)).value;
-                          if (room == null) return CircularProgressIndicator();
+                          if (room == null) return const CircularProgressIndicator();
                           return ListTile(
                             title: Text(room.uid),
                             subtitle: Text(room.displayName),
-                            leading: Icon(Icons.panorama_fish_eye_sharp),
+                            leading: const Icon(Icons.panorama_fish_eye_sharp),
                             trailing: Text(room.open.name),
                             onTap: () {
                               ChatRoute(room.uid).go(context);

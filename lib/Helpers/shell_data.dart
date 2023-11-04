@@ -30,6 +30,8 @@ extension SuperShellData on List<ShellData> {
         type: BottomNavigationBarType.fixed,
       );
 
+  String title(BuildContext context) => this[getCurrentIndex(context)].name;
+
   NavigationBar navigationBar(BuildContext context) => NavigationBar(
         selectedIndex: getCurrentIndex(context),
         onDestinationSelected: (v) {

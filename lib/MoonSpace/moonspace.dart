@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -207,7 +206,10 @@ class SpaceMoonHome extends ConsumerWidget {
           initializeDateFormatting();
 
           return CupertinoTheme(
-            data: CupertinoThemeData(brightness: brightness),
+            data: CupertinoThemeData(
+              brightness: brightness,
+              primaryColor: CupertinoColors.systemPurple,
+            ),
             child: child ?? const SimpleError(),
           );
         },

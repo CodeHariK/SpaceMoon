@@ -188,8 +188,8 @@ const Tweet$json = {
   '1': 'Tweet',
   '2': [
     {'1': 'uid', '3': 1, '4': 1, '5': 9, '10': 'uid'},
-    {'1': 'sender_id', '3': 10, '4': 1, '5': 9, '10': 'senderId'},
-    {'1': 'room_id', '3': 20, '4': 1, '5': 9, '10': 'roomId'},
+    {'1': 'user', '3': 10, '4': 1, '5': 9, '10': 'user'},
+    {'1': 'room', '3': 20, '4': 1, '5': 9, '10': 'room'},
     {'1': 'created', '3': 30, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
     {'1': 'media_type', '3': 40, '4': 1, '5': 14, '6': '.user.MediaType', '10': 'mediaType'},
     {'1': 'text', '3': 50, '4': 1, '5': 9, '10': 'text'},
@@ -199,8 +199,8 @@ const Tweet$json = {
 
 /// Descriptor for `Tweet`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List tweetDescriptor = $convert.base64Decode(
-    'CgVUd2VldBIQCgN1aWQYASABKAlSA3VpZBIbCglzZW5kZXJfaWQYCiABKAlSCHNlbmRlcklkEh'
-    'cKB3Jvb21faWQYFCABKAlSBnJvb21JZBI0CgdjcmVhdGVkGB4gASgLMhouZ29vZ2xlLnByb3Rv'
-    'YnVmLlRpbWVzdGFtcFIHY3JlYXRlZBIuCgptZWRpYV90eXBlGCggASgOMg8udXNlci5NZWRpYV'
-    'R5cGVSCW1lZGlhVHlwZRISCgR0ZXh0GDIgASgJUgR0ZXh0EhIKBGxpbmsYPCABKAlSBGxpbms=');
+    'CgVUd2VldBIQCgN1aWQYASABKAlSA3VpZBISCgR1c2VyGAogASgJUgR1c2VyEhIKBHJvb20YFC'
+    'ABKAlSBHJvb20SNAoHY3JlYXRlZBgeIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBS'
+    'B2NyZWF0ZWQSLgoKbWVkaWFfdHlwZRgoIAEoDjIPLnVzZXIuTWVkaWFUeXBlUgltZWRpYVR5cG'
+    'USEgoEdGV4dBgyIAEoCVIEdGV4dBISCgRsaW5rGDwgASgJUgRsaW5r');
 

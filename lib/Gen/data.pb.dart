@@ -492,8 +492,8 @@ class Room extends $pb.GeneratedMessage {
 class Tweet extends $pb.GeneratedMessage {
   factory Tweet({
     $core.String? uid,
-    $core.String? senderId,
-    $core.String? roomId,
+    $core.String? user,
+    $core.String? room,
     $0.Timestamp? created,
     MediaType? mediaType,
     $core.String? text,
@@ -503,11 +503,11 @@ class Tweet extends $pb.GeneratedMessage {
     if (uid != null) {
       $result.uid = uid;
     }
-    if (senderId != null) {
-      $result.senderId = senderId;
+    if (user != null) {
+      $result.user = user;
     }
-    if (roomId != null) {
-      $result.roomId = roomId;
+    if (room != null) {
+      $result.room = room;
     }
     if (created != null) {
       $result.created = created;
@@ -529,8 +529,8 @@ class Tweet extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Tweet', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'uid')
-    ..aOS(10, _omitFieldNames ? '' : 'senderId')
-    ..aOS(20, _omitFieldNames ? '' : 'roomId')
+    ..aOS(10, _omitFieldNames ? '' : 'user')
+    ..aOS(20, _omitFieldNames ? '' : 'room')
     ..aOM<$0.Timestamp>(30, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..e<MediaType>(40, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
     ..aOS(50, _omitFieldNames ? '' : 'text')
@@ -569,22 +569,22 @@ class Tweet extends $pb.GeneratedMessage {
   void clearUid() => clearField(1);
 
   @$pb.TagNumber(10)
-  $core.String get senderId => $_getSZ(1);
+  $core.String get user => $_getSZ(1);
   @$pb.TagNumber(10)
-  set senderId($core.String v) { $_setString(1, v); }
+  set user($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(10)
-  $core.bool hasSenderId() => $_has(1);
+  $core.bool hasUser() => $_has(1);
   @$pb.TagNumber(10)
-  void clearSenderId() => clearField(10);
+  void clearUser() => clearField(10);
 
   @$pb.TagNumber(20)
-  $core.String get roomId => $_getSZ(2);
+  $core.String get room => $_getSZ(2);
   @$pb.TagNumber(20)
-  set roomId($core.String v) { $_setString(2, v); }
+  set room($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(20)
-  $core.bool hasRoomId() => $_has(2);
+  $core.bool hasRoom() => $_has(2);
   @$pb.TagNumber(20)
-  void clearRoomId() => clearField(20);
+  void clearRoom() => clearField(20);
 
   @$pb.TagNumber(30)
   $0.Timestamp get created => $_getN(3);

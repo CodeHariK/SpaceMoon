@@ -61,15 +61,16 @@ class AppTheme {
   // static TextStyle get poppins => GoogleFonts.poppins();
   static TextStyle get poppins => const TextStyle();
 
-  static Color get seedColor => const Color(0xff6750a4);
-
+  static Color get seedColor => Colors.purple;
+  // bodyMedium: GoogleFonts.merriweather(),
+  // displaySmall: GoogleFonts.pacifico(),
   TextTheme get textTheme => TextTheme(
         displayLarge: poppins.copyWith(color: Colors.orange),
         displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
         displaySmall: poppins.copyWith(color: Colors.teal),
         headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
-        headlineMedium: poppins.copyWith(color: const Color.fromARGB(255, 237, 255, 157), fontSize: 26.c),
-        // headlineSmall: poppins.copyWith(fontSize: 22.5.c),
+        headlineMedium: poppins.copyWith(fontSize: 26.c),
+        headlineSmall: poppins.copyWith(fontSize: 22.5.c),
         titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
         titleMedium:
             poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
@@ -85,10 +86,8 @@ class AppTheme {
   FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
-          backgroundColor: seedColor,
           padding: EdgeInsets.all(12.c),
-          // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          textStyle: poppins.copyWith(fontSize: (14, 18).c),
+          // textStyle: poppins.copyWith(fontSize: (14, 18).c),
         ),
       );
 
@@ -132,7 +131,7 @@ class AppTheme {
         //
         // primary: Colors.yellow, //filledbutton
         // onPrimary: Colors.yellow, //filledbuttonfont
-        primaryContainer: Colors.purple,
+        // primaryContainer: Colors.purple,//filledButton, floatingActionButton
         // onPrimaryContainer: Colors.white, //text font,
         inversePrimary: Colors.cyan,
 
@@ -169,7 +168,7 @@ class AppTheme {
 
         //
         // outline: Colors.yellow, //textfield border
-        outlineVariant: Colors.green,
+        // outlineVariant: Colors.green,//Divider
         // shadow: Colors.blue, //Shadow, elevation
         scrim: Colors.orange,
       );
@@ -181,7 +180,7 @@ class AppTheme {
         colorScheme: colorScheme,
 
         //
-        dividerTheme: DividerThemeData(color: seedColor),
+        // dividerTheme: DividerThemeData(color: seedColor),
 
         //
         inputDecorationTheme: inputDecoration,

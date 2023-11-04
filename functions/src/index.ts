@@ -6,6 +6,7 @@ import { onCall, onRequest } from "firebase-functions/v2/https";
 // import { FieldValue } from "firebase-admin/firestore";
 import * as users from "./users";
 import * as chat from "./chat";
+import * as tweet from "./tweet";
 
 admin.initializeApp({ projectId: "spacemoonfire" });
 
@@ -16,8 +17,11 @@ export const userHi = users.userHi;
 
 export const callCreateRoom = chat.callCreateRoom;
 export const requestAccessToRoom = chat.requestAccessToRoom;
-export const removeUser = chat.removeUser;
+export const deleteRoomUser = chat.deleteRoomUser;
 export const acceptAccessToRoom = chat.acceptAccessToRoom;
+
+export const sendTweet = tweet.sendTweet;
+export const deleteTweet = tweet.deleteTweet;
 
 export const helloWorld = onRequest((request, response) => {
     response.set("Access-Control-Allow-Origin", "*");

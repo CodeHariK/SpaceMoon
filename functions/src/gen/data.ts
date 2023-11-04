@@ -365,8 +365,8 @@ export interface Room {
 
 export interface Tweet {
   uid: string;
-  senderId: string;
-  roomId: string;
+  user: string;
+  room: string;
   created: Date | undefined;
   mediaType: MediaType;
   text: string;
@@ -937,7 +937,7 @@ export const Room = {
 };
 
 function createBaseTweet(): Tweet {
-  return { uid: "", senderId: "", roomId: "", created: undefined, mediaType: 0, text: "", link: "" };
+  return { uid: "", user: "", room: "", created: undefined, mediaType: 0, text: "", link: "" };
 }
 
 export const Tweet = {
@@ -945,11 +945,11 @@ export const Tweet = {
     if (message.uid !== "") {
       writer.uint32(10).string(message.uid);
     }
-    if (message.senderId !== "") {
-      writer.uint32(82).string(message.senderId);
+    if (message.user !== "") {
+      writer.uint32(82).string(message.user);
     }
-    if (message.roomId !== "") {
-      writer.uint32(162).string(message.roomId);
+    if (message.room !== "") {
+      writer.uint32(162).string(message.room);
     }
     if (message.created !== undefined) {
       Timestamp.encode(toTimestamp(message.created), writer.uint32(242).fork()).ldelim();
@@ -985,14 +985,14 @@ export const Tweet = {
             break;
           }
 
-          message.senderId = reader.string();
+          message.user = reader.string();
           continue;
         case 20:
           if (tag !== 162) {
             break;
           }
 
-          message.roomId = reader.string();
+          message.room = reader.string();
           continue;
         case 30:
           if (tag !== 242) {
@@ -1034,8 +1034,8 @@ export const Tweet = {
   fromJSON(object: any): Tweet {
     return {
       uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
-      senderId: isSet(object.senderId) ? globalThis.String(object.senderId) : "",
-      roomId: isSet(object.roomId) ? globalThis.String(object.roomId) : "",
+      user: isSet(object.user) ? globalThis.String(object.user) : "",
+      room: isSet(object.room) ? globalThis.String(object.room) : "",
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       mediaType: isSet(object.mediaType) ? mediaTypeFromJSON(object.mediaType) : 0,
       text: isSet(object.text) ? globalThis.String(object.text) : "",
@@ -1048,11 +1048,11 @@ export const Tweet = {
     if (message.uid !== "") {
       obj.uid = message.uid;
     }
-    if (message.senderId !== "") {
-      obj.senderId = message.senderId;
+    if (message.user !== "") {
+      obj.user = message.user;
     }
-    if (message.roomId !== "") {
-      obj.roomId = message.roomId;
+    if (message.room !== "") {
+      obj.room = message.room;
     }
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
@@ -1075,8 +1075,8 @@ export const Tweet = {
   fromPartial<I extends Exact<DeepPartial<Tweet>, I>>(object: I): Tweet {
     const message = createBaseTweet();
     message.uid = object.uid ?? "";
-    message.senderId = object.senderId ?? "";
-    message.roomId = object.roomId ?? "";
+    message.user = object.user ?? "";
+    message.room = object.room ?? "";
     message.created = object.created ?? undefined;
     message.mediaType = object.mediaType ?? 0;
     message.text = object.text ?? "";

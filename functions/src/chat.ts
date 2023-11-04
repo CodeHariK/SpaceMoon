@@ -35,7 +35,6 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
     });
 
     _room.created = new Date()
-    // _room.members = members
 
     if (currentUID != null) {
         let v = await admin.firestore().collection(constName(Const.rooms)).add(toMap(_room),);
@@ -55,24 +54,22 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
 
 export const requestAccessToRoom = onCall(async (request) => {
     let userId = request.auth!.uid;
-    let roomId = request.data;
+    let _roomuser = RoomUser.fromJSON(request.data)
 
-    if (typeof roomId !== 'string') {
+    if (!_roomuser.room) {
         throw new HttpsError('invalid-argument', 'Invalid Room ID')
     }
 
-    let user = RoomUser.create({
-        user: userId,
-        room: roomId,
-        created: new Date(),
-        role: Role.REQUEST,
-    });
-
-    let u = await getRoomUserById(userId, roomId)
+    let u = await getRoomUserById(userId, _roomuser.room)
 
     if (!u) {
         await admin.firestore().collection(constName(Const.roomusers)).add(
-            RoomUser.toJSON(user) as Map<string, any>
+            RoomUser.toJSON(RoomUser.create({
+                user: userId,
+                room: _roomuser.room,
+                created: new Date(),
+                role: Role.REQUEST,
+            })) as Map<string, any>
         );
     }
 
@@ -81,20 +78,22 @@ export const requestAccessToRoom = onCall(async (request) => {
 
 export const acceptAccessToRoom = onCall(async (request) => {
     let adminId = request.auth!.uid;
-    let { roomuser } = request.data;
-    let _roomuser = RoomUser.fromJSON(roomuser)
+    let _roomuser = RoomUser.fromJSON(request.data)
 
     if (!_roomuser.room) {
         throw new HttpsError('invalid-argument', 'You must provide a RoomUser to accept.');
     }
 
-    _roomuser.role = Role.USER;
-
     const adminUser = await getRoomUserById(adminId, _roomuser.room);
 
     if (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)) {
         await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid)
-            .set(RoomUser.toJSON(_roomuser) as Map<string, any>,
+            .set(RoomUser.toJSON(RoomUser.create({
+                user: _roomuser.user,
+                room: _roomuser.room,
+                role: Role.USER,
+                created: new Date(),
+            })) as Map<string, any>,
                 { merge: true }
             );
 
@@ -104,10 +103,9 @@ export const acceptAccessToRoom = onCall(async (request) => {
     }
 });
 
-export const removeUser = onCall(async (request) => {
+export const deleteRoomUser = onCall(async (request) => {
     let adminId = request.auth!.uid;
-    let { roomuser } = request.data;
-    let _roomuser = RoomUser.fromJSON(roomuser)
+    let _roomuser = RoomUser.fromJSON(request.data)
 
     if (!_roomuser.room) {
         throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');

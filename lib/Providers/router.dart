@@ -33,6 +33,7 @@ class AppRouter {
   /*-*/ static const String account = 'account';
   /*-*/ static const String settings = 'settings';
   /*-*/ static const String chat = 'chat/:chatId';
+  /*-----*/ static const String chatInfo = 'info';
   static const String profile = '/profile';
   static const String search = '/search';
 
