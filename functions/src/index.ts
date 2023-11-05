@@ -5,7 +5,7 @@ import { onCall, onRequest } from "firebase-functions/v2/https";
 // import { onDocumentWritten, onDocumentCreated, onDocumentDeleted } from "firebase-functions/v2/firestore";
 // import { FieldValue } from "firebase-admin/firestore";
 import * as users from "./users";
-import * as chat from "./chat";
+import * as chat from "./room";
 import * as tweet from "./tweet";
 
 admin.initializeApp({ projectId: "spacemoonfire" });
@@ -14,6 +14,8 @@ export const onUserCreate = users.onUserCreate;
 export const callUserUpdate = users.callUserUpdate;
 export const addAdmin = users.addAdmin;
 export const userHi = users.userHi;
+export const deleteAuthUser = users.deleteAuthUser;
+export const deleteUser = users.deleteUser;
 
 export const callCreateRoom = chat.callCreateRoom;
 export const requestAccessToRoom = chat.requestAccessToRoom;
@@ -30,7 +32,6 @@ export const helloWorld = onRequest((request, response) => {
 });
 
 export const sayHello = onCall((request) => {
-
     console.log(request.data);
 
     return {

@@ -354,12 +354,10 @@ export interface Room {
   displayName: string;
   photoURL: string;
   description: string;
-  members: RoomUser[];
-  created:
-    | Date
-    | undefined;
-  /** open : true = Anyone can join, false = cant join, null = send request to join */
+  created: Date | undefined;
   open: Visible;
+  activeCount: number;
+  totalCount: number;
   tweetCount: number;
 }
 
@@ -754,9 +752,10 @@ function createBaseRoom(): Room {
     displayName: "",
     photoURL: "",
     description: "",
-    members: [],
     created: undefined,
     open: 0,
+    activeCount: 0,
+    totalCount: 0,
     tweetCount: 0,
   };
 }
@@ -778,17 +777,20 @@ export const Room = {
     if (message.description !== "") {
       writer.uint32(242).string(message.description);
     }
-    for (const v of message.members) {
-      RoomUser.encode(v!, writer.uint32(322).fork()).ldelim();
-    }
     if (message.created !== undefined) {
-      Timestamp.encode(toTimestamp(message.created), writer.uint32(402).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(322).fork()).ldelim();
     }
     if (message.open !== 0) {
-      writer.uint32(480).int32(message.open);
+      writer.uint32(400).int32(message.open);
+    }
+    if (message.activeCount !== 0) {
+      writer.uint32(480).int32(message.activeCount);
+    }
+    if (message.totalCount !== 0) {
+      writer.uint32(560).int32(message.totalCount);
     }
     if (message.tweetCount !== 0) {
-      writer.uint32(560).int32(message.tweetCount);
+      writer.uint32(640).int32(message.tweetCount);
     }
     return writer;
   },
@@ -840,24 +842,31 @@ export const Room = {
             break;
           }
 
-          message.members.push(RoomUser.decode(reader, reader.uint32()));
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         case 50:
-          if (tag !== 402) {
+          if (tag !== 400) {
             break;
           }
 
-          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.open = reader.int32() as any;
           continue;
         case 60:
           if (tag !== 480) {
             break;
           }
 
-          message.open = reader.int32() as any;
+          message.activeCount = reader.int32();
           continue;
         case 70:
           if (tag !== 560) {
+            break;
+          }
+
+          message.totalCount = reader.int32();
+          continue;
+        case 80:
+          if (tag !== 640) {
             break;
           }
 
@@ -879,9 +888,10 @@ export const Room = {
       displayName: isSet(object.displayName) ? globalThis.String(object.displayName) : "",
       photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
       description: isSet(object.description) ? globalThis.String(object.description) : "",
-      members: globalThis.Array.isArray(object?.members) ? object.members.map((e: any) => RoomUser.fromJSON(e)) : [],
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
+      activeCount: isSet(object.activeCount) ? globalThis.Number(object.activeCount) : 0,
+      totalCount: isSet(object.totalCount) ? globalThis.Number(object.totalCount) : 0,
       tweetCount: isSet(object.tweetCount) ? globalThis.Number(object.tweetCount) : 0,
     };
   },
@@ -903,14 +913,17 @@ export const Room = {
     if (message.description !== "") {
       obj.description = message.description;
     }
-    if (message.members?.length) {
-      obj.members = message.members.map((e) => RoomUser.toJSON(e));
-    }
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
     }
     if (message.open !== 0) {
       obj.open = visibleToJSON(message.open);
+    }
+    if (message.activeCount !== 0) {
+      obj.activeCount = Math.round(message.activeCount);
+    }
+    if (message.totalCount !== 0) {
+      obj.totalCount = Math.round(message.totalCount);
     }
     if (message.tweetCount !== 0) {
       obj.tweetCount = Math.round(message.tweetCount);
@@ -928,9 +941,10 @@ export const Room = {
     message.displayName = object.displayName ?? "";
     message.photoURL = object.photoURL ?? "";
     message.description = object.description ?? "";
-    message.members = object.members?.map((e) => RoomUser.fromPartial(e)) || [];
     message.created = object.created ?? undefined;
     message.open = object.open ?? 0;
+    message.activeCount = object.activeCount ?? 0;
+    message.totalCount = object.totalCount ?? 0;
     message.tweetCount = object.tweetCount ?? 0;
     return message;
   },

@@ -1,8 +1,9 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { Const, Role, Tweet } from "./Gen/data";
-import { getRoomUserById } from "./chat";
+import { getRoomUserById } from "./room";
 import { constName } from "./Helpers/const";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 export const sendTweet = onCall(async (request) => {
     let userId = request.auth!.uid;
@@ -22,6 +23,12 @@ export const sendTweet = onCall(async (request) => {
         await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
             Tweet.toJSON(tweet) as Map<string, any>
         );
+
+        admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
+            {
+                'tweetCount': FieldValue.increment(1)
+            },
+            { merge: true });
     } else {
         throw new HttpsError('invalid-argument', 'Invalid User')
     }
@@ -50,6 +57,12 @@ export const deleteTweet = onCall(async (request) => {
         await admin.firestore()
             .collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`)
             .doc(tweet.uid).delete();
+
+        admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
+            {
+                'tweetCount': FieldValue.increment(-1)
+            },
+            { merge: true });
     } else {
         throw new HttpsError('invalid-argument', 'Not enough privilege')
     }

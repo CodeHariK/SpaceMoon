@@ -12,14 +12,14 @@ import 'package:spacemoon/Widget/Common/fire_image.dart';
 
 class SendBox extends HookConsumerWidget {
   const SendBox({
-    required this.me,
+    required this.roomUser,
     this.mediaType = MediaType.TEXT,
     this.link,
     this.onChanged,
     super.key,
   });
 
-  final User me;
+  final RoomUser roomUser;
   final MediaType mediaType;
   final String? link;
   final Function(String value)? onChanged;
@@ -36,7 +36,7 @@ class SendBox extends HookConsumerWidget {
         controller: tweetCon,
         minLines: 1,
         // expands: true,
-        maxLines: mediaType == MediaType.QR ? 25 : 3,
+        maxLines: mediaType == MediaType.QR ? 25 : 4,
         onChanged: onChanged,
 
         decoration: InputDecoration(
@@ -46,7 +46,7 @@ class SendBox extends HookConsumerWidget {
           fillColor: theme.pri.withAlpha(20),
           filled: true,
           contentPadding: 16.e,
-          prefixIcon: Icon(Icons.star),
+          // prefixIcon: const Icon(Icons.star),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -57,7 +57,7 @@ class SendBox extends HookConsumerWidget {
                     context: context,
                     builder: (context) {
                       return QrDialog(
-                        me: me,
+                        roomUser: roomUser,
                       );
                     },
                   );
@@ -66,7 +66,7 @@ class SendBox extends HookConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.tag),
                 onPressed: () async {
-                  final userId = me.uid;
+                  final userId = roomUser.user;
                   final imageTask = await saveFirePickCropImage(
                     '$userId/tweets',
                   );
@@ -126,7 +126,7 @@ class SendBox extends HookConsumerWidget {
                         return PhotoDialog(
                           imageUrl: imageUrl,
                           ref: ref,
-                          me: me,
+                          roomUser: roomUser,
                           // scrollCon: scrollCon,
                         );
                       },

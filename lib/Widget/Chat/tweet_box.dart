@@ -12,11 +12,11 @@ class TweetBox extends HookConsumerWidget {
   const TweetBox({
     super.key,
     required this.tweet,
-    required this.me,
+    required this.roomuser,
   });
 
   final Tweet tweet;
-  final User me;
+  final RoomUser roomuser;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,44 +75,47 @@ class TweetBox extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SelectableText(tweet.text),
+                          SelectableText(
+                            tweet.text,
+                          ),
                           // SuperLink(tweet.text),
 
                           //
                           // if (tweet.mediaType == MediaType.VIDEO)
-                          const VideoPlayerBox(
-                            title: 'Sintel',
-                            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-                            // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-                          ),
+                          //   const VideoPlayerBox(
+                          //     title: 'Sintel',
+                          //     videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+                          //     // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                          //   ),
 
-                          if (tweet.mediaType == MediaType.IMAGE)
-                            ClipRRect(
-                              borderRadius: 25.br,
-                              child: SizedBox(
-                                height: 300,
-                                width: 300,
-                                child: Image.network(
-                                  tweet.link,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          if (tweet.mediaType == MediaType.QR)
-                            QrBox(
-                              qrtext: tweet.text,
-                            ),
-                          // // if (isWebsite(tweet.text)) ...[
-                          // //   link.LinkPreview(
-                          // //     enableAnimation: true,
-                          // //     onPreviewDataFetched: (p0) {
-                          // //       linkPreviewData.value = p0;
-                          // //     },
-                          // //     previewData: linkPreviewData.value,
-                          // //     text: tweet.text,
-                          // //     width: 300,
-                          // //   ),
-                          // ],
+                          // if (tweet.mediaType == MediaType.IMAGE)
+                          //   ClipRRect(
+                          //     borderRadius: 25.br,
+                          //     child: SizedBox(
+                          //       height: 300,
+                          //       width: 300,
+                          //       child: Image.network(
+                          //         tweet.link,
+                          //         fit: BoxFit.cover,
+                          //       ),
+                          //     ),
+                          //   ),
+
+                          // if (tweet.mediaType == MediaType.QR)
+                          //   QrBox(
+                          //     qrtext: tweet.text,
+                          //   ),
+
+                          // if (isWebsite(tweet.text))
+                          //   link.LinkPreview(
+                          //     enableAnimation: true,
+                          //     onPreviewDataFetched: (p0) {
+                          //       linkPreviewData.value = p0;
+                          //     },
+                          //     previewData: linkPreviewData.value,
+                          //     text: tweet.text,
+                          //     width: 300,
+                          //   ),
 
                           Text(
                             'Time : ${tweet.created.toDateTime()}',
@@ -125,7 +128,7 @@ class TweetBox extends HookConsumerWidget {
               ),
             ),
           ]..sort(
-              (_, __) => me.uid == tweet.user ? -1 : 1,
+              (_, __) => roomuser.user == tweet.user ? -1 : 1,
             ),
         ),
       ),

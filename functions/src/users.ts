@@ -1,26 +1,34 @@
-import { AuthBlockingEvent, beforeUserCreated } from "firebase-functions/v2/identity";
+import * as functions from "firebase-functions/v1";
+import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Const, User } from "./Gen/data";
 import { constName } from "./Helpers/const";
 
-export const onUserCreate = beforeUserCreated((event: AuthBlockingEvent) => {
-    const { uid, email, displayName, phoneNumber, photoURL } = event.data;
 
-    const obj = {
-        email: email,
-        displayName: displayName,
-        phoneNumber: phoneNumber,
-        photoURL: photoURL,
-        created: new Date(),
-    };
+export const onUserCreate = functions.auth.user().onCreate((user) => {
+    const { uid, email, displayName, phoneNumber, photoURL } = user;
 
-    admin.firestore().collection(constName(Const.users)).doc(uid).set(User.toJSON(User.create(obj))!, { merge: true });
+    admin.firestore().collection(constName(Const.users)).doc(uid)
+        .set(
+            User.toJSON(User.create({
+                email: email,
+                displayName: displayName,
+                phoneNumber: phoneNumber,
+                photoURL: photoURL,
+                created: new Date(),
+            })) as Map<string, any>
+            , { merge: true });
+
+    admin.auth().setCustomUserClaims(uid, {
+        manager: false,
+    });
+
+    return 'Created';
 });
 
 export const callUserUpdate = onCall((request): void => {
     let uid = request.auth?.uid;
-
 
     const { displayName, photoURL, fcmToken } = request.data;
 
@@ -75,6 +83,26 @@ async function grantModerateRole(uid: string) {
         manager: true,
     });
 }
+
+export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
+    admin.firestore().collection(constName(Const.users))
+        .doc(user.uid).delete();
+
+    const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
+        .where('user', '==', user.uid).get()
+
+    const db = admin.firestore();
+    const batch = db.batch();
+    roomUserQuery.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+    await batch.commit();
+    return { message: `Deleted all ${user.uid} documents.` };
+});
+
+export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
+    admin.auth().deleteUser(event.params.userId);
+});
 
 // Helper Functions ___________________________________________
 

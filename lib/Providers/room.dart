@@ -76,16 +76,32 @@ Future<Room?> getRoomById(GetRoomByIdRef ref, String roomId) async {
   return room;
 }
 
-@riverpod
-Future<List<RoomUser?>> getAllMyUsers(GetAllMyUsersRef ref) async {
+// @riverpod
+// FutureOr<int> allRoomUserCount(AllRoomUserCountRef ref) async {
+//   final room = ref.watch(currentRoomProvider).value;
+
+//   if (room == null) return 0;
+
+//   final uu = await FirebaseFirestore.instance
+//       .collection(Const.roomusers.name)
+//       .where('room', isEqualTo: room.uid)
+//       .count()
+//       .get();
+
+//   return uu.count;
+// }
+
+@Riverpod(keepAlive: true)
+Stream<List<RoomUser?>> getAllMyUsers(GetAllMyUsersRef ref) {
   final room = ref.watch(currentRoomProvider).value;
 
-  if (room == null) return [];
+  if (room == null) return const Stream.empty();
 
-  final t = (await FirebaseFirestore.instance.collection(Const.roomusers.name).where('room', isEqualTo: room.uid).get())
-      .docs
-      .map((value) => fromDocSnap(RoomUser(), value))
-      .toList();
+  final t = FirebaseFirestore.instance
+      .collection(Const.roomusers.name)
+      .where('room', isEqualTo: room.uid)
+      .snapshots()
+      .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
 
   return t;
 }
@@ -96,9 +112,11 @@ Stream<List<RoomUser?>> getAllMyRooms(GetAllMyRoomsRef ref) {
 
   if (user == null) return const Stream.empty();
 
-  return FirebaseFirestore.instance.collection(Const.roomusers.name).where('user', isEqualTo: user.uid).snapshots().map(
-        (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
-      );
+  return FirebaseFirestore.instance
+      .collection(Const.roomusers.name)
+      .where('user', isEqualTo: user.uid)
+      .snapshots()
+      .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
 }
 
 @Riverpod(keepAlive: true)

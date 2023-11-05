@@ -49,10 +49,10 @@ class QrBox extends StatelessWidget {
 class QrDialog extends HookWidget {
   const QrDialog({
     super.key,
-    required this.me,
+    required this.roomUser,
   });
 
-  final User me;
+  final RoomUser roomUser;
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +140,7 @@ class QrDialog extends HookWidget {
 
                     //
                     SendBox(
-                      me: me,
+                      roomUser: roomUser,
                       onChanged: (value) {
                         qrtext.value = value;
                       },

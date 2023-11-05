@@ -13,13 +13,13 @@ class PhotoDialog extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.ref,
-    required this.me,
+    required this.roomUser,
     // required this.scrollCon,
   });
 
   final String imageUrl;
   final WidgetRef ref;
-  final User me;
+  final RoomUser roomUser;
   // final ScrollController scrollCon;
 
   @override
@@ -65,7 +65,7 @@ class PhotoDialog extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SendBox(
-                    me: me,
+                    roomUser: roomUser,
                     link: imageUrl,
                     mediaType: MediaType.IMAGE,
                   ),

@@ -4,13 +4,11 @@ import 'package:go_router/go_router.dart';
 class Error404Page extends StatelessWidget {
   const Error404Page({
     super.key,
-    required this.state,
   });
-
-  final GoRouterState state;
 
   @override
   Widget build(BuildContext context) {
+    GoRouterState state = GoRouterState.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Page not found')),
       body: Center(

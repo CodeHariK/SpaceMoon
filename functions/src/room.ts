@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import { Const, Role, Room, RoomUser } from "./Gen/data";
 import { constName } from "./Helpers/const";
 import { checkUserExists } from "./users";
+import { FieldValue } from "firebase-admin/firestore";
 
 export const callCreateRoom = onCall(async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;
@@ -37,17 +38,22 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
     _room.created = new Date()
 
     if (currentUID != null) {
-        let v = await admin.firestore().collection(constName(Const.rooms)).add(toMap(_room),);
-
+        let roomDoc = await admin.firestore().collection(constName(Const.rooms)).add(toMap(_room),);
 
         members.forEach(async (e) => {
-            e.room = v.id;
+            e.room = roomDoc.id;
             await admin.firestore().collection(constName(Const.roomusers)).add(
                 RoomUser.toJSON(e) as Map<string, any>
             );
         });
 
-        return v.id;
+        // admin.firestore().collection(constName(Const.rooms)).doc(roomDoc.id).set(
+        //     {
+        //         'totalCount': FieldValue.increment(members.length)
+        //     },
+        //     { merge: true });
+
+        return roomDoc.id;
     }
     return;
 });
@@ -97,7 +103,13 @@ export const acceptAccessToRoom = onCall(async (request) => {
                 { merge: true }
             );
 
-        return { message: 'The target user has been kicked from the room.' };
+        // admin.firestore().collection(constName(Const.rooms)).doc(_roomuser.room).set(
+        //     {
+        //         'totalCount': FieldValue.increment(1)
+        //     },
+        //     { merge: true });
+
+        return { message: 'The target user has been added to the room.' };
     } else {
         throw new HttpsError('permission-denied', 'You do not have permission to kick users from this room.');
     }
@@ -115,7 +127,13 @@ export const deleteRoomUser = onCall(async (request) => {
 
     if ((adminId === _roomuser.user) || (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR))) {
         await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid).delete();
-        return { message: 'The target user has been kicked from the room.' };
+
+        // admin.firestore().collection(constName(Const.rooms)).doc(_roomuser.room).set(
+        //     {
+        //         'totalCount': FieldValue.increment(-1)
+        //     },
+        //     { merge: true });
+        return { message: 'The target user has been removed from the room.' };
     } else {
         throw new HttpsError('permission-denied', 'You do not have permission to kick users from this room.');
     }

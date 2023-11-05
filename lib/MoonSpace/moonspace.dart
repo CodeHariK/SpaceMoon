@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/Helper/debug_functions.dart';
@@ -57,9 +59,9 @@ void moonspace({
         final StackTrace? stackTrace = details.stack;
         // In development mode simply print to console.
         FlutterError.dumpErrorToConsole(details);
+        lava(details.toString());
+        debugPrintStack(stackTrace: stackTrace);
         if (kDebugMode) {
-          lava(details.toString());
-          debugPrintStack(stackTrace: stackTrace);
         } else {
           // In production mode report to the application zone
           //
@@ -85,9 +87,9 @@ void moonspace({
         final StackTrace? stackTrace = details.stack;
         // In development mode simply print to console.
         FlutterError.dumpErrorToConsole(details);
+        lava(details.toString());
+        debugPrintStack(stackTrace: stackTrace);
         if (kDebugMode) {
-          lava(details.toString());
-          debugPrintStack(stackTrace: stackTrace);
         } else {
           // In production mode report to the application zone
           Zone.current.handleUncaughtError(exception, stackTrace!);
@@ -128,9 +130,9 @@ void moonspace({
       );
     },
     (error, stack) {
+      print(error);
+      print(stack);
       if (kDebugMode) {
-        print(error);
-        print(stack);
       } else {
         // In production
         // Report errors to a reporting service such as Sentry or Crashlytics
@@ -143,7 +145,7 @@ void moonspace({
   );
 }
 
-class SpaceMoonHome extends ConsumerWidget {
+class SpaceMoonHome extends HookConsumerWidget {
   const SpaceMoonHome({
     super.key,
     required this.title,
@@ -158,7 +160,11 @@ class SpaceMoonHome extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('SpaceMoon Rebuild ${MediaQuery.of(context).size} \n');
+    useOnAppLifecycleStateChange((previous, current) {
+      lava('$previous -> $current');
+    });
+
+    dino('SpaceMoon Rebuild ${MediaQuery.of(context).size} \n');
     // return AppThemeWidget(
     //   dark: false,
     //   designSize: const Size(430, 932),

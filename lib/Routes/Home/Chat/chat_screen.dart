@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:moonspace/widgets/anim_btn.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Special/error_page.dart';
+import 'package:spacemoon/Widget/Chat/send_box.dart';
+import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 
 class ChatRoute extends GoRouteData {
   final String chatId;
@@ -35,7 +38,6 @@ class ChatPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(roomStreamProvider).value;
-    final me = ref.watch(currentUserProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
 
     useEffect(() {
@@ -52,7 +54,7 @@ class ChatPage extends HookConsumerWidget {
     );
 
     if (query == null || room == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Error404Page();
     }
 
     if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
@@ -66,7 +68,6 @@ class ChatPage extends HookConsumerWidget {
           body: Center(
             child: Column(
               children: [
-                Text('Me : ${me?.uid}'),
                 Text('Me in room : $meInRoom'),
                 Text(room.toString()),
                 if (meInRoom?.role == Role.REQUEST)
@@ -107,8 +108,32 @@ class ChatPage extends HookConsumerWidget {
             title: Text('Chat$chatId'),
           ),
         ),
-        body: Column(
-          children: [],
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: FirestoreQueryBuilder(
+                  query: query,
+                  builder: (context, snapshot, child) {
+                    return ListView(
+                      cacheExtent: 1000,
+                      reverse: true,
+                      children: snapshot.docs
+                          .map(
+                            (e) => TweetBox(
+                              tweet: e.data()!,
+                              roomuser: meInRoom!,
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                ),
+              ),
+              if (meInRoom != null) SendBox(roomUser: meInRoom),
+            ],
+          ),
         ),
       ),
     );

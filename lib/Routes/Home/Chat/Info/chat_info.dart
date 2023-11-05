@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Routes/Special/error_page.dart';
 
 class ChatInfoRoute extends GoRouteData {
   final String chatId;
@@ -38,7 +39,7 @@ class ChatInfoPage extends HookConsumerWidget {
     }, [room]);
 
     if (room == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Error404Page();
     }
 
     if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
@@ -57,7 +58,7 @@ class ChatInfoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat$chatId'),
+        title: Text('Chat ${room.totalCount} $chatId'),
       ),
       body: Column(
         children: [

@@ -167,10 +167,11 @@ const Room$json = {
     {'1': 'displayName', '3': 10, '4': 1, '5': 9, '10': 'displayName'},
     {'1': 'photoURL', '3': 20, '4': 1, '5': 9, '10': 'photoURL'},
     {'1': 'description', '3': 30, '4': 1, '5': 9, '10': 'description'},
-    {'1': 'members', '3': 40, '4': 3, '5': 11, '6': '.user.RoomUser', '10': 'members'},
-    {'1': 'created', '3': 50, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'open', '3': 60, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
-    {'1': 'tweet_count', '3': 70, '4': 1, '5': 5, '10': 'tweetCount'},
+    {'1': 'created', '3': 40, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
+    {'1': 'open', '3': 50, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
+    {'1': 'activeCount', '3': 60, '4': 1, '5': 5, '10': 'activeCount'},
+    {'1': 'totalCount', '3': 70, '4': 1, '5': 5, '10': 'totalCount'},
+    {'1': 'tweetCount', '3': 80, '4': 1, '5': 5, '10': 'tweetCount'},
   ],
 };
 
@@ -178,10 +179,10 @@ const Room$json = {
 final $typed_data.Uint8List roomDescriptor = $convert.base64Decode(
     'CgRSb29tEhAKA3VpZBgBIAEoCVIDdWlkEhIKBG5pY2sYAiABKAlSBG5pY2sSIAoLZGlzcGxheU'
     '5hbWUYCiABKAlSC2Rpc3BsYXlOYW1lEhoKCHBob3RvVVJMGBQgASgJUghwaG90b1VSTBIgCgtk'
-    'ZXNjcmlwdGlvbhgeIAEoCVILZGVzY3JpcHRpb24SKAoHbWVtYmVycxgoIAMoCzIOLnVzZXIuUm'
-    '9vbVVzZXJSB21lbWJlcnMSNAoHY3JlYXRlZBgyIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1l'
-    'c3RhbXBSB2NyZWF0ZWQSIQoEb3Blbhg8IAEoDjINLnVzZXIuVmlzaWJsZVIEb3BlbhIfCgt0d2'
-    'VldF9jb3VudBhGIAEoBVIKdHdlZXRDb3VudA==');
+    'ZXNjcmlwdGlvbhgeIAEoCVILZGVzY3JpcHRpb24SNAoHY3JlYXRlZBgoIAEoCzIaLmdvb2dsZS'
+    '5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSIQoEb3BlbhgyIAEoDjINLnVzZXIuVmlzaWJs'
+    'ZVIEb3BlbhIgCgthY3RpdmVDb3VudBg8IAEoBVILYWN0aXZlQ291bnQSHgoKdG90YWxDb3VudB'
+    'hGIAEoBVIKdG90YWxDb3VudBIeCgp0d2VldENvdW50GFAgASgFUgp0d2VldENvdW50');
 
 @$core.Deprecated('Use tweetDescriptor instead')
 const Tweet$json = {
