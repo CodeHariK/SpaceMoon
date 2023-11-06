@@ -15,7 +15,7 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:stack_trace/stack_trace.dart' as stack_trace;
+// import 'package:stack_trace/stack_trace.dart' as stack_trace;
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -50,7 +50,7 @@ void moonspace({
         if (kDebugMode) {
           return ErrorPage(error: details);
         }
-        return const SimpleError();
+        return const SizedBox();
       };
 
       // This captures errors reported by the Flutter framework.
@@ -59,8 +59,8 @@ void moonspace({
         final StackTrace? stackTrace = details.stack;
         // In development mode simply print to console.
         FlutterError.dumpErrorToConsole(details);
-        lava(details.toString());
-        debugPrintStack(stackTrace: stackTrace);
+        // lava(details.toString());
+        // debugPrintStack(stackTrace: stackTrace);
         if (kDebugMode) {
         } else {
           // In production mode report to the application zone
@@ -71,37 +71,30 @@ void moonspace({
         }
       };
 
-      // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-      PlatformDispatcher.instance.onError = (error, stack) {
-        //
-        // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        //
-        lava(error);
-        debugPrintStack(stackTrace: stack);
-        return true;
-      };
+      // // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+      // PlatformDispatcher.instance.onError = (error, stack) {
+      //   //
+      //   // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      //   //
+      //   debugPrint(error.toString());
+      //   debugPrintStack(stackTrace: stack);
+      //   return true;
+      // };
 
-      // This captures errors reported by the Flutter framework.
-      FlutterError.presentError = (FlutterErrorDetails details) async {
-        final dynamic exception = details.exception;
-        final StackTrace? stackTrace = details.stack;
-        // In development mode simply print to console.
-        FlutterError.dumpErrorToConsole(details);
-        lava(details.toString());
-        debugPrintStack(stackTrace: stackTrace);
-        if (kDebugMode) {
-        } else {
-          // In production mode report to the application zone
-          Zone.current.handleUncaughtError(exception, stackTrace!);
-        }
-      };
-
-      FlutterError.demangleStackTrace = (StackTrace stack) {
-        debugPrintStack(stackTrace: stack);
-        if (stack is stack_trace.Trace) return stack.vmTrace;
-        if (stack is stack_trace.Chain) return stack.toTrace().vmTrace;
-        return stack;
-      };
+      // // This captures errors reported by the Flutter framework.
+      // FlutterError.presentError = (FlutterErrorDetails details) async {
+      //   final dynamic exception = details.exception;
+      //   final StackTrace? stackTrace = details.stack;
+      //   // In development mode simply print to console.
+      //   // FlutterError.dumpErrorToConsole(details);
+      //   // lava(details.toString());
+      //   // debugPrintStack(stackTrace: stackTrace);
+      //   if (kDebugMode) {
+      //   } else {
+      //     // In production mode report to the application zone
+      //     Zone.current.handleUncaughtError(exception, stackTrace!);
+      //   }
+      // };
 
       //-----
 
@@ -130,9 +123,9 @@ void moonspace({
       );
     },
     (error, stack) {
-      print(error);
-      print(stack);
       if (kDebugMode) {
+        // debugPrint(error.toString());
+        // debugPrintStack(stackTrace: stack);
       } else {
         // In production
         // Report errors to a reporting service such as Sentry or Crashlytics

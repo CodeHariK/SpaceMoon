@@ -12,11 +12,11 @@ import 'package:spacemoon/Widget/Common/fire_image.dart';
 
 class SendBox extends HookConsumerWidget {
   const SendBox({
+    super.key,
     required this.roomUser,
     this.mediaType = MediaType.TEXT,
     this.link,
     this.onChanged,
-    super.key,
   });
 
   final RoomUser roomUser;
@@ -35,162 +35,170 @@ class SendBox extends HookConsumerWidget {
       child: TextFormField(
         controller: tweetCon,
         minLines: 1,
-        // expands: true,
-        maxLines: mediaType == MediaType.QR ? 25 : 4,
+        maxLines: mediaType == MediaType.QR ? 60 : 4,
         onChanged: onChanged,
-
+        scrollPhysics: const ClampingScrollPhysics(),
+        buildCounter: mediaType == MediaType.QR
+            ? ((context, {required currentLength, required isFocused, maxLength}) {
+                return Text('$currentLength ${currentLength == 1200 ? "Max Length" : ""}');
+              })
+            : null,
+        maxLength: mediaType == MediaType.QR ? 1200 : null,
         decoration: InputDecoration(
-          hintText: 'Type...',
-          enabledBorder: 1.bs.out.r(30),
-          focusedBorder: 1.bs.out.r(30),
-          fillColor: theme.pri.withAlpha(20),
+          hintText: mediaType == MediaType.QR ? 'Type to generate QR Code' : 'Type...',
+          enabledBorder: 1.bs.out.r(15),
+          focusedBorder: 1.bs.out.r(15),
+          fillColor: theme.pri.withAlpha(10),
           filled: true,
           contentPadding: 16.e,
           // prefixIcon: const Icon(Icons.star),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.qr_code_rounded),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return QrDialog(
-                        roomUser: roomUser,
-                      );
-                    },
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.tag),
-                onPressed: () async {
-                  final userId = roomUser.user;
-                  final imageTask = await saveFirePickCropImage(
-                    '$userId/tweets',
-                  );
+          suffixIcon: (mediaType == MediaType.QR)
+              ? null
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.qr_code_rounded),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          useSafeArea: false,
+                          builder: (context) {
+                            return QrDialog(
+                              roomUser: roomUser,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.tag),
+                      onPressed: () async {
+                        final userId = roomUser.user;
+                        final imageTask = await saveFirePickCropImage(
+                          '$userId/tweets',
+                        );
 
-                  if (context.mounted && imageTask != null) {
-                    // final url = showDialog<String?>(
-                    //   context: context,
-                    //   builder: (context) {
-                    //     return FireUploadDialog(imageTask: imageTask);
-                    //   },
-                    // );
-                    // dino(url);
-                    LoadingScreenController? contoller = LoadingScreen().show(
-                      context: context,
-                      text: 'Uploading',
-                      action: Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              imageTask.cancel();
+                        if (context.mounted && imageTask != null) {
+                          // final url = showDialog<String?>(
+                          //   context: context,
+                          //   builder: (context) {
+                          //     return FireUploadDialog(imageTask: imageTask);
+                          //   },
+                          // );
+                          // dino(url);
+                          LoadingScreenController? contoller = LoadingScreen().show(
+                            context: context,
+                            text: 'Uploading',
+                            action: Row(
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    imageTask.cancel();
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    imageTask.pause();
+                                  },
+                                  child: const Text('Pause'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    imageTask.resume();
+                                  },
+                                  child: const Text('Resume'),
+                                ),
+                              ],
+                            ),
+                          );
+                          imageTask.stream.listen(
+                            (event) {
+                              contoller?.update(event.transferred.toString());
+                              if (!event.running) {
+                                LoadingScreen().hide();
+                              }
                             },
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              imageTask.pause();
+                          );
+                        }
+
+                        final imageUrl = await imageTask?.then(
+                          (p0) => p0.ref.getDownloadURL(),
+                        );
+
+                        if (imageUrl != null && context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return PhotoDialog(
+                                imageUrl: imageUrl,
+                                ref: ref,
+                                roomUser: roomUser,
+                                // scrollCon: scrollCon,
+                              );
                             },
-                            child: const Text('Pause'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              imageTask.resume();
-                            },
-                            child: const Text('Resume'),
-                          ),
-                        ],
-                      ),
-                    );
-                    imageTask.stream.listen(
-                      (event) {
-                        contoller?.update(event.transferred.toString());
-                        if (!event.running) {
-                          LoadingScreen().hide();
+                          );
                         }
                       },
-                    );
-                  }
+                    ),
+                    // IconButton(
+                    //   icon: const Icon(Icons.tag),
+                    //   onPressed: () async {
+                    //     final userId = me.id;
+                    //     log('Hello');
+                    //     final multiTask = await saveFireMedia(
+                    //       '$userId/tweets',
+                    //     );
+                    //     final multiUrl = await multiTask?.then(
+                    //       (p0) => p0.ref.getDownloadURL(),
+                    //     );
+                    //     // log(imageUrl.toString());
 
-                  final imageUrl = await imageTask?.then(
-                    (p0) => p0.ref.getDownloadURL(),
-                  );
+                    //     // if (imageUrl != null && context.mounted) {
+                    //     //   showDialog(
+                    //     //     context: context,
+                    //     //     builder: (context) {
+                    //     //       return PhotoDialog(
+                    //     //         imageUrl: imageUrl,
+                    //     //         ref: ref,
+                    //     //         me: me,
+                    //     //         // scrollCon: scrollCon,
+                    //     //       );
+                    //     //     },
+                    //     //   );
+                    //     // }
+                    //   },
+                    // ),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      onPressed: () {
+                        if (tweetCon.text.isNotEmpty) {
+                          //
+                          ref.read(tweetsProvider.notifier).sendTweet(
+                                tweet: Tweet(
+                                  text: tweetCon.text,
+                                  mediaType: mediaType,
+                                  link: link,
+                                ),
+                              );
 
-                  if (imageUrl != null && context.mounted) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return PhotoDialog(
-                          imageUrl: imageUrl,
-                          ref: ref,
-                          roomUser: roomUser,
-                          // scrollCon: scrollCon,
-                        );
+                          //
+                          tweetCon.clear();
+                          FocusManager.instance.primaryFocus?.unfocus();
+
+                          // scrollCon.jumpTo(
+                          //   scrollCon.position.minScrollExtent,
+                          // );
+
+                          if (mediaType != MediaType.TEXT) {
+                            context.pop();
+                          }
+                        }
                       },
-                    );
-                  }
-                },
-              ),
-              // IconButton(
-              //   icon: const Icon(Icons.tag),
-              //   onPressed: () async {
-              //     final userId = me.id;
-              //     log('Hello');
-              //     final multiTask = await saveFireMedia(
-              //       '$userId/tweets',
-              //     );
-              //     final multiUrl = await multiTask?.then(
-              //       (p0) => p0.ref.getDownloadURL(),
-              //     );
-              //     // log(imageUrl.toString());
-
-              //     // if (imageUrl != null && context.mounted) {
-              //     //   showDialog(
-              //     //     context: context,
-              //     //     builder: (context) {
-              //     //       return PhotoDialog(
-              //     //         imageUrl: imageUrl,
-              //     //         ref: ref,
-              //     //         me: me,
-              //     //         // scrollCon: scrollCon,
-              //     //       );
-              //     //     },
-              //     //   );
-              //     // }
-              //   },
-              // ),
-              IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: () {
-                  if (tweetCon.text.isNotEmpty) {
-                    //
-                    ref.read(tweetsProvider.notifier).sendTweet(
-                          tweet: Tweet(
-                            text: tweetCon.text,
-                            mediaType: mediaType,
-                            link: link,
-                          ),
-                        );
-
-                    //
-                    tweetCon.clear();
-                    FocusManager.instance.primaryFocus?.unfocus();
-
-                    // scrollCon.jumpTo(
-                    //   scrollCon.position.minScrollExtent,
-                    // );
-
-                    if (mediaType != MediaType.TEXT) {
-                      context.pop();
-                    }
-                  }
-                },
-              ),
-            ],
-          ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

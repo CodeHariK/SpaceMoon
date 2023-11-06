@@ -58,7 +58,7 @@ class ChatInfoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat ${room.totalCount} $chatId'),
+        title: Text('Chat $chatId'),
       ),
       body: Column(
         children: [

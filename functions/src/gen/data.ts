@@ -356,15 +356,13 @@ export interface Room {
   description: string;
   created: Date | undefined;
   open: Visible;
-  activeCount: number;
-  totalCount: number;
-  tweetCount: number;
 }
 
 export interface Tweet {
   uid: string;
   user: string;
   room: string;
+  path: string;
   created: Date | undefined;
   mediaType: MediaType;
   text: string;
@@ -746,18 +744,7 @@ export const RoomUser = {
 };
 
 function createBaseRoom(): Room {
-  return {
-    uid: "",
-    nick: "",
-    displayName: "",
-    photoURL: "",
-    description: "",
-    created: undefined,
-    open: 0,
-    activeCount: 0,
-    totalCount: 0,
-    tweetCount: 0,
-  };
+  return { uid: "", nick: "", displayName: "", photoURL: "", description: "", created: undefined, open: 0 };
 }
 
 export const Room = {
@@ -782,15 +769,6 @@ export const Room = {
     }
     if (message.open !== 0) {
       writer.uint32(400).int32(message.open);
-    }
-    if (message.activeCount !== 0) {
-      writer.uint32(480).int32(message.activeCount);
-    }
-    if (message.totalCount !== 0) {
-      writer.uint32(560).int32(message.totalCount);
-    }
-    if (message.tweetCount !== 0) {
-      writer.uint32(640).int32(message.tweetCount);
     }
     return writer;
   },
@@ -851,27 +829,6 @@ export const Room = {
 
           message.open = reader.int32() as any;
           continue;
-        case 60:
-          if (tag !== 480) {
-            break;
-          }
-
-          message.activeCount = reader.int32();
-          continue;
-        case 70:
-          if (tag !== 560) {
-            break;
-          }
-
-          message.totalCount = reader.int32();
-          continue;
-        case 80:
-          if (tag !== 640) {
-            break;
-          }
-
-          message.tweetCount = reader.int32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -890,9 +847,6 @@ export const Room = {
       description: isSet(object.description) ? globalThis.String(object.description) : "",
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
-      activeCount: isSet(object.activeCount) ? globalThis.Number(object.activeCount) : 0,
-      totalCount: isSet(object.totalCount) ? globalThis.Number(object.totalCount) : 0,
-      tweetCount: isSet(object.tweetCount) ? globalThis.Number(object.tweetCount) : 0,
     };
   },
 
@@ -919,15 +873,6 @@ export const Room = {
     if (message.open !== 0) {
       obj.open = visibleToJSON(message.open);
     }
-    if (message.activeCount !== 0) {
-      obj.activeCount = Math.round(message.activeCount);
-    }
-    if (message.totalCount !== 0) {
-      obj.totalCount = Math.round(message.totalCount);
-    }
-    if (message.tweetCount !== 0) {
-      obj.tweetCount = Math.round(message.tweetCount);
-    }
     return obj;
   },
 
@@ -943,15 +888,12 @@ export const Room = {
     message.description = object.description ?? "";
     message.created = object.created ?? undefined;
     message.open = object.open ?? 0;
-    message.activeCount = object.activeCount ?? 0;
-    message.totalCount = object.totalCount ?? 0;
-    message.tweetCount = object.tweetCount ?? 0;
     return message;
   },
 };
 
 function createBaseTweet(): Tweet {
-  return { uid: "", user: "", room: "", created: undefined, mediaType: 0, text: "", link: "" };
+  return { uid: "", user: "", room: "", path: "", created: undefined, mediaType: 0, text: "", link: "" };
 }
 
 export const Tweet = {
@@ -965,17 +907,20 @@ export const Tweet = {
     if (message.room !== "") {
       writer.uint32(162).string(message.room);
     }
+    if (message.path !== "") {
+      writer.uint32(242).string(message.path);
+    }
     if (message.created !== undefined) {
-      Timestamp.encode(toTimestamp(message.created), writer.uint32(242).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(322).fork()).ldelim();
     }
     if (message.mediaType !== 0) {
-      writer.uint32(320).int32(message.mediaType);
+      writer.uint32(400).int32(message.mediaType);
     }
     if (message.text !== "") {
-      writer.uint32(402).string(message.text);
+      writer.uint32(482).string(message.text);
     }
     if (message.link !== "") {
-      writer.uint32(482).string(message.link);
+      writer.uint32(562).string(message.link);
     }
     return writer;
   },
@@ -1013,24 +958,31 @@ export const Tweet = {
             break;
           }
 
-          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.path = reader.string();
           continue;
         case 40:
-          if (tag !== 320) {
+          if (tag !== 322) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 50:
+          if (tag !== 400) {
             break;
           }
 
           message.mediaType = reader.int32() as any;
           continue;
-        case 50:
-          if (tag !== 402) {
+        case 60:
+          if (tag !== 482) {
             break;
           }
 
           message.text = reader.string();
           continue;
-        case 60:
-          if (tag !== 482) {
+        case 70:
+          if (tag !== 562) {
             break;
           }
 
@@ -1050,6 +1002,7 @@ export const Tweet = {
       uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
       user: isSet(object.user) ? globalThis.String(object.user) : "",
       room: isSet(object.room) ? globalThis.String(object.room) : "",
+      path: isSet(object.path) ? globalThis.String(object.path) : "",
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       mediaType: isSet(object.mediaType) ? mediaTypeFromJSON(object.mediaType) : 0,
       text: isSet(object.text) ? globalThis.String(object.text) : "",
@@ -1067,6 +1020,9 @@ export const Tweet = {
     }
     if (message.room !== "") {
       obj.room = message.room;
+    }
+    if (message.path !== "") {
+      obj.path = message.path;
     }
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
@@ -1091,6 +1047,7 @@ export const Tweet = {
     message.uid = object.uid ?? "";
     message.user = object.user ?? "";
     message.room = object.room ?? "";
+    message.path = object.path ?? "";
     message.created = object.created ?? undefined;
     message.mediaType = object.mediaType ?? 0;
     message.text = object.text ?? "";

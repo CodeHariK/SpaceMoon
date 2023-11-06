@@ -169,9 +169,6 @@ const Room$json = {
     {'1': 'description', '3': 30, '4': 1, '5': 9, '10': 'description'},
     {'1': 'created', '3': 40, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
     {'1': 'open', '3': 50, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
-    {'1': 'activeCount', '3': 60, '4': 1, '5': 5, '10': 'activeCount'},
-    {'1': 'totalCount', '3': 70, '4': 1, '5': 5, '10': 'totalCount'},
-    {'1': 'tweetCount', '3': 80, '4': 1, '5': 5, '10': 'tweetCount'},
   ],
 };
 
@@ -181,8 +178,7 @@ final $typed_data.Uint8List roomDescriptor = $convert.base64Decode(
     '5hbWUYCiABKAlSC2Rpc3BsYXlOYW1lEhoKCHBob3RvVVJMGBQgASgJUghwaG90b1VSTBIgCgtk'
     'ZXNjcmlwdGlvbhgeIAEoCVILZGVzY3JpcHRpb24SNAoHY3JlYXRlZBgoIAEoCzIaLmdvb2dsZS'
     '5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSIQoEb3BlbhgyIAEoDjINLnVzZXIuVmlzaWJs'
-    'ZVIEb3BlbhIgCgthY3RpdmVDb3VudBg8IAEoBVILYWN0aXZlQ291bnQSHgoKdG90YWxDb3VudB'
-    'hGIAEoBVIKdG90YWxDb3VudBIeCgp0d2VldENvdW50GFAgASgFUgp0d2VldENvdW50');
+    'ZVIEb3Blbg==');
 
 @$core.Deprecated('Use tweetDescriptor instead')
 const Tweet$json = {
@@ -191,17 +187,19 @@ const Tweet$json = {
     {'1': 'uid', '3': 1, '4': 1, '5': 9, '10': 'uid'},
     {'1': 'user', '3': 10, '4': 1, '5': 9, '10': 'user'},
     {'1': 'room', '3': 20, '4': 1, '5': 9, '10': 'room'},
-    {'1': 'created', '3': 30, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'media_type', '3': 40, '4': 1, '5': 14, '6': '.user.MediaType', '10': 'mediaType'},
-    {'1': 'text', '3': 50, '4': 1, '5': 9, '10': 'text'},
-    {'1': 'link', '3': 60, '4': 1, '5': 9, '10': 'link'},
+    {'1': 'path', '3': 30, '4': 1, '5': 9, '10': 'path'},
+    {'1': 'created', '3': 40, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
+    {'1': 'media_type', '3': 50, '4': 1, '5': 14, '6': '.user.MediaType', '10': 'mediaType'},
+    {'1': 'text', '3': 60, '4': 1, '5': 9, '10': 'text'},
+    {'1': 'link', '3': 70, '4': 1, '5': 9, '10': 'link'},
   ],
 };
 
 /// Descriptor for `Tweet`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List tweetDescriptor = $convert.base64Decode(
     'CgVUd2VldBIQCgN1aWQYASABKAlSA3VpZBISCgR1c2VyGAogASgJUgR1c2VyEhIKBHJvb20YFC'
-    'ABKAlSBHJvb20SNAoHY3JlYXRlZBgeIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBS'
-    'B2NyZWF0ZWQSLgoKbWVkaWFfdHlwZRgoIAEoDjIPLnVzZXIuTWVkaWFUeXBlUgltZWRpYVR5cG'
-    'USEgoEdGV4dBgyIAEoCVIEdGV4dBISCgRsaW5rGDwgASgJUgRsaW5r');
+    'ABKAlSBHJvb20SEgoEcGF0aBgeIAEoCVIEcGF0aBI0CgdjcmVhdGVkGCggASgLMhouZ29vZ2xl'
+    'LnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBIuCgptZWRpYV90eXBlGDIgASgOMg8udXNlci'
+    '5NZWRpYVR5cGVSCW1lZGlhVHlwZRISCgR0ZXh0GDwgASgJUgR0ZXh0EhIKBGxpbmsYRiABKAlS'
+    'BGxpbms=');
 

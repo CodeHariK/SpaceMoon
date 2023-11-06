@@ -9,18 +9,23 @@ part 'tweets.g.dart';
 @riverpod
 class Tweets extends _$Tweets {
   @override
-  Stream<List<Tweet?>> build() {
-    final room = ref.watch(currentRoomProvider).value;
-
-    final stream = room?.tweetCol
-        ?.orderBy(
-          Const.created.name,
-          descending: true,
-        )
-        .snapshots()
-        .map((event) => event.docs.map((e) => e.data()).toList());
-    return stream ?? const Stream.empty();
+  void build() {
+    return;
   }
+
+  // @override
+  // Stream<List<Tweet?>> build() {
+  //   final room = ref.watch(currentRoomProvider).value;
+
+  //   final stream = room?.tweetCol
+  //       ?.orderBy(
+  //         Const.created.name,
+  //         descending: true,
+  //       )
+  //       .snapshots()
+  //       .map((event) => event.docs.map((e) => e.data()?..room = room.uid).toList());
+  //   return stream ?? const Stream.empty();
+  // }
 
   FutureOr<void> sendTweet({
     required Tweet tweet,

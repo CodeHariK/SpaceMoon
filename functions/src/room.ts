@@ -3,7 +3,6 @@ import * as admin from "firebase-admin";
 import { Const, Role, Room, RoomUser } from "./Gen/data";
 import { constName } from "./Helpers/const";
 import { checkUserExists } from "./users";
-import { FieldValue } from "firebase-admin/firestore";
 
 export const callCreateRoom = onCall(async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;

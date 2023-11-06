@@ -108,58 +108,39 @@ class ChatPage extends HookConsumerWidget {
             title: Text('Chat$chatId'),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: FirestoreQueryBuilder(
-                  query: query,
-                  builder: (context, snapshot, child) {
-                    return ListView(
-                      cacheExtent: 1000,
-                      reverse: true,
-                      children: snapshot.docs
-                          .map(
-                            (e) => TweetBox(
-                              tweet: e.data()!,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: FirestoreQueryBuilder(
+                    query: query,
+                    builder: (context, snapshot, child) {
+                      return ListView(
+                        cacheExtent: 1000,
+                        reverse: true,
+                        children: snapshot.docs.map(
+                          (doc) {
+                            final tweet = doc.data()!;
+                            tweet.room = chatId;
+                            tweet.path = doc.reference.path;
+                            return TweetBox(
+                              tweet: tweet,
                               roomuser: meInRoom!,
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
+                            );
+                          },
+                        ).toList(),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              if (meInRoom != null) SendBox(roomUser: meInRoom),
-            ],
+                if (meInRoom != null) SendBox(roomUser: meInRoom),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-// FilledButton(
-//   onPressed: () {
-//     ref.read(tweetsProvider.notifier).sendTweet(
-//           tweet: Tweet(
-//             user: 's',
-//             mediaType: MediaType.IMAGE,
-//             room: 'roo',
-//           ),
-//         );
-//   },
-//   child: const Text('Send Tweet'),
-// ),
-// FilledButton(
-//   onPressed: () {
-//     ref.read(tweetsProvider.notifier).deleteTweet(
-//           tweet: Tweet(
-//             room: 'HRLGHohzAAGcQSAgbJSa',
-//             uid: 'Aqy0Xd73n36EFyvR3APU',
-//           ),
-//         );
-//   },
-//   child: const Text('Delete Tweet'),
-// ),

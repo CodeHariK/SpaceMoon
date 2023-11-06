@@ -72,19 +72,20 @@ message Room {
     
     Visible open = 50;
 
-    int32 activeCount = 60; 
-    int32 totalCount = 70; 
-    int32 tweetCount = 80;
+    // int32 activeCount = 60; 
+    // int32 totalCount = 70; 
+    // int32 tweetCount = 80;
 }
 
 message Tweet {
     string uid = 1;
     string user = 10;
     string room = 20;
-    google.protobuf.Timestamp created = 30;
-    MediaType media_type = 40;
-    string text = 50;
-    string link = 60;
+    string path = 30;
+    google.protobuf.Timestamp created = 40;
+    MediaType media_type = 50;
+    string text = 60;
+    string link = 70;
 }
 
 enum Const {

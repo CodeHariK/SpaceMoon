@@ -33,6 +33,9 @@ class AppTheme {
     designSize: const Size(360, 780),
     dark: false,
   );
+
+  static bool get darkness => currentAppTheme.dark;
+
   static double get w => currentAppTheme.size.width;
   static double get dw => currentAppTheme.designSize.width;
   static double get mw => currentAppTheme.maxSize.width;
@@ -62,26 +65,6 @@ class AppTheme {
   static TextStyle get poppins => const TextStyle();
 
   static Color get seedColor => Colors.purple;
-  // bodyMedium: GoogleFonts.merriweather(),
-  // displaySmall: GoogleFonts.pacifico(),
-  TextTheme get textTheme => TextTheme(
-        displayLarge: poppins.copyWith(color: Colors.orange),
-        displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
-        displaySmall: poppins.copyWith(color: Colors.teal),
-        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
-        headlineMedium: poppins.copyWith(fontSize: 26.c),
-        headlineSmall: poppins.copyWith(fontSize: 22.5.c),
-        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
-        titleMedium:
-            poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
-        titleSmall: poppins.copyWith(color: seedColor, fontSize: (13, 16).c),
-        bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
-        bodyMedium: const TextStyle(),
-        bodySmall: const TextStyle(),
-        labelLarge: poppins.copyWith(color: Colors.orange),
-        labelMedium: poppins.copyWith(color: Colors.blue),
-        labelSmall: poppins.copyWith(color: Colors.teal),
-      );
 
   FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -122,6 +105,22 @@ class AppTheme {
         ),
         // labelStyle: AppTheme.tx.titleMedium,
         // contentPadding: EdgeInsets.all(12.c),
+      );
+
+  DialogTheme get dialogTheme => DialogTheme(
+        shadowColor: seedColor,
+        elevation: 2,
+        actionsPadding: const EdgeInsets.only(right: 12, bottom: 8),
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide.none,
+        ),
+      );
+
+  CardTheme get cardTheme => CardTheme(
+        color: AppTheme.darkness ? const Color.fromARGB(255, 68, 61, 71) : const Color.fromARGB(255, 250, 239, 255),
+        elevation: 0,
       );
 
   ColorScheme get colorScheme => ColorScheme.fromSeed(
@@ -173,11 +172,31 @@ class AppTheme {
         scrim: Colors.orange,
       );
 
+  TextTheme get textTheme => TextTheme(
+        displayLarge: poppins.copyWith(color: Colors.orange),
+        displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
+        displaySmall: poppins.copyWith(color: Colors.teal),
+        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
+        headlineMedium: poppins.copyWith(fontSize: 26.c),
+        headlineSmall: poppins.copyWith(fontSize: 22.5.c),
+        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
+        titleMedium:
+            poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
+        titleSmall: poppins.copyWith(color: seedColor, fontSize: (13, 16).c),
+        bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
+        bodyMedium: poppins,
+        bodySmall: poppins,
+        labelLarge: poppins.copyWith(color: Colors.orange),
+        labelMedium: poppins.copyWith(color: Colors.blue),
+        labelSmall: poppins.copyWith(color: Colors.teal),
+      );
+
   ThemeData get theme => ThemeData(
         //
         brightness: dark ? Brightness.dark : Brightness.light,
         useMaterial3: true,
         colorScheme: colorScheme,
+        textTheme: textTheme,
 
         //
         // dividerTheme: DividerThemeData(color: seedColor),
@@ -192,7 +211,10 @@ class AppTheme {
         textButtonTheme: textButton,
 
         //
-        textTheme: textTheme,
+        dialogTheme: dialogTheme,
+
+        //
+        cardTheme: cardTheme,
       );
 
   @override

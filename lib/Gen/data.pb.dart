@@ -340,9 +340,6 @@ class Room extends $pb.GeneratedMessage {
     $core.String? description,
     $0.Timestamp? created,
     Visible? open,
-    $core.int? activeCount,
-    $core.int? totalCount,
-    $core.int? tweetCount,
   }) {
     final $result = create();
     if (uid != null) {
@@ -366,15 +363,6 @@ class Room extends $pb.GeneratedMessage {
     if (open != null) {
       $result.open = open;
     }
-    if (activeCount != null) {
-      $result.activeCount = activeCount;
-    }
-    if (totalCount != null) {
-      $result.totalCount = totalCount;
-    }
-    if (tweetCount != null) {
-      $result.tweetCount = tweetCount;
-    }
     return $result;
   }
   Room._() : super();
@@ -389,9 +377,6 @@ class Room extends $pb.GeneratedMessage {
     ..aOS(30, _omitFieldNames ? '' : 'description')
     ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..e<Visible>(50, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
-    ..a<$core.int>(60, _omitFieldNames ? '' : 'activeCount', $pb.PbFieldType.O3, protoName: 'activeCount')
-    ..a<$core.int>(70, _omitFieldNames ? '' : 'totalCount', $pb.PbFieldType.O3, protoName: 'totalCount')
-    ..a<$core.int>(80, _omitFieldNames ? '' : 'tweetCount', $pb.PbFieldType.O3, protoName: 'tweetCount')
     ..hasRequiredFields = false
   ;
 
@@ -480,33 +465,6 @@ class Room extends $pb.GeneratedMessage {
   $core.bool hasOpen() => $_has(6);
   @$pb.TagNumber(50)
   void clearOpen() => clearField(50);
-
-  @$pb.TagNumber(60)
-  $core.int get activeCount => $_getIZ(7);
-  @$pb.TagNumber(60)
-  set activeCount($core.int v) { $_setSignedInt32(7, v); }
-  @$pb.TagNumber(60)
-  $core.bool hasActiveCount() => $_has(7);
-  @$pb.TagNumber(60)
-  void clearActiveCount() => clearField(60);
-
-  @$pb.TagNumber(70)
-  $core.int get totalCount => $_getIZ(8);
-  @$pb.TagNumber(70)
-  set totalCount($core.int v) { $_setSignedInt32(8, v); }
-  @$pb.TagNumber(70)
-  $core.bool hasTotalCount() => $_has(8);
-  @$pb.TagNumber(70)
-  void clearTotalCount() => clearField(70);
-
-  @$pb.TagNumber(80)
-  $core.int get tweetCount => $_getIZ(9);
-  @$pb.TagNumber(80)
-  set tweetCount($core.int v) { $_setSignedInt32(9, v); }
-  @$pb.TagNumber(80)
-  $core.bool hasTweetCount() => $_has(9);
-  @$pb.TagNumber(80)
-  void clearTweetCount() => clearField(80);
 }
 
 class Tweet extends $pb.GeneratedMessage {
@@ -514,6 +472,7 @@ class Tweet extends $pb.GeneratedMessage {
     $core.String? uid,
     $core.String? user,
     $core.String? room,
+    $core.String? path,
     $0.Timestamp? created,
     MediaType? mediaType,
     $core.String? text,
@@ -528,6 +487,9 @@ class Tweet extends $pb.GeneratedMessage {
     }
     if (room != null) {
       $result.room = room;
+    }
+    if (path != null) {
+      $result.path = path;
     }
     if (created != null) {
       $result.created = created;
@@ -551,10 +513,11 @@ class Tweet extends $pb.GeneratedMessage {
     ..aOS(1, _omitFieldNames ? '' : 'uid')
     ..aOS(10, _omitFieldNames ? '' : 'user')
     ..aOS(20, _omitFieldNames ? '' : 'room')
-    ..aOM<$0.Timestamp>(30, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..e<MediaType>(40, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
-    ..aOS(50, _omitFieldNames ? '' : 'text')
-    ..aOS(60, _omitFieldNames ? '' : 'link')
+    ..aOS(30, _omitFieldNames ? '' : 'path')
+    ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..e<MediaType>(50, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
+    ..aOS(60, _omitFieldNames ? '' : 'text')
+    ..aOS(70, _omitFieldNames ? '' : 'link')
     ..hasRequiredFields = false
   ;
 
@@ -607,42 +570,51 @@ class Tweet extends $pb.GeneratedMessage {
   void clearRoom() => clearField(20);
 
   @$pb.TagNumber(30)
-  $0.Timestamp get created => $_getN(3);
+  $core.String get path => $_getSZ(3);
   @$pb.TagNumber(30)
-  set created($0.Timestamp v) { setField(30, v); }
+  set path($core.String v) { $_setString(3, v); }
   @$pb.TagNumber(30)
-  $core.bool hasCreated() => $_has(3);
+  $core.bool hasPath() => $_has(3);
   @$pb.TagNumber(30)
-  void clearCreated() => clearField(30);
-  @$pb.TagNumber(30)
-  $0.Timestamp ensureCreated() => $_ensure(3);
+  void clearPath() => clearField(30);
 
   @$pb.TagNumber(40)
-  MediaType get mediaType => $_getN(4);
+  $0.Timestamp get created => $_getN(4);
   @$pb.TagNumber(40)
-  set mediaType(MediaType v) { setField(40, v); }
+  set created($0.Timestamp v) { setField(40, v); }
   @$pb.TagNumber(40)
-  $core.bool hasMediaType() => $_has(4);
+  $core.bool hasCreated() => $_has(4);
   @$pb.TagNumber(40)
-  void clearMediaType() => clearField(40);
+  void clearCreated() => clearField(40);
+  @$pb.TagNumber(40)
+  $0.Timestamp ensureCreated() => $_ensure(4);
 
   @$pb.TagNumber(50)
-  $core.String get text => $_getSZ(5);
+  MediaType get mediaType => $_getN(5);
   @$pb.TagNumber(50)
-  set text($core.String v) { $_setString(5, v); }
+  set mediaType(MediaType v) { setField(50, v); }
   @$pb.TagNumber(50)
-  $core.bool hasText() => $_has(5);
+  $core.bool hasMediaType() => $_has(5);
   @$pb.TagNumber(50)
-  void clearText() => clearField(50);
+  void clearMediaType() => clearField(50);
 
   @$pb.TagNumber(60)
-  $core.String get link => $_getSZ(6);
+  $core.String get text => $_getSZ(6);
   @$pb.TagNumber(60)
-  set link($core.String v) { $_setString(6, v); }
+  set text($core.String v) { $_setString(6, v); }
   @$pb.TagNumber(60)
-  $core.bool hasLink() => $_has(6);
+  $core.bool hasText() => $_has(6);
   @$pb.TagNumber(60)
-  void clearLink() => clearField(60);
+  void clearText() => clearField(60);
+
+  @$pb.TagNumber(70)
+  $core.String get link => $_getSZ(7);
+  @$pb.TagNumber(70)
+  set link($core.String v) { $_setString(7, v); }
+  @$pb.TagNumber(70)
+  $core.bool hasLink() => $_has(7);
+  @$pb.TagNumber(70)
+  void clearLink() => clearField(70);
 }
 
 
