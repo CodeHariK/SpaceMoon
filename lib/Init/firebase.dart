@@ -93,15 +93,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> emulator() async {
   if (kDebugMode) {
     try {
-      FirebaseFirestore.instance.settings = const Settings(
-        host: 'localhost:8080',
+      final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? '10.0.2.2' : 'localhost';
+
+      FirebaseFirestore.instance.settings = Settings(
+        host: '$emulatorHost:8080',
         sslEnabled: false,
         persistenceEnabled: false,
       );
-      await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-      FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-      FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
-      FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+
+      await FirebaseAuth.instance.useAuthEmulator(emulatorHost, 9099);
+      FirebaseFunctions.instance.useFunctionsEmulator(emulatorHost, 5001);
+      await FirebaseStorage.instance.useStorageEmulator(emulatorHost, 9199);
+      FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
     } catch (e, s) {
       lava(e);
       lava(s);

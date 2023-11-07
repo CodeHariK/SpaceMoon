@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Form/mario.dart';
@@ -37,12 +35,18 @@ class TweetBox extends HookConsumerWidget {
         child: Card(
           child: Row(
             children: [
-              const Expanded(
+              Expanded(
                 flex: 2,
                 child: SizedBox(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.palette_outlined),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.palette_outlined),
+                        Text('${tweet.created.toDateTime().toLocal().hour}'),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -59,35 +63,34 @@ class TweetBox extends HookConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              SelectableText(tweet.text),
-
                               // SuperLink(tweet.text),
 
                               //
-                              // if (tweet.mediaType == MediaType.VIDEO)
-                              //   const VideoPlayerBox(
-                              //     title: 'Sintel',
-                              //     videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-                              //     // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-                              //   ),
+                              if (tweet.mediaType == MediaType.VIDEO)
+                                const VideoPlayerBox(
+                                  title: 'Sintel',
+                                  videoUrl:
+                                      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+                                  // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                                ),
 
-                              // if (tweet.mediaType == MediaType.IMAGE)
-                              //   ClipRRect(
-                              //     borderRadius: 25.br,
-                              //     child: SizedBox(
-                              //       height: 300,
-                              //       width: 300,
-                              //       child: Image.network(
-                              //         tweet.link,
-                              //         fit: BoxFit.cover,
-                              //       ),
-                              //     ),
-                              //   ),
+                              if (tweet.mediaType == MediaType.IMAGE)
+                                ClipRRect(
+                                  borderRadius: 25.br,
+                                  child: SizedBox(
+                                    height: 300,
+                                    width: 300,
+                                    child: Image.network(
+                                      tweet.link,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
 
-                              // if (tweet.mediaType == MediaType.QR)
-                              //   QrBox(
-                              //     qrtext: tweet.text,
-                              //   ),
+                              if (tweet.mediaType == MediaType.QR)
+                                QrBox(
+                                  codeQrtext: tweet.text,
+                                ),
 
                               // if (isWebsite(tweet.text))
                               //   link.LinkPreview(
@@ -100,7 +103,12 @@ class TweetBox extends HookConsumerWidget {
                               //     width: 300,
                               //   ),
 
-                              Text('Time : ${tweet.created.toDateTime()}'),
+                              // if (tweet.mediaType != MediaType.QR)
+                              SelectableText(
+                                tweet.text,
+                                // minLines: 1,
+                                // maxLines: 5,
+                              ),
                             ],
                           ),
                         ),
@@ -197,7 +205,7 @@ class TweetRoute extends GoRouteData {
   }
 }
 
-class TweetDialog extends StatelessWidget {
+class TweetDialog extends ConsumerWidget {
   const TweetDialog({
     super.key,
     this.dialog = true,
@@ -210,7 +218,7 @@ class TweetDialog extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () => GoRouter.maybeOf(context)?.pop('Hello'),
       child: AlertDialog(
@@ -218,7 +226,10 @@ class TweetDialog extends StatelessWidget {
         content: child,
         actions: [
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              // ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+              context.pop();
+            },
             child: const Text('Delete'),
           ),
         ],

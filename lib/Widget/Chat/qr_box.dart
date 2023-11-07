@@ -8,6 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Helper/extensions.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -16,60 +17,64 @@ import 'package:spacemoon/Widget/Chat/send_box.dart';
 class QrBox extends StatelessWidget {
   const QrBox({
     super.key,
-    required this.qrtext,
+    required this.codeQrtext,
+    this.repaintKey,
   });
 
-  final String qrtext;
-
+  final String codeQrtext;
+  final GlobalKey? repaintKey;
   @override
   Widget build(BuildContext context) {
-    // double size = (qrtext.length > 1250 ? 2 : qrtext.length ~/ 500) * 150 + 200;
-
-    final repaintKey = GlobalKey();
+    final code =
+        BarcodeType.values.where((element) => element.name == (codeQrtext.split('||').firstOrNull ?? '')).firstOrNull ??
+            BarcodeType.QrCode;
+    final qrText = codeQrtext.split('||').lastOrNull ?? '';
+    print(code);
+    print(qrText);
 
     return Column(
       children: [
-        RepaintBoundary(
-          key: repaintKey,
-          child: BarcodeWidget(
-            barcode: Barcode.qrCode(
-              errorCorrectLevel: BarcodeQRCorrectionLevel.high,
-            ),
-            padding: const EdgeInsets.all(12),
-            // margin: EdgeInsets.all(4),
-            errorBuilder: (context, error) => Center(
-              child: Text(
-                error,
-                style: const TextStyle(color: Colors.red),
+        qrText.isEmpty
+            ? SizedBox(
+                width: context.mq.w,
+                height: context.mq.w,
+                child: Center(
+                  child: Icon(
+                    Icons.qr_code_rounded,
+                    size: context.mq.w,
+                  ),
+                ),
+              )
+            : RepaintBoundary(
+                key: repaintKey,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: BarcodeWidget(
+                      barcode: code == BarcodeType.QrCode
+                          ? Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high)
+                          : Barcode.fromType(code),
+                      padding: const EdgeInsets.all(8),
+                      // margin: EdgeInsets.all(4),
+                      errorBuilder: (context, error) => Placeholder(
+                        color: const Color.fromARGB(255, 255, 232, 235),
+                        child: Center(
+                          child: Text(
+                            error,
+                            style: const TextStyle(color: Colors.red, fontSize: 20),
+                          ),
+                        ),
+                      ),
+                      data: qrText,
+                      // width: context.mq.w,
+                      // height: context.mq.w,
+                      // backgroundColor: AppTheme.darkness ? Colors.black : Colors.white,
+                      color: AppTheme.darkness ? Colors.white : Colors.black, // AppTheme.seedColor,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            data: qrtext,
-            width: context.mq.w,
-            height: context.mq.w,
-            // decoration: BoxDecoration(
-            //   border: Border.all(
-            //     color: Colors.yellow,
-            //     width: 3,
-            //   ),
-            // ),
-            color: AppTheme.seedColor,
-          ),
-        ),
-        IconButton.filledTonal(
-          onPressed: () async {
-            RenderRepaintBoundary boundary = repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-            var image = await boundary.toImage();
-            var byteData = await image.toByteData(format: ImageByteFormat.png);
-            var pngBytes = byteData?.buffer.asUint8List();
-            print(pngBytes);
-            final file = await File('my_image.png').writeAsBytes(pngBytes as List<int>);
-            // await ref.putData(
-            //   await imageFile.readAsBytes(),
-            //   SettableMetadata(contentType: "image/jpeg"),
-            // );
-          },
-          icon: const Icon(Icons.download),
-        ),
       ],
     );
   }
@@ -86,6 +91,8 @@ class QrDialog extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final qrtext = useState('');
+    final barcodeType = useState(BarcodeType.QrCode);
+    final repaintKey = GlobalKey();
 
     return DefaultTabController(
       length: 2,
@@ -106,7 +113,7 @@ class QrDialog extends HookWidget {
                   onPressed: () {
                     ref.read(tweetsProvider.notifier).sendTweet(
                           tweet: Tweet(
-                            text: qrtext.value,
+                            text: '${barcodeType.value.name}||${qrtext.value}',
                             mediaType: MediaType.QR,
                           ),
                         );
@@ -124,22 +131,57 @@ class QrDialog extends HookWidget {
                 physics: const ClampingScrollPhysics(),
                 child: Column(
                   children: [
-                    //
-                    if (qrtext.value.isEmpty)
-                      SizedBox(
-                        width: context.mq.w,
-                        height: context.mq.w,
-                        child: Center(
-                          child: Icon(
-                            Icons.qr_code_rounded,
-                            size: context.mq.w,
+                    QrBox(
+                      codeQrtext: '${barcodeType.value.name}||${qrtext.value}',
+                    ),
+
+//
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField(
+                            value: barcodeType.value,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            alignment: Alignment.center,
+                            items: BarcodeType.values
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e.name),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                barcodeType.value = value;
+                              }
+                            },
                           ),
                         ),
-                      ),
-                    if (qrtext.value.isNotEmpty)
-                      QrBox(
-                        qrtext: qrtext.value,
-                      ),
+                        if (qrtext.value.isNotEmpty)
+                          OutlinedButton(
+                            onPressed: () async {
+                              RenderRepaintBoundary boundary =
+                                  repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+                              var image = await boundary.toImage(pixelRatio: 1 + (qrtext.value.length ~/ 120) / 10);
+                              var byteData = await image.toByteData(format: ImageByteFormat.png);
+                              var pngBytes = byteData?.buffer.asUint8List();
+                              final directory = await getDownloadsDirectory();
+
+                              await File('${directory?.path}/my_image.png').writeAsBytes(pngBytes as List<int>);
+                              // await ref.putData(
+                              //   await imageFile.readAsBytes(),
+                              //   SettableMetadata(contentType: "image/jpeg"),
+                              // );
+                            },
+                            child: const Text('Download'),
+                          ),
+                      ],
+                    ),
+
                     //
                     SendBox(
                       roomUser: roomUser,

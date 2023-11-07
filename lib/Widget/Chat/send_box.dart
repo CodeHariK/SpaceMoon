@@ -57,91 +57,95 @@ class SendBox extends HookConsumerWidget {
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.qr_code_rounded),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          useSafeArea: false,
-                          builder: (context) {
-                            return QrDialog(
-                              roomUser: roomUser,
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.tag),
-                      onPressed: () async {
-                        final userId = roomUser.user;
-                        final imageTask = await saveFirePickCropImage(
-                          '$userId/tweets',
-                        );
-
-                        if (context.mounted && imageTask != null) {
-                          // final url = showDialog<String?>(
-                          //   context: context,
-                          //   builder: (context) {
-                          //     return FireUploadDialog(imageTask: imageTask);
-                          //   },
-                          // );
-                          // dino(url);
-                          LoadingScreenController? contoller = LoadingScreen().show(
-                            context: context,
-                            text: 'Uploading',
-                            action: Row(
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    imageTask.cancel();
-                                  },
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    imageTask.pause();
-                                  },
-                                  child: const Text('Pause'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    imageTask.resume();
-                                  },
-                                  child: const Text('Resume'),
-                                ),
-                              ],
-                            ),
-                          );
-                          imageTask.stream.listen(
-                            (event) {
-                              contoller?.update(event.transferred.toString());
-                              if (!event.running) {
-                                LoadingScreen().hide();
-                              }
-                            },
-                          );
-                        }
-
-                        final imageUrl = await imageTask?.then(
-                          (p0) => p0.ref.getDownloadURL(),
-                        );
-
-                        if (imageUrl != null && context.mounted) {
+                    if (mediaType == MediaType.TEXT)
+                      IconButton(
+                        icon: const Icon(Icons.qr_code_rounded),
+                        onPressed: () {
                           showDialog(
                             context: context,
+                            useSafeArea: false,
                             builder: (context) {
-                              return PhotoDialog(
-                                imageUrl: imageUrl,
-                                ref: ref,
+                              return QrDialog(
                                 roomUser: roomUser,
-                                // scrollCon: scrollCon,
                               );
                             },
                           );
-                        }
-                      },
-                    ),
+                        },
+                      ),
+
+                    if (mediaType == MediaType.TEXT)
+                      IconButton(
+                        icon: const Icon(Icons.tag),
+                        onPressed: () async {
+                          final userId = roomUser.user;
+                          final imageTask = await saveFirePickCropImage(
+                            '$userId/tweets',
+                          );
+
+                          if (context.mounted && imageTask != null) {
+                            // final url = showDialog<String?>(
+                            //   context: context,
+                            //   builder: (context) {
+                            //     return FireUploadDialog(imageTask: imageTask);
+                            //   },
+                            // );
+                            // dino(url);
+                            LoadingScreenController? contoller = LoadingScreen().show(
+                              context: context,
+                              text: 'Uploading',
+                              action: Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      imageTask.cancel();
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      imageTask.pause();
+                                    },
+                                    child: const Text('Pause'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      imageTask.resume();
+                                    },
+                                    child: const Text('Resume'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            imageTask.stream.listen(
+                              (event) {
+                                contoller?.update(event.transferred.toString());
+                                if (!event.running) {
+                                  LoadingScreen().hide();
+                                }
+                              },
+                            );
+                          }
+
+                          final imageUrl = await imageTask?.then(
+                            (task) => task.ref.getDownloadURL(),
+                          );
+
+                          if (imageUrl != null && context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return PhotoDialog(
+                                  imageUrl: imageUrl,
+                                  ref: ref,
+                                  roomUser: roomUser,
+                                  // scrollCon: scrollCon,
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+
                     // IconButton(
                     //   icon: const Icon(Icons.tag),
                     //   onPressed: () async {
@@ -170,6 +174,7 @@ class SendBox extends HookConsumerWidget {
                     //     // }
                     //   },
                     // ),
+
                     IconButton(
                       icon: const Icon(Icons.send),
                       onPressed: () {

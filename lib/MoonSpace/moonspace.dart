@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/Helper/debug_functions.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -38,32 +37,31 @@ void moonspace({
       //
       WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       await SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-        DeviceOrientation.portraitDown,
+        // DeviceOrientation.landscapeLeft,
+        // DeviceOrientation.landscapeRight,
+        // DeviceOrientation.portraitDown,
         DeviceOrientation.portraitUp,
       ]);
 
-      ErrorWidget.builder = (FlutterErrorDetails details) {
-        if (kDebugMode) {
-          return ErrorPage(error: details);
-        }
-        return const SizedBox();
-      };
+      // ErrorWidget.builder = (FlutterErrorDetails details) {
+      //   if (kDebugMode) {
+      //     return ErrorPage(error: details);
+      //   }
+      //   return const SizedBox();
+      // };
 
       // This captures errors reported by the Flutter framework.
       FlutterError.onError = (FlutterErrorDetails details) async {
         final dynamic exception = details.exception;
         final StackTrace? stackTrace = details.stack;
-        // In development mode simply print to console.
-        FlutterError.dumpErrorToConsole(details);
-        // lava(details.toString());
-        // debugPrintStack(stackTrace: stackTrace);
+
         if (kDebugMode) {
+          FlutterError.presentError(details);
+          debugPrint(exception);
+          debugPrintStack(stackTrace: stackTrace);
         } else {
-          // In production mode report to the application zone
           //
           // FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
           //
@@ -71,30 +69,15 @@ void moonspace({
         }
       };
 
-      // // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-      // PlatformDispatcher.instance.onError = (error, stack) {
-      //   //
-      //   // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      //   //
-      //   debugPrint(error.toString());
-      //   debugPrintStack(stackTrace: stack);
-      //   return true;
-      // };
-
-      // // This captures errors reported by the Flutter framework.
-      // FlutterError.presentError = (FlutterErrorDetails details) async {
-      //   final dynamic exception = details.exception;
-      //   final StackTrace? stackTrace = details.stack;
-      //   // In development mode simply print to console.
-      //   // FlutterError.dumpErrorToConsole(details);
-      //   // lava(details.toString());
-      //   // debugPrintStack(stackTrace: stackTrace);
-      //   if (kDebugMode) {
-      //   } else {
-      //     // In production mode report to the application zone
-      //     Zone.current.handleUncaughtError(exception, stackTrace!);
-      //   }
-      // };
+      // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+      PlatformDispatcher.instance.onError = (error, stack) {
+        //
+        // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        //
+        debugPrint(error.toString());
+        debugPrintStack(stackTrace: stack);
+        return true;
+      };
 
       //-----
 
@@ -124,8 +107,8 @@ void moonspace({
     },
     (error, stack) {
       if (kDebugMode) {
-        // debugPrint(error.toString());
-        // debugPrintStack(stackTrace: stack);
+        debugPrint(error.toString());
+        debugPrintStack(stackTrace: stack);
       } else {
         // In production
         // Report errors to a reporting service such as Sentry or Crashlytics

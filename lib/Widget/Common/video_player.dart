@@ -60,6 +60,9 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
     super.initState();
     _videoPlayerController = VideoPlayerController.networkUrl(
       Uri.parse(widget.videoUrl),
+      videoPlayerOptions: VideoPlayerOptions(
+        allowBackgroundPlayback: false,
+      ),
     )
       ..addListener(() {
         // Inside the `addListener` callback of the `VideoPlayerController`
@@ -82,6 +85,8 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
         if (!widget.videoOnly) {
           // _startHideControlsTimer();
           _videoPlayerController.play();
+        } else {
+          _videoPlayerController.seekTo(Duration(seconds: _videoPlayerController.value.duration.inSeconds ~/ 2));
         }
       });
 
@@ -99,35 +104,12 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
     super.dispose();
   }
 
-  void _playPauseVideo() {
-    _hideControlsTimer?.cancel();
-    setState(() {
-      if (_videoPlayerController.value.isPlaying) {
-        _videoPlayerController.pause();
-        _animationController.forward();
-      } else {
-        _videoPlayerController.play();
-        _animationController.reverse();
-      }
-      _startHideControlsTimer();
-    });
-  }
-
   void _onSliderChanged(double value) {
     setState(() {
       _sliderValue = value;
       final Duration duration = _videoPlayerController.value.duration;
       final double newPosition = value * duration.inMilliseconds.toDouble();
       _videoPlayerController.seekTo(Duration(milliseconds: newPosition.toInt()));
-    });
-  }
-
-  void _replayVideo() {
-    setState(() {
-      _videoPlayerController.seekTo(Duration.zero);
-      _videoPlayerController.play();
-      _animationController.reverse();
-      _showReplayButton = false;
     });
   }
 
@@ -195,27 +177,28 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
           duration: const Duration(milliseconds: 300),
           transitionBuilder: (child, animation) =>
               ScaleTransition(scale: Tween<double>(begin: .9, end: 1).animate(animation), child: child),
-          child: !_videoPlayerController.value.isInitialized
-              ? Animate(
-                  effects: const [ShimmerEffect(size: 2, delay: Duration(seconds: 2), duration: Duration(seconds: 2))],
-                  onComplete: (controller) => controller.repeat(),
-                  child: Scaffold(appBar: appbar(context)),
-                )
-              : Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (!widget.videoOnly) appbar(context),
+          child: video(),
+          // child: !_videoPlayerController.value.isInitialized
+          //     ? Animate(
+          //         effects: const [ShimmerEffect(size: 2, delay: Duration(seconds: 2), duration: Duration(seconds: 2))],
+          //         onComplete: (controller) => controller.repeat(),
+          //         child: Scaffold(appBar: appbar(context)),
+          //       )
+          //     : Stack(
+          //         alignment: Alignment.center,
+          //         children: [
+          //           if (!widget.videoOnly) appbar(context),
 
-                    video(),
+          //           video(),
 
-                    //
-                    if ((!_videoPlayerController.value.isPlaying || _showControls) && !widget.videoOnly) ...[
-                      playPauseButton(),
-                      // controls(),
-                    ],
-                    if (_showReplayButton && !widget.videoOnly) replayButton(),
-                  ],
-                ),
+          //           //
+          //           if ((!_videoPlayerController.value.isPlaying || _showControls) && !widget.videoOnly) ...[
+          //             playPauseButton(),
+          //             // controls(),
+          //           ],
+          //           if (_showReplayButton && !widget.videoOnly) replayButton(),
+          //         ],
+          //       ),
         ),
       ),
     );
@@ -285,7 +268,19 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
       opacity: _showControls ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
       child: IconButton(
-        onPressed: _playPauseVideo,
+        onPressed: () {
+          _hideControlsTimer?.cancel();
+          setState(() {
+            if (_videoPlayerController.value.isPlaying) {
+              _videoPlayerController.pause();
+              _animationController.forward();
+            } else {
+              _videoPlayerController.play();
+              _animationController.reverse();
+            }
+            _startHideControlsTimer();
+          });
+        },
         icon: AnimatedIcon(
           icon: AnimatedIcons.pause_play,
           progress: _animationController,
@@ -398,7 +393,14 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
 
   IconButton replayButton() {
     return IconButton(
-      onPressed: _replayVideo,
+      onPressed: () {
+        setState(() {
+          _videoPlayerController.seekTo(Duration.zero);
+          _videoPlayerController.play();
+          _animationController.reverse();
+          _showReplayButton = false;
+        });
+      },
       icon: const Icon(
         Icons.replay,
         size: 60,

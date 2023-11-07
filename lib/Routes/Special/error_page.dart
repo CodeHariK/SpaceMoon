@@ -37,30 +37,23 @@ class ErrorPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.all(8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            if (error is FlutterErrorDetails)
-              SelectableText(
-                error.exception.toString(),
-                style: const TextStyle(color: Colors.purple),
-                textDirection: TextDirection.ltr,
-              ),
-            // SelectableText(
-            //   error.toString(),
-            //   style: const TextStyle(color: Colors.amber),
-            //   textDirection: TextDirection.ltr,
-            // ),
-            // if (error is FlutterError || error is FlutterErrorDetails)
-            //   SelectableText(
-            //     error is FlutterErrorDetails ? error.stack.toString() : error.stackTrace.toString(),
-            //     style: const TextStyle(color: Colors.red),
-            //     textDirection: TextDirection.ltr,
-            //   ),
-          ],
-        ),
+      child: SelectableText(
+        (error is FlutterErrorDetails) ? error.exception.toString() : error.toString(),
+        style: const TextStyle(color: Colors.purple),
+        textDirection: TextDirection.ltr,
       ),
+
+      // SelectableText(
+      //   error.toString(),
+      //   style: const TextStyle(color: Colors.amber),
+      //   textDirection: TextDirection.ltr,
+      // ),
+      // if (error is FlutterError || error is FlutterErrorDetails)
+      //   SelectableText(
+      //     error is FlutterErrorDetails ? error.stack.toString() : error.stackTrace.toString(),
+      //     style: const TextStyle(color: Colors.red),
+      //     textDirection: TextDirection.ltr,
+      //   ),
     );
   }
 }

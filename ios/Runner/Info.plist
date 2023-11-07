@@ -46,6 +46,19 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
+	<!-- Permission options for the `photos` group -->
+    <key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to select and send photos in chat messages. Your photos will only be used for this purpose and will not be shared with others.</string>
+
+    <!-- Permission options for the `camera` group -->
+    <key>NSCameraUsageDescription</key>
+	<string>We need access to your device's camera to take photos, videos and scan barcodes, which you can share in chat messages.</string>
+
+    <!-- Permission options for the `microphone` group -->
+    <key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your device's microphone to record and send voice messages in chat, make voice calls, and enable voice-based interactions within the app.</string>
+
+
 	<!-- Google Sign-in Section -->
 	<key>CFBundleURLTypes</key>
 	<array>

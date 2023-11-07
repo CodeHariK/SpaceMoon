@@ -25,6 +25,7 @@ class PhotoDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      shape: 0.bRound.r(25),
       child: ClipRRect(
         borderRadius: 25.br,
         child: Scaffold(
@@ -33,30 +34,29 @@ class PhotoDialog extends StatelessWidget {
           // ),
           body: Stack(
             children: [
-              ClipRRect(
-                child: Container(
-                  constraints: BoxConstraints.expand(
-                    height: MediaQuery.of(context).size.height,
-                  ),
-                  child: PhotoView(
-                    imageProvider: NetworkImage(imageUrl),
-                    // tightMode: true,
-                    // maxScale: PhotoViewComputedScale.covered * 2.0,
-                    // minScale: PhotoViewComputedScale.contained * 0.8,
-                    initialScale: PhotoViewComputedScale.covered,
-                  ),
+              Container(
+                constraints: BoxConstraints.expand(
+                  height: MediaQuery.of(context).size.height,
+                ),
+                child: PhotoView(
+                  imageProvider: NetworkImage(imageUrl),
+                  // tightMode: true,
+                  // maxScale: PhotoViewComputedScale.covered * 2.0,
+                  // minScale: PhotoViewComputedScale.contained * 0.8,
+                  initialScale: PhotoViewComputedScale.covered,
                 ),
               ),
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black,
+                      Color.fromARGB(120, 255, 255, 255),
+                      Color.fromARGB(255, 255, 255, 255),
                     ],
-                    stops: [0.7, 1],
+                    stops: [0.7, 0.8, 1],
                   ),
                 ),
               ),
