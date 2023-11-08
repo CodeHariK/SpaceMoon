@@ -126,7 +126,6 @@ class ChatPage extends HookConsumerWidget {
                             tweet.path = doc.reference.path;
                             return TweetBox(
                               tweet: tweet,
-                              roomuser: meInRoom!,
                             );
                           },
                         ).toList(),

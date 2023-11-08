@@ -13,6 +13,7 @@ import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Home/settings.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
+import 'package:spacemoon/Gen/data.pb.dart';
 
 part 'home.g.dart';
 

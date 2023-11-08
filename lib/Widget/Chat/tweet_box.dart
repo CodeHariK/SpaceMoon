@@ -1,140 +1,173 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:moonspace/Form/mario.dart';
 import 'package:moonspace/Helper/extensions.dart';
 import 'package:moonspace/darkknight/extensions/regex.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
-
-// part 'tweet_box.g.dart';
 
 class TweetBox extends HookConsumerWidget {
   const TweetBox({
     super.key,
     required this.tweet,
-    required this.roomuser,
+    this.isHero = false,
   });
 
   final Tweet tweet;
-  final RoomUser roomuser;
+  final bool isHero;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final ValueNotifier<PreviewData?> linkPreviewData = useState(null);
 
-    final child = Hero(
-      tag: tweet.path,
-      child: Padding(
+    final roomuser = ref.watch(currentRoomUserProvider).value;
+
+    final box = Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(120) : AppTheme.seedColor.withAlpha(20),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            bottomLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
         padding: const EdgeInsets.all(8.0),
-        child: Card(
-          child: Row(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.palette_outlined),
-                        Text('${tweet.created.toDateTime().toLocal().hour}'),
-                      ],
+              // SuperLink(tweet.text),
+
+              //
+              if (tweet.mediaType == MediaType.VIDEO)
+                VideoPlayerBox(
+                  tweet: tweet
+                    ..text = 'Sintel'
+                    ..link = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+                  // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+                ),
+
+              if (tweet.mediaType == MediaType.IMAGE)
+                ClipRRect(
+                  borderRadius: 25.br,
+                  child: SizedBox(
+                    height: 300,
+                    width: 300,
+                    child: Image.network(
+                      tweet.link,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 8,
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // SuperLink(tweet.text),
 
-                              //
-                              if (tweet.mediaType == MediaType.VIDEO)
-                                const VideoPlayerBox(
-                                  title: 'Sintel',
-                                  videoUrl:
-                                      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-                                  // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-                                ),
+              if (tweet.mediaType == MediaType.QR)
+                QrBox(
+                  codeQrtext: tweet.text,
+                ),
 
-                              if (tweet.mediaType == MediaType.IMAGE)
-                                ClipRRect(
-                                  borderRadius: 25.br,
-                                  child: SizedBox(
-                                    height: 300,
-                                    width: 300,
-                                    child: Image.network(
-                                      tweet.link,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
+              // if (isWebsite(tweet.text))
+              //   link.LinkPreview(
+              //     enableAnimation: true,
+              //     onPreviewDataFetched: (p0) {
+              //       linkPreviewData.value = p0;
+              //     },
+              //     previewData: linkPreviewData.value,
+              //     text: tweet.text,
+              //     width: 300,
+              //   ),
 
-                              if (tweet.mediaType == MediaType.QR)
-                                QrBox(
-                                  codeQrtext: tweet.text,
-                                ),
-
-                              // if (isWebsite(tweet.text))
-                              //   link.LinkPreview(
-                              //     enableAnimation: true,
-                              //     onPreviewDataFetched: (p0) {
-                              //       linkPreviewData.value = p0;
-                              //     },
-                              //     previewData: linkPreviewData.value,
-                              //     text: tweet.text,
-                              //     width: 300,
-                              //   ),
-
-                              // if (tweet.mediaType != MediaType.QR)
-                              SelectableText(
-                                tweet.text,
-                                // minLines: 1,
-                                // maxLines: 5,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+              // if (tweet.mediaType != MediaType.QR)
+              if (isHero)
+                TextFormField(
+                  initialValue: tweet.text,
+                  minLines: 1,
+                  maxLines: 10,
+                  decoration: const InputDecoration(
+                    hintText: 'Type...',
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                   ),
                 ),
-              ),
-            ]..sort(
-                (_, __) => roomuser.user == tweet.user ? -1 : 1,
-              ),
+              if (!isHero)
+                Text(
+                  tweet.text,
+                  // minLines: 1,
+                  // maxLines: 5,
+                ),
+            ],
           ),
         ),
       ),
     );
 
-    return GestureDetector(
-      onTap: () {
-        TweetRoute(
-          chatId: tweet.room,
-          tweetPath: tweet.path,
-          $extra: child,
-        ).navPush(context);
-      },
-      child: child,
+    final child = Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: SizedBox(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.palette_outlined),
+                      Text('${tweet.created.toDateTime().toLocal().hour}'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 8,
+            child: (tweet.mediaType == MediaType.VIDEO)
+                ? box
+                : Row(
+                    children: [
+                      const Spacer(),
+                      Hero(
+                        tag: tweet.path,
+                        child: box,
+                      ),
+                    ],
+                  ),
+          ),
+        ]..sort(
+            (_, __) => roomuser?.user == tweet.user ? -1 : 1,
+          ),
+      ),
     );
+
+    return isHero
+        ? (tweet.mediaType == MediaType.VIDEO)
+            ? box
+            : Hero(
+                tag: tweet.path,
+                child: box,
+              )
+        : GestureDetector(
+            onTap: (tweet.mediaType == MediaType.VIDEO)
+                ? null
+                : () {
+                    TweetRoute(
+                      chatId: tweet.room,
+                      tweetPath: tweet.path,
+                      $extra: tweet,
+                    ).navPush(context);
+                  },
+            child: child,
+          );
   }
 }
 
@@ -159,7 +192,7 @@ class DialogPage extends Page<String> {
 class TweetRoute extends GoRouteData {
   final String chatId;
   final String tweetPath;
-  final Widget $extra;
+  final Tweet $extra;
 
   const TweetRoute({
     required this.chatId,
@@ -176,7 +209,7 @@ class TweetRoute extends GoRouteData {
       child: TweetDialog(
         chatId: chatId,
         dialog: true,
-        child: $extra,
+        tweet: $extra,
       ),
     );
   }
@@ -197,7 +230,7 @@ class TweetRoute extends GoRouteData {
           return TweetDialog(
             chatId: chatId,
             dialog: true,
-            child: $extra,
+            tweet: $extra,
           );
         },
       ),
@@ -210,12 +243,12 @@ class TweetDialog extends ConsumerWidget {
     super.key,
     this.dialog = true,
     required this.chatId,
-    required this.child,
+    required this.tweet,
   });
 
   final String chatId;
   final bool dialog;
-  final Widget child;
+  final Tweet tweet;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -223,7 +256,7 @@ class TweetDialog extends ConsumerWidget {
       onTap: () => GoRouter.maybeOf(context)?.pop('Hello'),
       child: AlertDialog(
         contentPadding: const EdgeInsets.all(4),
-        content: child,
+        content: TweetBox(tweet: tweet, isHero: true),
         actions: [
           OutlinedButton(
             onPressed: () {

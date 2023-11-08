@@ -41,6 +41,14 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              HomeRoute().go(context);
+            },
+            icon: const Icon(Icons.home),
+          ),
+        ],
       ),
       body: ProfileScreen(
         avatar: Container(

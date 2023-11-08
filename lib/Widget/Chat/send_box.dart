@@ -57,124 +57,151 @@ class SendBox extends HookConsumerWidget {
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (mediaType == MediaType.TEXT)
-                      IconButton(
-                        icon: const Icon(Icons.qr_code_rounded),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            useSafeArea: false,
-                            builder: (context) {
-                              return QrDialog(
-                                roomUser: roomUser,
-                              );
-                            },
-                          );
-                        },
+                    ContextMenu(
+                      child: Icon(Icons.brightness_auto_outlined),
+                      optionChild: Container(
+                        width: 200,
+                        height: 200,
+                        color: Colors.red,
+                        child: Column(
+                          children: [
+                            MAction(
+                              text: 'text',
+                              fn: () {},
+                            ),
+                          ].toButtonBar(context),
+                        ),
                       ),
+                    ),
 
-                    if (mediaType == MediaType.TEXT)
-                      IconButton(
-                        icon: const Icon(Icons.tag),
-                        onPressed: () async {
-                          final userId = roomUser.user;
-                          final imageTask = await saveFirePickCropImage(
-                            '$userId/tweets',
-                          );
+                    //
+                    IconButton(
+                      onPressed: () {
+                        ContextOverlay().show(
+                          context: context,
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            color: Colors.red,
+                            child: Column(
+                              children: [
+                                MAction(
+                                  text: 'text',
+                                  fn: () {},
+                                ),
+                              ].toButtonBar(context),
+                            ),
+                          ),
+                        );
+                        // Navigator.push(
+                        //   context,
+                        //   PageRouteBuilder(
+                        //     pageBuilder: (context, animation, secondaryAnimation) {
+                        //       return Scaffold(
+                        //         appBar: AppBar(),
+                        //         body: Wrap(
+                        //           children: [
+                        //             OutlinedButton(
+                        //               onPressed: () {},
+                        //               child: const Text('Send qr'),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       );
+                        //     },
+                        //   ),
+                        // );
+                      },
+                      icon: const Icon(Icons.add_circle_outline_sharp),
+                    ),
 
-                          if (context.mounted && imageTask != null) {
-                            // final url = showDialog<String?>(
-                            //   context: context,
-                            //   builder: (context) {
-                            //     return FireUploadDialog(imageTask: imageTask);
-                            //   },
-                            // );
-                            // dino(url);
-                            LoadingScreenController? contoller = LoadingScreen().show(
-                              context: context,
-                              text: 'Uploading',
-                              action: Row(
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      imageTask.cancel();
-                                    },
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      imageTask.pause();
-                                    },
-                                    child: const Text('Pause'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      imageTask.resume();
-                                    },
-                                    child: const Text('Resume'),
-                                  ),
-                                ],
-                              ),
-                            );
-                            imageTask.stream.listen(
-                              (event) {
-                                contoller?.update(event.transferred.toString());
-                                if (!event.running) {
-                                  LoadingScreen().hide();
-                                }
-                              },
-                            );
-                          }
+                    // if (mediaType == MediaType.TEXT)
+                    //   IconButton(
+                    //     icon: const Icon(Icons.qr_code_rounded),
+                    //     onPressed: () {
+                    //       showDialog(
+                    //         context: context,
+                    //         useSafeArea: false,
+                    //         builder: (context) {
+                    //           return QrDialog(
+                    //             roomUser: roomUser,
+                    //           );
+                    //         },
+                    //       );
+                    //     },
+                    //   ),
+                    // if (mediaType == MediaType.TEXT)
+                    //   IconButton(
+                    //     icon: const Icon(Icons.tag),
+                    //     onPressed: () async {
+                    //       final userId = roomUser.user;
+                    //       final imageTask = await saveFirePickCropImage(
+                    //         '$userId/tweets',
+                    //       );
 
-                          final imageUrl = await imageTask?.then(
-                            (task) => task.ref.getDownloadURL(),
-                          );
+                    //       if (context.mounted && imageTask != null) {
+                    //         // final url = showDialog<String?>(
+                    //         //   context: context,
+                    //         //   builder: (context) {
+                    //         //     return FireUploadDialog(imageTask: imageTask);
+                    //         //   },
+                    //         // );
+                    //         // dino(url);
+                    //         LoadingScreenController? contoller = LoadingScreen().show(
+                    //           context: context,
+                    //           text: 'Uploading',
+                    //           action: Row(
+                    //             children: [
+                    //               TextButton(
+                    //                 onPressed: () {
+                    //                   imageTask.cancel();
+                    //                 },
+                    //                 child: const Text('Cancel'),
+                    //               ),
+                    //               TextButton(
+                    //                 onPressed: () {
+                    //                   imageTask.pause();
+                    //                 },
+                    //                 child: const Text('Pause'),
+                    //               ),
+                    //               TextButton(
+                    //                 onPressed: () {
+                    //                   imageTask.resume();
+                    //                 },
+                    //                 child: const Text('Resume'),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         );
+                    //         imageTask.stream.listen(
+                    //           (event) {
+                    //             contoller?.update(event.transferred.toString());
+                    //             if (!event.running) {
+                    //               LoadingScreen().hide();
+                    //             }
+                    //           },
+                    //         );
+                    //       }
 
-                          if (imageUrl != null && context.mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return PhotoDialog(
-                                  imageUrl: imageUrl,
-                                  ref: ref,
-                                  roomUser: roomUser,
-                                  // scrollCon: scrollCon,
-                                );
-                              },
-                            );
-                          }
-                        },
-                      ),
+                    //       final imageUrl = await imageTask?.then(
+                    //         (task) => task.ref.getDownloadURL(),
+                    //       );
 
-                    // IconButton(
-                    //   icon: const Icon(Icons.tag),
-                    //   onPressed: () async {
-                    //     final userId = me.id;
-                    //     log('Hello');
-                    //     final multiTask = await saveFireMedia(
-                    //       '$userId/tweets',
-                    //     );
-                    //     final multiUrl = await multiTask?.then(
-                    //       (p0) => p0.ref.getDownloadURL(),
-                    //     );
-                    //     // log(imageUrl.toString());
-
-                    //     // if (imageUrl != null && context.mounted) {
-                    //     //   showDialog(
-                    //     //     context: context,
-                    //     //     builder: (context) {
-                    //     //       return PhotoDialog(
-                    //     //         imageUrl: imageUrl,
-                    //     //         ref: ref,
-                    //     //         me: me,
-                    //     //         // scrollCon: scrollCon,
-                    //     //       );
-                    //     //     },
-                    //     //   );
-                    //     // }
-                    //   },
-                    // ),
-
+                    //       if (imageUrl != null && context.mounted) {
+                    //         showDialog(
+                    //           context: context,
+                    //           builder: (context) {
+                    //             return PhotoDialog(
+                    //               imageUrl: imageUrl,
+                    //               ref: ref,
+                    //               roomUser: roomUser,
+                    //               // scrollCon: scrollCon,
+                    //             );
+                    //           },
+                    //         );
+                    //       }
+                    //     },
+                    //   ),
                     IconButton(
                       icon: const Icon(Icons.send),
                       onPressed: () {

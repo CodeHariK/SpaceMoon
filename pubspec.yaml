@@ -67,6 +67,8 @@ dependencies:
 
   shared_preferences: ^2.2.2
 
+  path_provider: ^2.1.1
+
   flutter_adaptive_scaffold: ^0.1.7+1
 
   flutter_animate: ^4.2.0+1
@@ -80,7 +82,6 @@ dependencies:
 
   moonspace:
     path: ../MoonSpace
-  path_provider: ^2.1.1
 
 dev_dependencies:
   flutter_test:

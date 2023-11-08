@@ -59,7 +59,7 @@ void moonspace({
 
         if (kDebugMode) {
           FlutterError.presentError(details);
-          debugPrint(exception);
+          debugPrint(exception.toString());
           debugPrintStack(stackTrace: stackTrace);
         } else {
           //

@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -46,6 +45,7 @@ final ValueNotifier<RoutingConfig> myConfig = ValueNotifier<RoutingConfig>(const
 
 final GoRouter router = GoRouter.routingConfig(
   navigatorKey: AppRouter.rootNavigatorKey,
+  refreshListenable: GoRouterRefresh(),
   routingConfig: myConfig,
   initialLocation: AppRouter.onboard,
   errorPageBuilder: (context, state) => const MaterialPage(child: Error404Page()),
@@ -55,8 +55,8 @@ final GoRouter router = GoRouter.routingConfig(
 RoutingConfig _generateRoutingConfig({required bool authenticated, required bool onboarded}) {
   return RoutingConfig(
     redirectLimit: 5,
-    redirect: (context, state) {
-      log('Redirect ${state.uri} auth:$authenticated onboard:$onboarded}');
+    redirect: (context, state) async {
+      debugPrint('Redirect ${state.uri} auth:$authenticated onboard:$onboarded}');
 
       if (!onboarded) return AppRouter.onboard;
       if (state.match(AppRouter.onboard)) return authenticated ? AppRouter.home : AppRouter.login;
@@ -76,17 +76,36 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
   );
 }
 
+class GoRouterRefresh extends Listenable {
+  static VoidCallback? _listener;
+  @override
+  void addListener(VoidCallback listener) {
+    _listener = listener;
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    _listener = null;
+  }
+
+  static void notify() {
+    _listener?.call();
+  }
+}
+
 @Riverpod(keepAlive: true)
 Future routerRedirector(RouterRedirectorRef ref) async {
   final onboarded = ref.watch(onboardedProvider);
   final user = ref.watch(currentUserProvider).value;
 
-  log(user?.uid ?? '-');
+  debugPrint(user?.uid ?? '-');
 
   myConfig.value = _generateRoutingConfig(
     authenticated: user != null, // && ((user.emailVerified == true) && verifyEmail),
     onboarded: onboarded,
   );
+
+  GoRouterRefresh.notify();
 
   return false;
 }
