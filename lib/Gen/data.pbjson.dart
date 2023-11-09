@@ -41,13 +41,14 @@ const MediaType$json = {
     {'1': 'PDF', '2': 20},
     {'1': 'FILE', '2': 30},
     {'1': 'QR', '2': 35},
+    {'1': 'POST', '2': 50},
   ],
 };
 
 /// Descriptor for `MediaType`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List mediaTypeDescriptor = $convert.base64Decode(
     'CglNZWRpYVR5cGUSCAoEVEVYVBAAEgkKBUlNQUdFEAUSCQoFVklERU8QChIJCgVBVURJTxAPEg'
-    'cKA1BERhAUEggKBEZJTEUQHhIGCgJRUhAj');
+    'cKA1BERhAUEggKBEZJTEUQHhIGCgJRUhAjEggKBFBPU1QQMg==');
 
 @$core.Deprecated('Use activeDescriptor instead')
 const Active$json = {

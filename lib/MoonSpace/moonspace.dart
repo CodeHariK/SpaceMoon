@@ -190,7 +190,7 @@ class SpaceMoonHome extends HookConsumerWidget {
           return CupertinoTheme(
             data: CupertinoThemeData(
               brightness: brightness,
-              primaryColor: CupertinoColors.systemPurple,
+              primaryColor: AppTheme.seedColor,
             ),
             child: child ?? const SimpleError(),
           );

@@ -20,6 +20,7 @@ enum MediaType {
     PDF = 20;
     FILE = 30;
     QR = 35;
+    POST = 50;
 }
 
 enum Active {

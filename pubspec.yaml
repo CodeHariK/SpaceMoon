@@ -80,6 +80,8 @@ dependencies:
 
   barcode_widget: ^2.0.4
 
+  any_link_preview: ^3.0.1
+
   moonspace:
     path: ../MoonSpace
 

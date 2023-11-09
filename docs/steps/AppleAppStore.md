@@ -1,7 +1,6 @@
+# Creating Apple Certificates, Identifiers & Profiles
 
 [![Release an iOS app with Flutter in 7 steps](https://i.ytimg.com/vi_webp/iE2bpP56QKc/sddefault.webp)](https://www.youtube.com/watch?v=iE2bpP56QKc)
-
-# Creating Apple Certificates, Identifiers & Profiles
 
   Create Apple Developer account and enroll @ [https://developer.apple.com/programs/enroll/](https://developer.apple.com/programs/enroll/)
 

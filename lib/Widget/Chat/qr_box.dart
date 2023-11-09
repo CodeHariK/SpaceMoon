@@ -29,8 +29,6 @@ class QrBox extends StatelessWidget {
         BarcodeType.values.where((element) => element.name == (codeQrtext.split('||').firstOrNull ?? '')).firstOrNull ??
             BarcodeType.QrCode;
     final qrText = codeQrtext.split('||').lastOrNull ?? '';
-    print(code);
-    print(qrText);
 
     return Column(
       children: [
@@ -132,6 +130,7 @@ class QrDialog extends HookWidget {
                 child: Column(
                   children: [
                     QrBox(
+                      repaintKey: repaintKey,
                       codeQrtext: '${barcodeType.value.name}||${qrtext.value}',
                     ),
 

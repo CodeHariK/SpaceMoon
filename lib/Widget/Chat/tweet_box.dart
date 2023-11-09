@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Helper/extensions.dart';
 import 'package:moonspace/darkknight/extensions/regex.dart';
+import 'package:any_link_preview/any_link_preview.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -22,25 +23,38 @@ class TweetBox extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final ValueNotifier<PreviewData?> linkPreviewData = useState(null);
-
     final roomuser = ref.watch(currentRoomUserProvider).value;
 
     final box = Material(
       color: Colors.transparent,
       child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(120) : AppTheme.seedColor.withAlpha(20),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
+        decoration: isHero
+            ? null
+            : BoxDecoration(
+                boxShadow: const [
+                  BoxShadow(
+                    offset: Offset(0, 1),
+                    blurRadius: 4,
+                    spreadRadius: 4,
+                    color: Color.fromARGB(77, 51, 52, 52),
+                  ),
+                ],
+                color: AppTheme.darkness ? const Color.fromARGB(221, 83, 83, 83) : Colors.white,
+                // border: Border.all(
+                //   color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(200) : AppTheme.seedColor.withAlpha(100),
+                // ),
+                // color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(80) : Color.fromARGB(66, 238, 238, 238),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  bottomLeft: Radius.circular(((roomuser?.user == tweet.user) ? 20 : 0)),
+                  bottomRight: Radius.circular((roomuser?.user == tweet.user) ? 0 : 20),
+                  topRight: const Radius.circular(20),
+                ),
+              ),
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               // SuperLink(tweet.text),
@@ -68,22 +82,26 @@ class TweetBox extends HookConsumerWidget {
                 ),
 
               if (tweet.mediaType == MediaType.QR)
-                QrBox(
-                  codeQrtext: tweet.text,
+                SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: QrBox(
+                    codeQrtext: tweet.text,
+                  ),
                 ),
 
-              // if (isWebsite(tweet.text))
-              //   link.LinkPreview(
-              //     enableAnimation: true,
-              //     onPreviewDataFetched: (p0) {
-              //       linkPreviewData.value = p0;
-              //     },
-              //     previewData: linkPreviewData.value,
-              //     text: tweet.text,
-              //     width: 300,
-              //   ),
+              if (isWebsite(tweet.text))
+                SizedBox(
+                  width: 300,
+                  child: AnyLinkPreview(
+                    link: tweet.text,
+                    displayDirection: UIDirection.uiDirectionVertical,
+                    showMultimedia: true,
+                    bodyMaxLines: 5,
+                    bodyTextOverflow: TextOverflow.ellipsis,
+                  ),
+                ),
 
-              // if (tweet.mediaType != MediaType.QR)
               if (isHero)
                 TextFormField(
                   initialValue: tweet.text,
@@ -96,11 +114,13 @@ class TweetBox extends HookConsumerWidget {
                     focusedBorder: InputBorder.none,
                   ),
                 ),
-              if (!isHero)
+              if (tweet.mediaType == MediaType.TEXT && !isHero)
                 Text(
                   tweet.text,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                   // minLines: 1,
-                  // maxLines: 5,
+                  maxLines: 5,
                 ),
             ],
           ),
@@ -111,38 +131,28 @@ class TweetBox extends HookConsumerWidget {
     final child = Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(
-            flex: 2,
-            child: SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.palette_outlined),
-                      Text('${tweet.created.toDateTime().toLocal().hour}'),
-                    ],
-                  ),
-                ),
-              ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.palette_outlined),
+                Text('${tweet.created.toDateTime().toLocal().hour}'),
+              ],
             ),
           ),
-          Expanded(
-            flex: 8,
-            child: (tweet.mediaType == MediaType.VIDEO)
-                ? box
-                : Row(
-                    children: [
-                      const Spacer(),
-                      Hero(
-                        tag: tweet.path,
-                        child: box,
-                      ),
-                    ],
+          (tweet.mediaType == MediaType.VIDEO)
+              ? box
+              : LimitedBox(
+                  maxWidth: AppTheme.w * .7,
+                  child: Hero(
+                    tag: tweet.path,
+                    child: box,
                   ),
-          ),
+                ),
         ]..sort(
             (_, __) => roomuser?.user == tweet.user ? -1 : 1,
           ),

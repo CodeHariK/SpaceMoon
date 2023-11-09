@@ -63,6 +63,7 @@ export enum MediaType {
   PDF = 20,
   FILE = 30,
   QR = 35,
+  POST = 50,
   UNRECOGNIZED = -1,
 }
 
@@ -89,6 +90,9 @@ export function mediaTypeFromJSON(object: any): MediaType {
     case 35:
     case "QR":
       return MediaType.QR;
+    case 50:
+    case "POST":
+      return MediaType.POST;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -112,6 +116,8 @@ export function mediaTypeToJSON(object: MediaType): string {
       return "FILE";
     case MediaType.QR:
       return "QR";
+    case MediaType.POST:
+      return "POST";
     case MediaType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

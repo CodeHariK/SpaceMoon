@@ -64,7 +64,7 @@ class AppTheme {
   // static TextStyle get poppins => GoogleFonts.poppins();
   static TextStyle get poppins => const TextStyle();
 
-  static Color get seedColor => Colors.purple;
+  static Color get seedColor => Colors.red;
 
   FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -99,10 +99,14 @@ class AppTheme {
       );
 
   InputDecorationTheme get inputDecoration => InputDecorationTheme(
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: seedColor),
         ),
+
         // labelStyle: AppTheme.tx.titleMedium,
         // contentPadding: EdgeInsets.all(12.c),
       );
@@ -130,7 +134,7 @@ class AppTheme {
         //
         // primary: Colors.yellow, //filledbutton
         // onPrimary: Colors.yellow, //filledbuttonfont
-        // primaryContainer: Colors.purple,//filledButton, floatingActionButton
+        // primaryContainer: Colors.purple, //filledButton, floatingActionButton
         // onPrimaryContainer: Colors.white, //text font,
         inversePrimary: Colors.cyan,
 
