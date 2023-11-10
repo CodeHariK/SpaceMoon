@@ -14,8 +14,7 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
-// import 'package:stack_trace/stack_trace.dart' as stack_trace;
-import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void moonspace({
@@ -172,7 +171,6 @@ class SpaceMoonHome extends HookConsumerWidget {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-          FirebaseUILocalizations.delegate,
           ...?localizationsDelegates,
         ],
         theme: AppTheme.currentAppTheme.theme,
