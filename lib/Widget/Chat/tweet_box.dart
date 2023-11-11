@@ -8,6 +8,7 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Static/theme.dart';
+import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
 
@@ -31,15 +32,17 @@ class TweetBox extends HookConsumerWidget {
         decoration: isHero
             ? null
             : BoxDecoration(
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
-                    offset: Offset(0, 1),
-                    blurRadius: 4,
-                    spreadRadius: 4,
-                    color: Color.fromARGB(77, 51, 52, 52),
+                    offset: const Offset(0, 1),
+                    blurRadius: 2,
+                    spreadRadius: 1,
+                    color: AppTheme.darkness
+                        ? const Color.fromARGB(255, 67, 67, 67)
+                        : const Color.fromARGB(77, 50, 158, 158),
                   ),
                 ],
-                color: AppTheme.darkness ? const Color.fromARGB(221, 83, 83, 83) : Colors.white,
+                color: AppTheme.darkness ? const Color.fromARGB(221, 36, 36, 36) : Colors.white,
                 // border: Border.all(
                 //   color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(200) : AppTheme.seedColor.withAlpha(100),
                 // ),
@@ -87,6 +90,33 @@ class TweetBox extends HookConsumerWidget {
                   width: 300,
                   child: QrBox(
                     codeQrtext: tweet.text,
+                  ),
+                ),
+
+              if (tweet.mediaType == MediaType.POST)
+                InkWell(
+                  onTap: () {
+                    context.cPush(
+                      Hero(
+                        tag: 'Appflowy',
+                        child: AppFlowy(
+                          jsonData: exampleJson,
+                        ),
+                      ),
+                    );
+                  },
+                  child: IgnorePointer(
+                    child: SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: Hero(
+                        tag: 'Appflowy',
+                        child: AppFlowy(
+                          jsonData: exampleJson,
+                          showAppbar: false,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
 
@@ -144,7 +174,7 @@ class TweetBox extends HookConsumerWidget {
               ],
             ),
           ),
-          (tweet.mediaType == MediaType.VIDEO)
+          (tweet.mediaType == MediaType.VIDEO || tweet.mediaType == MediaType.POST)
               ? box
               : LimitedBox(
                   maxWidth: AppTheme.w * .7,

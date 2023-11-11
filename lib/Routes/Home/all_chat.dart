@@ -7,7 +7,6 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
 
 class AllChatPage extends ConsumerWidget {
   const AllChatPage({super.key});
@@ -15,8 +14,6 @@ class AllChatPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allRooms = ref.watch(getAllMyRoomsProvider);
-
-    return AppFlowy(jsonData: exampleJson);
 
     return Scaffold(
       body: Center(
