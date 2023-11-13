@@ -95,7 +95,14 @@ Future<UploadTask?> saveFirePickCropImage(
 
   if (imageBytes == null) return null;
 
-  return FirebaseStorage.instance.ref().child(location).child(image.name).putData(imageBytes);
+  return FirebaseStorage.instance.ref().child(location).child(image.name).putData(
+        imageBytes,
+        SettableMetadata(
+          customMetadata: {
+            'owner': 'owner',
+          },
+        ),
+      );
   // .then(
   //   (snapshot) async {
   //     return await snapshot.ref.getDownloadURL();

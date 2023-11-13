@@ -6,6 +6,7 @@ import 'package:moonspace/Form/mario.dart';
 import 'package:moonspace/Helper/extensions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
 import 'package:spacemoon/Widget/Chat/photo_box.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
@@ -59,7 +60,7 @@ class SendBox extends HookConsumerWidget {
                           padding: const EdgeInsets.all(8),
                           crossAxisCount: 3,
                           children: [
-                            IconButton.filled(
+                            IconButton.filledTonal(
                               icon: const Icon(Icons.qr_code_rounded),
                               onPressed: () {
                                 context.rSlidePush(
@@ -70,7 +71,7 @@ class SendBox extends HookConsumerWidget {
                                 ContextMenu.hide();
                               },
                             ),
-                            IconButton.filled(
+                            IconButton.filledTonal(
                               icon: const Icon(Icons.camera_alt_outlined),
                               onPressed: () async {
                                 ContextMenu.hide();
@@ -85,6 +86,7 @@ class SendBox extends HookConsumerWidget {
                                     context: context,
                                     text: 'Uploading',
                                     action: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                       children: [
                                         TextButton(
                                           onPressed: () {
@@ -135,6 +137,26 @@ class SendBox extends HookConsumerWidget {
                                   );
                                 }
                               },
+                            ),
+                            IconButton.filledTonal(
+                              onPressed: () async {
+                                ContextMenu.hide();
+                                final res = await context.cPush<String>(
+                                  Hero(
+                                    tag: 'Appflowy',
+                                    child: AppFlowy(
+                                      jsonData: exampleJson,
+                                    ),
+                                  ),
+                                );
+                                ref.read(tweetsProvider.notifier).sendTweet(
+                                      tweet: Tweet(
+                                        text: res,
+                                        mediaType: MediaType.POST,
+                                      ),
+                                    );
+                              },
+                              icon: const Icon(Icons.post_add),
                             ),
                           ],
                         ),

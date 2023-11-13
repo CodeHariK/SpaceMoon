@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:spacemoon/Static/theme.dart';
 
@@ -70,56 +71,62 @@ class _AppFlowyState extends State<AppFlowy> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      extendBodyBehindAppBar: PlatformExtension.isDesktopOrWeb,
-      appBar: !widget.showAppbar
-          ? null
-          : AppBar(
-              title: const Text('Editor'),
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.upload_file_outlined),
-                ),
-                IconButton(
-                  onPressed: () {
-                    showImageMenu(
-                      Overlay.of(context),
-                      editorState,
-                      SelectionMenu(
-                        context: context,
-                        editorState: editorState,
-                        selectionMenuItems: [],
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.image),
-                ),
-                IconButton(
-                  onPressed: () {
-                    undoCommand.execute(editorState);
-                  },
-                  icon: const Icon(Icons.undo),
-                ),
-              ],
-            ),
-      body: SafeArea(
-        child: PlatformExtension.isDesktopOrWeb
-            ? DesktopEditor(
-                editorState: editorState,
-                editorScrollController: editorScrollController,
-                header: widget.header,
-                footer: widget.footer,
-                editable: widget.editable,
-              )
-            : MobileEditor(
-                editorState: editorState,
-                editorScrollController: editorScrollController,
-                header: widget.header,
-                footer: widget.footer,
-                editable: widget.editable,
+    return WillPopScope(
+      onWillPop: () async {
+        context.pop(toFile);
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        extendBodyBehindAppBar: PlatformExtension.isDesktopOrWeb,
+        appBar: !widget.showAppbar
+            ? null
+            : AppBar(
+                title: const Text('Editor'),
+                actions: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.upload_file_outlined),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showImageMenu(
+                        Overlay.of(context),
+                        editorState,
+                        SelectionMenu(
+                          context: context,
+                          editorState: editorState,
+                          selectionMenuItems: [],
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.image),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      undoCommand.execute(editorState);
+                    },
+                    icon: const Icon(Icons.undo),
+                  ),
+                ],
               ),
+        body: SafeArea(
+          child: PlatformExtension.isDesktopOrWeb
+              ? DesktopEditor(
+                  editorState: editorState,
+                  editorScrollController: editorScrollController,
+                  header: widget.header,
+                  footer: widget.footer,
+                  editable: widget.editable,
+                )
+              : MobileEditor(
+                  editorState: editorState,
+                  editorScrollController: editorScrollController,
+                  header: widget.header,
+                  footer: widget.footer,
+                  editable: widget.editable,
+                ),
+        ),
       ),
     );
   }

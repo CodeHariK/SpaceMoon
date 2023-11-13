@@ -182,7 +182,7 @@ class AppTheme {
         displaySmall: poppins.copyWith(color: Colors.teal),
         headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
         headlineMedium: poppins.copyWith(fontSize: 26.c),
-        headlineSmall: poppins.copyWith(fontSize: 22.5.c),
+        headlineSmall: GoogleFonts.merriweather(fontSize: 22.5.c),
         titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
         titleMedium:
             poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label

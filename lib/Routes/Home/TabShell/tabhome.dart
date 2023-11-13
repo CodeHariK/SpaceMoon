@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/Form/async_text_field.dart';
+import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/darkknight/extensions/color.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
 
@@ -119,51 +121,8 @@ class _Tab1PageState extends State<Tab1Page> {
           ),
         ),
       ),
-      body: res == null
-          ? null
-          : GridView.count(
-              physics: const ClampingScrollPhysics(),
-              crossAxisCount: 2,
-              children: res?.results?.map(
-                    (e) {
-                      final url = e.urls?.small ?? e.urls?.regular ?? e.urls?.full;
-                      if (url != null) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder: (context, animation, secondaryAnimation) {
-                                  return Scaffold(
-                                    appBar: AppBar(),
-                                    body: Hero(
-                                      tag: e.id!,
-                                      child: InteractiveViewer(
-                                        child: CustomCacheImage(
-                                          imageUrl: url,
-                                          // blurHash: e.blurHash,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Hero(
-                            tag: e.id!,
-                            child: CustomCacheImage(
-                              imageUrl: url,
-                              blurHash: e.blurHash,
-                            ),
-                          ),
-                        );
-                      } else {
-                        return const Placeholder();
-                      }
-                    },
-                  ).toList() ??
-                  [],
-            ),
+      // body: res == null ? null : Grid(res),
+      body: res == null ? null : UnslashRow(res),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           page += 1;
@@ -173,6 +132,174 @@ class _Tab1PageState extends State<Tab1Page> {
           Icons.fence,
         ),
       ),
+    );
+  }
+}
+
+class UnslashRow extends StatelessWidget {
+  const UnslashRow(
+    this.res, {
+    super.key,
+  });
+
+  final Unsplash? res;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 400,
+          child: PageView.builder(
+            controller: PageController(viewportFraction: .8),
+            itemCount: res?.results?.length,
+            itemBuilder: (context, index) {
+              final e = res?.results?[index];
+              final url = e?.urls?.small ?? e?.urls?.regular ?? e?.urls?.full;
+
+              if (e == null || url == null) return const Placeholder();
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    // BoxShadow(
+                    //   color: Colors.grey.shade600,
+                    //   spreadRadius: 1,
+                    //   blurRadius: 8,
+                    //   offset: const Offset(0, 4),
+                    // ),
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 1,
+                      spreadRadius: 1,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                margin: const EdgeInsets.all(8.0),
+                child: Hero(
+                  tag: e.id!,
+                  child: CustomCacheImage(
+                    imageUrl: url,
+                    radius: 12,
+                    blurHash: e.blurHash,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            res?.results?.length ?? 0,
+            (index) => Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey,
+              ),
+              width: 12,
+              height: 12,
+              margin: const EdgeInsets.all(8),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Grid extends StatelessWidget {
+  const Grid(
+    this.res, {
+    super.key,
+  });
+
+  final Unsplash? res;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      physics: const BouncingScrollPhysics(),
+      crossAxisCount: 2,
+      children: res?.results?.map(
+            (e) {
+              final url = e.urls?.small ?? e.urls?.regular ?? e.urls?.full;
+              if (url != null) {
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        fullscreenDialog: true,
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          return Scaffold(
+                            appBar: AppBar(),
+                            body: Stack(
+                              children: [
+                                Hero(
+                                  tag: e.id!,
+                                  child: InteractiveViewer(
+                                    child: CustomCacheImage(
+                                      imageUrl: url,
+                                      // blurHash: e.blurHash,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      stops: const [0, 1],
+                                      colors: [
+                                        (HexColor(e.color ?? '#ffffff')),
+                                        (HexColor(e.color ?? '#ffffff')).withAlpha(0),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (e.description != null || (e.description?.isNotEmpty ?? false))
+                                        Text(
+                                          e.description.toString().toUpperCase(),
+                                          style: context.hs.c(HexColor(e.color ?? '#ffffff').mop),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      if (e.altDescription != null || (e.altDescription?.isNotEmpty ?? false))
+                                        Text(
+                                          e.altDescription.toString().toUpperCase(),
+                                          style: context.tm.c(HexColor(e.color ?? '#ffffff').mop),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: Hero(
+                    tag: e.id!,
+                    child: CustomCacheImage(
+                      imageUrl: url,
+                      blurHash: e.blurHash,
+                    ),
+                  ),
+                );
+              } else {
+                return const Placeholder();
+              }
+            },
+          ).toList() ??
+          [],
     );
   }
 }
@@ -349,7 +476,8 @@ class Breadcrumb {
 
   factory Breadcrumb.fromJson(String str) => Breadcrumb.fromMap(json.decode(str));
 
-  String toJson() => json.encode(toMap());
+  @override
+  String toString() => json.encode(toMap());
 
   factory Breadcrumb.fromMap(Map<String, dynamic> json) => Breadcrumb(
         slug: json["slug"],
