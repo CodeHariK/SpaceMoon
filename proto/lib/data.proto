@@ -111,3 +111,12 @@ enum Const {
     tweet_count = 900;
     description = 1000;
 }
+
+// message ImageMeta {
+//     string path = 1;
+//     string url = 2;
+//     string localUrl = 5;
+//     string blurhash = 10;
+//     int32 width = 20;
+//     int32 height = 30;
+// }

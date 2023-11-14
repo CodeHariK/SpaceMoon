@@ -1,16 +1,22 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:blurhash_dart/blurhash_dart.dart';
 import 'package:collection/collection.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image/image.dart' as img;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:moonspace/Helper/debug_functions.dart';
+import 'package:moonspace/darkknight/extensions/string.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:moonspace/Helper/extensions.dart';
+import 'package:path/path.dart' as path;
+import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 
 Future<List<UploadTask>?> saveFireMedia(
   String location,
@@ -37,12 +43,24 @@ Future<List<UploadTask>?> saveFireMedia(
   return null;
 }
 
-Future<UploadTask?> saveFirePickCropImage(
+class SaveFire {
+  // final ImageMeta meta;
+  final UploadTask task;
+
+  SaveFire({
+    // required this.meta,
+    required this.task,
+  });
+}
+
+Future<SaveFire?> saveFirePickCropImage(
   String location, {
   bool crop = false,
   bool camera = false,
+  String? multipath,
+  String? singlepath,
 }) async {
-  print('save Fire Pick');
+  debugPrint('save Fire Pick');
 
   final status = await Permission.photos.status;
 
@@ -94,20 +112,46 @@ Future<UploadTask?> saveFirePickCropImage(
   log('Save Fire Image : ${imageBytes?.length}');
 
   if (imageBytes == null) return null;
+  final upImg = img.decodeImage(imageBytes);
+  if (upImg == null) return null;
 
-  return FirebaseStorage.instance.ref().child(location).child(image.name).putData(
-        imageBytes,
-        SettableMetadata(
-          customMetadata: {
-            'owner': 'owner',
-          },
-        ),
-      );
-  // .then(
-  //   (snapshot) async {
-  //     return await snapshot.ref.getDownloadURL();
-  //   },
+  final blurHash = BlurHash.encode(upImg, numCompX: 4, numCompY: 3);
+
+  print(base64Encode(utf8.encode(blurHash.hash)));
+
+  // final imageMeta = ImageMeta(
+  //   path: location,
+  //   localUrl: image.path,
+  //   // blurhash: base64Encode(utf8.encode(blurHash.hash)),
+  //   width: upImg.width,
+  //   height: upImg.height,
   // );
+  return SaveFire(
+    // meta: imageMeta,
+    task: FirebaseStorage.instance
+        .ref()
+        .child(location)
+        .child('${randomString(12)}${path.extension(image.path)}')
+        .putData(
+          imageBytes,
+          SettableMetadata(
+            contentType: lookupMimeType(image.path),
+            // customMetadata: (imageMeta.toMap()?.map((key, value) => MapEntry(key, value.toString())))
+            //   ?..addAll({
+
+            customMetadata: ({
+              'path': location,
+              'localUrl': image.path,
+              // blurhash: base64Encode(utf8.encode(blurHash.hash)),
+              'width': upImg.width.toString(),
+              'height': upImg.height.toString(),
+              if (multipath != null) 'multi': multipath,
+              if (singlepath != null) 'single': singlepath,
+              // 'path': image.path,
+            }),
+          ),
+        ),
+  );
 }
 
 class UploadStatus {
@@ -138,103 +182,6 @@ extension SuperUploadTask on UploadTask {
                 running: event.state == TaskState.running || event.state == TaskState.paused,
               );
       },
-    );
-  }
-}
-
-class AuthImage extends StatelessWidget {
-  const AuthImage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseAuth.instance.userChanges(),
-      builder: (context, snapshot) {
-        return GestureDetector(
-          onTap: () async {
-            final uploadTask = await saveFirePickCropImage(
-              '${FirebaseAuth.instance.currentUser?.uid}/avatars',
-            );
-            final hello = await uploadTask?.then((p0) => p0.ref.getDownloadURL());
-
-            if (hello != null) {
-              FirebaseAuth.instance.currentUser?.updatePhotoURL(hello);
-            }
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Image.network(
-                FirebaseAuth.instance.currentUser?.photoURL ?? '',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.face_2_outlined, size: 120);
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class FireImage extends StatefulWidget {
-  const FireImage({super.key, required this.location, required this.imageUrl, required this.function});
-
-  final String location;
-  final String imageUrl;
-  final Function(String url) function;
-
-  @override
-  State<FireImage> createState() => _FireImageState();
-}
-
-class _FireImageState extends State<FireImage> {
-  late final String imageUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    imageUrl = widget.imageUrl;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        log('Hello');
-        final hello = await saveFirePickCropImage(widget.location);
-        final url = await hello?.then((p0) => p0.ref.getDownloadURL());
-
-        if (url != null) {
-          setState(() {
-            imageUrl = url;
-            widget.function(url);
-          });
-        }
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: 16.br,
-            border: Border.all(width: 1),
-          ),
-          margin: const EdgeInsets.all(16.0),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.face_2_outlined, size: 120);
-              },
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -77,9 +77,12 @@ class SendBox extends HookConsumerWidget {
                                 ContextMenu.hide();
 
                                 final userId = roomUser.user;
-                                final imageTask = await saveFirePickCropImage(
+                                final saveFire = await saveFirePickCropImage(
                                   '$userId/tweets',
                                 );
+
+                                // final imageMeta = saveFire?.meta;
+                                final imageTask = saveFire?.task;
 
                                 if (context.mounted && imageTask != null) {
                                   LoadingScreenController? contoller = LoadingScreen().show(

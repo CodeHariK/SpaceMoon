@@ -7,6 +7,7 @@ import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as users from "./users";
 import * as chat from "./room";
 import * as tweet from "./tweet";
+import * as image from "./image";
 
 admin.initializeApp({ projectId: "spacemoonfire" });
 
@@ -24,6 +25,8 @@ export const acceptAccessToRoom = chat.acceptAccessToRoom;
 
 export const sendTweet = tweet.sendTweet;
 export const deleteTweet = tweet.deleteTweet;
+
+export const generateThumbnail = image.generateThumbnail;
 
 export const helloWorld = onRequest((request, response) => {
     response.set("Access-Control-Allow-Origin", "*");

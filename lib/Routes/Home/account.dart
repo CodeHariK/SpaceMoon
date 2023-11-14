@@ -2,15 +2,19 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User, PhoneAuthProvider, EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
+import 'package:spacemoon/Widget/Common/fire_image.dart';
 
 void callUserUpdate(User user) {
   FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
@@ -26,17 +30,19 @@ class AccountRoute extends GoRouteData {
   }
 }
 
-class AccountPage extends StatefulWidget {
+class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _AccountPageState extends ConsumerState<AccountPage> {
   @override
   Widget build(BuildContext context) {
     final platform = Theme.of(context).platform;
+
+    final user = ref.watch(currentUserDataProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,30 +57,43 @@ class _AccountPageState extends State<AccountPage> {
         ],
       ),
       body: ProfileScreen(
-        avatar: Container(
-          padding: const EdgeInsets.all(8),
-          child: InkWell(
-            splashFactory: InkSplash.splashFactory,
-            onTap: () async {
-              callUserUpdate(
-                User(
-                  photoURL: 'https://avatars.githubusercontent.com/u/144345505?v=4',
+        avatar: user.when(
+          data: (data) {
+            return AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: InkWell(
+                  splashFactory: InkSplash.splashFactory,
+                  onTap: () async {
+                    final photo = await saveFirePickCropImage(
+                      '${data?.uid}/profile',
+                      crop: true,
+                    );
+                    photo?.task.then((url) async {
+                      final u = await url.ref.getDownloadURL();
+                      callUserUpdate(User(photoURL: u));
+                    });
+                  },
+                  child: data?.photoURL == null || data?.photoURL.isEmpty == true
+                      ? Icon(
+                          CupertinoIcons.person_crop_circle_badge_plus,
+                          size: 120.c,
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(250),
+                          child: CustomCacheImage(
+                            imageUrl: thumbImage(data!.photoURL),
+                          ),
+                        ),
                 ),
-              );
-            },
-            child: FirebaseAuth.instance.currentUser?.photoURL == null
-                ? Icon(
-                    CupertinoIcons.person_crop_circle_badge_plus,
-                    size: 120.c,
-                  )
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(250),
-                    child: Image.network(
-                      FirebaseAuth.instance.currentUser!.photoURL!,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-          ),
+              ),
+            );
+          },
+          error: (error, stackTrace) {
+            return const SizedBox.shrink();
+          },
+          loading: () => const SizedBox.shrink(),
         ),
         actions: [
           SignedOutAction((context) {
@@ -110,4 +129,10 @@ class _AccountPageState extends State<AccountPage> {
       ),
     );
   }
+}
+
+String thumbImage(String u) {
+  final uri = Uri.parse(u);
+  final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
+  return u.replaceFirst(base, 'thumb_$base');
 }

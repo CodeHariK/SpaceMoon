@@ -39,9 +39,7 @@ export const callUserUpdate = onCall((request): void => {
     };
 
     if (uid != null) {
-
         admin.auth().updateUser(uid, User.toJSON(User.create(obj))!)
-
         admin.firestore().collection(constName(Const.users)).doc(uid).set(userToMap(obj), { merge: true });
     }
 });
