@@ -43,6 +43,7 @@ class MediaType extends $pb.ProtobufEnum {
   static const MediaType FILE = MediaType._(30, _omitEnumNames ? '' : 'FILE');
   static const MediaType QR = MediaType._(35, _omitEnumNames ? '' : 'QR');
   static const MediaType POST = MediaType._(50, _omitEnumNames ? '' : 'POST');
+  static const MediaType GALLERY = MediaType._(60, _omitEnumNames ? '' : 'GALLERY');
 
   static const $core.List<MediaType> values = <MediaType> [
     TEXT,
@@ -53,6 +54,7 @@ class MediaType extends $pb.ProtobufEnum {
     FILE,
     QR,
     POST,
+    GALLERY,
   ];
 
   static final $core.Map<$core.int, MediaType> _byValue = $pb.ProtobufEnum.initByValue(values);

@@ -16,15 +16,18 @@ export const sendTweet = onCall(async (request) => {
     let u = await getRoomUserById(userId, tweet.room)
 
     if (u && u.role >= Role.USER) {
-        await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
+        const sentTweet = await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
             Tweet.toJSON(Tweet.create({
                 user: userId,
                 created: new Date(),
                 text: tweet.text,
                 mediaType: tweet.mediaType,
                 link: tweet.link,
+                imageMetadata: tweet.imageMetadata,
             })) as Map<string, any>
         );
+
+        return sentTweet.path
 
         // admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
         //     {

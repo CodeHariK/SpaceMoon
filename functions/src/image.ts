@@ -7,6 +7,7 @@ import * as admin from "firebase-admin";
 // library for image resizing
 import sharp = require("sharp");
 import { FieldValue } from "firebase-admin/firestore";
+import { ImageMetadata, Tweet } from "./Gen/data";
 
 /**
  * When an image is uploaded in the Storage bucket,
@@ -28,38 +29,39 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         return logger.log("Already a Thumbnail.");
     }
 
-    const meta = {
-        width: event.data.metadata?.width,
-        height: event.data.metadata?.height,
-        blurhash: event.data.metadata?.blurhash,
-        path: event.data.mediaLink
-    }
+    const user = filePath.split('/')[0];
+    const docpath = filePath.replace(user + '/', '').replace('/' + fileName, '')
+
+    console.log(event.data.metadata?.localUrl)
+    let imageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).imageMetadata.find((imgData, __, ___) => {
+        return imgData.localUrl == event.data.metadata?.localUrl;
+    })
+
+    if (!imageData) return;
+
+    let i = ImageMetadata.fromPartial(imageData)
+    i.url = event.data.mediaLink!
+    i.localUrl = '';
 
     if (event.data.metadata?.single) {
-        const e = event.data.metadata?.single?.split('/')
-        const path = e?.pop()
-        const collection = e?.join('/')
 
-        admin.firestore().doc(
-            collection).set({ [path!]: meta },
-                {
-                    merge: true
-                }
-            );
+        admin.firestore().doc(docpath).set({
+            [event.data.metadata?.single]: event.data.mediaLink
+        },
+            {
+                merge: true
+            }
+        );
     }
     if (event.data.metadata?.multi) {
-        const e = event.data.metadata?.multi?.split('/')
-        const path = e?.pop()
-        const collection = e?.join('/')
-
-        admin.firestore().doc(
-            collection).set({
-                [path!]: FieldValue.arrayUnion(...[meta])
-            },
-                {
-                    merge: true
-                }
-            );
+        await admin.firestore().doc(docpath).set({
+            [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(imageData)]),
+        }, { merge: true }
+        );
+        await admin.firestore().doc(docpath).set({
+            [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(i)])
+        }, { merge: true }
+        );
     }
 
     // Download file into memory from bucket.
@@ -73,7 +75,7 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         width: 200,
         height: 200,
         withoutEnlargement: true,
-    }).toBuffer();
+    }).withMetadata().toBuffer();
     logger.log("Thumbnail created");
 
     // Prefix 'thumb_' to file name.

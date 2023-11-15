@@ -21,6 +21,7 @@ enum MediaType {
     FILE = 30;
     QR = 35;
     POST = 50;
+    GALLERY = 60;
 }
 
 enum Active {
@@ -87,6 +88,7 @@ message Tweet {
     MediaType media_type = 50;
     string text = 60;
     string link = 70;
+    repeated ImageMetadata imageMetadata = 80;
 }
 
 enum Const {
@@ -112,11 +114,11 @@ enum Const {
     description = 1000;
 }
 
-// message ImageMeta {
-//     string path = 1;
-//     string url = 2;
-//     string localUrl = 5;
-//     string blurhash = 10;
-//     int32 width = 20;
-//     int32 height = 30;
-// }
+message ImageMetadata {
+    string url = 1;
+    string localUrl = 10;
+    string blurhash = 20;
+    int32 width = 30;
+    int32 height = 40;
+    string caption = 50;
+}

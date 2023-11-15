@@ -64,6 +64,7 @@ export enum MediaType {
   FILE = 30,
   QR = 35,
   POST = 50,
+  GALLERY = 60,
   UNRECOGNIZED = -1,
 }
 
@@ -93,6 +94,9 @@ export function mediaTypeFromJSON(object: any): MediaType {
     case 50:
     case "POST":
       return MediaType.POST;
+    case 60:
+    case "GALLERY":
+      return MediaType.GALLERY;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -118,6 +122,8 @@ export function mediaTypeToJSON(object: MediaType): string {
       return "QR";
     case MediaType.POST:
       return "POST";
+    case MediaType.GALLERY:
+      return "GALLERY";
     case MediaType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -373,6 +379,16 @@ export interface Tweet {
   mediaType: MediaType;
   text: string;
   link: string;
+  imageMetadata: ImageMetadata[];
+}
+
+export interface ImageMetadata {
+  url: string;
+  localUrl: string;
+  blurhash: string;
+  width: number;
+  height: number;
+  caption: string;
 }
 
 function createBaseUser(): User {
@@ -899,7 +915,17 @@ export const Room = {
 };
 
 function createBaseTweet(): Tweet {
-  return { uid: "", user: "", room: "", path: "", created: undefined, mediaType: 0, text: "", link: "" };
+  return {
+    uid: "",
+    user: "",
+    room: "",
+    path: "",
+    created: undefined,
+    mediaType: 0,
+    text: "",
+    link: "",
+    imageMetadata: [],
+  };
 }
 
 export const Tweet = {
@@ -927,6 +953,9 @@ export const Tweet = {
     }
     if (message.link !== "") {
       writer.uint32(562).string(message.link);
+    }
+    for (const v of message.imageMetadata) {
+      ImageMetadata.encode(v!, writer.uint32(642).fork()).ldelim();
     }
     return writer;
   },
@@ -994,6 +1023,13 @@ export const Tweet = {
 
           message.link = reader.string();
           continue;
+        case 80:
+          if (tag !== 642) {
+            break;
+          }
+
+          message.imageMetadata.push(ImageMetadata.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1013,6 +1049,9 @@ export const Tweet = {
       mediaType: isSet(object.mediaType) ? mediaTypeFromJSON(object.mediaType) : 0,
       text: isSet(object.text) ? globalThis.String(object.text) : "",
       link: isSet(object.link) ? globalThis.String(object.link) : "",
+      imageMetadata: globalThis.Array.isArray(object?.imageMetadata)
+        ? object.imageMetadata.map((e: any) => ImageMetadata.fromJSON(e))
+        : [],
     };
   },
 
@@ -1042,6 +1081,9 @@ export const Tweet = {
     if (message.link !== "") {
       obj.link = message.link;
     }
+    if (message.imageMetadata?.length) {
+      obj.imageMetadata = message.imageMetadata.map((e) => ImageMetadata.toJSON(e));
+    }
     return obj;
   },
 
@@ -1058,6 +1100,141 @@ export const Tweet = {
     message.mediaType = object.mediaType ?? 0;
     message.text = object.text ?? "";
     message.link = object.link ?? "";
+    message.imageMetadata = object.imageMetadata?.map((e) => ImageMetadata.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseImageMetadata(): ImageMetadata {
+  return { url: "", localUrl: "", blurhash: "", width: 0, height: 0, caption: "" };
+}
+
+export const ImageMetadata = {
+  encode(message: ImageMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    if (message.localUrl !== "") {
+      writer.uint32(82).string(message.localUrl);
+    }
+    if (message.blurhash !== "") {
+      writer.uint32(162).string(message.blurhash);
+    }
+    if (message.width !== 0) {
+      writer.uint32(240).int32(message.width);
+    }
+    if (message.height !== 0) {
+      writer.uint32(320).int32(message.height);
+    }
+    if (message.caption !== "") {
+      writer.uint32(402).string(message.caption);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ImageMetadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseImageMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.localUrl = reader.string();
+          continue;
+        case 20:
+          if (tag !== 162) {
+            break;
+          }
+
+          message.blurhash = reader.string();
+          continue;
+        case 30:
+          if (tag !== 240) {
+            break;
+          }
+
+          message.width = reader.int32();
+          continue;
+        case 40:
+          if (tag !== 320) {
+            break;
+          }
+
+          message.height = reader.int32();
+          continue;
+        case 50:
+          if (tag !== 402) {
+            break;
+          }
+
+          message.caption = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ImageMetadata {
+    return {
+      url: isSet(object.url) ? globalThis.String(object.url) : "",
+      localUrl: isSet(object.localUrl) ? globalThis.String(object.localUrl) : "",
+      blurhash: isSet(object.blurhash) ? globalThis.String(object.blurhash) : "",
+      width: isSet(object.width) ? globalThis.Number(object.width) : 0,
+      height: isSet(object.height) ? globalThis.Number(object.height) : 0,
+      caption: isSet(object.caption) ? globalThis.String(object.caption) : "",
+    };
+  },
+
+  toJSON(message: ImageMetadata): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.localUrl !== "") {
+      obj.localUrl = message.localUrl;
+    }
+    if (message.blurhash !== "") {
+      obj.blurhash = message.blurhash;
+    }
+    if (message.width !== 0) {
+      obj.width = Math.round(message.width);
+    }
+    if (message.height !== 0) {
+      obj.height = Math.round(message.height);
+    }
+    if (message.caption !== "") {
+      obj.caption = message.caption;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ImageMetadata>, I>>(base?: I): ImageMetadata {
+    return ImageMetadata.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ImageMetadata>, I>>(object: I): ImageMetadata {
+    const message = createBaseImageMetadata();
+    message.url = object.url ?? "";
+    message.localUrl = object.localUrl ?? "";
+    message.blurhash = object.blurhash ?? "";
+    message.width = object.width ?? 0;
+    message.height = object.height ?? 0;
+    message.caption = object.caption ?? "";
     return message;
   },
 };

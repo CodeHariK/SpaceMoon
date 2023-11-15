@@ -42,13 +42,14 @@ const MediaType$json = {
     {'1': 'FILE', '2': 30},
     {'1': 'QR', '2': 35},
     {'1': 'POST', '2': 50},
+    {'1': 'GALLERY', '2': 60},
   ],
 };
 
 /// Descriptor for `MediaType`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List mediaTypeDescriptor = $convert.base64Decode(
     'CglNZWRpYVR5cGUSCAoEVEVYVBAAEgkKBUlNQUdFEAUSCQoFVklERU8QChIJCgVBVURJTxAPEg'
-    'cKA1BERhAUEggKBEZJTEUQHhIGCgJRUhAjEggKBFBPU1QQMg==');
+    'cKA1BERhAUEggKBEZJTEUQHhIGCgJRUhAjEggKBFBPU1QQMhILCgdHQUxMRVJZEDw=');
 
 @$core.Deprecated('Use activeDescriptor instead')
 const Active$json = {
@@ -193,6 +194,7 @@ const Tweet$json = {
     {'1': 'media_type', '3': 50, '4': 1, '5': 14, '6': '.user.MediaType', '10': 'mediaType'},
     {'1': 'text', '3': 60, '4': 1, '5': 9, '10': 'text'},
     {'1': 'link', '3': 70, '4': 1, '5': 9, '10': 'link'},
+    {'1': 'imageMetadata', '3': 80, '4': 3, '5': 11, '6': '.user.ImageMetadata', '10': 'imageMetadata'},
   ],
 };
 
@@ -202,5 +204,25 @@ final $typed_data.Uint8List tweetDescriptor = $convert.base64Decode(
     'ABKAlSBHJvb20SEgoEcGF0aBgeIAEoCVIEcGF0aBI0CgdjcmVhdGVkGCggASgLMhouZ29vZ2xl'
     'LnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBIuCgptZWRpYV90eXBlGDIgASgOMg8udXNlci'
     '5NZWRpYVR5cGVSCW1lZGlhVHlwZRISCgR0ZXh0GDwgASgJUgR0ZXh0EhIKBGxpbmsYRiABKAlS'
-    'BGxpbms=');
+    'BGxpbmsSOQoNaW1hZ2VNZXRhZGF0YRhQIAMoCzITLnVzZXIuSW1hZ2VNZXRhZGF0YVINaW1hZ2'
+    'VNZXRhZGF0YQ==');
+
+@$core.Deprecated('Use imageMetadataDescriptor instead')
+const ImageMetadata$json = {
+  '1': 'ImageMetadata',
+  '2': [
+    {'1': 'url', '3': 1, '4': 1, '5': 9, '10': 'url'},
+    {'1': 'localUrl', '3': 10, '4': 1, '5': 9, '10': 'localUrl'},
+    {'1': 'blurhash', '3': 20, '4': 1, '5': 9, '10': 'blurhash'},
+    {'1': 'width', '3': 30, '4': 1, '5': 5, '10': 'width'},
+    {'1': 'height', '3': 40, '4': 1, '5': 5, '10': 'height'},
+    {'1': 'caption', '3': 50, '4': 1, '5': 9, '10': 'caption'},
+  ],
+};
+
+/// Descriptor for `ImageMetadata`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List imageMetadataDescriptor = $convert.base64Decode(
+    'Cg1JbWFnZU1ldGFkYXRhEhAKA3VybBgBIAEoCVIDdXJsEhoKCGxvY2FsVXJsGAogASgJUghsb2'
+    'NhbFVybBIaCghibHVyaGFzaBgUIAEoCVIIYmx1cmhhc2gSFAoFd2lkdGgYHiABKAVSBXdpZHRo'
+    'EhYKBmhlaWdodBgoIAEoBVIGaGVpZ2h0EhgKB2NhcHRpb24YMiABKAlSB2NhcHRpb24=');
 

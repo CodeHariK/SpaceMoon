@@ -1,13 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Form/mario.dart';
 import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/darkknight/extensions/string.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
 import 'package:spacemoon/Widget/Chat/photo_box.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 
@@ -71,76 +74,101 @@ class SendBox extends HookConsumerWidget {
                                 ContextMenu.hide();
                               },
                             ),
+                            // IconButton.filledTonal(
+                            //   icon: const Icon(Icons.camera_alt_outlined),
+                            //   onPressed: () async {
+                            //     ContextMenu.hide();
+
+                            //     final userId = roomUser.user;
+                            //     final saveFire = await saveFirePickCropImage(
+                            //       '$userId/tweets',
+                            //     );
+
+                            //     // final imageMeta = saveFire?.meta;
+                            //     final imageTask = saveFire?.task;
+
+                            //     if (context.mounted && imageTask != null) {
+                            //       LoadingScreenController? contoller = LoadingScreen().show(
+                            //         context: context,
+                            //         text: 'Uploading',
+                            //         action: Row(
+                            //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            //           children: [
+                            //             TextButton(
+                            //               onPressed: () {
+                            //                 imageTask.cancel();
+                            //               },
+                            //               child: const Text('Cancel'),
+                            //             ),
+                            //             TextButton(
+                            //               onPressed: () {
+                            //                 imageTask.pause();
+                            //               },
+                            //               child: const Text('Pause'),
+                            //             ),
+                            //             TextButton(
+                            //               onPressed: () {
+                            //                 imageTask.resume();
+                            //               },
+                            //               child: const Text('Resume'),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       );
+                            //       imageTask.stream.listen(
+                            //         (event) {
+                            //           contoller?.update(event.transferred.toString());
+                            //           if (!event.running) {
+                            //             LoadingScreen().hide();
+                            //           }
+                            //         },
+                            //       );
+                            //     }
+
+                            //     final imageUrl = await imageTask?.then(
+                            //       (task) => task.ref.getDownloadURL(),
+                            //     );
+
+                            //     if (imageUrl != null && context.mounted) {
+                            //       showDialog(
+                            //         context: context,
+                            //         builder: (context) {
+                            //           return PhotoDialog(
+                            //             imageUrl: imageUrl,
+                            //             ref: ref,
+                            //             roomUser: roomUser,
+                            //             // scrollCon: scrollCon,
+                            //           );
+                            //         },
+                            //       );
+                            //     }
+                            //   },
+                            // ),
+
                             IconButton.filledTonal(
-                              icon: const Icon(Icons.camera_alt_outlined),
                               onPressed: () async {
                                 ContextMenu.hide();
-
-                                final userId = roomUser.user;
-                                final saveFire = await saveFirePickCropImage(
-                                  '$userId/tweets',
-                                );
-
-                                // final imageMeta = saveFire?.meta;
-                                final imageTask = saveFire?.task;
-
-                                if (context.mounted && imageTask != null) {
-                                  LoadingScreenController? contoller = LoadingScreen().show(
-                                    context: context,
-                                    text: 'Uploading',
-                                    action: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {
-                                            imageTask.cancel();
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            imageTask.pause();
-                                          },
-                                          child: const Text('Pause'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            imageTask.resume();
-                                          },
-                                          child: const Text('Resume'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  imageTask.stream.listen(
-                                    (event) {
-                                      contoller?.update(event.transferred.toString());
-                                      if (!event.running) {
-                                        LoadingScreen().hide();
-                                      }
-                                    },
-                                  );
-                                }
-
-                                final imageUrl = await imageTask?.then(
-                                  (task) => task.ref.getDownloadURL(),
-                                );
-
-                                if (imageUrl != null && context.mounted) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return PhotoDialog(
-                                        imageUrl: imageUrl,
-                                        ref: ref,
-                                        roomUser: roomUser,
-                                        // scrollCon: scrollCon,
-                                      );
-                                    },
-                                  );
-                                }
+                                final imgs = await saveFireMedia('loc');
+                                if (imgs.isEmpty) return;
+                                final tweetPath = await ref.read(tweetsProvider.notifier).sendTweet(
+                                      tweet: Tweet(
+                                        mediaType: MediaType.GALLERY,
+                                        imageMetadata: List<ImageMetadata>.from(imgs),
+                                      ),
+                                    );
+                                // for (var img in imgs) {
+                                //   await uploadFire(
+                                //     imageName: randomString(12),
+                                //     user: roomUser.user,
+                                //     meta: img!,
+                                //     location: tweetPath,
+                                //     multipath: 'imageMetadata',
+                                //   );
+                                // }
                               },
+                              icon: const Icon(Icons.call_merge_sharp),
                             ),
+
                             IconButton.filledTonal(
                               onPressed: () async {
                                 ContextMenu.hide();

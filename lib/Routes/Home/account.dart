@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -66,14 +67,14 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 child: InkWell(
                   splashFactory: InkSplash.splashFactory,
                   onTap: () async {
-                    final photo = await saveFirePickCropImage(
-                      '${data?.uid}/profile',
-                      crop: true,
-                    );
-                    photo?.task.then((url) async {
-                      final u = await url.ref.getDownloadURL();
-                      callUserUpdate(User(photoURL: u));
-                    });
+                    // final photo = await saveFirePickCropImage(
+                    //   '${data?.uid}/profile',
+                    //   crop: true,
+                    // );
+                    // photo?.task.then((url) async {
+                    //   final u = await url.ref.getDownloadURL();
+                    //   callUserUpdate(User(photoURL: u));
+                    // });
                   },
                   child: data?.photoURL == null || data?.photoURL.isEmpty == true
                       ? Icon(

@@ -9,6 +9,7 @@ import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
+import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
 
@@ -92,6 +93,8 @@ class TweetBox extends HookConsumerWidget {
                     codeQrtext: tweet.text,
                   ),
                 ),
+
+              if (tweet.mediaType == MediaType.GALLERY && tweet.imageMetadata.isNotEmpty) GalleryBox(tweet: tweet),
 
               if (tweet.mediaType == MediaType.POST)
                 InkWell(

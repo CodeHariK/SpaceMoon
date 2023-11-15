@@ -477,6 +477,7 @@ class Tweet extends $pb.GeneratedMessage {
     MediaType? mediaType,
     $core.String? text,
     $core.String? link,
+    $core.Iterable<ImageMetadata>? imageMetadata,
   }) {
     final $result = create();
     if (uid != null) {
@@ -503,6 +504,9 @@ class Tweet extends $pb.GeneratedMessage {
     if (link != null) {
       $result.link = link;
     }
+    if (imageMetadata != null) {
+      $result.imageMetadata.addAll(imageMetadata);
+    }
     return $result;
   }
   Tweet._() : super();
@@ -518,6 +522,7 @@ class Tweet extends $pb.GeneratedMessage {
     ..e<MediaType>(50, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
     ..aOS(60, _omitFieldNames ? '' : 'text')
     ..aOS(70, _omitFieldNames ? '' : 'link')
+    ..pc<ImageMetadata>(80, _omitFieldNames ? '' : 'imageMetadata', $pb.PbFieldType.PM, protoName: 'imageMetadata', subBuilder: ImageMetadata.create)
     ..hasRequiredFields = false
   ;
 
@@ -615,6 +620,129 @@ class Tweet extends $pb.GeneratedMessage {
   $core.bool hasLink() => $_has(7);
   @$pb.TagNumber(70)
   void clearLink() => clearField(70);
+
+  @$pb.TagNumber(80)
+  $core.List<ImageMetadata> get imageMetadata => $_getList(8);
+}
+
+class ImageMetadata extends $pb.GeneratedMessage {
+  factory ImageMetadata({
+    $core.String? url,
+    $core.String? localUrl,
+    $core.String? blurhash,
+    $core.int? width,
+    $core.int? height,
+    $core.String? caption,
+  }) {
+    final $result = create();
+    if (url != null) {
+      $result.url = url;
+    }
+    if (localUrl != null) {
+      $result.localUrl = localUrl;
+    }
+    if (blurhash != null) {
+      $result.blurhash = blurhash;
+    }
+    if (width != null) {
+      $result.width = width;
+    }
+    if (height != null) {
+      $result.height = height;
+    }
+    if (caption != null) {
+      $result.caption = caption;
+    }
+    return $result;
+  }
+  ImageMetadata._() : super();
+  factory ImageMetadata.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ImageMetadata.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ImageMetadata', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'url')
+    ..aOS(10, _omitFieldNames ? '' : 'localUrl', protoName: 'localUrl')
+    ..aOS(20, _omitFieldNames ? '' : 'blurhash')
+    ..a<$core.int>(30, _omitFieldNames ? '' : 'width', $pb.PbFieldType.O3)
+    ..a<$core.int>(40, _omitFieldNames ? '' : 'height', $pb.PbFieldType.O3)
+    ..aOS(50, _omitFieldNames ? '' : 'caption')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ImageMetadata clone() => ImageMetadata()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ImageMetadata copyWith(void Function(ImageMetadata) updates) => super.copyWith((message) => updates(message as ImageMetadata)) as ImageMetadata;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ImageMetadata create() => ImageMetadata._();
+  ImageMetadata createEmptyInstance() => create();
+  static $pb.PbList<ImageMetadata> createRepeated() => $pb.PbList<ImageMetadata>();
+  @$core.pragma('dart2js:noInline')
+  static ImageMetadata getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ImageMetadata>(create);
+  static ImageMetadata? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get url => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set url($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasUrl() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUrl() => clearField(1);
+
+  @$pb.TagNumber(10)
+  $core.String get localUrl => $_getSZ(1);
+  @$pb.TagNumber(10)
+  set localUrl($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(10)
+  $core.bool hasLocalUrl() => $_has(1);
+  @$pb.TagNumber(10)
+  void clearLocalUrl() => clearField(10);
+
+  @$pb.TagNumber(20)
+  $core.String get blurhash => $_getSZ(2);
+  @$pb.TagNumber(20)
+  set blurhash($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(20)
+  $core.bool hasBlurhash() => $_has(2);
+  @$pb.TagNumber(20)
+  void clearBlurhash() => clearField(20);
+
+  @$pb.TagNumber(30)
+  $core.int get width => $_getIZ(3);
+  @$pb.TagNumber(30)
+  set width($core.int v) { $_setSignedInt32(3, v); }
+  @$pb.TagNumber(30)
+  $core.bool hasWidth() => $_has(3);
+  @$pb.TagNumber(30)
+  void clearWidth() => clearField(30);
+
+  @$pb.TagNumber(40)
+  $core.int get height => $_getIZ(4);
+  @$pb.TagNumber(40)
+  set height($core.int v) { $_setSignedInt32(4, v); }
+  @$pb.TagNumber(40)
+  $core.bool hasHeight() => $_has(4);
+  @$pb.TagNumber(40)
+  void clearHeight() => clearField(40);
+
+  @$pb.TagNumber(50)
+  $core.String get caption => $_getSZ(5);
+  @$pb.TagNumber(50)
+  set caption($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(50)
+  $core.bool hasCaption() => $_has(5);
+  @$pb.TagNumber(50)
+  void clearCaption() => clearField(50);
 }
 
 

@@ -27,14 +27,15 @@ class Tweets extends _$Tweets {
   //   return stream ?? const Stream.empty();
   // }
 
-  FutureOr<void> sendTweet({
+  FutureOr<String> sendTweet({
     required Tweet tweet,
   }) async {
     final roomuser = ref.watch(currentRoomUserProvider).value;
 
     tweet.room = roomuser!.room;
 
-    await FirebaseFunctions.instance.httpsCallable('sendTweet').call(tweet.toMap());
+    final res = await FirebaseFunctions.instance.httpsCallable('sendTweet').call(tweet.toMap());
+    return res.data;
   }
 
   FutureOr<void> deleteTweet({
