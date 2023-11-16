@@ -33,15 +33,15 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
     const docpath = filePath.replace(user + '/', '').replace('/' + fileName, '')
 
     console.log(event.data.metadata?.localUrl)
-    let imageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).imageMetadata.find((imgData, __, ___) => {
+    let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
         return imgData.localUrl == event.data.metadata?.localUrl;
     })
 
-    if (!imageData) return;
+    if (!oldImageData) return;
 
-    let i = ImageMetadata.fromPartial(imageData)
-    i.url = event.data.mediaLink!
-    i.localUrl = '';
+    let newImageData = ImageMetadata.fromPartial(oldImageData)
+    newImageData.url = event.data.mediaLink!
+    newImageData.localUrl = '';
 
     if (event.data.metadata?.single) {
 
@@ -55,11 +55,11 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
     }
     if (event.data.metadata?.multi) {
         await admin.firestore().doc(docpath).set({
-            [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(imageData)]),
+            [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
         }, { merge: true }
         );
         await admin.firestore().doc(docpath).set({
-            [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(i)])
+            [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
         }, { merge: true }
         );
     }

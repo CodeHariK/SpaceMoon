@@ -477,7 +477,7 @@ class Tweet extends $pb.GeneratedMessage {
     MediaType? mediaType,
     $core.String? text,
     $core.String? link,
-    $core.Iterable<ImageMetadata>? imageMetadata,
+    $core.Iterable<ImageMetadata>? gallery,
   }) {
     final $result = create();
     if (uid != null) {
@@ -504,8 +504,8 @@ class Tweet extends $pb.GeneratedMessage {
     if (link != null) {
       $result.link = link;
     }
-    if (imageMetadata != null) {
-      $result.imageMetadata.addAll(imageMetadata);
+    if (gallery != null) {
+      $result.gallery.addAll(gallery);
     }
     return $result;
   }
@@ -522,7 +522,7 @@ class Tweet extends $pb.GeneratedMessage {
     ..e<MediaType>(50, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
     ..aOS(60, _omitFieldNames ? '' : 'text')
     ..aOS(70, _omitFieldNames ? '' : 'link')
-    ..pc<ImageMetadata>(80, _omitFieldNames ? '' : 'imageMetadata', $pb.PbFieldType.PM, protoName: 'imageMetadata', subBuilder: ImageMetadata.create)
+    ..pc<ImageMetadata>(80, _omitFieldNames ? '' : 'gallery', $pb.PbFieldType.PM, subBuilder: ImageMetadata.create)
     ..hasRequiredFields = false
   ;
 
@@ -622,7 +622,7 @@ class Tweet extends $pb.GeneratedMessage {
   void clearLink() => clearField(70);
 
   @$pb.TagNumber(80)
-  $core.List<ImageMetadata> get imageMetadata => $_getList(8);
+  $core.List<ImageMetadata> get gallery => $_getList(8);
 }
 
 class ImageMetadata extends $pb.GeneratedMessage {

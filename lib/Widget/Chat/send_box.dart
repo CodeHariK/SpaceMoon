@@ -1,18 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Form/mario.dart';
 import 'package:moonspace/Helper/extensions.dart';
-import 'package:moonspace/darkknight/extensions/string.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
-import 'package:spacemoon/Widget/Chat/photo_box.dart';
-import 'package:spacemoon/Helpers/proto.dart';
+import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
-import 'package:spacemoon/Widget/Common/fire_image.dart';
 
 class SendBox extends HookConsumerWidget {
   const SendBox({
@@ -145,29 +141,7 @@ class SendBox extends HookConsumerWidget {
                             //   },
                             // ),
 
-                            IconButton.filledTonal(
-                              onPressed: () async {
-                                ContextMenu.hide();
-                                final imgs = await saveFireMedia('loc');
-                                if (imgs.isEmpty) return;
-                                final tweetPath = await ref.read(tweetsProvider.notifier).sendTweet(
-                                      tweet: Tweet(
-                                        mediaType: MediaType.GALLERY,
-                                        imageMetadata: List<ImageMetadata>.from(imgs),
-                                      ),
-                                    );
-                                // for (var img in imgs) {
-                                //   await uploadFire(
-                                //     imageName: randomString(12),
-                                //     user: roomUser.user,
-                                //     meta: img!,
-                                //     location: tweetPath,
-                                //     multipath: 'imageMetadata',
-                                //   );
-                                // }
-                              },
-                              icon: const Icon(Icons.call_merge_sharp),
-                            ),
+                            GalleryUploaderButton(ref: ref),
 
                             IconButton.filledTonal(
                               onPressed: () async {

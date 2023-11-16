@@ -100,6 +100,7 @@ const Const$json = {
     {'1': 'members', '2': 800},
     {'1': 'tweet_count', '2': 900},
     {'1': 'description', '2': 1000},
+    {'1': 'gallery', '2': 1100},
   ],
 };
 
@@ -109,7 +110,7 @@ final $typed_data.Uint8List constDescriptor = $convert.base64Decode(
     '4SBwoDdWlkEGQSCAoEbmljaxBuEhAKC2Rpc3BsYXlOYW1lEJYBEgoKBWVtYWlsEMgBEhAKC3Bo'
     'b25lTnVtYmVyEPoBEg0KCHBob3RvVVJMEKwCEg0KCGZjbVRva2VuEN4CEgsKBnN0YXR1cxCQAx'
     'IMCgdjcmVhdGVkENgEEgkKBG9wZW4QvAUSDAoHbWVtYmVycxCgBhIQCgt0d2VldF9jb3VudBCE'
-    'BxIQCgtkZXNjcmlwdGlvbhDoBw==');
+    'BxIQCgtkZXNjcmlwdGlvbhDoBxIMCgdnYWxsZXJ5EMwI');
 
 @$core.Deprecated('Use userDescriptor instead')
 const User$json = {
@@ -194,7 +195,7 @@ const Tweet$json = {
     {'1': 'media_type', '3': 50, '4': 1, '5': 14, '6': '.user.MediaType', '10': 'mediaType'},
     {'1': 'text', '3': 60, '4': 1, '5': 9, '10': 'text'},
     {'1': 'link', '3': 70, '4': 1, '5': 9, '10': 'link'},
-    {'1': 'imageMetadata', '3': 80, '4': 3, '5': 11, '6': '.user.ImageMetadata', '10': 'imageMetadata'},
+    {'1': 'gallery', '3': 80, '4': 3, '5': 11, '6': '.user.ImageMetadata', '10': 'gallery'},
   ],
 };
 
@@ -204,8 +205,7 @@ final $typed_data.Uint8List tweetDescriptor = $convert.base64Decode(
     'ABKAlSBHJvb20SEgoEcGF0aBgeIAEoCVIEcGF0aBI0CgdjcmVhdGVkGCggASgLMhouZ29vZ2xl'
     'LnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBIuCgptZWRpYV90eXBlGDIgASgOMg8udXNlci'
     '5NZWRpYVR5cGVSCW1lZGlhVHlwZRISCgR0ZXh0GDwgASgJUgR0ZXh0EhIKBGxpbmsYRiABKAlS'
-    'BGxpbmsSOQoNaW1hZ2VNZXRhZGF0YRhQIAMoCzITLnVzZXIuSW1hZ2VNZXRhZGF0YVINaW1hZ2'
-    'VNZXRhZGF0YQ==');
+    'BGxpbmsSLQoHZ2FsbGVyeRhQIAMoCzITLnVzZXIuSW1hZ2VNZXRhZGF0YVIHZ2FsbGVyeQ==');
 
 @$core.Deprecated('Use imageMetadataDescriptor instead')
 const ImageMetadata$json = {

@@ -115,6 +115,7 @@ class Const extends $pb.ProtobufEnum {
   static const Const members = Const._(800, _omitEnumNames ? '' : 'members');
   static const Const tweet_count = Const._(900, _omitEnumNames ? '' : 'tweet_count');
   static const Const description = Const._(1000, _omitEnumNames ? '' : 'description');
+  static const Const gallery = Const._(1100, _omitEnumNames ? '' : 'gallery');
 
   static const $core.List<Const> values = <Const> [
     users,
@@ -134,6 +135,7 @@ class Const extends $pb.ProtobufEnum {
     members,
     tweet_count,
     description,
+    gallery,
   ];
 
   static final $core.Map<$core.int, Const> _byValue = $pb.ProtobufEnum.initByValue(values);

@@ -226,6 +226,7 @@ export enum Const {
   members = 800,
   tweet_count = 900,
   description = 1000,
+  gallery = 1100,
   UNRECOGNIZED = -1,
 }
 
@@ -282,6 +283,9 @@ export function constFromJSON(object: any): Const {
     case 1000:
     case "description":
       return Const.description;
+    case 1100:
+    case "gallery":
+      return Const.gallery;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -325,6 +329,8 @@ export function constToJSON(object: Const): string {
       return "tweet_count";
     case Const.description:
       return "description";
+    case Const.gallery:
+      return "gallery";
     case Const.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -379,7 +385,7 @@ export interface Tweet {
   mediaType: MediaType;
   text: string;
   link: string;
-  imageMetadata: ImageMetadata[];
+  gallery: ImageMetadata[];
 }
 
 export interface ImageMetadata {
@@ -915,17 +921,7 @@ export const Room = {
 };
 
 function createBaseTweet(): Tweet {
-  return {
-    uid: "",
-    user: "",
-    room: "",
-    path: "",
-    created: undefined,
-    mediaType: 0,
-    text: "",
-    link: "",
-    imageMetadata: [],
-  };
+  return { uid: "", user: "", room: "", path: "", created: undefined, mediaType: 0, text: "", link: "", gallery: [] };
 }
 
 export const Tweet = {
@@ -954,7 +950,7 @@ export const Tweet = {
     if (message.link !== "") {
       writer.uint32(562).string(message.link);
     }
-    for (const v of message.imageMetadata) {
+    for (const v of message.gallery) {
       ImageMetadata.encode(v!, writer.uint32(642).fork()).ldelim();
     }
     return writer;
@@ -1028,7 +1024,7 @@ export const Tweet = {
             break;
           }
 
-          message.imageMetadata.push(ImageMetadata.decode(reader, reader.uint32()));
+          message.gallery.push(ImageMetadata.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1049,8 +1045,8 @@ export const Tweet = {
       mediaType: isSet(object.mediaType) ? mediaTypeFromJSON(object.mediaType) : 0,
       text: isSet(object.text) ? globalThis.String(object.text) : "",
       link: isSet(object.link) ? globalThis.String(object.link) : "",
-      imageMetadata: globalThis.Array.isArray(object?.imageMetadata)
-        ? object.imageMetadata.map((e: any) => ImageMetadata.fromJSON(e))
+      gallery: globalThis.Array.isArray(object?.gallery)
+        ? object.gallery.map((e: any) => ImageMetadata.fromJSON(e))
         : [],
     };
   },
@@ -1081,8 +1077,8 @@ export const Tweet = {
     if (message.link !== "") {
       obj.link = message.link;
     }
-    if (message.imageMetadata?.length) {
-      obj.imageMetadata = message.imageMetadata.map((e) => ImageMetadata.toJSON(e));
+    if (message.gallery?.length) {
+      obj.gallery = message.gallery.map((e) => ImageMetadata.toJSON(e));
     }
     return obj;
   },
@@ -1100,7 +1096,7 @@ export const Tweet = {
     message.mediaType = object.mediaType ?? 0;
     message.text = object.text ?? "";
     message.link = object.link ?? "";
-    message.imageMetadata = object.imageMetadata?.map((e) => ImageMetadata.fromPartial(e)) || [];
+    message.gallery = object.gallery?.map((e) => ImageMetadata.fromPartial(e)) || [];
     return message;
   },
 };

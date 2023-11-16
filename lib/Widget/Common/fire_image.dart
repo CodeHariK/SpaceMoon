@@ -22,9 +22,7 @@ import 'package:spacemoon/Helpers/proto.dart';
 import 'package:moonspace/Helper/debug_functions.dart';
 import 'package:moonspace/darkknight/extensions/string.dart';
 
-Future<List<ImageMetadata?>> saveFireMedia(
-  String location,
-) async {
+Future<List<ImageMetadata?>> saveFireMedia() async {
   try {
     final mediaFiles = await ImagePicker().pickMultipleMedia();
     final mediasRead = mediaFiles.map((e) async {
@@ -43,7 +41,7 @@ Future<List<ImageMetadata?>> saveFireMedia(
         maintainAspect: true,
       );
 
-      final blurHash = BlurHash.encode(newImg, numCompX: 4, numCompY: 3);
+      final blurHash = BlurHash.encode(newImg, numCompX: 3, numCompY: 2);
 
       return ImageMetadata(
         localUrl: savepath,

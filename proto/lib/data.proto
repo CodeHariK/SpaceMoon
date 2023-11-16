@@ -88,7 +88,7 @@ message Tweet {
     MediaType media_type = 50;
     string text = 60;
     string link = 70;
-    repeated ImageMetadata imageMetadata = 80;
+    repeated ImageMetadata gallery = 80;
 }
 
 enum Const {
@@ -112,6 +112,8 @@ enum Const {
     members = 800;
     tweet_count = 900;
     description = 1000;
+
+    gallery = 1100;
 }
 
 message ImageMetadata {

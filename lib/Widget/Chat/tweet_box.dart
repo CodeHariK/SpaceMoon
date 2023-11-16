@@ -94,7 +94,7 @@ class TweetBox extends HookConsumerWidget {
                   ),
                 ),
 
-              if (tweet.mediaType == MediaType.GALLERY && tweet.imageMetadata.isNotEmpty) GalleryBox(tweet: tweet),
+              if (tweet.mediaType == MediaType.GALLERY && tweet.gallery.isNotEmpty) GalleryBox(tweet: tweet),
 
               if (tweet.mediaType == MediaType.POST)
                 InkWell(
@@ -200,6 +200,9 @@ class TweetBox extends HookConsumerWidget {
                 child: box,
               )
         : GestureDetector(
+            onLongPress: () {
+              print('Long Press');
+            },
             onTap: (tweet.mediaType == MediaType.VIDEO)
                 ? null
                 : () {

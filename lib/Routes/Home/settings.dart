@@ -24,7 +24,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ThemeType theme = ref.watch(globalThemeProvider);
+    GlobalAppTheme globalAppTheme = ref.watch(globalThemeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,17 +50,46 @@ class SettingsPage extends ConsumerWidget {
                       .toList();
                 },
                 onSelected: (v) {
-                  ref.read(globalThemeProvider.notifier).set(v);
+                  ref.read(globalThemeProvider.notifier).setThemeType(v);
                 },
                 position: PopupMenuPosition.under,
                 offset: const Offset(1, -120),
                 child: ListTile(
                   visualDensity: VisualDensity.compact,
                   title: const Text('Theme'),
-                  subtitle: Text(theme.name),
-                  trailing: theme.icon,
+                  subtitle: Text(globalAppTheme.theme.name),
+                  trailing: globalAppTheme.theme.icon,
                 ),
               ),
+
+              //
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: Colors.primaries
+                        .map(
+                          (c) => InkWell(
+                            onTap: () {
+                              ref.read(globalThemeProvider.notifier).setColor(c);
+                            },
+                            child: Container(
+                              width: 25,
+                              height: 25,
+                              margin: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: c,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              )
             ],
           ),
           CupertinoListTile.notched(

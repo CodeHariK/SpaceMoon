@@ -27,11 +27,14 @@ class AppTheme {
 
   final bool dark;
 
+  final Color appColor;
+
   static AppTheme currentAppTheme = AppTheme(
     size: const Size(360, 780),
     maxSize: const Size(1366, 1024),
     designSize: const Size(360, 780),
     dark: false,
+    appColor: Colors.indigo,
   );
 
   static bool get darkness => currentAppTheme.dark;
@@ -59,12 +62,13 @@ class AppTheme {
     required this.maxSize,
     required this.designSize,
     required this.dark,
+    required this.appColor,
   });
 
   // static TextStyle get poppins => GoogleFonts.poppins();
   static TextStyle get poppins => const TextStyle();
 
-  static Color get seedColor => Colors.red;
+  static Color get seedColor => currentAppTheme.appColor;
 
   FilledButtonThemeData get filledButton => FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -180,10 +184,10 @@ class AppTheme {
         displayLarge: poppins.copyWith(color: Colors.orange),
         displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
         displaySmall: poppins.copyWith(color: Colors.teal),
-        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
-        headlineMedium: poppins.copyWith(fontSize: 26.c),
+        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 28.c),
+        headlineMedium: GoogleFonts.merriweather(letterSpacing: 3.c, fontSize: 24.c),
         headlineSmall: GoogleFonts.merriweather(fontSize: 22.5.c),
-        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 22).c),
+        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 20).c),
         titleMedium:
             poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
         titleSmall: poppins.copyWith(color: seedColor, fontSize: (13, 16).c),

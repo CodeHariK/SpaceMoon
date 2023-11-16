@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:moonspace/darkknight/extensions/color.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
@@ -19,6 +22,11 @@ class Pref extends _$Pref {
   static const String _theme = 'theme';
   Future<void> saveTheme(ThemeType theme) async => await _pref?.setString(_theme, theme.toString());
   ThemeType getTheme() => ThemeType.from(_pref?.getString(_theme));
+
+  //Color
+  static const String _color = 'color';
+  Future<void> saveColor(Color color) async => await _pref?.setString(_color, color.hexCode);
+  Color? getColor() => _pref?.getString(_color)?.tryToColor();
 
   //Onboard
   static const String _onboard = 'onboard';

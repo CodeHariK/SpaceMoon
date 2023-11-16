@@ -9,7 +9,10 @@ import * as chat from "./room";
 import * as tweet from "./tweet";
 import * as image from "./image";
 
-admin.initializeApp({ projectId: "spacemoonfire" });
+admin.initializeApp({
+    projectId: "spacemoonfire",
+    storageBucket: 'spacemoonfire.appspot.com',
+});
 
 export const onUserCreate = users.onUserCreate;
 export const callUserUpdate = users.callUserUpdate;
@@ -24,6 +27,8 @@ export const deleteRoomUser = chat.deleteRoomUser;
 export const acceptAccessToRoom = chat.acceptAccessToRoom;
 
 export const sendTweet = tweet.sendTweet;
+export const updateTweet = tweet.updateTweet;
+export const onTweetDeleted = tweet.onTweetDeleted;
 export const deleteTweet = tweet.deleteTweet;
 
 export const generateThumbnail = image.generateThumbnail;

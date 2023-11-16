@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/scheduler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Providers/pref.dart';
@@ -31,17 +33,46 @@ enum ThemeType {
   }
 }
 
+class GlobalAppTheme {
+  final ThemeType theme;
+  final Color color;
+
+  GlobalAppTheme({
+    required this.theme,
+    required this.color,
+  });
+
+  GlobalAppTheme copyWith({
+    ThemeType? theme,
+    Color? color,
+  }) {
+    return GlobalAppTheme(
+      theme: theme ?? this.theme,
+      color: color ?? this.color,
+    );
+  }
+}
+
 @Riverpod(keepAlive: true)
 class GlobalTheme extends _$GlobalTheme {
   @override
-  ThemeType build() {
+  GlobalAppTheme build() {
     ref.watch(prefProvider);
     ThemeType theme = ref.read(prefProvider.notifier).getTheme();
-    return theme;
+    Color? color = ref.read(prefProvider.notifier).getColor();
+    return GlobalAppTheme(
+      theme: theme,
+      color: color ?? Colors.indigo,
+    );
   }
 
-  void set(ThemeType theme) {
-    state = theme;
-    ref.read(prefProvider.notifier).saveTheme(state);
+  void setThemeType(ThemeType theme) {
+    state = state.copyWith(theme: theme);
+    ref.read(prefProvider.notifier).saveTheme(state.theme);
+  }
+
+  void setColor(Color color) {
+    state = state.copyWith(color: color);
+    ref.read(prefProvider.notifier).saveColor(state.color);
   }
 }

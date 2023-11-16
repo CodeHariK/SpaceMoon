@@ -154,13 +154,16 @@ class SpaceMoonHome extends HookConsumerWidget {
     //   }),
     // );
 
-    final brightness = ref.watch(globalThemeProvider).brightness;
+    final globalAppTheme = ref.watch(globalThemeProvider);
+    final brightness = globalAppTheme.theme.brightness;
+    final appColor = globalAppTheme.color;
 
     AppTheme.currentAppTheme = AppTheme(
       dark: brightness == Brightness.dark,
       designSize: const Size(360, 780),
       maxSize: const Size(1366, 1024),
       size: MediaQuery.of(context).size,
+      appColor: appColor,
     );
     return Builder(builder: (context) {
       return MaterialApp.router(

@@ -36,7 +36,9 @@ class ChatPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final room = ref.watch(roomStreamProvider).value;
+    final roomPro = ref.watch(roomStreamProvider);
+    final room = roomPro.value;
+
     final meInRoom = ref.watch(currentRoomUserProvider).value;
 
     useEffect(() {
@@ -45,7 +47,9 @@ class ChatPage extends HookConsumerWidget {
       return null;
     }, [room]);
 
-    // dino(room);
+    if (roomPro.isLoading) {
+      return const Scaffold();
+    }
 
     Query<Tweet?>? query = room?.tweetCol?.orderBy(
       Const.created.name,
