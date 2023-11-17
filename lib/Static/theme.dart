@@ -140,32 +140,32 @@ class AppTheme {
         // onPrimary: Colors.yellow, //filledbuttonfont
         // primaryContainer: Colors.purple, //filledButton, floatingActionButton
         // onPrimaryContainer: Colors.white, //text font,
-        inversePrimary: Colors.cyan,
+        // inversePrimary: Colors.cyan,
 
         //
         // background: Colors.yellow, //Scaffold
-        onBackground: const Color.fromARGB(255, 255, 59, 190),
+        // onBackground: const Color.fromARGB(255, 255, 59, 190),
 
         //
-        secondary: Colors.purple,
-        onSecondary: Colors.blue,
+        // secondary: Colors.purple,
+        // onSecondary: Colors.blue,
         // secondaryContainer: Colors.pink, //NavigationRail
         // onSecondaryContainer: Colors.green, //NavigationRail
 
         //
-        // surface: Colors.yellow, //card
+        // surface: Colors.yellow, //card, appbar
         // onSurface: Colors.yellow, //font, underline
         // surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
-        // inverseSurface: Colors.red,//Snackbar background
-        onInverseSurface: Colors.blue[900],
-        // surfaceVariant: Colors.blue,//tabBarDivider
+        // inverseSurface: Colors.red, //Snackbar background
+        // onInverseSurface: Colors.blue[900],
+        // surfaceVariant: Colors.blue, //tabBarDivider
         // onSurfaceVariant: Colors.yellow, //Textfield lable font
 
         //
-        tertiary: Colors.purple,
-        onTertiary: Colors.blue,
-        tertiaryContainer: Colors.pink,
-        onTertiaryContainer: Colors.green,
+        // tertiary: Colors.purple,
+        // onTertiary: Colors.blue,
+        // tertiaryContainer: Colors.pink,
+        // onTertiaryContainer: Colors.green,
 
         //
         // error: Colors.green,
@@ -177,7 +177,7 @@ class AppTheme {
         // outline: Colors.yellow, //textfield border
         // outlineVariant: Colors.green,//Divider
         // shadow: Colors.blue, //Shadow, elevation
-        scrim: Colors.orange,
+        // scrim: Colors.orange,
       );
 
   TextTheme get textTheme => TextTheme(
@@ -187,16 +187,16 @@ class AppTheme {
         headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 28.c),
         headlineMedium: GoogleFonts.merriweather(letterSpacing: 3.c, fontSize: 24.c),
         headlineSmall: GoogleFonts.merriweather(fontSize: 22.5.c),
-        titleLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (17, 20).c),
-        titleMedium:
-            poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
-        titleSmall: poppins.copyWith(color: seedColor, fontSize: (13, 16).c),
+        titleLarge: GoogleFonts.merriweather(letterSpacing: 2.c, fontSize: (18, 22).c),
+        titleMedium: GoogleFonts.merriweather(
+            letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
+        titleSmall: poppins.copyWith(fontSize: (14, 16).c),
         bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
         bodyMedium: poppins,
         bodySmall: poppins,
         labelLarge: poppins.copyWith(color: Colors.orange),
-        labelMedium: poppins.copyWith(color: Colors.blue),
-        labelSmall: poppins.copyWith(color: Colors.teal),
+        labelMedium: const TextStyle(),
+        labelSmall: const TextStyle(),
       );
 
   ThemeData get theme => ThemeData(

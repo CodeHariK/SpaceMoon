@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:moonspace/Helper/extensions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -104,11 +106,18 @@ class ChatPage extends HookConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          titleSpacing: 0,
           title: ListTile(
+            titleAlignment: ListTileTitleAlignment.center,
+            contentPadding: EdgeInsets.zero,
             onTap: () {
               ChatInfoRoute(chatId).go(context);
             },
-            title: Text('Chat$chatId'),
+            title: Text(room.displayName, style: context.tm, maxLines: 1),
+            subtitle: Text(room.nick, style: context.ts, maxLines: 1),
+            leading: CircleAvatar(
+                // backgroundImage: Image.network(room.photoURL).image,
+                ),
           ),
         ),
         body: SafeArea(
@@ -117,24 +126,80 @@ class ChatPage extends HookConsumerWidget {
             child: Column(
               children: [
                 Expanded(
-                  child: FirestoreQueryBuilder(
-                    query: query,
-                    builder: (context, snapshot, child) {
-                      return ListView(
-                        cacheExtent: 1000,
-                        reverse: true,
-                        children: snapshot.docs.map(
-                          (doc) {
-                            final tweet = doc.data()!;
-                            tweet.room = chatId;
-                            tweet.path = doc.reference.path;
-                            return TweetBox(
-                              tweet: tweet,
-                            );
-                          },
-                        ).toList(),
-                      );
-                    },
+                  child: Stack(
+                    children: [
+                      FirestoreQueryBuilder(
+                        query: query,
+                        builder: (context, snapshot, child) {
+                          if (snapshot.isFetching) {
+                            return const SizedBox.shrink();
+                          }
+                          if (snapshot.hasError) {
+                            return Text('error ${snapshot.error}');
+                          }
+
+                          return ListView.separated(
+                            cacheExtent: 400,
+                            reverse: true,
+                            itemCount: snapshot.docs.length,
+                            separatorBuilder: (context, index) {
+                              final doc = snapshot.docs[index];
+                              final tweet = doc.data()!;
+
+                              if (index > 0 && index < snapshot.docs.length) {
+                                Tweet lastTweet = snapshot.docs[index + 1].data()!;
+
+                                final lDate = lastTweet.created.toDateTime();
+                                final cDate = tweet.created.toDateTime();
+
+                                if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    alignment: Alignment.center,
+                                    child: Chip(
+                                      label: Text('$index  ${DateFormat('MMMM dd yyyy').format(cDate)}'),
+                                    ),
+                                  );
+                                }
+                              }
+                              return const SizedBox.shrink();
+                            },
+                            itemBuilder: (context, index) {
+                              if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
+                                snapshot.fetchMore();
+                              }
+                              print(index);
+                              final doc = snapshot.docs[index];
+                              final tweet = doc.data()!;
+                              tweet.room = chatId;
+                              tweet.path = doc.reference.path;
+                              return TweetBox(
+                                tweet: tweet,
+                              );
+                            },
+                            // children: snapshot.docs.map(
+                            //   (doc) {
+                            //     final tweet = doc.data()!;
+                            //     tweet.room = chatId;
+                            //     tweet.path = doc.reference.path;
+                            //     return TweetBox(
+                            //       tweet: tweet,
+                            //     );
+                            //   },
+                            // ).toList(),
+                          );
+                        },
+                      ),
+
+                      //
+                      Container(
+                        alignment: Alignment.topCenter,
+                        child: Chip(
+                          label: Text('Hello'),
+                          //   label: Text('$index  ${DateFormat('MMMM dd yyyy').format(cDate)}'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (meInRoom != null) SendBox(roomUser: meInRoom),

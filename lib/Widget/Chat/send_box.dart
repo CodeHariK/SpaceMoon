@@ -1,9 +1,13 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Form/mario.dart';
 import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/darkknight/extensions/string.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
@@ -154,12 +158,14 @@ class SendBox extends HookConsumerWidget {
                                     ),
                                   ),
                                 );
-                                ref.read(tweetsProvider.notifier).sendTweet(
-                                      tweet: Tweet(
-                                        text: res,
-                                        mediaType: MediaType.POST,
-                                      ),
-                                    );
+                                if (res != null) {
+                                  ref.read(tweetsProvider.notifier).sendTweet(
+                                        tweet: Tweet(
+                                          text: res,
+                                          mediaType: MediaType.POST,
+                                        ),
+                                      );
+                                }
                               },
                               icon: const Icon(Icons.post_add),
                             ),
@@ -174,25 +180,36 @@ class SendBox extends HookConsumerWidget {
           if (mediaType != MediaType.QR)
             FloatingActionButton(
               elevation: 0,
-              onPressed: () async {
-                if (tweetCon.text.isNotEmpty) {
-                  //
-                  ref.read(tweetsProvider.notifier).sendTweet(
-                        tweet: Tweet(
-                          text: tweetCon.text,
-                          mediaType: mediaType,
-                          link: link,
-                        ),
-                      );
-
-                  tweetCon.clear();
-                  FocusManager.instance.primaryFocus?.unfocus();
-
-                  if (mediaType != MediaType.TEXT) {
-                    context.pop();
-                  }
+              onPressed: () {
+                for (int i = 0; i < 10; i++) {
+                  FirebaseFirestore.instance.collection('rooms/${roomUser.room}/tweets').add(
+                    {
+                      'created': DateTime.now().subtract(Duration(days: Random().nextInt(1000))).toIso8601String(),
+                      'text': randomString(Random().nextInt(Random().nextBool() ? 20 : 500)),
+                      'user': Random().nextBool() ? roomUser.user : randomString(28),
+                    },
+                  );
                 }
               },
+              // onPressed: () async {
+              //   if (tweetCon.text.isNotEmpty) {
+              //     //
+              //     ref.read(tweetsProvider.notifier).sendTweet(
+              //           tweet: Tweet(
+              //             text: tweetCon.text,
+              //             mediaType: mediaType,
+              //             link: link,
+              //           ),
+              //         );
+
+              //     tweetCon.clear();
+              //     FocusManager.instance.primaryFocus?.unfocus();
+
+              //     if (mediaType != MediaType.TEXT) {
+              //       context.pop();
+              //     }
+              //   }
+              // },
               child: const Icon(Icons.send),
             ),
         ],

@@ -235,13 +235,7 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .doc(tweet.path)
-          .withConverter(
-            fromFirestore: (snapshot, options) => fromDocSnap(Tweet(), snapshot),
-            toFirestore: (value, options) => value?.toMap() ?? {},
-          )
-          .snapshots(),
+      stream: tweet.stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active && snapshot.data?.data() == null) {
           Future.delayed(const Duration(milliseconds: 50), () {
@@ -335,7 +329,7 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
                     IgnorePointer(
                       ignoring: startSelection,
                       child: GalleryImage(
-                        key: ObjectKey(tweet.gallery[index]),
+                        key: ObjectKey(tweet.gallery[index].hashCode + index),
                         tweet: tweet,
                         index: index,
                         inScaffold: true,

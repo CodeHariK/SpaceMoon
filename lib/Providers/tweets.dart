@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -5,6 +6,16 @@ import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
 
 part 'tweets.g.dart';
+
+extension SuperTweet on Tweet {
+  Stream<DocumentSnapshot<Tweet?>>? get stream => FirebaseFirestore.instance
+      .doc(path)
+      .withConverter(
+        fromFirestore: (snapshot, options) => fromDocSnap(Tweet(), snapshot),
+        toFirestore: (value, options) => value?.toMap() ?? {},
+      )
+      .snapshots();
+}
 
 @riverpod
 class Tweets extends _$Tweets {

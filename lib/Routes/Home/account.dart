@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -15,7 +14,6 @@ import 'package:firebase_auth/firebase_auth.dart' hide User, PhoneAuthProvider, 
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
-import 'package:spacemoon/Widget/Common/fire_image.dart';
 
 void callUserUpdate(User user) {
   FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
@@ -91,10 +89,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
               ),
             );
           },
-          error: (error, stackTrace) {
-            return const SizedBox.shrink();
-          },
-          loading: () => const SizedBox.shrink(),
+          error: (error, stackTrace) => const SizedBox.shrink(),
+          loading: () => const AspectRatio(aspectRatio: 1, child: Center(child: CircularProgressIndicator())),
         ),
         actions: [
           SignedOutAction((context) {

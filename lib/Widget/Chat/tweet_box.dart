@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:moonspace/Helper/extensions.dart';
 import 'package:moonspace/darkknight/extensions/regex.dart';
 import 'package:any_link_preview/any_link_preview.dart';
@@ -58,7 +59,7 @@ class TweetBox extends HookConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: roomuser?.user == tweet.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               // SuperLink(tweet.text),
@@ -167,15 +168,12 @@ class TweetBox extends HookConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.palette_outlined),
-                Text('${tweet.created.toDateTime().toLocal().hour}'),
-              ],
-            ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircleAvatar(),
+              Text(DateFormat.jm().format(tweet.created.toDateTime()), style: context.ls),
+            ],
           ),
           (tweet.mediaType == MediaType.VIDEO || tweet.mediaType == MediaType.POST)
               ? box
