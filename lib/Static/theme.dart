@@ -194,7 +194,7 @@ class AppTheme {
         bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
         bodyMedium: poppins,
         bodySmall: poppins,
-        labelLarge: poppins.copyWith(color: Colors.orange),
+        labelLarge: const TextStyle(),
         labelMedium: const TextStyle(),
         labelSmall: const TextStyle(),
       );

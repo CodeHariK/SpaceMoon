@@ -1,11 +1,15 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/Helper/functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -15,6 +19,7 @@ import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ChatRoute extends GoRouteData {
   final String chatId;
@@ -31,23 +36,51 @@ class ChatRoute extends GoRouteData {
   }
 }
 
-class ChatPage extends HookConsumerWidget {
+class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({super.key, required this.chatId});
 
   final String chatId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends ConsumerState<ChatPage> {
+  //
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ScrollOffsetController scrollOffsetController = ScrollOffsetController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final ScrollOffsetListener scrollOffsetListener = ScrollOffsetListener.create();
+
+  late final StreamController<(int? index, bool show)> dateStream =
+      createDebounceFunc(1000, ((int? index, bool show) value) async {
+    if (value.$2) {
+      dateStream.add((value.$1, false));
+    }
+  });
+
+  @override
+  void initState() {
+    super.initState();
+
+    ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
+
+    itemPositionsListener.itemPositions.addListener(() {
+      dateStream.add((itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final roomPro = ref.watch(roomStreamProvider);
     final room = roomPro.value;
 
     final meInRoom = ref.watch(currentRoomUserProvider).value;
-
-    useEffect(() {
-      ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
-
-      return null;
-    }, [room]);
 
     if (roomPro.isLoading) {
       return const Scaffold();
@@ -111,7 +144,7 @@ class ChatPage extends HookConsumerWidget {
             titleAlignment: ListTileTitleAlignment.center,
             contentPadding: EdgeInsets.zero,
             onTap: () {
-              ChatInfoRoute(chatId).go(context);
+              ChatInfoRoute(widget.chatId).go(context);
             },
             title: Text(room.displayName, style: context.tm, maxLines: 1),
             subtitle: Text(room.nick, style: context.ts, maxLines: 1),
@@ -121,90 +154,95 @@ class ChatPage extends HookConsumerWidget {
           ),
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      FirestoreQueryBuilder(
-                        query: query,
-                        builder: (context, snapshot, child) {
-                          if (snapshot.isFetching) {
+          child: Column(
+            children: [
+              Expanded(
+                child: FirestoreQueryBuilder(
+                  query: query,
+                  builder: (context, allTweetSnap, child) {
+                    if (allTweetSnap.isFetching) {
+                      return const SizedBox.shrink();
+                    }
+                    if (allTweetSnap.hasError) {
+                      return Text('error ${allTweetSnap.error}');
+                    }
+
+                    return Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        ScrollablePositionedList.separated(
+                          minCacheExtent: 400,
+                          itemScrollController: itemScrollController,
+                          scrollOffsetController: scrollOffsetController,
+                          itemPositionsListener: itemPositionsListener,
+                          scrollOffsetListener: scrollOffsetListener,
+                          reverse: true,
+                          itemCount: allTweetSnap.docs.length,
+                          separatorBuilder: (context, index) {
+                            final doc = allTweetSnap.docs[index];
+                            final tweet = doc.data()!;
+
+                            if (index > 0 && index < allTweetSnap.docs.length) {
+                              Tweet lastTweet = allTweetSnap.docs[index + 1].data()!;
+
+                              final lDate = lastTweet.created.toDateTime();
+                              final cDate = tweet.created.toDateTime();
+
+                              if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
+                                return Chip(
+                                  padding: EdgeInsets.zero,
+                                  label: Text(DateFormat('MMMM dd yyyy').format(cDate)),
+                                );
+                              }
+                            }
                             return const SizedBox.shrink();
-                          }
-                          if (snapshot.hasError) {
-                            return Text('error ${snapshot.error}');
-                          }
+                          },
+                          itemBuilder: (context, index) {
+                            if (allTweetSnap.hasMore && index + 1 == allTweetSnap.docs.length) {
+                              allTweetSnap.fetchMore();
+                            }
+                            final doc = allTweetSnap.docs[index];
+                            final tweet = doc.data()!;
+                            tweet.room = widget.chatId;
+                            tweet.path = doc.reference.path;
 
-                          return ListView.separated(
-                            cacheExtent: 400,
-                            reverse: true,
-                            itemCount: snapshot.docs.length,
-                            separatorBuilder: (context, index) {
-                              final doc = snapshot.docs[index];
-                              final tweet = doc.data()!;
-
-                              if (index > 0 && index < snapshot.docs.length) {
-                                Tweet lastTweet = snapshot.docs[index + 1].data()!;
-
-                                final lDate = lastTweet.created.toDateTime();
-                                final cDate = tweet.created.toDateTime();
-
-                                if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
-                                  return Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    alignment: Alignment.center,
-                                    child: Chip(
-                                      label: Text('$index  ${DateFormat('MMMM dd yyyy').format(cDate)}'),
-                                    ),
-                                  );
-                                }
-                              }
-                              return const SizedBox.shrink();
-                            },
-                            itemBuilder: (context, index) {
-                              if (snapshot.hasMore && index + 1 == snapshot.docs.length) {
-                                snapshot.fetchMore();
-                              }
-                              print(index);
-                              final doc = snapshot.docs[index];
-                              final tweet = doc.data()!;
-                              tweet.room = chatId;
-                              tweet.path = doc.reference.path;
-                              return TweetBox(
-                                tweet: tweet,
-                              );
-                            },
-                            // children: snapshot.docs.map(
-                            //   (doc) {
-                            //     final tweet = doc.data()!;
-                            //     tweet.room = chatId;
-                            //     tweet.path = doc.reference.path;
-                            //     return TweetBox(
-                            //       tweet: tweet,
-                            //     );
-                            //   },
-                            // ).toList(),
-                          );
-                        },
-                      ),
-
-                      //
-                      Container(
-                        alignment: Alignment.topCenter,
-                        child: Chip(
-                          label: Text('Hello'),
-                          //   label: Text('$index  ${DateFormat('MMMM dd yyyy').format(cDate)}'),
+                            return TweetBox(tweet: tweet);
+                          },
                         ),
-                      ),
-                    ],
-                  ),
+                        StreamBuilder(
+                          stream: dateStream.stream,
+                          builder: (context, dateSnapshot) {
+                            final value = dateSnapshot.data;
+                            final index = value?.$1;
+                            if (index == null) return const SizedBox();
+                            final show = value!.$2;
+                            final date = DateFormat('MMMM dd yyyy')
+                                .format(allTweetSnap.docs[index].data()!.created.toDateTime());
+
+                            return TweenAnimationBuilder(
+                              tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
+                              curve: Curves.linear,
+                              duration: const Duration(seconds: 1),
+                              builder: (context, value, child) {
+                                return Opacity(
+                                  opacity: clampDouble(value * 5, 0, 1),
+                                  child: child,
+                                );
+                              },
+                              child: Chip(
+                                padding: EdgeInsets.zero,
+                                label: Text(date),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                if (meInRoom != null) SendBox(roomUser: meInRoom),
-              ],
-            ),
+              ),
+              if (meInRoom != null) SendBox(roomUser: meInRoom),
+            ],
           ),
         ),
       ),

@@ -29,41 +29,6 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         return logger.log("Already a Thumbnail.");
     }
 
-    const user = filePath.split('/')[0];
-    const docpath = filePath.replace(user + '/', '').replace('/' + fileName, '')
-
-    console.log(event.data.metadata?.localUrl)
-    let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
-        return imgData.localUrl == event.data.metadata?.localUrl;
-    })
-
-    if (!oldImageData) return;
-
-    let newImageData = ImageMetadata.fromPartial(oldImageData)
-    newImageData.url = event.data.mediaLink!
-    newImageData.localUrl = '';
-
-    if (event.data.metadata?.single) {
-
-        admin.firestore().doc(docpath).set({
-            [event.data.metadata?.single]: event.data.mediaLink
-        },
-            {
-                merge: true
-            }
-        );
-    }
-    if (event.data.metadata?.multi) {
-        await admin.firestore().doc(docpath).set({
-            [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
-        }, { merge: true }
-        );
-        await admin.firestore().doc(docpath).set({
-            [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
-        }, { merge: true }
-        );
-    }
-
     // Download file into memory from bucket.
     const bucket = getStorage().bucket(fileBucket);
     const downloadResponse = await bucket.file(filePath).download();
@@ -87,5 +52,40 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
     await bucket.file(thumbFilePath).save(thumbnailBuffer, {
         metadata: metadata,
     });
+
+    const user = filePath.split('/')[0];
+    const docpath = filePath.replace(user + '/', '').replace('/' + fileName, '')
+
+    console.log(event.data.metadata?.localUrl)
+    let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
+        return imgData.localUrl == event.data.metadata?.localUrl;
+    })
+
+    if (!oldImageData) return;
+
+    let newImageData = ImageMetadata.fromPartial(oldImageData)
+    newImageData.url = event.data.mediaLink!
+    newImageData.localUrl = '';
+
+    if (event.data.metadata?.single) {
+        admin.firestore().doc(docpath).set({
+            [event.data.metadata?.single]: event.data.mediaLink
+        },
+            {
+                merge: true
+            }
+        );
+    }
+    if (event.data.metadata?.multi) {
+        await admin.firestore().doc(docpath).set({
+            [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
+        }, { merge: true }
+        );
+        await admin.firestore().doc(docpath).set({
+            [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
+        }, { merge: true }
+        );
+    }
+
     return logger.log("Thumbnail uploaded!");
 });

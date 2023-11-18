@@ -184,8 +184,8 @@ class SendBox extends HookConsumerWidget {
                 for (int i = 0; i < 10; i++) {
                   FirebaseFirestore.instance.collection('rooms/${roomUser.room}/tweets').add(
                     {
-                      'created': DateTime.now().subtract(Duration(days: Random().nextInt(1000))).toIso8601String(),
-                      'text': randomString(Random().nextInt(Random().nextBool() ? 20 : 500)),
+                      'created': DateTime.now().subtract(Duration(days: Random().nextInt(30))).toIso8601String(),
+                      'text': randomString(Random().nextInt(Random().nextBool() ? 20 : 300)),
                       'user': Random().nextBool() ? roomUser.user : randomString(28),
                     },
                   );
