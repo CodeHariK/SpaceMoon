@@ -34,6 +34,7 @@ export const deleteTweet = tweet.deleteTweet;
 export const generateThumbnail = image.generateThumbnail;
 
 export const helloWorld = onRequest((request, response) => {
+    console.log(request.query);
     response.set("Access-Control-Allow-Origin", "*");
     console.log('Hello');
     response.send("Hello from Firebase!");

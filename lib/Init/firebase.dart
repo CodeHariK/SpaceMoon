@@ -36,7 +36,9 @@ Future<void> initFirebase() async {
     auth.AppleProvider(),
   ]);
 
-  await emulator();
+  if (!Platform.isAndroid) {
+    await emulator();
+  }
 
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     FirebaseMessaging messaging = FirebaseMessaging.instance;

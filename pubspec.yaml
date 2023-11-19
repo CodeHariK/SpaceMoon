@@ -90,8 +90,7 @@ dependencies:
 
   appflowy_editor: ^1.5.2
 
-  camera: ^0.10.5+5
-  google_mlkit_barcode_scanning: ^0.10.0
+  mobile_scanner: ^3.5.2
 
   moonspace:
     git:

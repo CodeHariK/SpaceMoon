@@ -193,46 +193,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  camera:
-    dependency: "direct main"
-    description:
-      name: camera
-      sha256: "1f9010f0689774380fbcd7d6b7820a5157e8e97685fa66d619e1d1f58b3fdf93"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.5+5"
-  camera_android:
-    dependency: transitive
-    description:
-      name: camera_android
-      sha256: "58463140f1b39591b8e2155861b436abad4ceb48160058be8374164ff0309ef3"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.8+13"
-  camera_avfoundation:
-    dependency: transitive
-    description:
-      name: camera_avfoundation
-      sha256: "3b6d9f550cfd658c71f34a99509528501e5e5d4fa79f11e3a4d6ef380d8e0254"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.13+7"
-  camera_platform_interface:
-    dependency: transitive
-    description:
-      name: camera_platform_interface
-      sha256: "86fd4fc597c6e455265ddb5884feb352d0171ad14b9cdf3aba30da59b25738c4"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.0"
-  camera_web:
-    dependency: transitive
-    description:
-      name: camera_web
-      sha256: d4c2c571c7af04f8b10702ca16bb9ed2a26e64534171e8f75c9349b2c004d8f1
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.2+3"
   characters:
     dependency: transitive
     description:
@@ -285,26 +245,26 @@ packages:
     dependency: "direct main"
     description:
       name: cloud_firestore
-      sha256: "49c0e34a0de7150f6b46390263edd7a940776713bf188891f7fd07c7d750389c"
+      sha256: fabfa9b20e752ea55841b0177620a817baf3c7cd12854f339f7daadb6969ee5a
       url: "https://pub.dev"
     source: hosted
-    version: "4.13.0"
+    version: "4.13.1"
   cloud_firestore_platform_interface:
     dependency: transitive
     description:
       name: cloud_firestore_platform_interface
-      sha256: beb8a599bd619d5081469b7af43bf4e9bb0e778f3b005c1b45e21b97e836d1a5
+      sha256: "32cfa6cebf3408e541f074083fa429505af855896425eeab1c4f13edc3f68450"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.4"
+    version: "6.0.5"
   cloud_firestore_web:
     dependency: transitive
     description:
       name: cloud_firestore_web
-      sha256: "7a21039c98e8b5e2e0c3f5c764b185fe18b353312613074e81262a246fb58ba4"
+      sha256: d8e36c1a60c69eb6d5bc239e497a1f284627ef8eb42258776bbfc98ce615e869
       url: "https://pub.dev"
     source: hosted
-    version: "3.8.4"
+    version: "3.8.5"
   cloud_functions:
     dependency: "direct main"
     description:
@@ -533,10 +493,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_auth
-      sha256: af5a03a0c377af9218c9aa3c6a9ef5207d9621f0f6cd3b5099a5f570e1a03206
+      sha256: a9281f9b149ad4cffbfe91725ee5159c63aca2f27c05e2e87052fc240abe212c
       url: "https://pub.dev"
     source: hosted
-    version: "4.13.0"
+    version: "4.14.0"
   firebase_auth_platform_interface:
     dependency: transitive
     description:
@@ -621,10 +581,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_storage
-      sha256: be556c6fe60f30ac5d8160f6645ebb74699094322fc4c6a59a7698c0ed40a494
+      sha256: "2535c38b915d1fa1d2b1f3ee0d84b8a2de49c7f03887cbd74f92d5cd0960ba05"
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "11.5.1"
   firebase_storage_platform_interface:
     dependency: transitive
     description:
@@ -775,10 +735,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_riverpod
-      sha256: "305203d1578f6857675f9730568548b03900ce53afd319f4aa9d2fa943334dbe"
+      sha256: "49b55e8a467229eedb801bd0864baa7f891c39cc00f790189ba8479e9ad0fa06"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.6"
   flutter_svg:
     dependency: transitive
     description:
@@ -853,22 +813,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
-  google_mlkit_barcode_scanning:
-    dependency: "direct main"
-    description:
-      name: google_mlkit_barcode_scanning
-      sha256: "965183a8cd5cef8477ceea5dbdf29c34a739cf0cfbf1bdad54cd3f9f1807afe5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.0"
-  google_mlkit_commons:
-    dependency: transitive
-    description:
-      name: google_mlkit_commons
-      sha256: "046586b381cdd139f7f6a05ad6998f7e339d061bd70158249907358394b5f496"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.1"
   google_sign_in:
     dependency: transitive
     description:
@@ -921,10 +865,10 @@ packages:
     dependency: "direct main"
     description:
       name: hooks_riverpod
-      sha256: "2827136ecc0c2abffc3a58e575db6d5b84d159977fa1edc223c97bf566aa8c73"
+      sha256: "4fee3c75360e353128149df23ed93414477082bb130f9e23723b1a79a54bc6d0"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.6"
   hotreloader:
     dependency: transitive
     description:
@@ -1157,6 +1101,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  mobile_scanner:
+    dependency: "direct main"
+    description:
+      name: mobile_scanner
+      sha256: cf978740676ba5b0c17399baf117984b31190bb7a6eaa43e51229ed46abc42ee
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.2"
   moonspace:
     dependency: "direct main"
     description:
@@ -1336,10 +1288,10 @@ packages:
     dependency: transitive
     description:
       name: plugin_platform_interface
-      sha256: da3fdfeccc4d4ff2da8f8c556704c08f912542c5fb3cf2233ed75372384a034d
+      sha256: f4f88d4a900933e7267e2b353594774fc0d07fb072b47eedcd5b54e1ea3269f8
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.6"
+    version: "2.1.7"
   pointycastle:
     dependency: transitive
     description:
@@ -1472,10 +1424,10 @@ packages:
     dependency: transitive
     description:
       name: riverpod
-      sha256: "2e84315036e64c59affaff7443dea51247bc2fe704461a32f26a27986fb63d55"
+      sha256: "01fa385aa5d6db42fd602d8c400c28ae1c83d1fd6fbae1cbf0f4c78bac58d4b2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.6"
   riverpod_analyzer_utils:
     dependency: transitive
     description:
@@ -1488,10 +1440,10 @@ packages:
     dependency: "direct main"
     description:
       name: riverpod_annotation
-      sha256: "9330309e4400f40e39a2a1d1c340e775d0fd23451cf2dd2286e03c7896fd2bd5"
+      sha256: "670dc172c835a1638fe942552449f99adb40ea3faa2d4988081db3c2bd1a4891"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.1"
   riverpod_generator:
     dependency: "direct dev"
     description:
@@ -1645,10 +1597,10 @@ packages:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: "8ed044102f3135add97be8653662052838859f5400075ef227f8ad72ae320803"
+      sha256: bb4738f15b23352822f4c42a531677e5c6f522e079461fd240ead29d8d8a54a6
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0+1"
+    version: "2.5.0+2"
   stack_trace:
     dependency: transitive
     description:
@@ -1781,10 +1733,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_ios
-      sha256: "4ac97281cf60e2e8c5cc703b2b28528f9b50c8f7cebc71df6bdf0845f647268a"
+      sha256: bba3373219b7abb6b5e0d071b0fe66dfbe005d07517a68e38d4fc3638f35c6d3
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.0"
+    version: "6.2.1"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -1885,10 +1837,10 @@ packages:
     dependency: transitive
     description:
       name: video_player_avfoundation
-      sha256: fe73d636f82286a3739f5e644f95f09442cacdc436ebbe5436521dc915f3ecac
+      sha256: bc923884640d6dc403050586eb40713cdb8d1d84e6886d8aca50ab04c59124c2
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.1"
+    version: "2.5.2"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -1949,10 +1901,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "350a11abd2d1d97e0cc7a28a81b781c08002aa2864d9e3f192ca0ffa18b06ed3"
+      sha256: "7c99c0e1e2fa190b48d25c81ca5e42036d5cac81430ef249027d97b0935c553f"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.9"
+    version: "5.1.0"
   xdg_directories:
     dependency: transitive
     description:
