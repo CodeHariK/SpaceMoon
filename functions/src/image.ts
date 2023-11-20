@@ -35,6 +35,8 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
     const imageBuffer = downloadResponse[0];
     logger.log("Image downloaded!");
 
+    const sharpImageMetaData = (await sharp(imageBuffer).metadata());
+
     // Generate a thumbnail using sharp.
     const thumbnailBuffer = await sharp(imageBuffer).resize({
         width: 200,
@@ -56,17 +58,6 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
     const user = filePath.split('/')[0];
     const docpath = filePath.replace(user + '/', '').replace('/' + fileName, '')
 
-    console.log(event.data.metadata?.localUrl)
-    let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
-        return imgData.localUrl == event.data.metadata?.localUrl;
-    })
-
-    if (!oldImageData) return;
-
-    let newImageData = ImageMetadata.fromPartial(oldImageData)
-    newImageData.url = event.data.mediaLink!
-    newImageData.localUrl = '';
-
     if (event.data.metadata?.single) {
         admin.firestore().doc(docpath).set({
             [event.data.metadata?.single]: event.data.mediaLink
@@ -77,6 +68,19 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         );
     }
     if (event.data.metadata?.multi) {
+
+        let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
+            return imgData.localUrl == event.data.metadata?.localUrl;
+        })
+
+        if (!oldImageData) return;
+
+        let newImageData = ImageMetadata.fromPartial(oldImageData)
+        newImageData.url = event.data.mediaLink!
+        newImageData.localUrl = '';
+        newImageData.width = sharpImageMetaData.width!;
+        newImageData.height = sharpImageMetaData.height!;
+
         await admin.firestore().doc(docpath).set({
             [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
         }, { merge: true }

@@ -1,10 +1,22 @@
 import 'dart:convert';
 
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:moonspace/Helper/debug_functions.dart';
-import 'package:spacemoon/Providers/auth.dart';
+import 'package:intl/intl.dart';
+import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/widgets/shimmer_boxes.dart';
+import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
+import 'package:spacemoon/Providers/user_data.dart';
+import 'package:spacemoon/Widget/Chat/gallery.dart';
+import 'package:spacemoon/Widget/Common/fire_image.dart';
+
+void callUserUpdate(User user) {
+  FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
+}
 
 class ProfileRoute extends GoRouteData {
   @override
@@ -13,30 +25,109 @@ class ProfileRoute extends GoRouteData {
   }
 }
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userPro = ref.watch(currentUserDataProvider);
+    final user = userPro.value;
+
+    if (userPro.isLoading) return const Scaffold();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: Column(
-        children: [
-          Consumer(
-            builder: (context, ref, child) {
-              final user = ref.watch(currentUserProvider).value;
-              return FutureBuilder(
-                future: user?.getIdToken(),
-                builder: (context, snapshot) {
-                  final refreshToken = snapshot.data;
-                  return SelectableText((beautifyMap(jwtParse(refreshToken))).toString());
-                },
-              );
-            },
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: 200,
+                width: 200,
+                padding: const EdgeInsets.all(8),
+                child: InkWell(
+                  splashFactory: InkSplash.splashFactory,
+                  onTap: () async {
+                    final imageMetadata = await selectImageMedia();
+
+                    if (imageMetadata == null) return;
+
+                    await uploadFire(
+                      meta: imageMetadata,
+                      imageName: 'profile',
+                      user: user!.uid,
+                      location: 'users/${user.uid}',
+                      singlepath: Const.photoURL.name,
+                    );
+
+                    // photo?.task.then((url) async {
+                    //   final u = await url.ref.getDownloadURL();
+                    //   callUserUpdate(User(photoURL: u));
+                    // });
+                  },
+                  child: user?.photoURL == null || user?.photoURL.isEmpty == true
+                      ? const Icon(
+                          CupertinoIcons.person_crop_circle_badge_plus,
+                          size: 120,
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(250),
+                          child: CustomCacheImage(
+                            imageUrl: thumbImage(user!.photoURL),
+                          ),
+                        ),
+                ),
+              ),
+              ListTile(
+                title: Text(user?.displayName ?? 'Name', style: context.hl),
+                titleAlignment: ListTileTitleAlignment.center,
+                trailing: IconButton(
+                  icon: const Icon(Icons.wind_power_outlined),
+                  onPressed: () {},
+                ),
+              ),
+
+              ListTile(
+                title: Text(user?.nick ?? 'Nickname', style: context.hs),
+                titleAlignment: ListTileTitleAlignment.center,
+                trailing: IconButton(
+                  icon: const Icon(Icons.wind_power_outlined),
+                  onPressed: () {},
+                ),
+              ),
+              ListTile(
+                title: Text(user?.email ?? 'Email', style: context.tm),
+              ),
+              ListTile(
+                title: Text('Visibility : ${user?.open.name}', style: context.tm),
+              ),
+              ListTile(
+                title: Text('Friends : ${user?.friends.length}', style: context.tm),
+              ),
+              ListTile(
+                title: Text('Status : ${user?.status.name}', style: context.tm),
+              ),
+              ListTile(
+                title: Text(
+                  'Joined on : ${DateFormat.yMMMd().format(user?.created.toDateTime() ?? DateTime.now())}',
+                  style: context.tm,
+                ),
+              ),
+              // Consumer(
+              //   builder: (context, ref, child) {
+              //     final user = ref.watch(currentUserProvider).value;
+              //     return FutureBuilder(
+              //       future: user?.getIdToken(),
+              //       builder: (context, snapshot) {
+              //         final refreshToken = snapshot.data;
+              //         return SelectableText(refreshToken ?? '-');
+              //         return SelectableText((beautifyMap(jwtParse(refreshToken))).toString());
+              //       },
+              //     );
+              //   },
+              // ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
@@ -80,9 +79,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final roomPro = ref.watch(roomStreamProvider);
     final room = roomPro.value;
 
-    final meInRoom = ref.watch(currentRoomUserProvider).value;
+    final meInRoomPro = ref.watch(currentRoomUserProvider);
+    final meInRoom = meInRoomPro.value;
 
-    if (roomPro.isLoading) {
+    if (roomPro.isLoading || meInRoomPro.isLoading) {
       return const Scaffold();
     }
 
@@ -171,7 +171,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       alignment: Alignment.topCenter,
                       children: [
                         ScrollablePositionedList.separated(
-                          minCacheExtent: 400,
+                          minCacheExtent: 600,
                           itemScrollController: itemScrollController,
                           scrollOffsetController: scrollOffsetController,
                           itemPositionsListener: itemPositionsListener,
@@ -191,7 +191,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                               if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
                                 return Chip(
                                   padding: EdgeInsets.zero,
-                                  label: Text(DateFormat('MMMM dd yyyy').format(cDate)),
+                                  label: Text(DateFormat.yMMMd().format(cDate)),
                                 );
                               }
                             }
@@ -216,8 +216,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             final index = value?.$1;
                             if (index == null) return const SizedBox();
                             final show = value!.$2;
-                            final date = DateFormat('MMMM dd yyyy')
-                                .format(allTweetSnap.docs[index].data()!.created.toDateTime());
+                            final date =
+                                DateFormat.yMMMd().format(allTweetSnap.docs[index].data()!.created.toDateTime());
 
                             return TweenAnimationBuilder(
                               tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),

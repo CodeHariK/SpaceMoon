@@ -7,7 +7,6 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
-import 'package:spacemoon/Widget/Chat/qr_scanner.dart';
 
 class AllChatPage extends ConsumerWidget {
   const AllChatPage({super.key});
@@ -72,21 +71,20 @@ class AllChatPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          context.bSlidePush(const BarcodeScannerWithScanWindow());
-          // ref.read(currentRoomProvider.notifier).createRoom(
-          //   room: Room(
-          //     nick: '@nick',
-          //     description: 'Description',
-          //     displayName: 'Hello',
-          //     open: Visible.MODERATED,
-          //     photoURL: 'photoUrl',
-          //   ),
-          //   users: [
-          //     randomString(5),
-          //     randomString(5),
-          //     randomString(5),
-          //   ],
-          // );
+          ref.read(currentRoomProvider.notifier).createRoom(
+            room: Room(
+              nick: '@nick',
+              description: 'Description',
+              displayName: 'Hello',
+              open: Visible.MODERATED,
+              photoURL: 'photoUrl',
+            ),
+            users: [
+              randomString(5),
+              randomString(5),
+              randomString(5),
+            ],
+          );
         },
         child: const Icon(Icons.pest_control_rodent_outlined),
       ),

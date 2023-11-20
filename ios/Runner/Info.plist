@@ -54,10 +54,9 @@
     <key>NSCameraUsageDescription</key>
 	<string>We need access to your device's camera to take photos, videos and scan barcodes, which you can share in chat messages.</string>
 
-    <!-- Permission options for the `microphone` group -->
-    <key>NSMicrophoneUsageDescription</key>
-	<string>The app needs access to your microphone for meetings.</string>
-
+    <!-- Permission for saving photos -->
+    <key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need access to save photos in gallery.</string>
 
 	<!-- Google Sign-in Section -->
 	<key>CFBundleURLTypes</key>

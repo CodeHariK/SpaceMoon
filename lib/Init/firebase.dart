@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:moonspace/Helper/debug_functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Routes/Home/account.dart';
+import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/firebase_options.dart';
 
 Future<void> initFirebase() async {

@@ -44,7 +44,7 @@ class TweetBox extends HookConsumerWidget {
                         : const Color.fromARGB(77, 50, 158, 158),
                   ),
                 ],
-                color: AppTheme.darkness ? const Color.fromARGB(221, 36, 36, 36) : Colors.white,
+                color: AppTheme.darkness ? const Color.fromARGB(221, 50, 50, 50) : Colors.white,
                 // border: Border.all(
                 //   color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(200) : AppTheme.seedColor.withAlpha(100),
                 // ),
@@ -59,7 +59,8 @@ class TweetBox extends HookConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: roomuser?.user == tweet.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            // crossAxisAlignment: roomuser?.user == tweet.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               // SuperLink(tweet.text),

@@ -1,17 +1,14 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:moonspace/Helper/extensions.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
+import 'package:spacemoon/Widget/Chat/qr_scanner.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 
 class QrBox extends StatelessWidget {
@@ -55,13 +52,29 @@ class QrBox extends StatelessWidget {
                           : Barcode.fromType(code),
                       padding: const EdgeInsets.all(8),
                       // margin: EdgeInsets.all(4),
-                      errorBuilder: (context, error) => Placeholder(
-                        color: const Color.fromARGB(255, 255, 232, 235),
-                        child: Center(
-                          child: Text(
-                            error,
-                            style: const TextStyle(color: Colors.red, fontSize: 20),
-                          ),
+                      errorBuilder: (context, error) => SizedBox(
+                        width: context.mq.w,
+                        height: context.mq.w,
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Icon(
+                              Icons.qr_code_rounded,
+                              size: context.mq.w,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.black87,
+                                border: Border.all(color: AppTheme.seedColor, width: 2),
+                              ),
+                              child: const Text(
+                                'Error : Input too large',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       data: qrText,
@@ -104,28 +117,17 @@ class QrDialog extends HookWidget {
             ],
           ),
         ),
-        floatingActionButton: (qrtext.value.isEmpty)
-            ? null
-            : Consumer(
-                builder: (context, ref, child) => FloatingActionButton(
-                  onPressed: () {
-                    ref.read(tweetsProvider.notifier).sendTweet(
-                          tweet: Tweet(
-                            text: '${barcodeType.value.name}||${qrtext.value}',
-                            mediaType: MediaType.QR,
-                          ),
-                        );
-                    context.pop();
-                  },
-                  child: const Icon(Icons.send),
-                ),
-              ),
-        body: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: TabBarView(
-            children: [
-              //
-              SingleChildScrollView(
+        body: TabBarView(
+          children: [
+            //
+            Scaffold(
+              floatingActionButton: (qrtext.value.isEmpty)
+                  ? null
+                  : SendButton(
+                      text: '${barcodeType.value.name}||${qrtext.value}',
+                      mediaType: MediaType.QR,
+                    ),
+              body: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 child: Column(
                   children: [
@@ -134,7 +136,7 @@ class QrDialog extends HookWidget {
                       codeQrtext: '${barcodeType.value.name}||${qrtext.value}',
                     ),
 
-//
+                    //
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -168,13 +170,14 @@ class QrDialog extends HookWidget {
                               var image = await boundary.toImage(pixelRatio: 1 + (qrtext.value.length ~/ 120) / 10);
                               var byteData = await image.toByteData(format: ImageByteFormat.png);
                               var pngBytes = byteData?.buffer.asUint8List();
-                              final directory = await getDownloadsDirectory();
 
-                              await File('${directory?.path}/my_image.png').writeAsBytes(pngBytes as List<int>);
-                              // await ref.putData(
-                              //   await imageFile.readAsBytes(),
-                              //   SettableMetadata(contentType: "image/jpeg"),
-                              // );
+                              if (pngBytes != null) {
+                                await ImageGallerySaver.saveImage(
+                                  pngBytes,
+                                  name: 'Hello.png',
+                                  isReturnImagePathOfIOS: true,
+                                );
+                              }
                             },
                             child: const Text('Download'),
                           ),
@@ -192,28 +195,11 @@ class QrDialog extends HookWidget {
                   ],
                 ),
               ),
+            ),
 
-              //
-              // BarcodeScannerView(),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    //
-                    GestureDetector(
-                      onTap: () {},
-                      child: const AspectRatio(
-                        aspectRatio: 1,
-                        child: FittedBox(
-                          fit: BoxFit.fill,
-                          child: Icon(Icons.qr_code_scanner_rounded),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            //
+            const QrScanner()
+          ],
         ),
       ),
     );

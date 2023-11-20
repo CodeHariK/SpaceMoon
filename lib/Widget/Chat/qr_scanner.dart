@@ -3,17 +3,19 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:moonspace/Helper/extensions.dart';
 
-class BarcodeScannerWithScanWindow extends StatefulWidget {
-  const BarcodeScannerWithScanWindow({super.key});
+class QrScanner extends StatefulWidget {
+  const QrScanner({super.key});
 
   @override
-  State<BarcodeScannerWithScanWindow> createState() => _BarcodeScannerWithScanWindowState();
+  State<QrScanner> createState() => _QrScannerState();
 }
 
-class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWindow>
-    with SingleTickerProviderStateMixin {
+class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMixin {
   final MobileScannerController controller = MobileScannerController();
   Barcode? barcode;
   BarcodeCapture? capture;
@@ -30,21 +32,79 @@ class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWin
   @override
   void dispose() {
     animCon.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('With Scan window')),
       backgroundColor: Colors.black,
+      extendBody: true,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            barcode = null;
-          });
+        heroTag: 'GalleryQr',
+        onPressed: () async {
+          final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+          if (image?.path != null) {
+            final result = await controller.analyzeImage(image!.path);
+            if (mounted && result == false) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('No Code Found')),
+              );
+            }
+          }
         },
+        child: const Icon(Icons.photo),
       ),
+      bottomNavigationBar: (barcode == null)
+          ? null
+          : DraggableScrollableSheet(
+              expand: false,
+              minChildSize: (barcode != null) ? 0.2 : 0,
+              initialChildSize: (barcode != null) ? 0.4 : 0,
+              maxChildSize: .8,
+              snapSizes: [0.2, 0.4, 0.6, 0.8],
+              builder: (context, scrollController) {
+                return Scaffold(
+                  floatingActionButton: FloatingActionButton.small(
+                    heroTag: 'CopyQr',
+                    onPressed: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: barcode!.displayValue!),
+                      );
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Copied to Clipboard')),
+                        );
+                      }
+                    },
+                    child: const Icon(Icons.copy),
+                  ),
+                  body: CustomScrollView(
+                    controller: scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    slivers: [
+                      SliverAppBar(
+                        leading: const SizedBox(),
+                        title: Text('${capture!.barcodes.length} match found'),
+                        pinned: true,
+                      ),
+                      SliverToBoxAdapter(
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SelectableText(
+                            barcode!.displayValue.toString(),
+                            style: context.bl,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final scanWindow = Rect.fromCenter(
@@ -59,9 +119,8 @@ class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWin
                 scanWindow: scanWindow,
                 controller: controller,
                 onScannerStarted: (arguments) {
-                  setState(() {
-                    this.arguments = arguments;
-                  });
+                  this.arguments = arguments;
+                  setState(() {});
                 },
                 errorBuilder: (context, error, child) {
                   return ScannerErrorWidget(error: error);
@@ -70,6 +129,19 @@ class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWin
                   this.capture = capture;
                   setState(() => barcode = capture.barcodes.first);
                 },
+                overlay: Center(
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: FittedBox(
+                      fit: BoxFit.fill,
+                      child: Icon(
+                        Icons.qr_code_scanner_rounded,
+                        color: context.theme.pri.withAlpha(120),
+                      ),
+                    ),
+                  ),
+                ),
               ),
               if (barcode != null && barcode?.corners != null && arguments != null)
                 CustomPaint(
@@ -80,112 +152,14 @@ class _BarcodeScannerWithScanWindowState extends State<BarcodeScannerWithScanWin
                     capture: capture!,
                   ),
                 ),
+              // const ScanningPainter(),
+              // const PolygonPainter(),
               CustomPaint(painter: ScannerOverlay(scanWindow, animCon)),
-              const ScanningPainter(),
-              const PolygonPainter(),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: DraggableScrollableSheet(
-                  expand: false,
-                  minChildSize: (barcode != null) ? 0.2 : 0,
-                  initialChildSize: (barcode != null) ? 0.4 : 0,
-                  maxChildSize: .8,
-                  // snapSizes: [0.2, 0.4, 0.6, 0.8],
-                  builder: (_, controller) {
-                    return Container(
-                      clipBehavior: Clip.hardEdge,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        ),
-                        color: Colors.white,
-                      ),
-                      padding: const EdgeInsets.only(top: 8, bottom: 8),
-                      child: Stack(
-                        children: [
-                          SingleChildScrollView(
-                            controller: controller,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 50),
-                                if ((barcode != null))
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(barcode!.displayValue.toString()),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          if (capture != null && barcode != null)
-                            Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(),
-                                ),
-                                color: Colors.white,
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('${capture!.barcodes.length} match found'),
-                                  Text(barcode!.type.name.toUpperCase()),
-                                  FilledButton(
-                                    style: FilledButton.styleFrom(
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      backgroundColor: Colors.black,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop(barcode);
-                                    },
-                                    child: const Text('Submit'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
             ],
           );
         },
       ),
     );
-  }
-}
-
-class ScannerOverlay2 extends CustomPainter {
-  ScannerOverlay2(this.scanWindow);
-
-  final Rect scanWindow;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final backgroundPath = Path()..addRect(Rect.largest);
-    final cutoutPath = Path()..addRect(scanWindow);
-
-    final backgroundPaint = Paint()
-      ..color = Colors.black.withOpacity(0.5)
-      ..style = PaintingStyle.fill
-      ..blendMode = BlendMode.dstOut;
-
-    final backgroundWithCutout = Path.combine(
-      PathOperation.difference,
-      backgroundPath,
-      cutoutPath,
-    );
-    canvas.drawPath(backgroundWithCutout, backgroundPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
 
@@ -260,286 +234,6 @@ class BarcodeOverlay extends CustomPainter {
   }
 }
 
-class ScanningPainter extends StatefulWidget {
-  const ScanningPainter({super.key});
-
-  @override
-  ScanningPainterState createState() => ScanningPainterState();
-}
-
-class ScanningPainterState extends State<ScanningPainter> with SingleTickerProviderStateMixin {
-  double radius = 100.0;
-
-  late final Animation<double> animation;
-  late final AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    );
-
-    Tween<double> rotationTween = Tween(begin: -math.pi, end: math.pi);
-
-    animation = rotationTween.animate(controller)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller.repeat();
-        } else if (status == AnimationStatus.dismissed) {
-          controller.forward();
-        }
-      });
-
-    controller.forward();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      foregroundPainter: PointPainter(radius, animation.value),
-      painter: CirclePainter(radius),
-      child: Container(),
-    );
-  }
-}
-
-// FOR PAINTING THE CIRCLE
-class CirclePainter extends CustomPainter {
-  final double radius;
-  CirclePainter(this.radius);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.purpleAccent
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    var path = Path();
-    path.addOval(Rect.fromCircle(
-      center: Offset(size.width / 2, size.height / 2),
-      radius: radius,
-    ));
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => oldDelegate != this;
-}
-
-// FOR PAINTING THE TRACKING POINT
-class PointPainter extends CustomPainter {
-  final double radius;
-  final double radians;
-  PointPainter(this.radius, this.radians);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.teal
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    var pointPaint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill
-      ..strokeCap = StrokeCap.round;
-
-    var innerCirclePaint = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final textSpan = TextSpan(
-      text: "(${(radius * math.cos(radians)).round()}, ${(radius * math.sin(radians)).round()})",
-      style: const TextStyle(color: Colors.black, fontSize: 16),
-    );
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: 100,
-    );
-
-    var path = Path();
-
-    Offset center = Offset(size.width / 2, size.height / 2);
-
-    path.moveTo(center.dx, center.dy);
-
-    Offset pointOnCircle = Offset(
-      radius * math.cos(radians) + center.dx,
-      radius * math.sin(radians) + center.dy,
-    );
-
-    // For showing the point moving on the circle
-    canvas.drawCircle(pointOnCircle, 10, pointPaint);
-
-    // For drawing the inner circle
-    if (math.cos(radians) < 0.0) {
-      canvas.drawCircle(center, -radius * math.cos(radians), innerCirclePaint);
-      textPainter.paint(
-        canvas,
-        pointOnCircle + const Offset(-100, 10),
-      );
-    } else {
-      canvas.drawCircle(center, radius * math.cos(radians), innerCirclePaint);
-      textPainter.paint(
-        canvas,
-        pointOnCircle + const Offset(10, 10),
-      );
-    }
-
-    path.lineTo(pointOnCircle.dx, pointOnCircle.dy);
-    path.lineTo(pointOnCircle.dx, center.dy);
-
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => oldDelegate != this;
-}
-
-class PolygonPainter extends StatefulWidget {
-  const PolygonPainter({super.key});
-
-  @override
-  PolygonPainterState createState() => PolygonPainterState();
-}
-
-class PolygonPainterState extends State<PolygonPainter> with TickerProviderStateMixin {
-  double sides = 3.0;
-
-  late final Animation<double> animation;
-  late final AnimationController controller;
-
-  late final Animation<double> animation2;
-  late final AnimationController controller2;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    );
-
-    controller2 = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    );
-
-    Tween<double> radiusTween = Tween(begin: 0.0, end: 200);
-    Tween<double> rotationTween = Tween(begin: -math.pi, end: math.pi);
-
-    animation = rotationTween.animate(controller)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller.repeat();
-        } else if (status == AnimationStatus.dismissed) {
-          controller.forward();
-        }
-      });
-
-    animation2 = radiusTween.animate(controller2)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller2.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller2.forward();
-        }
-      });
-
-    controller.forward();
-    controller2.forward();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    controller2.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, snapshot) {
-        return CustomPaint(
-          painter: ShapePainter(sides, animation2.value, animation.value),
-          child: Container(),
-        );
-      },
-    );
-  }
-}
-
-// FOR PAINTING POLYGONS
-class ShapePainter extends CustomPainter {
-  final double sides;
-  final double radius;
-  final double radians;
-  ShapePainter(this.sides, this.radius, this.radians);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.teal
-      ..strokeWidth = 5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    var path = Path();
-
-    var angle = (math.pi * 2) / sides;
-
-    Offset center = Offset(size.width / 2, size.height / 2);
-    Offset startPoint = Offset(radius * math.cos(radians), radius * math.sin(radians));
-
-    path.moveTo(startPoint.dx + center.dx, startPoint.dy + center.dy);
-
-    for (int i = 1; i <= sides; i++) {
-      double x = radius * math.cos(radians + angle * i) + center.dx;
-      double y = radius * math.sin(radians + angle * i) + center.dy;
-      path.lineTo(x, y);
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
-}
-
 class ScannerErrorWidget extends StatelessWidget {
   const ScannerErrorWidget({super.key, required this.error});
 
@@ -571,7 +265,7 @@ class ScannerErrorWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Padding(
-              padding: EdgeInsets.only(bottom: 16),
+              padding: EdgeInsets.all(16),
               child: Icon(Icons.error, color: Colors.white),
             ),
             Text(
@@ -614,24 +308,9 @@ class ScannerOverlay extends CustomPainter {
     if (progress > 0.0) {
       paint.color = Colors.black;
       paint.shader = SweepGradient(
-        colors: const [
-          Colors.red,
-          Colors.blue,
-          Colors.yellow,
-          Colors.green,
-          Colors.white,
-          Colors.black,
-        ],
-        stops: const [
-          0.0,
-          0.2,
-          0.4,
-          0.6,
-          0.8,
-          1.0,
-        ],
-        startAngle: math.pi / 8,
-        endAngle: math.pi / 2,
+        colors: Colors.primaries.take(15).toList(),
+        startAngle: 0,
+        endAngle: 2 * math.pi,
         transform: GradientRotation(math.pi * 2 * progress),
       ).createShader(scanWindow);
     }
@@ -673,6 +352,23 @@ class ScannerOverlay extends CustomPainter {
       Path()..addRRect(borderRect.deflate(4.0)),
     );
     canvas.drawPath(path, paint);
+
+    final textSpan = TextSpan(
+      text: 'Scan',
+      style: TextStyle(foreground: paint, fontSize: 30),
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(
+      minWidth: 0,
+      maxWidth: 100,
+    );
+    textPainter.paint(
+      canvas,
+      scanWindow.topCenter + Offset(-textPainter.size.width / 2, -40),
+    );
   }
 
   @override

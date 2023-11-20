@@ -11,9 +11,8 @@ import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Routes/Home/account.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
+import 'package:photo_view/photo_view.dart';
 
 class GalleryImage extends StatelessWidget {
   const GalleryImage({
@@ -31,103 +30,133 @@ class GalleryImage extends StatelessWidget {
   Widget build(BuildContext context) {
     var imageMetadata = tweet.gallery[index];
 
-    return Container(
-      height: 320,
-      margin: const EdgeInsets.all(4),
-      decoration: imageMetadata.localUrl.isEmpty
+    return GestureDetector(
+      onTap: !inScaffold
           ? null
-          : BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-            ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            if (imageMetadata.url.isNotEmpty)
-              CustomCacheImage(
-                imageUrl: inScaffold ? imageMetadata.url : thumbImage(imageMetadata.url),
-                blurHash: imageMetadata.blurhash,
-              ),
-            if (imageMetadata.localUrl.isNotEmpty)
-              FutureBuilder(
-                future: File(imageMetadata.localUrl).readAsBytes(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError || !snapshot.hasData) {
-                    return BlurHash(hash: imageMetadata.blurhash);
-                  } else {
-                    return Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: Image.memory(snapshot.data!).image,
-                          fit: BoxFit.cover,
+          : () {
+              context.bSlidePush(
+                Scaffold(
+                  appBar: AppBar(
+                      // title: Text('Send Image'),
+                      ),
+                  body: Stack(
+                    children: [
+                      Container(
+                        constraints: BoxConstraints.expand(
+                          height: MediaQuery.of(context).size.height,
+                        ),
+                        child: PhotoView(
+                          imageProvider: NetworkImage(imageMetadata.url),
+                          // tightMode: true,
+                          // maxScale: PhotoViewComputedScale.covered * 2.0,
+                          // minScale: PhotoViewComputedScale.contained * 0.8,
+                          initialScale: PhotoViewComputedScale.contained,
                         ),
                       ),
-                    );
-                  }
-                },
-              ),
-            if (inScaffold && imageMetadata.localUrl.isNotEmpty)
-              FutureBuilder(
-                future: File(imageMetadata.localUrl).exists(),
-                builder: (context, snapshot) {
-                  if (snapshot.data == true) {
-                    return Container(
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: Colors.black,
-                        boxShadow: const [
-                          BoxShadow(color: Color.fromARGB(160, 255, 255, 255), blurRadius: 2, spreadRadius: 4),
-                        ],
-                      ),
-                      child: IconButton(
-                        iconSize: 32,
-                        color: Colors.white,
-                        padding: const EdgeInsets.all(12),
-                        onPressed: () async {
-                          await uploadFire(
-                            imageName: randomString(12),
-                            user: tweet.user,
-                            meta: imageMetadata,
-                            location: tweet.path,
-                            multipath: Const.gallery.name,
-                          );
-                        },
-                        icon: const Icon(CupertinoIcons.cloud_upload_fill),
-                      ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
-            if (inScaffold && imageMetadata.url.isNotEmpty)
-              Consumer(
-                builder: (_, ref, ___) => AsyncTextFormField(
-                  intialValue: imageMetadata.caption,
-                  asyncFn: (value) async {
-                    final uIndex = tweet.gallery.indexWhere((element) => element == imageMetadata);
-                    tweet.gallery[uIndex].caption = value;
-
-                    ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
-
-                    return true;
-                  },
-                  style: context.hm.c(Colors.white),
-                  showPrefix: false,
-                  milliseconds: 1000,
-                  decoration: const InputDecoration(
-                    fillColor: Colors.black38,
-                    hintStyle: TextStyle(color: Colors.white70),
-                    filled: true,
-                    focusedBorder: InputBorder.none,
-                    border: InputBorder.none,
-                    hintText: 'Add Caption...',
+                    ],
                   ),
                 ),
+              );
+            },
+      child: Container(
+        height: 320,
+        margin: const EdgeInsets.all(4),
+        decoration: imageMetadata.localUrl.isEmpty
+            ? null
+            : BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
               ),
-          ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              if (imageMetadata.url.isNotEmpty)
+                CustomCacheImage(
+                  imageUrl: inScaffold ? imageMetadata.url : thumbImage(imageMetadata.url),
+                  // blurHash: imageMetadata.blurhash,
+                ),
+              if (imageMetadata.localUrl.isNotEmpty)
+                FutureBuilder(
+                  future: File(imageMetadata.localUrl).readAsBytes(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError || !snapshot.hasData) {
+                      return const SizedBox();
+                      // return BlurHash(hash: imageMetadata.blurhash);
+                    } else {
+                      return Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: Image.memory(snapshot.data!).image,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              if (inScaffold && imageMetadata.localUrl.isNotEmpty)
+                FutureBuilder(
+                  future: File(imageMetadata.localUrl).exists(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == true) {
+                      return Container(
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.black,
+                          boxShadow: const [
+                            BoxShadow(color: Color.fromARGB(160, 255, 255, 255), blurRadius: 2, spreadRadius: 4),
+                          ],
+                        ),
+                        child: IconButton(
+                          iconSize: 32,
+                          color: Colors.white,
+                          padding: const EdgeInsets.all(12),
+                          onPressed: () async {
+                            await uploadFire(
+                              imageName: randomString(12),
+                              user: tweet.user,
+                              meta: imageMetadata,
+                              location: tweet.path,
+                              multipath: Const.gallery.name,
+                            );
+                          },
+                          icon: const Icon(CupertinoIcons.cloud_upload_fill),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+              if (inScaffold && imageMetadata.url.isNotEmpty)
+                Consumer(
+                  builder: (_, ref, ___) => AsyncTextFormField(
+                    intialValue: imageMetadata.caption,
+                    asyncFn: (value) async {
+                      final uIndex = tweet.gallery.indexWhere((element) => element == imageMetadata);
+                      tweet.gallery[uIndex].caption = value;
+
+                      ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+
+                      return true;
+                    },
+                    style: context.hm.c(Colors.white),
+                    showPrefix: false,
+                    milliseconds: 1000,
+                    decoration: const InputDecoration(
+                      fillColor: Colors.black38,
+                      hintStyle: TextStyle(color: Colors.white70),
+                      filled: true,
+                      focusedBorder: InputBorder.none,
+                      border: InputBorder.none,
+                      hintText: 'Add Caption...',
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -368,7 +397,7 @@ class GalleryUploaderButton extends StatelessWidget {
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     void func() async {
       ContextMenu.hide();
-      final imgs = (await saveFireMedia()).where((element) => element != null);
+      final imgs = (await selectMultiMedia()).where((element) => element != null);
       if (imgs.isEmpty) return;
       final path = tweet?.path ??
           await ref.read(tweetsProvider.notifier).sendTweet(
@@ -407,4 +436,10 @@ class GalleryUploaderButton extends StatelessWidget {
       icon: const Icon(CupertinoIcons.photo),
     );
   }
+}
+
+String thumbImage(String u) {
+  final uri = Uri.parse(u);
+  final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
+  return u.replaceFirst(base, 'thumb_$base');
 }
