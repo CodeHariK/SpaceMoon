@@ -1,14 +1,12 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:spacemoon/Gen/data.pb.dart';
-
-import 'package:moonspace/Helper/debug_functions.dart';
 
 Future<ImageMetadata?> selectImageMedia() async {
   try {
@@ -60,7 +58,7 @@ Future<List<ImageMetadata?>> selectMultiMedia() async {
     final medias = await Future.wait(mediasRead);
     return medias;
   } catch (e) {
-    lava(e);
+    debugPrint(e.toString());
   }
   return [];
 }

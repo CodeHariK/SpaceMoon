@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/Form/async_text_field.dart';
+import 'package:moonspace/helper/validator/validator.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -41,8 +43,8 @@ class ProfilePage extends ConsumerWidget {
           child: Column(
             children: [
               Container(
-                height: 200,
-                width: 200,
+                height: 240,
+                width: 240,
                 padding: const EdgeInsets.all(8),
                 child: InkWell(
                   splashFactory: InkSplash.splashFactory,
@@ -81,17 +83,33 @@ class ProfilePage extends ConsumerWidget {
                 title: Text(user?.displayName ?? 'Name', style: context.hl),
                 titleAlignment: ListTileTitleAlignment.center,
                 trailing: IconButton(
-                  icon: const Icon(Icons.wind_power_outlined),
+                  icon: const Icon(Icons.edit),
                   onPressed: () {},
                 ),
               ),
 
               ListTile(
-                title: Text(user?.nick ?? 'Nickname', style: context.hs),
-                titleAlignment: ListTileTitleAlignment.center,
-                trailing: IconButton(
-                  icon: const Icon(Icons.wind_power_outlined),
-                  onPressed: () {},
+                title: AsyncTextFormField(
+                  initialValue: user?.nick.replaceAll('@', ''),
+                  style: context.tl,
+                  asyncFn: (value) async {
+                    if (value.isEmpty) {
+                      return 'Empty not possible';
+                    }
+                    if (isAlphanumeric(value)) {
+                      return 'only alphanumeric characters are allowed';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Nickname',
+                    hintText: 'Nickname',
+                    prefix: const Text('@'),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {},
+                    ),
+                  ),
                 ),
               ),
               ListTile(

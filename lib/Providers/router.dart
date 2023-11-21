@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
-import 'package:spacemoon/Providers/auth.dart';
 
 part 'router.g.dart';
 
@@ -40,11 +40,13 @@ class AppRouter {
   static const String onboard = '/onboard';
 }
 
-final ValueNotifier<RoutingConfig> myConfig = ValueNotifier<RoutingConfig>(const RoutingConfig(routes: []));
+final ValueNotifier<RoutingConfig> myConfig = ValueNotifier<RoutingConfig>(
+  _generateRoutingConfig(authenticated: false, onboarded: false),
+);
 
 final GoRouter router = GoRouter.routingConfig(
   navigatorKey: AppRouter.rootNavigatorKey,
-  refreshListenable: GoRouterRefresh(),
+  // refreshListenable: GoRouterRefresh(),
   routingConfig: myConfig,
   initialLocation: AppRouter.onboard,
   errorPageBuilder: (context, state) => const MaterialPage(child: Error404Page()),
@@ -53,9 +55,9 @@ final GoRouter router = GoRouter.routingConfig(
 
 RoutingConfig _generateRoutingConfig({required bool authenticated, required bool onboarded}) {
   return RoutingConfig(
-    redirectLimit: 5,
+    redirectLimit: 100,
     redirect: (context, state) async {
-      debugPrint('Redirect ${state.uri} auth:$authenticated onboard:$onboarded}');
+      debugPrint('-> -> -> Redirect ${state.uri} auth:$authenticated onboard:$onboarded}');
 
       if (!onboarded) return AppRouter.onboard;
       if (state.match(AppRouter.onboard)) return authenticated ? AppRouter.home : AppRouter.login;
@@ -75,27 +77,27 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
   );
 }
 
-class GoRouterRefresh extends Listenable {
-  static VoidCallback? _listener;
-  @override
-  void addListener(VoidCallback listener) {
-    _listener = listener;
-  }
+// class GoRouterRefresh extends Listenable {
+//   static VoidCallback? _listener;
+//   @override
+//   void addListener(VoidCallback listener) {
+//     _listener = listener;
+//   }
 
-  @override
-  void removeListener(VoidCallback listener) {
-    _listener = null;
-  }
+//   @override
+//   void removeListener(VoidCallback listener) {
+//     _listener = null;
+//   }
 
-  static void notify() {
-    _listener?.call();
-  }
-}
+//   static void notify() {
+//     _listener?.call();
+//   }
+// }
 
 @Riverpod(keepAlive: true)
 Future routerRedirector(RouterRedirectorRef ref) async {
   final onboarded = ref.watch(onboardedProvider);
-  final user = ref.watch(currentUserProvider).value;
+  final user = ref.watch(currentUserDataProvider).value;
 
   debugPrint(user?.uid ?? '-');
 
@@ -104,7 +106,7 @@ Future routerRedirector(RouterRedirectorRef ref) async {
     onboarded: onboarded,
   );
 
-  GoRouterRefresh.notify();
+  // GoRouterRefresh.notify();
 
   return false;
 }

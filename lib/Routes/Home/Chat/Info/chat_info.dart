@@ -7,7 +7,6 @@ import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
@@ -38,10 +37,6 @@ class ChatInfoPage extends HookConsumerWidget {
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     final allUsersPro = ref.watch(getAllMyUsersProvider);
     final allUsers = allUsersPro.value ?? [];
-    final userPro = ref.watch(currentUserDataProvider);
-    final user = userPro.value;
-
-    if (userPro.isLoading) return const Scaffold();
 
     useEffect(() {
       ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
@@ -82,8 +77,8 @@ class ChatInfoPage extends HookConsumerWidget {
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                height: 200,
-                width: 200,
+                height: 240,
+                width: 240,
                 padding: const EdgeInsets.all(8),
                 child: InkWell(
                   splashFactory: InkSplash.splashFactory,
@@ -92,20 +87,15 @@ class ChatInfoPage extends HookConsumerWidget {
 
                     if (imageMetadata == null) return;
 
-                    await uploadFire(
-                      meta: imageMetadata,
-                      imageName: 'profile',
-                      user: user!.uid,
-                      location: 'users/${user.uid}',
-                      singlepath: Const.photoURL.name,
-                    );
-
-                    // photo?.task.then((url) async {
-                    //   final u = await url.ref.getDownloadURL();
-                    //   callUserUpdate(User(photoURL: u));
-                    // });
+                    // await uploadFire(
+                    //   meta: imageMetadata,
+                    //   imageName: 'profile',
+                    //   user: user!.uid,
+                    //   location: 'users/${user.uid}',
+                    //   singlepath: Const.photoURL.name,
+                    // );
                   },
-                  child: user?.photoURL == null || user?.photoURL.isEmpty == true
+                  child: room.photoURL.isEmpty == true
                       ? const Icon(
                           CupertinoIcons.person_crop_circle_badge_plus,
                           size: 120,
@@ -113,7 +103,7 @@ class ChatInfoPage extends HookConsumerWidget {
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(250),
                           child: CustomCacheImage(
-                            imageUrl: thumbImage(user!.photoURL),
+                            imageUrl: thumbImage(room.photoURL),
                           ),
                         ),
                 ),

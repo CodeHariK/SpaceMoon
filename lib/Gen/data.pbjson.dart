@@ -118,13 +118,12 @@ const User$json = {
   '2': [
     {'1': 'uid', '3': 100, '4': 1, '5': 9, '10': 'uid'},
     {'1': 'displayName', '3': 200, '4': 1, '5': 9, '10': 'displayName'},
-    {'1': 'nick', '3': 210, '4': 1, '5': 9, '10': 'nick'},
+    {'1': 'nick', '3': 250, '4': 1, '5': 9, '10': 'nick'},
     {'1': 'email', '3': 300, '4': 1, '5': 9, '10': 'email'},
     {'1': 'phoneNumber', '3': 400, '4': 1, '5': 9, '10': 'phoneNumber'},
     {'1': 'photoURL', '3': 500, '4': 1, '5': 9, '10': 'photoURL'},
     {'1': 'status', '3': 600, '4': 1, '5': 14, '6': '.user.Active', '10': 'status'},
-    {'1': 'rooms', '3': 700, '4': 3, '5': 9, '10': 'rooms'},
-    {'1': 'friends', '3': 750, '4': 3, '5': 9, '10': 'friends'},
+    {'1': 'friends', '3': 700, '4': 3, '5': 9, '10': 'friends'},
     {'1': 'roomRequest', '3': 800, '4': 3, '5': 9, '10': 'roomRequest'},
     {'1': 'created', '3': 900, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
     {'1': 'open', '3': 1000, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
@@ -135,13 +134,13 @@ const User$json = {
 /// Descriptor for `User`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List userDescriptor = $convert.base64Decode(
     'CgRVc2VyEhAKA3VpZBhkIAEoCVIDdWlkEiEKC2Rpc3BsYXlOYW1lGMgBIAEoCVILZGlzcGxheU'
-    '5hbWUSEwoEbmljaxjSASABKAlSBG5pY2sSFQoFZW1haWwYrAIgASgJUgVlbWFpbBIhCgtwaG9u'
+    '5hbWUSEwoEbmljaxj6ASABKAlSBG5pY2sSFQoFZW1haWwYrAIgASgJUgVlbWFpbBIhCgtwaG9u'
     'ZU51bWJlchiQAyABKAlSC3Bob25lTnVtYmVyEhsKCHBob3RvVVJMGPQDIAEoCVIIcGhvdG9VUk'
-    'wSJQoGc3RhdHVzGNgEIAEoDjIMLnVzZXIuQWN0aXZlUgZzdGF0dXMSFQoFcm9vbXMYvAUgAygJ'
-    'UgVyb29tcxIZCgdmcmllbmRzGO4FIAMoCVIHZnJpZW5kcxIhCgtyb29tUmVxdWVzdBigBiADKA'
-    'lSC3Jvb21SZXF1ZXN0EjUKB2NyZWF0ZWQYhAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVz'
-    'dGFtcFIHY3JlYXRlZBIiCgRvcGVuGOgHIAEoDjINLnVzZXIuVmlzaWJsZVIEb3BlbhIbCghmY2'
-    '1Ub2tlbhjMCCABKAlSCGZjbVRva2Vu');
+    'wSJQoGc3RhdHVzGNgEIAEoDjIMLnVzZXIuQWN0aXZlUgZzdGF0dXMSGQoHZnJpZW5kcxi8BSAD'
+    'KAlSB2ZyaWVuZHMSIQoLcm9vbVJlcXVlc3QYoAYgAygJUgtyb29tUmVxdWVzdBI1CgdjcmVhdG'
+    'VkGIQHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSIgoEb3Blbhjo'
+    'ByABKA4yDS51c2VyLlZpc2libGVSBG9wZW4SGwoIZmNtVG9rZW4YzAggASgJUghmY21Ub2tlbg'
+    '==');
 
 @$core.Deprecated('Use roomUserDescriptor instead')
 const RoomUser$json = {

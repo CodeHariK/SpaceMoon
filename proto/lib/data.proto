@@ -39,16 +39,13 @@ enum Visible {
 message User {
     string uid = 100;
     string displayName = 200;
-    string nick = 210;
+    string nick = 250;
     string email = 300;
     string phoneNumber = 400;
     string photoURL = 500;
     Active status = 600;
-    repeated string rooms = 700;
-    repeated string friends = 750;
+    repeated string friends = 700;
     repeated string roomRequest = 800;
-    // repeated string rooms = 8 [json_name = "dinosaur"];
-    // int32 level = 9;
     google.protobuf.Timestamp created = 900;
     Visible open = 1000;
 

@@ -121,7 +121,6 @@ export const deleteTweet = onCall(async (request) => {
 
 
 export const onTweetDeleted = onDocumentDeleted("rooms/{roomId}/tweets/{tweetId}", async (event) => {
-
     let path = `${Tweet.fromJSON(event.data?.data()).user}/${constName(Const.rooms)}/${event.params.roomId}/${constName(Const.tweets)}/${event.params.tweetId}`;
 
     await admin.storage().bucket().deleteFiles({

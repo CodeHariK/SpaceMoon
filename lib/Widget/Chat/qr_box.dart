@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/qr_scanner.dart';

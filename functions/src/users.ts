@@ -13,7 +13,8 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
         .set(
             User.toJSON(User.create({
                 email: email,
-                displayName: displayName,
+                nick: '@' + uid,
+                displayName: displayName ?? uid,
                 phoneNumber: phoneNumber,
                 photoURL: photoURL,
                 created: new Date(),
@@ -30,10 +31,11 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
 export const callUserUpdate = onCall((request): void => {
     let uid = request.auth?.uid;
 
-    const { displayName, photoURL, fcmToken } = request.data;
+    const { displayName, nick, photoURL, fcmToken } = request.data;
 
     const obj = {
         displayName: displayName,
+        nick: nick,
         photoURL: photoURL,
         fcmToken: fcmToken,
     };
@@ -83,6 +85,7 @@ async function grantModerateRole(uid: string) {
 }
 
 export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
+
     admin.firestore().collection(constName(Const.users))
         .doc(user.uid).delete();
 
@@ -95,11 +98,17 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
         batch.delete(doc.ref);
     });
     await batch.commit();
+
+    admin.storage().bucket().deleteFiles({
+        prefix: user.uid
+    });
+
     return { message: `Deleted all ${user.uid} documents.` };
 });
 
 export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
-    admin.auth().deleteUser(event.params.userId);
+    // console.log(await admin.auth().getUser(event.params.userId))
+    // admin.auth().deleteUser(event.params.userId);
 });
 
 // Helper Functions ___________________________________________

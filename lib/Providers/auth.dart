@@ -6,7 +6,12 @@ part 'auth.g.dart';
 
 @Riverpod(keepAlive: true)
 Stream<User?> currentUser(CurrentUserRef ref) {
-  return FirebaseAuth.instance.userChanges();
+  return FirebaseAuth.instance.userChanges()
+    ..listen(
+      (event) {
+        print('new fcm token : $event');
+      },
+    );
   // .map(
   //   (User? u) {
   //     return u != null

@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Form/async_text_field.dart';
-import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -40,7 +40,7 @@ class SearchPage extends HookConsumerWidget {
               asyncFn: (v) async {
                 await ref.read(roomTextProvider.notifier).change(v);
 
-                return true;
+                return null;
               },
             ),
             if (searchRooms.value != null && searchRooms.value!.isNotEmpty)

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:moonspace/darkknight/extensions/color.dart';
+import 'package:moonspace/helper/extensions/color.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacemoon/Providers/global_theme.dart';

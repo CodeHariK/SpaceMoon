@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:moonspace/Helper/debug_functions.dart';
+import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:spacemoon/Gen/data.pbenum.dart';
 import 'package:spacemoon/Gen/google/protobuf/timestamp.pbserver.dart' as time;

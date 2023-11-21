@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moonspace/Helper/extensions.dart';
-import 'package:moonspace/darkknight/extensions/string.dart';
+import 'package:moonspace/helper/extensions/string.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
@@ -37,7 +37,7 @@ class AllChatPage extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         return Consumer(builder: (context, ref, child) {
                           final room = ref.watch(GetRoomByIdProvider(data[index]!.room)).value;
-                          if (room == null) return const CircularProgressIndicator();
+                          if (room == null) return const SizedBox.shrink();
                           return ListTile(
                             title: Text(room.uid),
                             subtitle: Text(room.displayName),
@@ -73,7 +73,7 @@ class AllChatPage extends ConsumerWidget {
         onPressed: () async {
           ref.read(currentRoomProvider.notifier).createRoom(
             room: Room(
-              nick: '@nick',
+              nick: '#nick',
               description: 'Description',
               displayName: 'Hello',
               open: Visible.MODERATED,

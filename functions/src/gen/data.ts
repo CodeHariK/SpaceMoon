@@ -345,13 +345,8 @@ export interface User {
   phoneNumber: string;
   photoURL: string;
   status: Active;
-  rooms: string[];
   friends: string[];
   roomRequest: string[];
-  /**
-   * repeated string rooms = 8 [json_name = "dinosaur"];
-   * int32 level = 9;
-   */
   created: Date | undefined;
   open: Visible;
   /** ------------------- */
@@ -406,7 +401,6 @@ function createBaseUser(): User {
     phoneNumber: "",
     photoURL: "",
     status: 0,
-    rooms: [],
     friends: [],
     roomRequest: [],
     created: undefined,
@@ -424,7 +418,7 @@ export const User = {
       writer.uint32(1602).string(message.displayName);
     }
     if (message.nick !== "") {
-      writer.uint32(1682).string(message.nick);
+      writer.uint32(2002).string(message.nick);
     }
     if (message.email !== "") {
       writer.uint32(2402).string(message.email);
@@ -438,11 +432,8 @@ export const User = {
     if (message.status !== 0) {
       writer.uint32(4800).int32(message.status);
     }
-    for (const v of message.rooms) {
-      writer.uint32(5602).string(v!);
-    }
     for (const v of message.friends) {
-      writer.uint32(6002).string(v!);
+      writer.uint32(5602).string(v!);
     }
     for (const v of message.roomRequest) {
       writer.uint32(6402).string(v!);
@@ -480,8 +471,8 @@ export const User = {
 
           message.displayName = reader.string();
           continue;
-        case 210:
-          if (tag !== 1682) {
+        case 250:
+          if (tag !== 2002) {
             break;
           }
 
@@ -517,13 +508,6 @@ export const User = {
           continue;
         case 700:
           if (tag !== 5602) {
-            break;
-          }
-
-          message.rooms.push(reader.string());
-          continue;
-        case 750:
-          if (tag !== 6002) {
             break;
           }
 
@@ -575,7 +559,6 @@ export const User = {
       phoneNumber: isSet(object.phoneNumber) ? globalThis.String(object.phoneNumber) : "",
       photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
       status: isSet(object.status) ? activeFromJSON(object.status) : 0,
-      rooms: globalThis.Array.isArray(object?.rooms) ? object.rooms.map((e: any) => globalThis.String(e)) : [],
       friends: globalThis.Array.isArray(object?.friends) ? object.friends.map((e: any) => globalThis.String(e)) : [],
       roomRequest: globalThis.Array.isArray(object?.roomRequest)
         ? object.roomRequest.map((e: any) => globalThis.String(e))
@@ -609,9 +592,6 @@ export const User = {
     if (message.status !== 0) {
       obj.status = activeToJSON(message.status);
     }
-    if (message.rooms?.length) {
-      obj.rooms = message.rooms;
-    }
     if (message.friends?.length) {
       obj.friends = message.friends;
     }
@@ -642,7 +622,6 @@ export const User = {
     message.phoneNumber = object.phoneNumber ?? "";
     message.photoURL = object.photoURL ?? "";
     message.status = object.status ?? 0;
-    message.rooms = object.rooms?.map((e) => e) || [];
     message.friends = object.friends?.map((e) => e) || [];
     message.roomRequest = object.roomRequest?.map((e) => e) || [];
     message.created = object.created ?? undefined;

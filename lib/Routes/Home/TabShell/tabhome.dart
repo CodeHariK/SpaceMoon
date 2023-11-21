@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/Form/async_text_field.dart';
-import 'package:moonspace/Helper/extensions.dart';
-import 'package:moonspace/darkknight/extensions/color.dart';
+import 'package:moonspace/helper/extensions/color.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
 
@@ -115,7 +115,7 @@ class _Tab1PageState extends State<Tab1Page> {
                 query = value;
                 page = 1;
                 await fetch();
-                return true;
+                return null;
               },
             ),
           ),
@@ -160,13 +160,7 @@ class UnslashRow extends StatelessWidget {
               return Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    // BoxShadow(
-                    //   color: Colors.grey.shade600,
-                    //   spreadRadius: 1,
-                    //   blurRadius: 8,
-                    //   offset: const Offset(0, 4),
-                    // ),
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 1,

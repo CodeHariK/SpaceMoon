@@ -73,21 +73,21 @@ class LoginRoute extends GoRouteData {
             if (context.mounted) AccountRoute().pushReplacement(context);
           },
         ),
-        AuthStateChangeAction((context, AuthState state) {
-          final user = switch (state) {
-            SignedIn(user: final user) => user,
-            CredentialLinked(user: final user) => user,
-            UserCreated(credential: final cred) => cred.user,
-            _ => null,
-          };
+        // AuthStateChangeAction((context, AuthState state) {
+        //   final user = switch (state) {
+        //     SignedIn(user: final user) => user,
+        //     CredentialLinked(user: final user) => user,
+        //     UserCreated(credential: final cred) => cred.user,
+        //     _ => null,
+        //   };
 
-          switch (user) {
-            case User(emailVerified: true):
-              AccountRoute().pushReplacement(context);
-            case User(emailVerified: false, email: final String _):
-              VerifyEmailRoute().push(context);
-          }
-        }),
+        //   switch (user) {
+        //     case User(emailVerified: true):
+        //       AccountRoute().pushReplacement(context);
+        //     // case User(emailVerified: false, email: final String _):
+        //     //   VerifyEmailRoute().push(context);
+        //   }
+        // }),
       ],
     );
   }
@@ -142,11 +142,11 @@ class SmsRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return SMSCodeInputScreen(
-      actions: [
-        AuthStateChangeAction<SignedIn>((context, state) {
-          context.go('/');
-        }),
-      ],
+      // actions: [
+      //   AuthStateChangeAction<SignedIn>((context, state) {
+      //     context.go('/');
+      //   }),
+      // ],
       flowKey: $extra.flowKey,
       action: $extra.action,
       headerBuilder: headerIcon(Icons.sms_outlined),
@@ -213,11 +213,11 @@ class EmailLinkRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return EmailLinkSignInScreen(
-      actions: [
-        AuthStateChangeAction<SignedIn>((context, state) {
-          HomeRoute().pushReplacement(context);
-        }),
-      ],
+      // actions: [
+      //   AuthStateChangeAction<SignedIn>((context, state) {
+      //     HomeRoute().pushReplacement(context);
+      //   }),
+      // ],
       headerMaxExtent: 200,
       headerBuilder: headerIcon(Icons.link),
       sideBuilder: sideIcon(Icons.link),

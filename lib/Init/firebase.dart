@@ -11,10 +11,12 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart' as auth;
 import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:moonspace/Helper/debug_functions.dart';
+import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/firebase_options.dart';
+
+const spacemoonStorageBucket = 'spacemoonfire.appspot.com';
 
 Future<void> initFirebase() async {
   await Firebase.initializeApp(

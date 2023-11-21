@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:moonspace/Helper/extensions.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 
 class QrScanner extends StatefulWidget {
   const QrScanner({super.key});
@@ -65,7 +65,7 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
               minChildSize: (barcode != null) ? 0.2 : 0,
               initialChildSize: (barcode != null) ? 0.4 : 0,
               maxChildSize: .8,
-              snapSizes: [0.2, 0.4, 0.6, 0.8],
+              snapSizes: const [0.2, 0.4, 0.6, 0.8],
               builder: (context, scrollController) {
                 return Scaffold(
                   floatingActionButton: FloatingActionButton.small(

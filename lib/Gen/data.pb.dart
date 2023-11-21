@@ -27,7 +27,6 @@ class User extends $pb.GeneratedMessage {
     $core.String? phoneNumber,
     $core.String? photoURL,
     Active? status,
-    $core.Iterable<$core.String>? rooms,
     $core.Iterable<$core.String>? friends,
     $core.Iterable<$core.String>? roomRequest,
     $0.Timestamp? created,
@@ -56,9 +55,6 @@ class User extends $pb.GeneratedMessage {
     if (status != null) {
       $result.status = status;
     }
-    if (rooms != null) {
-      $result.rooms.addAll(rooms);
-    }
     if (friends != null) {
       $result.friends.addAll(friends);
     }
@@ -83,13 +79,12 @@ class User extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'User', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
     ..aOS(100, _omitFieldNames ? '' : 'uid')
     ..aOS(200, _omitFieldNames ? '' : 'displayName', protoName: 'displayName')
-    ..aOS(210, _omitFieldNames ? '' : 'nick')
+    ..aOS(250, _omitFieldNames ? '' : 'nick')
     ..aOS(300, _omitFieldNames ? '' : 'email')
     ..aOS(400, _omitFieldNames ? '' : 'phoneNumber', protoName: 'phoneNumber')
     ..aOS(500, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
     ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.OFFLINE, valueOf: Active.valueOf, enumValues: Active.values)
-    ..pPS(700, _omitFieldNames ? '' : 'rooms')
-    ..pPS(750, _omitFieldNames ? '' : 'friends')
+    ..pPS(700, _omitFieldNames ? '' : 'friends')
     ..pPS(800, _omitFieldNames ? '' : 'roomRequest', protoName: 'roomRequest')
     ..aOM<$0.Timestamp>(900, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
@@ -136,14 +131,14 @@ class User extends $pb.GeneratedMessage {
   @$pb.TagNumber(200)
   void clearDisplayName() => clearField(200);
 
-  @$pb.TagNumber(210)
+  @$pb.TagNumber(250)
   $core.String get nick => $_getSZ(2);
-  @$pb.TagNumber(210)
+  @$pb.TagNumber(250)
   set nick($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(210)
+  @$pb.TagNumber(250)
   $core.bool hasNick() => $_has(2);
-  @$pb.TagNumber(210)
-  void clearNick() => clearField(210);
+  @$pb.TagNumber(250)
+  void clearNick() => clearField(250);
 
   @$pb.TagNumber(300)
   $core.String get email => $_getSZ(3);
@@ -182,43 +177,38 @@ class User extends $pb.GeneratedMessage {
   void clearStatus() => clearField(600);
 
   @$pb.TagNumber(700)
-  $core.List<$core.String> get rooms => $_getList(7);
-
-  @$pb.TagNumber(750)
-  $core.List<$core.String> get friends => $_getList(8);
+  $core.List<$core.String> get friends => $_getList(7);
 
   @$pb.TagNumber(800)
-  $core.List<$core.String> get roomRequest => $_getList(9);
+  $core.List<$core.String> get roomRequest => $_getList(8);
 
-  /// repeated string rooms = 8 [json_name = "dinosaur"];
-  /// int32 level = 9;
   @$pb.TagNumber(900)
-  $0.Timestamp get created => $_getN(10);
+  $0.Timestamp get created => $_getN(9);
   @$pb.TagNumber(900)
   set created($0.Timestamp v) { setField(900, v); }
   @$pb.TagNumber(900)
-  $core.bool hasCreated() => $_has(10);
+  $core.bool hasCreated() => $_has(9);
   @$pb.TagNumber(900)
   void clearCreated() => clearField(900);
   @$pb.TagNumber(900)
-  $0.Timestamp ensureCreated() => $_ensure(10);
+  $0.Timestamp ensureCreated() => $_ensure(9);
 
   @$pb.TagNumber(1000)
-  Visible get open => $_getN(11);
+  Visible get open => $_getN(10);
   @$pb.TagNumber(1000)
   set open(Visible v) { setField(1000, v); }
   @$pb.TagNumber(1000)
-  $core.bool hasOpen() => $_has(11);
+  $core.bool hasOpen() => $_has(10);
   @$pb.TagNumber(1000)
   void clearOpen() => clearField(1000);
 
   /// -------------------
   @$pb.TagNumber(1100)
-  $core.String get fcmToken => $_getSZ(12);
+  $core.String get fcmToken => $_getSZ(11);
   @$pb.TagNumber(1100)
-  set fcmToken($core.String v) { $_setString(12, v); }
+  set fcmToken($core.String v) { $_setString(11, v); }
   @$pb.TagNumber(1100)
-  $core.bool hasFcmToken() => $_has(12);
+  $core.bool hasFcmToken() => $_has(11);
   @$pb.TagNumber(1100)
   void clearFcmToken() => clearField(1100);
 }

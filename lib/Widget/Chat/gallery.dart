@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/Form/async_text_field.dart';
 import 'package:moonspace/Form/mario.dart';
-import 'package:moonspace/Helper/extensions.dart';
-import 'package:moonspace/darkknight/extensions/string.dart';
+import 'package:moonspace/helper/extensions/string.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Init/firebase.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
@@ -133,14 +134,14 @@ class GalleryImage extends StatelessWidget {
               if (inScaffold && imageMetadata.url.isNotEmpty)
                 Consumer(
                   builder: (_, ref, ___) => AsyncTextFormField(
-                    intialValue: imageMetadata.caption,
+                    initialValue: imageMetadata.caption,
                     asyncFn: (value) async {
                       final uIndex = tweet.gallery.indexWhere((element) => element == imageMetadata);
                       tweet.gallery[uIndex].caption = value;
 
                       ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
 
-                      return true;
+                      return null;
                     },
                     style: context.hm.c(Colors.white),
                     showPrefix: false,
@@ -439,6 +440,7 @@ class GalleryUploaderButton extends StatelessWidget {
 }
 
 String thumbImage(String u) {
+  if (!u.contains(spacemoonStorageBucket)) return u;
   final uri = Uri.parse(u);
   final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
   return u.replaceFirst(base, 'thumb_$base');

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:moonspace/Helper/debug_functions.dart';
+import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
@@ -17,7 +17,7 @@ import 'package:spacemoon/Providers/router.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void moonspace({
+void electrify({
   required String title,
   final List<LocalizationsDelegate<dynamic>>? localizationsDelegates,
   final List<Locale>? supportedLocales,
