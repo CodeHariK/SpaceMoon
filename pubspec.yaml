@@ -80,6 +80,7 @@ dependencies:
   video_player: ^2.8.1
   mime: ^1.0.4
   image_gallery_saver: "^2.0.3"
+  flutter_svg: ^2.0.9
 
   barcode_widget: ^2.0.4
 

@@ -67,9 +67,10 @@ Future<void> initFirebase() async {
       vapidKey: 'BFjqeePbCMx5kxv-bTVBte9_maDaqJ6wjydfReBGHaIWJR3Oz54H26XnCXjuXpdF38zCUKkvcbHndNKzvYEf1uQ',
     );
 
-    lava('$token');
+    lava('init : $token');
     callUserUpdate(User(fcmToken: token));
     messaging.onTokenRefresh.listen((token) {
+      lava('tokenrefresh : $token');
       callUserUpdate(User(fcmToken: token));
     });
 

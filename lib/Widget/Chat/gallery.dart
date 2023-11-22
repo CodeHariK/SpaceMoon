@@ -135,7 +135,7 @@ class GalleryImage extends StatelessWidget {
                 Consumer(
                   builder: (_, ref, ___) => AsyncTextFormField(
                     initialValue: imageMetadata.caption,
-                    asyncFn: (value) async {
+                    asyncValidator: (value) async {
                       final uIndex = tweet.gallery.indexWhere((element) => element == imageMetadata);
                       tweet.gallery[uIndex].caption = value;
 

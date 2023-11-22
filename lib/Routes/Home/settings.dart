@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Special/about.dart';
 
 @immutable
 class SettingsRoute extends GoRouteData {
@@ -56,7 +58,7 @@ class SettingsPage extends ConsumerWidget {
                 offset: const Offset(1, -120),
                 child: ListTile(
                   visualDensity: VisualDensity.compact,
-                  title: const Text('Theme'),
+                  title: Text('Theme', style: context.tm),
                   subtitle: Text(globalAppTheme.theme.name),
                   trailing: globalAppTheme.theme.icon,
                 ),
@@ -78,7 +80,7 @@ class SettingsPage extends ConsumerWidget {
                             child: Container(
                               width: 25,
                               height: 25,
-                              margin: EdgeInsets.all(2),
+                              margin: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
                                 color: c,
@@ -96,7 +98,13 @@ class SettingsPage extends ConsumerWidget {
             onTap: () {
               AccountRoute().push(context);
             },
-            title: const Text('Account Management'),
+            title: Text('Account Management', style: context.tm),
+          ),
+          CupertinoListTile.notched(
+            onTap: () {
+              AboutRoute().push(context);
+            },
+            title: Text('About', style: context.tm),
           ),
         ],
       ),

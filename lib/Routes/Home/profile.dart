@@ -92,7 +92,7 @@ class ProfilePage extends ConsumerWidget {
                 title: AsyncTextFormField(
                   initialValue: user?.nick.replaceAll('@', ''),
                   style: context.tl,
-                  asyncFn: (value) async {
+                  asyncValidator: (value) async {
                     if (value.isEmpty) {
                       return 'Empty not possible';
                     }

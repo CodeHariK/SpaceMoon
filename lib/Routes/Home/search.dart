@@ -37,7 +37,7 @@ class SearchPage extends HookConsumerWidget {
                 labelText: 'Find Rooms',
               ),
               milliseconds: 300,
-              asyncFn: (v) async {
+              asyncValidator: (v) async {
                 await ref.read(roomTextProvider.notifier).change(v);
 
                 return null;

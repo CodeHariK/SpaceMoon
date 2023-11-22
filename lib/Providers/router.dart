@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 
@@ -38,6 +39,7 @@ class AppRouter {
 
   //
   static const String onboard = '/onboard';
+  static const String about = '/about';
 }
 
 final ValueNotifier<RoutingConfig> myConfig = ValueNotifier<RoutingConfig>(
@@ -73,6 +75,7 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
       if (authenticated) ...Home.routes,
       if (!authenticated) ...Auth.routes,
       if (!onboarded) ...Onboard.routes,
+      ...About.routes,
     ],
   );
 }

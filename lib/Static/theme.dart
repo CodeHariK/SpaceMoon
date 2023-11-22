@@ -181,9 +181,9 @@ class AppTheme {
       );
 
   TextTheme get textTheme => TextTheme(
-        displayLarge: poppins.copyWith(color: Colors.orange),
-        displayMedium: poppins.copyWith(color: const Color.fromARGB(255, 226, 32, 32)),
-        displaySmall: poppins.copyWith(color: Colors.teal),
+        displayLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 42.c),
+        displayMedium: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 36.c),
+        displaySmall: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 30.c),
         headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 28.c),
         headlineMedium: GoogleFonts.merriweather(letterSpacing: 3.c, fontSize: 24.c),
         headlineSmall: GoogleFonts.merriweather(fontSize: 22.5.c),

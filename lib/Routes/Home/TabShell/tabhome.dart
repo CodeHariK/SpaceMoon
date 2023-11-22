@@ -111,7 +111,7 @@ class _Tab1PageState extends State<Tab1Page> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AsyncTextFormField(
-              asyncFn: (value) async {
+              asyncValidator: (value) async {
                 query = value;
                 page = 1;
                 await fetch();
