@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:moonspace/Form/mario.dart';
+import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
+import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 
@@ -54,54 +54,7 @@ class SendBox extends HookConsumerWidget {
                 hintText: mediaType == MediaType.QR ? 'Type to generate QR Code' : 'Type...',
                 contentPadding: 16.e,
                 prefixIcon: const Icon(Icons.star),
-                suffixIcon: (mediaType == MediaType.QR)
-                    ? null
-                    : ContextMenu(
-                        boxSize: const Size(200, 200),
-                        optionChild: GridView.count(
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          padding: const EdgeInsets.all(8),
-                          crossAxisCount: 3,
-                          children: [
-                            IconButton.filledTonal(
-                              icon: const Icon(Icons.qr_code_rounded),
-                              onPressed: () {
-                                context.rSlidePush(
-                                  QrDialog(
-                                    roomUser: roomUser,
-                                  ),
-                                );
-                                ContextMenu.hide();
-                              },
-                            ),
-                            GalleryUploaderButton(ref: ref),
-                            IconButton.filledTonal(
-                              onPressed: () async {
-                                ContextMenu.hide();
-                                final res = await context.cPush<String>(
-                                  Hero(
-                                    tag: 'Appflowy',
-                                    child: AppFlowy(
-                                      jsonData: exampleJson,
-                                    ),
-                                  ),
-                                );
-                                if (res != null) {
-                                  ref.read(tweetsProvider.notifier).sendTweet(
-                                        tweet: Tweet(
-                                          text: res,
-                                          mediaType: MediaType.POST,
-                                        ),
-                                      );
-                                }
-                              },
-                              icon: const Icon(Icons.post_add),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(Icons.add_circle_outline_sharp),
-                      ),
+                suffixIcon: (mediaType == MediaType.QR) ? null : SendActionMenu(roomUser: roomUser),
               ),
             ),
           ),
@@ -114,6 +67,34 @@ class SendBox extends HookConsumerWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class SendActionMenu extends ConsumerWidget {
+  const SendActionMenu({
+    super.key,
+    required this.roomUser,
+  });
+
+  final RoomUser roomUser;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ContextMenu(
+      boxSize: const Size(200, 200),
+      optionChild: GridView.count(
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        padding: const EdgeInsets.all(8),
+        crossAxisCount: 3,
+        children: [
+          QrActionButton(roomUser: roomUser),
+          GalleryUploaderButton(ref: ref),
+          AppFlowyActionButton(ref: ref),
+        ],
+      ),
+      child: const Icon(Icons.add_circle_outline_sharp),
     );
   }
 }

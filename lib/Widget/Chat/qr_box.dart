@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -202,6 +203,30 @@ class QrDialog extends HookWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class QrActionButton extends StatelessWidget {
+  const QrActionButton({
+    super.key,
+    required this.roomUser,
+  });
+
+  final RoomUser roomUser;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filledTonal(
+      icon: const Icon(Icons.qr_code_rounded),
+      onPressed: () {
+        context.rSlidePush(
+          QrDialog(
+            roomUser: roomUser,
+          ),
+        );
+        ContextMenu.hide();
+      },
     );
   }
 }

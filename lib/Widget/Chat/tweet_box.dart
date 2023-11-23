@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:any_link_preview/any_link_preview.dart';
@@ -9,12 +9,12 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Static/theme.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
+import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
 
-class TweetBox extends HookConsumerWidget {
+class TweetBox extends ConsumerWidget {
   const TweetBox({
     super.key,
     required this.tweet,
@@ -98,32 +98,7 @@ class TweetBox extends HookConsumerWidget {
 
               if (tweet.mediaType == MediaType.GALLERY && tweet.gallery.isNotEmpty) GalleryBox(tweet: tweet),
 
-              if (tweet.mediaType == MediaType.POST)
-                InkWell(
-                  onTap: () {
-                    context.cPush(
-                      Hero(
-                        tag: 'Appflowy',
-                        child: AppFlowy(
-                          jsonData: exampleJson,
-                        ),
-                      ),
-                    );
-                  },
-                  child: IgnorePointer(
-                    child: SizedBox(
-                      width: 300,
-                      height: 300,
-                      child: Hero(
-                        tag: 'Appflowy',
-                        child: AppFlowy(
-                          jsonData: exampleJson,
-                          showAppbar: false,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              if (tweet.mediaType == MediaType.POST) AppFlowyBox(tweet: tweet),
 
               if (isWebsite(tweet.text))
                 SizedBox(

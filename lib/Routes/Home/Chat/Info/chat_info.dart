@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -75,7 +77,6 @@ class ChatInfoPage extends HookConsumerWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Align(
-              alignment: Alignment.center,
               child: Container(
                 height: 240,
                 width: 240,
@@ -110,6 +111,43 @@ class ChatInfoPage extends HookConsumerWidget {
               ),
             ),
           ),
+          SliverList.list(
+            children: [
+              Text(
+                room.displayName,
+                style: context.hl,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                room.nick,
+                style: context.hm,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                room.description,
+                style: context.hs,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                DateFormat.yMMMd().format(room.created.toDateTime()),
+                style: context.hs,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                room.open.name,
+                style: context.hs,
+                textAlign: TextAlign.center,
+              ),
+              Align(
+                child: FilledButton(
+                  onPressed: () {
+                    ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
+                  },
+                  child: const Text('Leave Room'),
+                ),
+              ),
+            ],
+          ),
           SliverList.builder(
             itemBuilder: (context, index) {
               final roomUser = allUsers[index]!;
@@ -140,20 +178,6 @@ class ChatInfoPage extends HookConsumerWidget {
             },
             itemCount: allUsers.length,
           ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Text(room.toString()),
-              ],
-            ),
-          ),
-          // Text(meInRoom.toString()),
-          // FilledButton(
-          //   onPressed: () {
-          //     ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
-          //   },
-          //   child: const Text('Leave Room'),
-          // ),
         ],
       ),
     );

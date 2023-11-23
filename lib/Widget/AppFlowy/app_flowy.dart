@@ -340,10 +340,13 @@ Map<String, BlockComponentBuilder> buildBlockComponentBuilders(
           onTap: () => editorState.apply(
             editorState.transaction..updateNode(node, {TodoListBlockKeys.checked: !checked}),
           ),
-          child: Icon(
-            checked ? Icons.check_box : Icons.check_box_outline_blank,
-            size: 20,
-            color: AppTheme.darkness ? Colors.white : Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 6.0),
+            child: Icon(
+              checked ? Icons.check_box : Icons.check_box_outline_blank,
+              size: 20,
+              color: AppTheme.darkness ? Colors.white : Colors.black,
+            ),
           ),
         );
       },
@@ -353,13 +356,14 @@ Map<String, BlockComponentBuilder> buildBlockComponentBuilders(
       configuration: configuration,
       iconBuilder: (context, node) {
         return Container(
-          width: 20,
-          height: 20,
+          width: 18,
+          height: 18,
+          padding: const EdgeInsets.only(right: 6.0),
           alignment: Alignment.center,
           child: const Icon(
-            Icons.circle,
+            Icons.circle_outlined,
             size: 10,
-            color: Colors.red,
+            color: Colors.black,
           ),
         );
       },
