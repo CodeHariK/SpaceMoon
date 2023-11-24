@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Static/assets.dart';
 
@@ -14,12 +15,18 @@ class SplashPage extends StatelessWidget {
           : ThemeData.dark(),
       home: Scaffold(
         body: Center(
-          child: Column(
-            children: [
-              Image.asset(Asset.spaceMoon),
-              const Spacer(),
-              Text('Built by shark.run', style: context.tm),
+          child: Animate(
+            effects: const [
+              FadeEffect(),
+              ScaleEffect(),
             ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(Asset.spaceMoon),
+                Text('Built by shark.run', style: context.tm),
+              ],
+            ),
           ),
         ),
       ),

@@ -41,33 +41,33 @@ class TabShellRoute extends ShellRouteData {
   }
 }
 
-class TabHomeRoute extends GoRouteData {
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const TabHomePage();
-  }
+// class TabHomeRoute extends GoRouteData {
+//   @override
+//   Widget build(BuildContext context, GoRouterState state) {
+//     return const TabHomePage();
+//   }
 
-  @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-    return '/tabhome/tab1';
-  }
-}
+//   @override
+//   FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+//     return '/tabhome/tab1';
+//   }
+// }
 
-class TabHomePage extends StatelessWidget {
-  const TabHomePage({super.key});
+// class TabHomePage extends StatelessWidget {
+//   const TabHomePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TabHome'),
-      ),
-      body: const Column(
-        children: [],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('TabHome'),
+//       ),
+//       body: const Column(
+//         children: [],
+//       ),
+//     );
+//   }
+// }
 
 class Tab1Route extends GoRouteData {
   @override
@@ -121,8 +121,8 @@ class _Tab1PageState extends State<Tab1Page> {
           ),
         ),
       ),
-      // body: res == null ? null : Grid(res),
-      body: res == null ? null : UnslashRow(res),
+      body: res == null ? null : Grid(res),
+      // body: res == null ? null : UnslashRow(res),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           page += 1;
@@ -459,7 +459,7 @@ class Breadcrumb {
   final String? slug;
   final String? title;
   final int? index;
-  final Type? type;
+  final UnsplashType? type;
 
   Breadcrumb({
     this.slug,
@@ -477,20 +477,18 @@ class Breadcrumb {
         slug: json["slug"],
         title: json["title"],
         index: json["index"],
-        type: typeValues.map[json["type"]]!,
+        type: UnsplashType.values.where((element) => element.name == json["type"]).firstOrNull,
       );
 
   Map<String, dynamic> toMap() => {
         "slug": slug,
         "title": title,
         "index": index,
-        "type": typeValues.reverse[type],
+        "type": type?.name,
       };
 }
 
-enum Type { LANDING_PAGE, SEARCH }
-
-final typeValues = EnumValues({"landing_page": Type.LANDING_PAGE, "search": Type.SEARCH});
+enum UnsplashType { landingPage, search }
 
 class ResultLinks {
   final String? self;
@@ -525,7 +523,7 @@ class ResultLinks {
 }
 
 class Tag {
-  final Type? type;
+  final UnsplashType? type;
   final String? title;
   final Source? source;
 
@@ -540,13 +538,13 @@ class Tag {
   String toJson() => json.encode(toMap());
 
   factory Tag.fromMap(Map<String, dynamic> json) => Tag(
-        type: typeValues.map[json["type"]]!,
+        type: UnsplashType.values.where((element) => element.name == json["type"]).firstOrNull,
         title: json["title"],
         source: json["source"] == null ? null : Source.fromMap(json["source"]),
       );
 
   Map<String, dynamic> toMap() => {
-        "type": typeValues.reverse[type],
+        "type": type?.name,
         "title": title,
         "source": source?.toMap(),
       };
@@ -1192,16 +1190,4 @@ class ResultUser {
         "for_hire": forHire,
         "social": social?.toMap(),
       };
-}
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

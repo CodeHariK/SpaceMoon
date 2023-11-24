@@ -6,6 +6,7 @@ import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/main.dart';
 
 part 'auth_routes.g.dart';
 
@@ -33,7 +34,7 @@ class LoginRoute extends GoRouteData {
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: Text('Welcome to Firebase UI! $actionText.'),
+          child: Text('Welcome to ${SpaceMoon.title}! $actionText.'),
         );
       },
       footerBuilder: (context, action) {

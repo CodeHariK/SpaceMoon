@@ -3,9 +3,13 @@ import 'package:spacemoon/Init/init.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:spacemoon/Init/electrify.dart';
 
+class SpaceMoon {
+  static String title = 'Spacemoon';
+}
+
 void main() {
   electrify(
-    title: 'Spacemoon',
+    title: SpaceMoon.title,
     init: init,
     localizationsDelegates: [
       FirebaseUILocalizations.delegate,

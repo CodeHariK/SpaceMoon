@@ -1,8 +1,8 @@
 class Asset {
-  static const String spaceMoon = 'assets/images/SpaceMoon.webp';
+  static const String spaceMoon = 'assets/images/SpaceMoon.png';
   static const String sharkrun = 'assets/images/SpaceShark.webp';
 
-  static const String books = 'assets/onboard/books.jpg';
-  static const String poetry = 'assets/onboard/poetry.avif';
-  static const String typewriter = 'assets/onboard/typewriter.jpg';
+  static const String dream = 'assets/onboard/dream.webp';
+  static const String story = 'assets/onboard/story.webp';
+  static const String team = 'assets/onboard/team.webp';
 }

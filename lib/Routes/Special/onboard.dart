@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,6 @@ import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Static/assets.dart';
-import 'package:moonspace/painter/wave_clipper.dart';
 
 part 'onboard.g.dart';
 
@@ -73,40 +71,37 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Expanded(
-              child: PhysicalShape(
-                color: Colors.white38,
-                clipper: const WaveClipper(),
-                child: PageView(
-                  physics: const ClampingScrollPhysics(),
-                  controller: pageCon,
-                  children: [
-                    OnboardPage(
-                      purple: purple,
-                      text: 'Dream big',
-                      image: Asset.books,
-                    ),
-                    OnboardPage(
-                      purple: purple,
-                      text: 'Organize tasks',
-                      image: Asset.typewriter,
-                    ),
-                    OnboardPage(
-                      purple: purple,
-                      text: 'Share your world.',
-                      image: Asset.poetry,
-                    ),
-                    const Scaffold(),
-                  ],
-                ),
+              child: PageView(
+                physics: const ClampingScrollPhysics(),
+                controller: pageCon,
+                children: [
+                  OnboardPage(
+                    purple: purple,
+                    text: 'Dream big',
+                    image: Asset.dream,
+                  ),
+                  OnboardPage(
+                    purple: purple,
+                    text: 'Organize tasks',
+                    image: Asset.team,
+                  ),
+                  OnboardPage(
+                    purple: purple,
+                    text: 'Share your world',
+                    image: Asset.story,
+                  ),
+                  const Scaffold(backgroundColor: Colors.white),
+                ],
               ),
             ),
             IconButton.filled(
-              style: IconButton.styleFrom(backgroundColor: purple.withOpacity(0.1)),
+              style: IconButton.styleFrom(backgroundColor: Colors.transparent),
               onPressed: () {
                 pageCon.nextPage(
                   duration: const Duration(milliseconds: 300),

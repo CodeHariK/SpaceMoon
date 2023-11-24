@@ -174,9 +174,7 @@ class TweetBox extends ConsumerWidget {
                 child: box,
               )
         : GestureDetector(
-            onLongPress: () {
-              print('Long Press');
-            },
+            onLongPress: () {},
             onTap: (tweet.mediaType == MediaType.VIDEO)
                 ? null
                 : () {

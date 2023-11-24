@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/Form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/helper/validator/validator.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -36,9 +37,18 @@ class SearchPage extends HookConsumerWidget {
                 hintText: 'Find Rooms',
                 labelText: 'Find Rooms',
               ),
-              milliseconds: 300,
+              milliseconds: 600,
               asyncValidator: (v) async {
+                if (v.length < 7) return 'Invalid';
+
+                if (v.startsWith('#')) {
+                  v = v.substring(1);
+                }
+
+                if (!isAlphanumeric(v)) return 'Invalid';
+
                 await ref.read(roomTextProvider.notifier).change(v);
+                await 200.mil.delay();
 
                 return null;
               },

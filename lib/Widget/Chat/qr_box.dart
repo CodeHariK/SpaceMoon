@@ -4,7 +4,8 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:moonspace/helper/extensions/string.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -173,11 +174,19 @@ class QrDialog extends HookWidget {
                               var pngBytes = byteData?.buffer.asUint8List();
 
                               if (pngBytes != null) {
-                                await ImageGallerySaver.saveImage(
+                                final saved = await SaverGallery.saveImage(
                                   pngBytes,
-                                  name: 'Hello.png',
-                                  isReturnImagePathOfIOS: true,
+                                  name: '${randomString(12)}.png',
+                                  androidRelativePath: "Spacemoon/QrCodes/",
+                                  androidExistNotSave: false,
                                 );
+                                if (context.mounted) {
+                                  if (saved.isSuccess) {
+                                    marioBar(context: context, content: 'Image saved');
+                                  } else {
+                                    marioBar(context: context, content: 'Error : Cannot Save image');
+                                  }
+                                }
                               }
                             },
                             child: const Text('Download'),
