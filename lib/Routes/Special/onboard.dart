@@ -59,6 +59,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         ref.read(onboardedProvider.notifier).set(true);
       }
     });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -70,49 +73,51 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: PageView(
-                physics: const ClampingScrollPhysics(),
-                controller: pageCon,
-                children: [
-                  OnboardPage(
-                    purple: purple,
-                    text: 'Dream big',
-                    image: Asset.dream,
+    return AnimatedBuilder(
+      animation: pageCon,
+      builder: (context, child) {
+        final double page = pageCon.hasClients ? (pageCon.page ?? 0) / 3 : 0;
+        final value = page + 0.2;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: PageView(
+                    physics: const ClampingScrollPhysics(),
+                    controller: pageCon,
+                    children: [
+                      OnboardPage(
+                        purple: purple,
+                        text: 'Dream big',
+                        image: Asset.dream,
+                      ),
+                      OnboardPage(
+                        purple: purple,
+                        text: 'Organize tasks',
+                        image: Asset.team,
+                      ),
+                      OnboardPage(
+                        purple: purple,
+                        text: 'Share your world',
+                        image: Asset.story,
+                      ),
+                      const Scaffold(backgroundColor: Colors.white),
+                    ],
                   ),
-                  OnboardPage(
-                    purple: purple,
-                    text: 'Organize tasks',
-                    image: Asset.team,
-                  ),
-                  OnboardPage(
-                    purple: purple,
-                    text: 'Share your world',
-                    image: Asset.story,
-                  ),
-                  const Scaffold(backgroundColor: Colors.white),
-                ],
-              ),
-            ),
-            IconButton.filled(
-              style: IconButton.styleFrom(backgroundColor: Colors.transparent),
-              onPressed: () {
-                pageCon.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              },
-              icon: AnimatedBuilder(
-                animation: pageCon,
-                builder: (context, child) {
-                  final value = (pageCon.page ?? 0) / 3 + 0.2;
-                  return SizedBox(
+                ),
+                IconButton.filled(
+                  style: IconButton.styleFrom(backgroundColor: Colors.transparent),
+                  onPressed: () {
+                    pageCon.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  icon: SizedBox(
                     width: 170,
                     height: 170,
                     child: CustomPaint(
@@ -122,14 +127,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         scaleFactor: 3 + 1.6 * value,
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+              ],
             ),
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

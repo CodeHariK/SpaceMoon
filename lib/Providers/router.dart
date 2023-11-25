@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:spacemoon/Providers/user_data.dart';
+import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
@@ -59,7 +59,7 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
   return RoutingConfig(
     redirectLimit: 100,
     redirect: (context, state) async {
-      debugPrint('-> -> -> Redirect ${state.uri} auth:$authenticated onboard:$onboarded}');
+      debugPrint('-> -> -> ${state.uri} auth:$authenticated onboard:$onboarded}');
 
       if (!onboarded) return AppRouter.onboard;
       if (state.match(AppRouter.onboard)) return authenticated ? AppRouter.home : AppRouter.login;
@@ -100,7 +100,7 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
 @Riverpod(keepAlive: true)
 Future routerRedirector(RouterRedirectorRef ref) async {
   final onboarded = ref.watch(onboardedProvider);
-  final user = ref.watch(currentUserDataProvider).value;
+  final user = ref.watch(currentUserProvider).value;
 
   debugPrint(user?.uid ?? '-');
 

@@ -120,7 +120,7 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/images/SpaceMoon.png"
   remove_alpha_ios: true
-  min_sdk_android: 27 # android min sdk min:16, default 21
+  min_sdk_android: 27
   web:
     generate: true
     image_path: "assets/images/SpaceMoon.png"
@@ -130,6 +130,13 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#ffffff"
   image: "assets/images/SpaceMoon.png"
-
+  branding: assets/images/Trademark.png
   color_dark: "#ffffff"
   image_dark: "assets/images/SpaceMoon.png"
+  branding_dark: assets/images/Trademark.png
+
+  android_12:
+    image: assets/images/SpaceMoon_android.png
+    color: "#ffffff"
+    branding: assets/images/Trademark.png
+    image_dark: assets/images/SpaceMoon_android.png
