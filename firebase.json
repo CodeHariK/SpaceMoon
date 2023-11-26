@@ -6,6 +6,12 @@
   "functions": [
     {
       "source": "functions",
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
       "codebase": "default",
       "ignore": [
         "node_modules",

@@ -83,19 +83,21 @@ class ChatInfoPage extends HookConsumerWidget {
                 padding: const EdgeInsets.all(8),
                 child: InkWell(
                   splashFactory: InkSplash.splashFactory,
-                  onTap: () async {
-                    final imageMetadata = await selectImageMedia();
+                  onTap: meInRoom?.role != Role.ADMIN
+                      ? null
+                      : () async {
+                          final imageMetadata = await selectImageMedia();
 
-                    if (imageMetadata == null) return;
+                          if (imageMetadata == null) return;
 
-                    // await uploadFire(
-                    //   meta: imageMetadata,
-                    //   imageName: 'profile',
-                    //   user: user!.uid,
-                    //   location: 'users/${user.uid}',
-                    //   singlepath: Const.photoURL.name,
-                    // );
-                  },
+                          await uploadFire(
+                            meta: imageMetadata,
+                            imageName: 'profile',
+                            user: 'rooms',
+                            location: 'room/${room.uid}',
+                            singlepath: Const.photoURL.name,
+                          );
+                        },
                   child: room.photoURL.isEmpty == true
                       ? const Icon(
                           CupertinoIcons.person_crop_circle_badge_plus,
@@ -118,26 +120,49 @@ class ChatInfoPage extends HookConsumerWidget {
                 style: context.hl,
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 10),
               Text(
                 room.nick,
                 style: context.hm,
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 10),
               Text(
                 room.description,
                 style: context.hs,
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 10),
+              DropdownButtonFormField(
+                key: ValueKey(room.open),
+                value: room.open,
+                items: Visible.values
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e.name),
+                      ),
+                    )
+                    .toList(),
+                borderRadius: 20.br,
+                decoration: const InputDecoration(
+                  labelText: 'Visiblity',
+                  // constraints: BoxConstraints(maxWidth: 200),
+                ),
+                onChanged: (value) {
+                  if (value != null) {
+                    room.open = value;
+                    ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
               Text(
                 DateFormat.yMMMd().format(room.created.toDateTime()),
                 style: context.hs,
                 textAlign: TextAlign.center,
               ),
-              Text(
-                room.open.name,
-                style: context.hs,
-                textAlign: TextAlign.center,
-              ),
+              const SizedBox(height: 10),
               Align(
                 child: FilledButton(
                   onPressed: () {
@@ -146,6 +171,7 @@ class ChatInfoPage extends HookConsumerWidget {
                   child: const Text('Leave Room'),
                 ),
               ),
+              const SizedBox(height: 10),
             ],
           ),
           SliverList.builder(
@@ -183,129 +209,3 @@ class ChatInfoPage extends HookConsumerWidget {
     );
   }
 }
-
-
-
-// class RoomUpdateDialog extends HookConsumerWidget {
-//   final String id;
-
-//   const RoomUpdateDialog(this.id, {super.key});
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final room = ref.read(currentRoomProvider).value;
-
-//     final roomNameCon = useTextEditingController(text: room?.nam);
-//     final roomNickCon = useTextEditingController(text: room?.nick);
-//     final roomDescriptionCon = useTextEditingController(text: room?.description);
-//     final roomOpen = useState(room?.open);
-//     final roomAvatar = useState(room?.avatar);
-
-//     final formKey = useState(GlobalKey<FormState>());
-
-//     return Form(
-//       key: formKey.value,
-//       child: Dialog(
-//         child: Padding(
-//           padding: const EdgeInsets.all(16),
-//           child: SingleChildScrollView(
-//             child: Column(
-//               mainAxisSize: MainAxisSize.min,
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 // FireImage(
-//                 //   location: '${room?.id}/avatar',
-//                 //   imageUrl: '${room?.avatar}',
-//                 //   function: (url) {
-//                 //     roomAvatar.value = url;
-//                 //   },
-//                 // ),
-//                 TextFormField(
-//                   controller: roomNameCon,
-//                   decoration: const InputDecoration(
-//                     hintText: 'Name',
-//                     labelText: 'Change Room name',
-//                   ),
-//                   textInputAction: TextInputAction.next,
-//                 ),
-//                 TextFormField(
-//                   controller: roomDescriptionCon,
-//                   validator: (value) {
-//                     if (value == null || value.isEmpty) {
-//                       return 'Empty';
-//                     }
-//                     return null;
-//                   },
-//                   decoration: const InputDecoration(
-//                     labelText: 'Change Room Description',
-//                     hintText: 'Description',
-//                   ),
-//                   textInputAction: TextInputAction.next,
-//                 ),
-//                 TextFormField(
-//                   controller: roomNickCon,
-//                   validator: (value) {
-//                     if (value == null || value.isEmpty) {
-//                       return 'Empty';
-//                     }
-//                     return null;
-//                   },
-//                   decoration: const InputDecoration(
-//                     labelText: 'Nickname',
-//                     contentPadding: EdgeInsets.zero,
-//                     hintText: 'Change nickname of room',
-//                   ),
-//                   textInputAction: TextInputAction.next,
-//                 ),
-//                 DropdownButtonFormField(
-//                   value: roomOpen.value,
-//                   items: Visible.values
-//                       .map(
-//                         (e) => DropdownMenuItem(
-//                           child: Text(e.name),
-//                           value: e,
-//                         ),
-//                       )
-//                       .toList(),
-//                   borderRadius: 20.br,
-//                   decoration: InputDecoration(
-//                     labelText: 'Visiblity',
-//                     contentPadding: EdgeInsets.zero,
-//                     // constraints: BoxConstraints(maxWidth: 200),
-//                   ),
-//                   onChanged: (value) {
-//                     roomOpen.value = value;
-//                   },
-//                 ),
-//                 // Flexible(
-//                 //   child: Center(
-//                 //     child: FilledButton.tonal(
-//                 //       child: const Text('Save'),
-//                 //       onPressed: () {
-//                 //         if (formKey.value.currentState?.validate() ?? false) {
-//                 //           dino({
-//                 //             Const.nam.name: roomNameCon.text,
-//                 //             Const.nick.name: roomNickCon.text,
-//                 //             Const.description.name: roomDescriptionCon.text,
-//                 //             Const.avatar.name: roomAvatar.value,
-//                 //             Const.open.name: roomOpen.value,
-//                 //           }.toString());
-//                 //           ref.read(currentRoomProvider.notifier).updateRoomInfo(
-//                 //                 roomName: roomNameCon.text,
-//                 //                 nick: roomNickCon.text,
-//                 //                 description: roomDescriptionCon.text,
-//                 //                 avatar: roomAvatar.value,
-//                 //                 open: roomOpen.value ?? Visible.CLOSE,
-//                 //               );
-//                 //         }
-//                 //       },
-//                 //     ),
-//                 //   ),
-//                 // ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

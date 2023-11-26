@@ -13,12 +13,12 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Routes/Home/profile.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/firebase_options.dart';
 
 const spacemoonStorageBucket = 'spacemoonfire.appspot.com';
 
-Future<void> initFirebase() async {
+Future<void> initFirebase({required bool useEmulator}) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -38,13 +38,48 @@ Future<void> initFirebase() async {
     auth.AppleProvider(),
   ]);
 
-  if (!Platform.isAndroid) {
+  if (useEmulator) {
     await emulator();
   }
 
-  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
+  await firebaseMessagingSetup();
+}
 
+Future<void> emulator() async {
+  if (kDebugMode) {
+    try {
+      final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? '10.0.2.2' : 'localhost';
+
+      FirebaseFirestore.instance.settings = Settings(
+        host: '$emulatorHost:8080',
+        sslEnabled: false,
+        persistenceEnabled: false,
+      );
+
+      await FirebaseAuth.instance.useAuthEmulator(emulatorHost, 9099);
+      FirebaseFunctions.instance.useFunctionsEmulator(emulatorHost, 5001);
+      await FirebaseStorage.instance.useStorageEmulator(emulatorHost, 9199);
+      FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
+    } catch (e, s) {
+      lava(e);
+      lava(s);
+    }
+  }
+}
+
+Future<void> firebaseMessagingSetup() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // For apple platforms, ensure the APNS token is available before making any FCM plugin API calls
+  final apnsToken = await messaging.getAPNSToken();
+
+  dino(apnsToken);
+
+  if (apnsToken == null && Platform.isIOS) {
+    return;
+  }
+
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
@@ -68,11 +103,7 @@ Future<void> initFirebase() async {
     );
 
     lava('init : $token');
-    callUserUpdate(User(fcmToken: token));
-    messaging.onTokenRefresh.listen((token) {
-      lava('tokenrefresh : $token');
-      callUserUpdate(User(fcmToken: token));
-    });
+    firebaseTokenUpdate(token);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       dino('Got a message whilst in the foreground!');
@@ -81,6 +112,13 @@ Future<void> initFirebase() async {
       if (message.notification != null) {
         dino('Message also contained a notification: ${message.notification}');
       }
+    });
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+      lava('tokenRefresh : $token');
+      firebaseTokenUpdate(token);
+    }).onError((err) {
+      lava(err);
     });
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -95,24 +133,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   dino("Handling a background message: ${message.messageId}");
 }
 
-Future<void> emulator() async {
-  if (kDebugMode) {
-    try {
-      final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? '10.0.2.2' : 'localhost';
-
-      FirebaseFirestore.instance.settings = Settings(
-        host: '$emulatorHost:8080',
-        sslEnabled: false,
-        persistenceEnabled: false,
-      );
-
-      await FirebaseAuth.instance.useAuthEmulator(emulatorHost, 9099);
-      FirebaseFunctions.instance.useFunctionsEmulator(emulatorHost, 5001);
-      await FirebaseStorage.instance.useStorageEmulator(emulatorHost, 9199);
-      FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
-    } catch (e, s) {
-      lava(e);
-      lava(s);
-    }
-  }
+void firebaseTokenUpdate(String? token) {
+  callUserUpdate(User(fcmToken: token));
+  FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+    lava('tokenrefresh : $token');
+    callUserUpdate(User(fcmToken: token));
+  });
 }

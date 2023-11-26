@@ -8,6 +8,7 @@ import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Static/assets.dart';
+import 'package:spacemoon/Static/theme.dart';
 
 part 'onboard.g.dart';
 
@@ -118,13 +119,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     );
                   },
                   icon: SizedBox(
-                    width: 170,
-                    height: 170,
+                    width: 160,
+                    height: 160,
                     child: CustomPaint(
                       painter: SunflowerPainter(
                         seeds: (400 * value).toInt(),
                         turns: 0.6281,
-                        scaleFactor: 3 + 1.6 * value,
+                        scaleFactor: 3 + 1 * value,
                       ),
                     ),
                   ),
@@ -170,8 +171,9 @@ class OnboardPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AspectRatio(
-              aspectRatio: 1,
+            SizedBox(
+              width: (300, 480).c,
+              height: (300, 480).c,
               child: Image.asset(
                 image,
                 fit: BoxFit.cover,

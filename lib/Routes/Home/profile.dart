@@ -1,24 +1,18 @@
 import 'dart:convert';
 
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:moonspace/Form/async_text_field.dart';
+import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
-
-void callUserUpdate(User user) {
-  FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
-}
 
 class ProfileRoute extends GoRouteData {
   @override
@@ -80,50 +74,31 @@ class ProfilePage extends ConsumerWidget {
                 ),
               ),
               ListTile(
-                title: Text(user?.displayName ?? 'Name', style: context.hl),
-                titleAlignment: ListTileTitleAlignment.center,
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {},
-                ),
-              ),
-
-              ListTile(
-                title: AsyncTextFormField(
-                  initialValue: user?.nick.replaceAll('@', ''),
-                  style: context.tl,
-                  asyncValidator: (value) async {
-                    if (value.isEmpty) {
-                      return 'Empty not possible';
-                    }
-                    if (isAlphanumeric(value)) {
-                      return 'only alphanumeric characters are allowed';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Nickname',
-                    hintText: 'Nickname',
-                    prefix: const Text('@'),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {},
-                    ),
-                  ),
+                contentPadding: EdgeInsets.zero,
+                title: AsyncProfileField(
+                  text: user?.displayName,
+                  type: AsyncProfileFieldType.displayName,
                 ),
               ),
               ListTile(
-                title: Text(user?.email ?? 'Email', style: context.tm),
+                contentPadding: EdgeInsets.zero,
+                title: AsyncProfileField(
+                  text: user?.nick,
+                  type: AsyncProfileFieldType.nickname,
+                ),
               ),
               ListTile(
-                title: Text('Visibility : ${user?.open.name}', style: context.tm),
+                title: Text('Email : ${user?.email}', style: context.tm),
               ),
-              ListTile(
-                title: Text('Friends : ${user?.friends.length}', style: context.tm),
-              ),
-              ListTile(
-                title: Text('Status : ${user?.status.name}', style: context.tm),
-              ),
+              // ListTile(
+              //   title: Text('Visibility : ${user?.open.name}', style: context.tm),
+              // ),
+              // ListTile(
+              //   title: Text('Friends : ${user?.friends.length}', style: context.tm),
+              // ),
+              // ListTile(
+              //   title: Text('Status : ${user?.status.name}', style: context.tm),
+              // ),
               ListTile(
                 title: Text(
                   'Joined on : ${DateFormat.yMMMd().format(user?.created.toDateTime() ?? DateTime.now())}',
@@ -147,6 +122,82 @@ class ProfilePage extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AsyncProfileFieldType {
+  final String name;
+
+  AsyncProfileFieldType({required this.name});
+
+  static AsyncProfileFieldType nickname = AsyncProfileFieldType(name: "Nickname");
+  static AsyncProfileFieldType displayName = AsyncProfileFieldType(name: "");
+}
+
+class AsyncProfileField extends StatelessWidget {
+  const AsyncProfileField({
+    super.key,
+    required this.text,
+    required this.type,
+  });
+
+  final String? text;
+  final AsyncProfileFieldType type;
+
+  @override
+  Widget build(BuildContext context) {
+    return AsyncTextFormField(
+      key: ValueKey(text),
+      initialValue: text,
+      style: (type == AsyncProfileFieldType.nickname) ? context.tl : context.hm,
+      asyncValidator: (value) async {
+        if (value.isEmpty) {
+          return 'Empty not possible';
+        }
+        if (!isAlphanumeric(value)) {
+          return 'only alphanumeric characters are allowed';
+        }
+
+        if (type == AsyncProfileFieldType.nickname) {
+          final count = await countUserByNick(value);
+
+          if (count != 0) {
+            return 'Not available';
+          }
+        }
+
+        return null;
+      },
+      textAlign: (type == AsyncProfileFieldType.nickname) ? TextAlign.start : TextAlign.center,
+      showPrefix: false,
+      decoration: (AsyncText value, nickCon) => InputDecoration(
+        hintText: type.name,
+        enabledBorder: 1.bs.c(Colors.transparent).out,
+        prefix: (type == AsyncProfileFieldType.nickname) ? Text('${type.name} : @ ') : null,
+        suffixIcon: (value.error != null || text == nickCon.text)
+            ? const Icon(Icons.edit)
+            : IconButton(
+                icon: const Icon(Icons.done),
+                onPressed: () {
+                  if (type == AsyncProfileFieldType.nickname) {
+                    callUserUpdate(User(nick: nickCon.text));
+                  }
+                  if (type == AsyncProfileFieldType.displayName) {
+                    callUserUpdate(User(displayName: nickCon.text));
+                  }
+                },
+              ),
+      ),
+      textInputAction: TextInputAction.done,
+      onSubmit: (value) {
+        if (type == AsyncProfileFieldType.nickname) {
+          callUserUpdate(User(nick: value));
+        }
+        if (type == AsyncProfileFieldType.displayName) {
+          callUserUpdate(User(displayName: value));
+        }
+      },
     );
   }
 }

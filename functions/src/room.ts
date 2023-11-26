@@ -1,8 +1,9 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Const, Role, Room, RoomUser } from "./Gen/data";
-import { constName } from "./Helpers/const";
+import { constName, visibleName } from "./Helpers/const";
 import { checkUserExists } from "./users";
+import { toMap } from "./Helpers/map";
 
 export const callCreateRoom = onCall(async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;
@@ -37,7 +38,7 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
     _room.created = new Date()
 
     if (currentUID != null) {
-        let roomDoc = await admin.firestore().collection(constName(Const.rooms)).add(toMap(_room),);
+        let roomDoc = await admin.firestore().collection(constName(Const.rooms)).add(roomToJson(_room),);
 
         members.forEach(async (e) => {
             e.room = roomDoc.id;
@@ -141,21 +142,25 @@ export const deleteRoomUser = onCall(async (request) => {
 export const updateRoomInfo = onCall(async (request): Promise<string> => {
     let userId: string = request.auth!.uid;
 
-    const { r } = request.data;
+    let room = Room.fromJSON(request.data)
 
-    let room = Room.fromJSON(r)
+    let r = roomToJson(Room.create({
+        description: room.description,
+        displayName: room.displayName,
+        nick: room.nick,
+        photoURL: room.photoURL,
+        open: room.open,
+    }));
+
+    let m = r.set(constName(Const.open), visibleName(room.open))
 
     try {
         let roomUser = await getRoomUserById(userId, room.uid)
         if (roomUser && roomUser.role == Role.ADMIN) {
             await admin.firestore().collection(constName(Const.rooms)).doc(room.uid).set(
-                toMap(Room.create({
-                    description: room.description,
-                    displayName: room.displayName,
-                    nick: room.nick,
-                    photoURL: room.photoURL,
-                    open: room.open,
-                })));
+                Object.fromEntries(m),
+                { merge: true },
+            );
         }
         return 'Done';
     }
@@ -163,7 +168,6 @@ export const updateRoomInfo = onCall(async (request): Promise<string> => {
         throw new HttpsError('aborted', e as string);
     }
 });
-
 
 export const getRoomUserById = async (userId: string, roomId: string) => {
     const roomUserQuery = admin.firestore().collection(constName(Const.roomusers))
@@ -181,14 +185,10 @@ export const getRoomUserById = async (userId: string, roomId: string) => {
 
 // Helper Functions ___________________________________________
 
-export function roomToMap(obj: any) {
-    return Room.toJSON(Room.create(obj)) as Map<string, any>;
-}
-
 export function roomUserToMap(obj: any) {
     return RoomUser.toJSON(RoomUser.create(obj)) as Map<string, any>;
 }
 
-export function toMap(room: Room) {
-    return Room.toJSON(room) as Map<string, any>;
+export function roomToJson(room: Room) {
+    return toMap(Room.toJSON(room)!);
 }

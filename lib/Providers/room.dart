@@ -193,6 +193,10 @@ class CurrentRoom extends _$CurrentRoom {
     state = const AsyncValue.data(null);
   }
 
+  void updateRoomInfo(Room room) {
+    FirebaseFunctions.instance.httpsCallable('updateRoomInfo').call(room.toMap());
+  }
+
   Future<Room?> createRoom({
     required Room room,
     required List<String> users,

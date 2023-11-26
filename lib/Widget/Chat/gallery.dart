@@ -146,7 +146,7 @@ class GalleryImage extends StatelessWidget {
                     style: context.hm.c(Colors.white),
                     showPrefix: false,
                     milliseconds: 1000,
-                    decoration: const InputDecoration(
+                    decoration: (AsyncText value, galleryCon) => const InputDecoration(
                       fillColor: Colors.black38,
                       hintStyle: TextStyle(color: Colors.white70),
                       filled: true,

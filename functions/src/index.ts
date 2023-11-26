@@ -25,6 +25,7 @@ export const callCreateRoom = chat.callCreateRoom;
 export const requestAccessToRoom = chat.requestAccessToRoom;
 export const deleteRoomUser = chat.deleteRoomUser;
 export const acceptAccessToRoom = chat.acceptAccessToRoom;
+export const updateRoomInfo = chat.updateRoomInfo;
 
 export const sendTweet = tweet.sendTweet;
 export const updateTweet = tweet.updateTweet;

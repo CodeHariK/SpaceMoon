@@ -184,7 +184,7 @@ class AppTheme {
         displayLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 42.c),
         displayMedium: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 36.c),
         displaySmall: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 32.c),
-        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 28.c),
+        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (28, 36).c),
         headlineMedium: GoogleFonts.merriweather(letterSpacing: 3.c, fontSize: 24.c),
         headlineSmall: GoogleFonts.merriweather(fontSize: 20.c),
         titleLarge: GoogleFonts.merriweather(letterSpacing: 2.c, fontSize: (18, 20).c),

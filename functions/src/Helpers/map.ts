@@ -8,6 +8,6 @@ export function toArray(map: Map<any, any>) {
     return arr.map((o, i) => ({ 'key': o[0], 'value': o[1] }));
 }
 
-export function toString(obj: any) {
+export function objToString(obj: any) {
     return JSON.stringify(Object.fromEntries(toMap(obj)));
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:moonspace/Form/async_text_field.dart';
+import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -33,7 +33,7 @@ class SearchPage extends HookConsumerWidget {
             AsyncTextFormField(
               con: roomCon,
               autofocus: true,
-              decoration: const InputDecoration(
+              decoration: (AsyncText value, roomCon) => const InputDecoration(
                 hintText: 'Find Rooms',
                 labelText: 'Find Rooms',
               ),
