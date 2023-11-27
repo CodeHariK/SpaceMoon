@@ -48,9 +48,10 @@ message User {
     repeated string roomRequest = 800;
     google.protobuf.Timestamp created = 900;
     Visible open = 1000;
+}
 
-    //-------------------
-    string fcmToken = 1100;
+message UserClaims {
+    string fcmToken = 100;
 }
 
 message RoomUser {
@@ -115,9 +116,10 @@ enum Const {
 
 message ImageMetadata {
     string url = 1;
-    string localUrl = 10;
-    string blurhash = 20;
+    string path = 10;
+    string localUrl = 20;
     int32 width = 30;
     int32 height = 40;
     string caption = 50;
+    // string blurhash = 60;
 }

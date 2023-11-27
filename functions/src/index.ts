@@ -17,7 +17,7 @@ admin.initializeApp({
 export const onUserCreate = users.onUserCreate;
 export const callUserUpdate = users.callUserUpdate;
 export const addAdmin = users.addAdmin;
-export const userHi = users.userHi;
+export const callFCMtokenUpdate = users.callFCMtokenUpdate;
 export const deleteAuthUser = users.deleteAuthUser;
 export const deleteUser = users.deleteUser;
 
@@ -26,6 +26,7 @@ export const requestAccessToRoom = chat.requestAccessToRoom;
 export const deleteRoomUser = chat.deleteRoomUser;
 export const acceptAccessToRoom = chat.acceptAccessToRoom;
 export const updateRoomInfo = chat.updateRoomInfo;
+export const deleteRoom = chat.deleteRoom;
 
 export const sendTweet = tweet.sendTweet;
 export const updateTweet = tweet.updateTweet;

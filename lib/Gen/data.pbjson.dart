@@ -127,7 +127,6 @@ const User$json = {
     {'1': 'roomRequest', '3': 800, '4': 3, '5': 9, '10': 'roomRequest'},
     {'1': 'created', '3': 900, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
     {'1': 'open', '3': 1000, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
-    {'1': 'fcmToken', '3': 1100, '4': 1, '5': 9, '10': 'fcmToken'},
   ],
 };
 
@@ -139,8 +138,19 @@ final $typed_data.Uint8List userDescriptor = $convert.base64Decode(
     'wSJQoGc3RhdHVzGNgEIAEoDjIMLnVzZXIuQWN0aXZlUgZzdGF0dXMSGQoHZnJpZW5kcxi8BSAD'
     'KAlSB2ZyaWVuZHMSIQoLcm9vbVJlcXVlc3QYoAYgAygJUgtyb29tUmVxdWVzdBI1CgdjcmVhdG'
     'VkGIQHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSIgoEb3Blbhjo'
-    'ByABKA4yDS51c2VyLlZpc2libGVSBG9wZW4SGwoIZmNtVG9rZW4YzAggASgJUghmY21Ub2tlbg'
-    '==');
+    'ByABKA4yDS51c2VyLlZpc2libGVSBG9wZW4=');
+
+@$core.Deprecated('Use userClaimsDescriptor instead')
+const UserClaims$json = {
+  '1': 'UserClaims',
+  '2': [
+    {'1': 'fcmToken', '3': 100, '4': 1, '5': 9, '10': 'fcmToken'},
+  ],
+};
+
+/// Descriptor for `UserClaims`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List userClaimsDescriptor = $convert.base64Decode(
+    'CgpVc2VyQ2xhaW1zEhoKCGZjbVRva2VuGGQgASgJUghmY21Ub2tlbg==');
 
 @$core.Deprecated('Use roomUserDescriptor instead')
 const RoomUser$json = {
@@ -211,8 +221,8 @@ const ImageMetadata$json = {
   '1': 'ImageMetadata',
   '2': [
     {'1': 'url', '3': 1, '4': 1, '5': 9, '10': 'url'},
-    {'1': 'localUrl', '3': 10, '4': 1, '5': 9, '10': 'localUrl'},
-    {'1': 'blurhash', '3': 20, '4': 1, '5': 9, '10': 'blurhash'},
+    {'1': 'path', '3': 10, '4': 1, '5': 9, '10': 'path'},
+    {'1': 'localUrl', '3': 20, '4': 1, '5': 9, '10': 'localUrl'},
     {'1': 'width', '3': 30, '4': 1, '5': 5, '10': 'width'},
     {'1': 'height', '3': 40, '4': 1, '5': 5, '10': 'height'},
     {'1': 'caption', '3': 50, '4': 1, '5': 9, '10': 'caption'},
@@ -221,7 +231,7 @@ const ImageMetadata$json = {
 
 /// Descriptor for `ImageMetadata`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List imageMetadataDescriptor = $convert.base64Decode(
-    'Cg1JbWFnZU1ldGFkYXRhEhAKA3VybBgBIAEoCVIDdXJsEhoKCGxvY2FsVXJsGAogASgJUghsb2'
-    'NhbFVybBIaCghibHVyaGFzaBgUIAEoCVIIYmx1cmhhc2gSFAoFd2lkdGgYHiABKAVSBXdpZHRo'
-    'EhYKBmhlaWdodBgoIAEoBVIGaGVpZ2h0EhgKB2NhcHRpb24YMiABKAlSB2NhcHRpb24=');
+    'Cg1JbWFnZU1ldGFkYXRhEhAKA3VybBgBIAEoCVIDdXJsEhIKBHBhdGgYCiABKAlSBHBhdGgSGg'
+    'oIbG9jYWxVcmwYFCABKAlSCGxvY2FsVXJsEhQKBXdpZHRoGB4gASgFUgV3aWR0aBIWCgZoZWln'
+    'aHQYKCABKAVSBmhlaWdodBIYCgdjYXB0aW9uGDIgASgJUgdjYXB0aW9u');
 

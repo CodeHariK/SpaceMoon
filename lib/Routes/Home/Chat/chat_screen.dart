@@ -209,33 +209,34 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             return TweetBox(tweet: tweet);
                           },
                         ),
-                        StreamBuilder(
-                          stream: dateStream.stream,
-                          builder: (context, dateSnapshot) {
-                            final value = dateSnapshot.data;
-                            final index = value?.$1;
-                            if (index == null) return const SizedBox();
-                            final show = value!.$2;
-                            final date =
-                                DateFormat.yMMMd().format(allTweetSnap.docs[index].data()!.created.toDateTime());
+                        if (allTweetSnap.docs.isNotEmpty)
+                          StreamBuilder(
+                            stream: dateStream.stream,
+                            builder: (context, dateSnapshot) {
+                              final value = dateSnapshot.data;
+                              final index = value?.$1;
+                              if (index == null) return const SizedBox();
+                              final show = value!.$2;
+                              final date =
+                                  DateFormat.yMMMd().format(allTweetSnap.docs[index].data()!.created.toDateTime());
 
-                            return TweenAnimationBuilder(
-                              tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
-                              curve: Curves.linear,
-                              duration: const Duration(seconds: 1),
-                              builder: (context, value, child) {
-                                return Opacity(
-                                  opacity: clampDouble(value * 5, 0, 1),
-                                  child: child,
-                                );
-                              },
-                              child: Chip(
-                                padding: EdgeInsets.zero,
-                                label: Text(date),
-                              ),
-                            );
-                          },
-                        ),
+                              return TweenAnimationBuilder(
+                                tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
+                                curve: Curves.linear,
+                                duration: const Duration(seconds: 1),
+                                builder: (context, value, child) {
+                                  return Opacity(
+                                    opacity: clampDouble(value * 5, 0, 1),
+                                    child: child,
+                                  );
+                                },
+                                child: Chip(
+                                  padding: EdgeInsets.zero,
+                                  label: Text(date),
+                                ),
+                              );
+                            },
+                          ),
                       ],
                     );
                   },

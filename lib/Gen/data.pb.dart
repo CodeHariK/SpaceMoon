@@ -31,7 +31,6 @@ class User extends $pb.GeneratedMessage {
     $core.Iterable<$core.String>? roomRequest,
     $0.Timestamp? created,
     Visible? open,
-    $core.String? fcmToken,
   }) {
     final $result = create();
     if (uid != null) {
@@ -67,9 +66,6 @@ class User extends $pb.GeneratedMessage {
     if (open != null) {
       $result.open = open;
     }
-    if (fcmToken != null) {
-      $result.fcmToken = fcmToken;
-    }
     return $result;
   }
   User._() : super();
@@ -88,7 +84,6 @@ class User extends $pb.GeneratedMessage {
     ..pPS(800, _omitFieldNames ? '' : 'roomRequest', protoName: 'roomRequest')
     ..aOM<$0.Timestamp>(900, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
-    ..aOS(1100, _omitFieldNames ? '' : 'fcmToken', protoName: 'fcmToken')
     ..hasRequiredFields = false
   ;
 
@@ -201,16 +196,56 @@ class User extends $pb.GeneratedMessage {
   $core.bool hasOpen() => $_has(10);
   @$pb.TagNumber(1000)
   void clearOpen() => clearField(1000);
+}
 
-  /// -------------------
-  @$pb.TagNumber(1100)
-  $core.String get fcmToken => $_getSZ(11);
-  @$pb.TagNumber(1100)
-  set fcmToken($core.String v) { $_setString(11, v); }
-  @$pb.TagNumber(1100)
-  $core.bool hasFcmToken() => $_has(11);
-  @$pb.TagNumber(1100)
-  void clearFcmToken() => clearField(1100);
+class UserClaims extends $pb.GeneratedMessage {
+  factory UserClaims({
+    $core.String? fcmToken,
+  }) {
+    final $result = create();
+    if (fcmToken != null) {
+      $result.fcmToken = fcmToken;
+    }
+    return $result;
+  }
+  UserClaims._() : super();
+  factory UserClaims.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory UserClaims.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'UserClaims', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
+    ..aOS(100, _omitFieldNames ? '' : 'fcmToken', protoName: 'fcmToken')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  UserClaims clone() => UserClaims()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  UserClaims copyWith(void Function(UserClaims) updates) => super.copyWith((message) => updates(message as UserClaims)) as UserClaims;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static UserClaims create() => UserClaims._();
+  UserClaims createEmptyInstance() => create();
+  static $pb.PbList<UserClaims> createRepeated() => $pb.PbList<UserClaims>();
+  @$core.pragma('dart2js:noInline')
+  static UserClaims getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<UserClaims>(create);
+  static UserClaims? _defaultInstance;
+
+  @$pb.TagNumber(100)
+  $core.String get fcmToken => $_getSZ(0);
+  @$pb.TagNumber(100)
+  set fcmToken($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(100)
+  $core.bool hasFcmToken() => $_has(0);
+  @$pb.TagNumber(100)
+  void clearFcmToken() => clearField(100);
 }
 
 class RoomUser extends $pb.GeneratedMessage {
@@ -618,8 +653,8 @@ class Tweet extends $pb.GeneratedMessage {
 class ImageMetadata extends $pb.GeneratedMessage {
   factory ImageMetadata({
     $core.String? url,
+    $core.String? path,
     $core.String? localUrl,
-    $core.String? blurhash,
     $core.int? width,
     $core.int? height,
     $core.String? caption,
@@ -628,11 +663,11 @@ class ImageMetadata extends $pb.GeneratedMessage {
     if (url != null) {
       $result.url = url;
     }
+    if (path != null) {
+      $result.path = path;
+    }
     if (localUrl != null) {
       $result.localUrl = localUrl;
-    }
-    if (blurhash != null) {
-      $result.blurhash = blurhash;
     }
     if (width != null) {
       $result.width = width;
@@ -651,8 +686,8 @@ class ImageMetadata extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ImageMetadata', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'url')
-    ..aOS(10, _omitFieldNames ? '' : 'localUrl', protoName: 'localUrl')
-    ..aOS(20, _omitFieldNames ? '' : 'blurhash')
+    ..aOS(10, _omitFieldNames ? '' : 'path')
+    ..aOS(20, _omitFieldNames ? '' : 'localUrl', protoName: 'localUrl')
     ..a<$core.int>(30, _omitFieldNames ? '' : 'width', $pb.PbFieldType.O3)
     ..a<$core.int>(40, _omitFieldNames ? '' : 'height', $pb.PbFieldType.O3)
     ..aOS(50, _omitFieldNames ? '' : 'caption')
@@ -690,22 +725,22 @@ class ImageMetadata extends $pb.GeneratedMessage {
   void clearUrl() => clearField(1);
 
   @$pb.TagNumber(10)
-  $core.String get localUrl => $_getSZ(1);
+  $core.String get path => $_getSZ(1);
   @$pb.TagNumber(10)
-  set localUrl($core.String v) { $_setString(1, v); }
+  set path($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(10)
-  $core.bool hasLocalUrl() => $_has(1);
+  $core.bool hasPath() => $_has(1);
   @$pb.TagNumber(10)
-  void clearLocalUrl() => clearField(10);
+  void clearPath() => clearField(10);
 
   @$pb.TagNumber(20)
-  $core.String get blurhash => $_getSZ(2);
+  $core.String get localUrl => $_getSZ(2);
   @$pb.TagNumber(20)
-  set blurhash($core.String v) { $_setString(2, v); }
+  set localUrl($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(20)
-  $core.bool hasBlurhash() => $_has(2);
+  $core.bool hasLocalUrl() => $_has(2);
   @$pb.TagNumber(20)
-  void clearBlurhash() => clearField(20);
+  void clearLocalUrl() => clearField(20);
 
   @$pb.TagNumber(30)
   $core.int get width => $_getIZ(3);

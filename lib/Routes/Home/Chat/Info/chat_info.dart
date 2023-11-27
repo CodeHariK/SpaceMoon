@@ -9,7 +9,8 @@ import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Routes/Special/error_page.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 
@@ -47,12 +48,12 @@ class ChatInfoPage extends HookConsumerWidget {
     }, [room]);
 
     if (room == null) {
-      return const Error404Page();
-    }
-
-    if (allUsersPro.isLoading) {
       return const Scaffold();
     }
+
+    // if (allUsersPro.isLoading) {
+    //   return const Scaffold();
+    // }
 
     if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
       return Scaffold(
@@ -70,7 +71,7 @@ class ChatInfoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat $chatId'),
+        title: const Text('Room Info'),
       ),
       body: CustomScrollView(
         physics: const ClampingScrollPhysics(),
@@ -93,8 +94,8 @@ class ChatInfoPage extends HookConsumerWidget {
                           await uploadFire(
                             meta: imageMetadata,
                             imageName: 'profile',
-                            user: 'rooms',
-                            location: 'room/${room.uid}',
+                            docPath: 'rooms/${room.uid}',
+                            storagePath: 'profile/rooms/${room.uid}',
                             singlepath: Const.photoURL.name,
                           );
                         },
@@ -115,61 +116,134 @@ class ChatInfoPage extends HookConsumerWidget {
           ),
           SliverList.list(
             children: [
-              Text(
-                room.displayName,
-                style: context.hl,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                room.nick,
-                style: context.hm,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                room.description,
-                style: context.hs,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField(
-                key: ValueKey(room.open),
-                value: room.open,
-                items: Visible.values
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList(),
-                borderRadius: 20.br,
-                decoration: const InputDecoration(
-                  labelText: 'Visiblity',
-                  // constraints: BoxConstraints(maxWidth: 200),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: AsyncProfileField(
+                  text: room.displayName,
+                  style: context.hs,
+                  textAlign: TextAlign.start,
+                  hintText: 'Name',
+                  prefix: const Text('Name  '),
+                  alphanumeric: false,
+                  asyncValidator: (value) async {
+                    return null;
+                  },
+                  onSubmit: (value) {
+                    ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                          Room(
+                            uid: room.uid,
+                            displayName: value,
+                          ),
+                        );
+                  },
                 ),
-                onChanged: (value) {
-                  if (value != null) {
-                    room.open = value;
-                    ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
-                  }
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: AsyncProfileField(
+                  text: room.nick,
+                  style: context.hs,
+                  textAlign: TextAlign.start,
+                  hintText: 'Nickname',
+                  prefix: const Text('Nickname  #'),
+                  alphanumeric: false,
+                  asyncValidator: (value) async {
+                    return null;
+                  },
+                  onSubmit: (value) {
+                    ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                          Room(
+                            uid: room.uid,
+                            nick: value,
+                          ),
+                        );
+                  },
+                ),
+              ),
+              AsyncProfileField(
+                text: room.description,
+                style: context.ts,
+                textAlign: TextAlign.start,
+                hintText: 'Description',
+                alphanumeric: false,
+                asyncValidator: (value) async {
+                  return null;
+                },
+                maxLines: null,
+                onSubmit: (value) {
+                  ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                        Room(
+                          uid: room.uid,
+                          description: value,
+                        ),
+                      );
                 },
               ),
-              const SizedBox(height: 10),
-              Text(
-                DateFormat.yMMMd().format(room.created.toDateTime()),
-                style: context.hs,
-                textAlign: TextAlign.center,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButtonFormField(
+                    key: ValueKey(room.open),
+                    value: room.open,
+                    items: Visible.values
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name),
+                          ),
+                        )
+                        .toList(),
+                    borderRadius: 20.br,
+                    decoration: const InputDecoration(
+                      labelText: 'Visiblity',
+                      constraints: BoxConstraints(maxWidth: 200),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                    ),
+                    onChanged: (value) {
+                      if (value != null) {
+                        room.open = value;
+                        ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
+                      }
+                    },
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  'Created on : ${DateFormat.yMMMd().format(room.created.toDateTime())}',
+                  style: context.hs,
+                ),
               ),
               const SizedBox(height: 10),
-              Align(
-                child: FilledButton(
-                  onPressed: () {
-                    ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
-                  },
-                  child: const Text('Leave Room'),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (meInRoom?.role == Role.ADMIN)
+                    Align(
+                      child: FilledButton(
+                        onPressed: () async {
+                          await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom!);
+                          if (context.mounted) {
+                            HomeRoute().go(context);
+                          }
+                        },
+                        child: const Text('Delete Room'),
+                      ),
+                    ),
+                  Align(
+                    child: FilledButton(
+                      onPressed: () async {
+                        await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
+                        if (context.mounted) {
+                          HomeRoute().go(context);
+                        }
+                      },
+                      child: const Text('Leave Room'),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
             ],
@@ -203,6 +277,9 @@ class ChatInfoPage extends HookConsumerWidget {
               );
             },
             itemCount: allUsers.length,
+          ),
+          const SliverPadding(
+            padding: EdgeInsets.all(25),
           ),
         ],
       ),

@@ -115,13 +115,21 @@ class GalleryImage extends StatelessWidget {
                           color: Colors.white,
                           padding: const EdgeInsets.all(12),
                           onPressed: () async {
-                            await uploadFire(
-                              imageName: randomString(12),
-                              user: tweet.user,
-                              meta: imageMetadata,
-                              location: tweet.path,
-                              multipath: Const.gallery.name,
-                            );
+                            try {
+                              final p = tweet.path.split('/');
+                              final roomId = p[1];
+                              final tweetId = p[3];
+
+                              await uploadFire(
+                                imageName: randomString(12),
+                                storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                                docPath: 'rooms/$roomId/tweets/$tweetId',
+                                meta: imageMetadata,
+                                multipath: Const.gallery.name,
+                              );
+                            } catch (e) {
+                              debugPrint(e.toString());
+                            }
                           },
                           icon: const Icon(CupertinoIcons.cloud_upload_fill),
                         ),
@@ -317,13 +325,21 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
                   child: const Icon(CupertinoIcons.refresh_circled_solid, size: 40),
                   onPressed: () async {
                     for (var img in tweet.notAvaiable) {
-                      await uploadFire(
-                        imageName: randomString(12),
-                        user: tweet.user,
-                        meta: img,
-                        location: tweet.path,
-                        multipath: Const.gallery.name,
-                      );
+                      try {
+                        final p = tweet.path.split('/');
+                        final roomId = p[1];
+                        final tweetId = p[3];
+
+                        await uploadFire(
+                          imageName: randomString(12),
+                          storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                          docPath: 'rooms/$roomId/tweets/$tweetId',
+                          meta: img,
+                          multipath: Const.gallery.name,
+                        );
+                      } catch (e) {
+                        debugPrint(e.toString());
+                      }
                     }
                   },
                 ),
@@ -415,13 +431,21 @@ class GalleryUploaderButton extends StatelessWidget {
       }
 
       for (var img in imgs) {
-        await uploadFire(
-          imageName: randomString(12),
-          user: meInRoom!.user,
-          meta: img!,
-          location: path,
-          multipath: Const.gallery.name,
-        );
+        try {
+          final p = path.split('/');
+          final roomId = p[1];
+          final tweetId = p[3];
+
+          await uploadFire(
+            imageName: randomString(12),
+            meta: img!,
+            storagePath: 'tweet/$roomId/${meInRoom!.user}/$tweetId',
+            docPath: 'rooms/$roomId/tweets/$tweetId',
+            multipath: Const.gallery.name,
+          );
+        } catch (e) {
+          debugPrint(e.toString());
+        }
       }
     }
 

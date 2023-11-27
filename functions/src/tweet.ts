@@ -29,12 +29,6 @@ export const sendTweet = onCall(async (request) => {
         );
 
         return sentTweet.path
-
-        // admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
-        //     {
-        //         'tweetCount': FieldValue.increment(1)
-        //     },
-        //     { merge: true });
     } else {
         throw new HttpsError('invalid-argument', 'Invalid User')
     }
@@ -84,6 +78,8 @@ export const deleteTweet = onCall(async (request) => {
 
     let tweet = Tweet.fromJSON(request.data)
 
+    console.log(tweet)
+
     if (!tweet.room) {
         throw new HttpsError('invalid-argument', 'Invalid Room ID')
     }
@@ -105,15 +101,7 @@ export const deleteTweet = onCall(async (request) => {
     }
 
     if (tweet.user == userId || !tweetUser || u.role > tweetUser?.role) {
-        await admin.firestore()
-            .collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`)
-            .doc(tweet.uid).delete();
-
-        // admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
-        //     {
-        //         'tweetCount': FieldValue.increment(-1)
-        //     },
-        //     { merge: true });
+        await admin.firestore().doc(tweet.path).delete();
     } else {
         throw new HttpsError('invalid-argument', 'Not enough privilege')
     }

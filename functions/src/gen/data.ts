@@ -349,7 +349,9 @@ export interface User {
   roomRequest: string[];
   created: Date | undefined;
   open: Visible;
-  /** ------------------- */
+}
+
+export interface UserClaims {
   fcmToken: string;
 }
 
@@ -385,10 +387,11 @@ export interface Tweet {
 
 export interface ImageMetadata {
   url: string;
+  path: string;
   localUrl: string;
-  blurhash: string;
   width: number;
   height: number;
+  /** string blurhash = 60; */
   caption: string;
 }
 
@@ -405,7 +408,6 @@ function createBaseUser(): User {
     roomRequest: [],
     created: undefined,
     open: 0,
-    fcmToken: "",
   };
 }
 
@@ -443,9 +445,6 @@ export const User = {
     }
     if (message.open !== 0) {
       writer.uint32(8000).int32(message.open);
-    }
-    if (message.fcmToken !== "") {
-      writer.uint32(8802).string(message.fcmToken);
     }
     return writer;
   },
@@ -534,13 +533,6 @@ export const User = {
 
           message.open = reader.int32() as any;
           continue;
-        case 1100:
-          if (tag !== 8802) {
-            break;
-          }
-
-          message.fcmToken = reader.string();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -565,7 +557,6 @@ export const User = {
         : [],
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
-      fcmToken: isSet(object.fcmToken) ? globalThis.String(object.fcmToken) : "",
     };
   },
 
@@ -604,9 +595,6 @@ export const User = {
     if (message.open !== 0) {
       obj.open = visibleToJSON(message.open);
     }
-    if (message.fcmToken !== "") {
-      obj.fcmToken = message.fcmToken;
-    }
     return obj;
   },
 
@@ -626,6 +614,62 @@ export const User = {
     message.roomRequest = object.roomRequest?.map((e) => e) || [];
     message.created = object.created ?? undefined;
     message.open = object.open ?? 0;
+    return message;
+  },
+};
+
+function createBaseUserClaims(): UserClaims {
+  return { fcmToken: "" };
+}
+
+export const UserClaims = {
+  encode(message: UserClaims, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.fcmToken !== "") {
+      writer.uint32(802).string(message.fcmToken);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserClaims {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserClaims();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 100:
+          if (tag !== 802) {
+            break;
+          }
+
+          message.fcmToken = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UserClaims {
+    return { fcmToken: isSet(object.fcmToken) ? globalThis.String(object.fcmToken) : "" };
+  },
+
+  toJSON(message: UserClaims): unknown {
+    const obj: any = {};
+    if (message.fcmToken !== "") {
+      obj.fcmToken = message.fcmToken;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UserClaims>, I>>(base?: I): UserClaims {
+    return UserClaims.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UserClaims>, I>>(object: I): UserClaims {
+    const message = createBaseUserClaims();
     message.fcmToken = object.fcmToken ?? "";
     return message;
   },
@@ -1081,7 +1125,7 @@ export const Tweet = {
 };
 
 function createBaseImageMetadata(): ImageMetadata {
-  return { url: "", localUrl: "", blurhash: "", width: 0, height: 0, caption: "" };
+  return { url: "", path: "", localUrl: "", width: 0, height: 0, caption: "" };
 }
 
 export const ImageMetadata = {
@@ -1089,11 +1133,11 @@ export const ImageMetadata = {
     if (message.url !== "") {
       writer.uint32(10).string(message.url);
     }
-    if (message.localUrl !== "") {
-      writer.uint32(82).string(message.localUrl);
+    if (message.path !== "") {
+      writer.uint32(82).string(message.path);
     }
-    if (message.blurhash !== "") {
-      writer.uint32(162).string(message.blurhash);
+    if (message.localUrl !== "") {
+      writer.uint32(162).string(message.localUrl);
     }
     if (message.width !== 0) {
       writer.uint32(240).int32(message.width);
@@ -1126,14 +1170,14 @@ export const ImageMetadata = {
             break;
           }
 
-          message.localUrl = reader.string();
+          message.path = reader.string();
           continue;
         case 20:
           if (tag !== 162) {
             break;
           }
 
-          message.blurhash = reader.string();
+          message.localUrl = reader.string();
           continue;
         case 30:
           if (tag !== 240) {
@@ -1168,8 +1212,8 @@ export const ImageMetadata = {
   fromJSON(object: any): ImageMetadata {
     return {
       url: isSet(object.url) ? globalThis.String(object.url) : "",
+      path: isSet(object.path) ? globalThis.String(object.path) : "",
       localUrl: isSet(object.localUrl) ? globalThis.String(object.localUrl) : "",
-      blurhash: isSet(object.blurhash) ? globalThis.String(object.blurhash) : "",
       width: isSet(object.width) ? globalThis.Number(object.width) : 0,
       height: isSet(object.height) ? globalThis.Number(object.height) : 0,
       caption: isSet(object.caption) ? globalThis.String(object.caption) : "",
@@ -1181,11 +1225,11 @@ export const ImageMetadata = {
     if (message.url !== "") {
       obj.url = message.url;
     }
+    if (message.path !== "") {
+      obj.path = message.path;
+    }
     if (message.localUrl !== "") {
       obj.localUrl = message.localUrl;
-    }
-    if (message.blurhash !== "") {
-      obj.blurhash = message.blurhash;
     }
     if (message.width !== 0) {
       obj.width = Math.round(message.width);
@@ -1205,8 +1249,8 @@ export const ImageMetadata = {
   fromPartial<I extends Exact<DeepPartial<ImageMetadata>, I>>(object: I): ImageMetadata {
     const message = createBaseImageMetadata();
     message.url = object.url ?? "";
+    message.path = object.path ?? "";
     message.localUrl = object.localUrl ?? "";
-    message.blurhash = object.blurhash ?? "";
     message.width = object.width ?? 0;
     message.height = object.height ?? 0;
     message.caption = object.caption ?? "";

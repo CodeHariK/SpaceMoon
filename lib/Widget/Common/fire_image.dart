@@ -72,20 +72,20 @@ Future<List<ImageMetadata?>> selectMultiMedia() async {
 Future<String?> uploadFire({
   required ImageMetadata meta,
   required String imageName,
-  required String user,
-  required String location,
+  required String docPath,
+  required String storagePath,
   String? multipath,
   String? singlepath,
 }) async {
   final name = '$imageName${path.extension(meta.localUrl)}';
-  final uploadTask = FirebaseStorage.instance.ref().child('$user/$location').child(name).putFile(
+  final uploadTask = FirebaseStorage.instance.ref().child(storagePath).child(name).putFile(
         File(meta.localUrl),
         SettableMetadata(
           contentType: lookupMimeType(meta.localUrl),
           customMetadata: ({
             // 'name': name,
             // 'user': user,
-            // 'path': location,
+            'path': docPath,
             'localUrl': meta.localUrl,
             // 'width': meta.width.toString(),
             // 'height': meta.height.toString(),

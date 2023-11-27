@@ -1,10 +1,10 @@
 import * as functions from "firebase-functions/v1";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { onCall, onRequest } from "firebase-functions/v2/https";
+import { onCall } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { Const, User } from "./Gen/data";
+import { Const, RoomUser, User } from "./Gen/data";
 import { constName } from "./Helpers/const";
-
+import { toMap } from "./Helpers/map";
 
 export const onUserCreate = functions.auth.user().onCreate((user) => {
     const { uid, email, displayName, phoneNumber, photoURL } = user;
@@ -13,7 +13,7 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
         .set(
             User.toJSON(User.create({
                 email: email,
-                nick: '@' + uid,
+                nick: uid,
                 displayName: displayName ?? uid,
                 phoneNumber: phoneNumber,
                 photoURL: photoURL,
@@ -31,25 +31,41 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
 export const callUserUpdate = onCall((request): void => {
     let uid = request.auth?.uid;
 
-    const { displayName, nick, photoURL, fcmToken } = request.data;
+    const { displayName, nick, photoURL } = request.data;
 
-    const obj = {
+    const user = User.create({
         displayName: displayName,
         nick: nick,
         photoURL: photoURL,
-        fcmToken: fcmToken,
-    };
+    });
 
     if (uid != null) {
-        admin.auth().updateUser(uid, User.toJSON(User.create(obj))!)
-        admin.firestore().collection(constName(Const.users)).doc(uid).set(userToMap(obj), { merge: true });
+        admin.auth().updateUser(uid, User.toJSON(user)!)
+        admin.firestore().collection(constName(Const.users)).doc(uid)
+            .update(userObj(user)).catch((error) => {
+                console.error('Error callUserUpdate'/*, error*/);
+            });
     }
 });
 
-export const userHi = onRequest((request, resp): void => {
-    resp.send('Hello');
-    return;
+export const callFCMtokenUpdate = onCall((request): void => {
+    let uid = request.auth?.uid;
+
+    const { fcmToken } = request.data;
+
+    if (uid != null) {
+        admin.auth().getUser(uid)
+            .then((userRecord) => {
+                const currentCustomClaims = userRecord.customClaims || {};
+                currentCustomClaims.fcmToken = fcmToken;
+
+                return admin.auth().setCustomUserClaims(uid!, currentCustomClaims);
+            }).catch((error) => {
+                console.error('Error adding new field to custom claims'/*, error*/);
+            });
+    }
 });
+
 
 export const checkUserExists = async (userId: string) => {
     return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).exists;
@@ -86,33 +102,51 @@ async function grantModerateRole(uid: string) {
 
 export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
 
-    admin.firestore().collection(constName(Const.users))
-        .doc(user.uid).delete();
-
     const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
         .where('user', '==', user.uid).get()
 
     const db = admin.firestore();
     const batch = db.batch();
     roomUserQuery.forEach((doc) => {
+        let ru = RoomUser.fromJSON(doc.data());
+        console.log(ru);
+        admin.storage().bucket().deleteFiles({
+            prefix: `tweet/${ru.room}/${ru.user}`
+        });
         batch.delete(doc.ref);
     });
     await batch.commit();
 
     admin.storage().bucket().deleteFiles({
-        prefix: user.uid
+        prefix: `profile/users/${user.uid}`
     });
 
+    admin.firestore().collection(constName(Const.users))
+        .doc(user.uid).delete()
+        .catch((error) => {
+            console.error('Error deleteAuthUser'/*, error*/);
+        });
     return { message: `Deleted all ${user.uid} documents.` };
 });
 
 export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
-    // console.log(await admin.auth().getUser(event.params.userId))
-    // admin.auth().deleteUser(event.params.userId);
+    console.log(event.params.userId)
+    admin.auth().deleteUser(event.params.userId)
+        .catch((error) => {
+            console.error('Error deleteUser'/*, error*/);
+        });
 });
 
 // Helper Functions ___________________________________________
 
-export function userToMap(obj: any) {
-    return User.toJSON(User.create(obj)) as Map<string, any>;
+export function userToMap(user: User) {
+    return toMap(userToJson(user)!);
+}
+
+export function userToJson(user: User) {
+    return User.toJSON(user)! as Map<String, any>;
+}
+
+export function userObj(user: User) {
+    return Object.fromEntries(userToMap(user));
 }

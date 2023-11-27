@@ -55,16 +55,14 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         metadata: metadata,
     });
 
-    const user = filePath.split('/')[0];
-    const docpath = filePath.replace(user + '/', '').replace('/' + fileName, '')
+    //------------------
+
+    let docpath = event.data.metadata!.path;
 
     if (event.data.metadata?.single) {
-        admin.firestore().doc(docpath).set({
+        admin.firestore().doc(docpath).update({
             [event.data.metadata?.single]: event.data.mediaLink
-        },
-            {
-                merge: true
-            }
+        }
         );
     }
     if (event.data.metadata?.multi) {
@@ -78,16 +76,17 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         let newImageData = ImageMetadata.fromPartial(oldImageData)
         newImageData.url = event.data.mediaLink!
         newImageData.localUrl = '';
+        newImageData.path = filePath;
         newImageData.width = sharpImageMetaData.width!;
         newImageData.height = sharpImageMetaData.height!;
 
-        await admin.firestore().doc(docpath).set({
+        await admin.firestore().doc(docpath).update({
             [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
-        }, { merge: true }
+        },
         );
-        await admin.firestore().doc(docpath).set({
+        await admin.firestore().doc(docpath).update({
             [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
-        }, { merge: true }
+        }
         );
     }
 

@@ -58,10 +58,6 @@ class Tweets extends _$Tweets {
   FutureOr<void> deleteTweet({
     required Tweet tweet,
   }) async {
-    final roomuser = ref.watch(currentRoomUserProvider).value;
-
-    tweet.room = roomuser!.room;
-
     await FirebaseFunctions.instance.httpsCallable('deleteTweet').call(tweet.toMap());
   }
 }

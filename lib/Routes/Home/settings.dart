@@ -102,9 +102,15 @@ class SettingsPage extends ConsumerWidget {
           ),
           CupertinoListTile.notched(
             onTap: () {
+              showLicensePage(context: context);
+            },
+            title: Text('License', style: context.tm),
+          ),
+          CupertinoListTile.notched(
+            onTap: () {
               AboutRoute().push(context);
             },
-            title: Text('About', style: context.tm),
+            title: Text('Developer Info', style: context.tm),
           ),
         ],
       ),

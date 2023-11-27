@@ -227,8 +227,15 @@ class CurrentRoom extends _$CurrentRoom {
     ref.invalidate(currentRoomUserProvider);
   }
 
-  void deleteRoomUser(RoomUser user) async {
+  Future<void> deleteRoom(RoomUser user) async {
+    await FirebaseFunctions.instance.httpsCallable('deleteRoom').call(user.toMap());
+    exitRoom();
+    ref.invalidate(currentRoomUserProvider);
+  }
+
+  Future<void> deleteRoomUser(RoomUser user) async {
     await FirebaseFunctions.instance.httpsCallable('deleteRoomUser').call(user.toMap());
+    exitRoom();
     ref.invalidate(currentRoomUserProvider);
   }
 }

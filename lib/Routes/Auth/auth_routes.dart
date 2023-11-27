@@ -176,35 +176,35 @@ class ForgotPasswordRoute extends GoRouteData {
   }
 }
 
-@TypedGoRoute<VerifyEmailRoute>(path: AppRouter.verifyEmail)
-@immutable
-class VerifyEmailRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+// @TypedGoRoute<VerifyEmailRoute>(path: AppRouter.verifyEmail)
+// @immutable
+// class VerifyEmailRoute extends GoRouteData {
+//   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return EmailVerificationScreen(
-      headerBuilder: headerIcon(Icons.verified),
-      sideBuilder: sideIcon(Icons.verified),
-      actionCodeSettings: ActionCodeSettings(
-        url: 'https://spacemoonfire.firebaseapp.com',
-        handleCodeInApp: true,
-        androidMinimumVersion: '27',
-        androidPackageName: 'run.shark.spacemoon',
-        iOSBundleId: 'run.shark.spacemoon',
-      ),
-      actions: [
-        EmailVerifiedAction(() {
-          AccountRoute().pushReplacement(context);
-        }),
-        AuthCancelledAction((context) {
-          FirebaseUIAuth.signOut(context: context);
-          HomeRoute().pushReplacement(context);
-        }),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context, GoRouterState state) {
+//     return EmailVerificationScreen(
+//       headerBuilder: headerIcon(Icons.verified),
+//       sideBuilder: sideIcon(Icons.verified),
+//       actionCodeSettings: ActionCodeSettings(
+//         url: 'https://spacemoonfire.firebaseapp.com',
+//         handleCodeInApp: true,
+//         androidMinimumVersion: '27',
+//         androidPackageName: 'run.shark.spacemoon',
+//         iOSBundleId: 'run.shark.spacemoon',
+//       ),
+//       actions: [
+//         EmailVerifiedAction(() {
+//           AccountRoute().pushReplacement(context);
+//         }),
+//         AuthCancelledAction((context) {
+//           FirebaseUIAuth.signOut(context: context);
+//           HomeRoute().pushReplacement(context);
+//         }),
+//       ],
+//     );
+//   }
+// }
 
 @TypedGoRoute<EmailLinkRoute>(path: AppRouter.emailLinkSignIn)
 @immutable

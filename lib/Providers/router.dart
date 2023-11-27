@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Providers/auth.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
@@ -101,11 +102,12 @@ RoutingConfig _generateRoutingConfig({required bool authenticated, required bool
 Future routerRedirector(RouterRedirectorRef ref) async {
   final onboarded = ref.watch(onboardedProvider);
   final user = ref.watch(currentUserProvider).value;
+  final userData = ref.watch(currentUserDataProvider).value;
 
-  debugPrint(user?.uid ?? '-');
+  debugPrint('routerRedirector : ${user?.uid}');
 
   myConfig.value = _generateRoutingConfig(
-    authenticated: user != null, // && ((user.emailVerified == true) && verifyEmail),
+    authenticated: user != null && userData != null, // && ((user.emailVerified == true) && verifyEmail),
     onboarded: onboarded,
   );
 

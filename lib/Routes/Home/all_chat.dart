@@ -73,7 +73,7 @@ class AllChatPage extends ConsumerWidget {
         onPressed: () async {
           ref.read(currentRoomProvider.notifier).createRoom(
             room: Room(
-              nick: '#nickle',
+              nick: 'nickle',
               description: 'Description',
               displayName: 'Hello',
               open: Visible.MODERATED,

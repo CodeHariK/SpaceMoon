@@ -4,6 +4,7 @@ import { Const, Role, Room, RoomUser } from "./Gen/data";
 import { constName, visibleName } from "./Helpers/const";
 import { checkUserExists } from "./users";
 import { toMap } from "./Helpers/map";
+import { deleteCollection } from "./Helpers/subcollection";
 
 export const callCreateRoom = onCall(async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;
@@ -115,6 +116,47 @@ export const acceptAccessToRoom = onCall(async (request) => {
     }
 });
 
+export const deleteRoom = onCall(async (request) => {
+    let adminId = request.auth!.uid;
+    let roomUser = RoomUser.fromJSON(request.data)
+
+    if (!roomUser.room) {
+        throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
+    }
+
+    const adminUser = await getRoomUserById(adminId, roomUser.room);
+
+    if ((adminId === roomUser.user) || (adminUser && (adminUser.role == Role.ADMIN))) {
+
+        const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
+            .where('room', '==', roomUser.room).get()
+
+        const db = admin.firestore();
+        const batch = db.batch();
+        roomUserQuery.forEach((doc) => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+
+        admin.storage().bucket().deleteFiles({
+            prefix: `tweet/${roomUser.room}`
+        });
+        admin.storage().bucket().deleteFiles({
+            prefix: `profile/rooms/${roomUser.room}`
+        });
+
+        await admin.firestore().collection(constName(Const.rooms)).doc(roomUser.room).delete().then(() => {
+            console.log('Room deleted');
+        });
+
+        deleteCollection(`${constName(Const.rooms)}/${roomUser.room}/tweets`, 100);
+
+        return { message: 'Room Deleted.' };
+    } else {
+        throw new HttpsError('permission-denied', 'You do not have permission to delete room.');
+    }
+});
+
 export const deleteRoomUser = onCall(async (request) => {
     let adminId = request.auth!.uid;
     let _roomuser = RoomUser.fromJSON(request.data)
@@ -144,7 +186,7 @@ export const updateRoomInfo = onCall(async (request): Promise<string> => {
 
     let room = Room.fromJSON(request.data)
 
-    let r = roomToJson(Room.create({
+    let r = roomToMap(Room.create({
         description: room.description,
         displayName: room.displayName,
         nick: room.nick,
@@ -189,6 +231,10 @@ export function roomUserToMap(obj: any) {
     return RoomUser.toJSON(RoomUser.create(obj)) as Map<string, any>;
 }
 
-export function roomToJson(room: Room) {
+export function roomToMap(room: Room) {
     return toMap(Room.toJSON(room)!);
+}
+
+export function roomToJson(room: Room) {
+    return Room.toJSON(room)! as Map<String, any>;
 }
