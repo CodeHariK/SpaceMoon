@@ -255,6 +255,7 @@ class RoomUser extends $pb.GeneratedMessage {
     $core.String? room,
     Role? role,
     $0.Timestamp? created,
+    $0.Timestamp? updated,
   }) {
     final $result = create();
     if (uid != null) {
@@ -272,6 +273,9 @@ class RoomUser extends $pb.GeneratedMessage {
     if (created != null) {
       $result.created = created;
     }
+    if (updated != null) {
+      $result.updated = updated;
+    }
     return $result;
   }
   RoomUser._() : super();
@@ -284,6 +288,7 @@ class RoomUser extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'room')
     ..e<Role>(10, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: Role.BLOCKED, valueOf: Role.valueOf, enumValues: Role.values)
     ..aOM<$0.Timestamp>(20, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(30, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
     ..hasRequiredFields = false
   ;
 
@@ -354,6 +359,17 @@ class RoomUser extends $pb.GeneratedMessage {
   void clearCreated() => clearField(20);
   @$pb.TagNumber(20)
   $0.Timestamp ensureCreated() => $_ensure(4);
+
+  @$pb.TagNumber(30)
+  $0.Timestamp get updated => $_getN(5);
+  @$pb.TagNumber(30)
+  set updated($0.Timestamp v) { setField(30, v); }
+  @$pb.TagNumber(30)
+  $core.bool hasUpdated() => $_has(5);
+  @$pb.TagNumber(30)
+  void clearUpdated() => clearField(30);
+  @$pb.TagNumber(30)
+  $0.Timestamp ensureUpdated() => $_ensure(5);
 }
 
 class Room extends $pb.GeneratedMessage {
@@ -364,6 +380,7 @@ class Room extends $pb.GeneratedMessage {
     $core.String? photoURL,
     $core.String? description,
     $0.Timestamp? created,
+    $0.Timestamp? updated,
     Visible? open,
   }) {
     final $result = create();
@@ -385,6 +402,9 @@ class Room extends $pb.GeneratedMessage {
     if (created != null) {
       $result.created = created;
     }
+    if (updated != null) {
+      $result.updated = updated;
+    }
     if (open != null) {
       $result.open = open;
     }
@@ -401,7 +421,8 @@ class Room extends $pb.GeneratedMessage {
     ..aOS(20, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
     ..aOS(30, _omitFieldNames ? '' : 'description')
     ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(50, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOM<$0.Timestamp>(50, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
+    ..e<Visible>(60, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
     ..hasRequiredFields = false
   ;
 
@@ -483,13 +504,24 @@ class Room extends $pb.GeneratedMessage {
   $0.Timestamp ensureCreated() => $_ensure(5);
 
   @$pb.TagNumber(50)
-  Visible get open => $_getN(6);
+  $0.Timestamp get updated => $_getN(6);
   @$pb.TagNumber(50)
-  set open(Visible v) { setField(50, v); }
+  set updated($0.Timestamp v) { setField(50, v); }
   @$pb.TagNumber(50)
-  $core.bool hasOpen() => $_has(6);
+  $core.bool hasUpdated() => $_has(6);
   @$pb.TagNumber(50)
-  void clearOpen() => clearField(50);
+  void clearUpdated() => clearField(50);
+  @$pb.TagNumber(50)
+  $0.Timestamp ensureUpdated() => $_ensure(6);
+
+  @$pb.TagNumber(60)
+  Visible get open => $_getN(7);
+  @$pb.TagNumber(60)
+  set open(Visible v) { setField(60, v); }
+  @$pb.TagNumber(60)
+  $core.bool hasOpen() => $_has(7);
+  @$pb.TagNumber(60)
+  void clearOpen() => clearField(60);
 }
 
 class Tweet extends $pb.GeneratedMessage {

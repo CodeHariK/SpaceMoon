@@ -361,6 +361,7 @@ export interface RoomUser {
   room: string;
   role: Role;
   created: Date | undefined;
+  updated: Date | undefined;
 }
 
 export interface Room {
@@ -370,6 +371,7 @@ export interface Room {
   photoURL: string;
   description: string;
   created: Date | undefined;
+  updated: Date | undefined;
   open: Visible;
 }
 
@@ -676,7 +678,7 @@ export const UserClaims = {
 };
 
 function createBaseRoomUser(): RoomUser {
-  return { uid: "", user: "", room: "", role: 0, created: undefined };
+  return { uid: "", user: "", room: "", role: 0, created: undefined, updated: undefined };
 }
 
 export const RoomUser = {
@@ -695,6 +697,9 @@ export const RoomUser = {
     }
     if (message.created !== undefined) {
       Timestamp.encode(toTimestamp(message.created), writer.uint32(162).fork()).ldelim();
+    }
+    if (message.updated !== undefined) {
+      Timestamp.encode(toTimestamp(message.updated), writer.uint32(242).fork()).ldelim();
     }
     return writer;
   },
@@ -741,6 +746,13 @@ export const RoomUser = {
 
           message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
+        case 30:
+          if (tag !== 242) {
+            break;
+          }
+
+          message.updated = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -757,6 +769,7 @@ export const RoomUser = {
       room: isSet(object.room) ? globalThis.String(object.room) : "",
       role: isSet(object.role) ? roleFromJSON(object.role) : 0,
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+      updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
     };
   },
 
@@ -777,6 +790,9 @@ export const RoomUser = {
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
     }
+    if (message.updated !== undefined) {
+      obj.updated = message.updated.toISOString();
+    }
     return obj;
   },
 
@@ -790,12 +806,22 @@ export const RoomUser = {
     message.room = object.room ?? "";
     message.role = object.role ?? 0;
     message.created = object.created ?? undefined;
+    message.updated = object.updated ?? undefined;
     return message;
   },
 };
 
 function createBaseRoom(): Room {
-  return { uid: "", nick: "", displayName: "", photoURL: "", description: "", created: undefined, open: 0 };
+  return {
+    uid: "",
+    nick: "",
+    displayName: "",
+    photoURL: "",
+    description: "",
+    created: undefined,
+    updated: undefined,
+    open: 0,
+  };
 }
 
 export const Room = {
@@ -818,8 +844,11 @@ export const Room = {
     if (message.created !== undefined) {
       Timestamp.encode(toTimestamp(message.created), writer.uint32(322).fork()).ldelim();
     }
+    if (message.updated !== undefined) {
+      Timestamp.encode(toTimestamp(message.updated), writer.uint32(402).fork()).ldelim();
+    }
     if (message.open !== 0) {
-      writer.uint32(400).int32(message.open);
+      writer.uint32(480).int32(message.open);
     }
     return writer;
   },
@@ -874,7 +903,14 @@ export const Room = {
           message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         case 50:
-          if (tag !== 400) {
+          if (tag !== 402) {
+            break;
+          }
+
+          message.updated = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 60:
+          if (tag !== 480) {
             break;
           }
 
@@ -897,6 +933,7 @@ export const Room = {
       photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
       description: isSet(object.description) ? globalThis.String(object.description) : "",
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+      updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
     };
   },
@@ -921,6 +958,9 @@ export const Room = {
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
     }
+    if (message.updated !== undefined) {
+      obj.updated = message.updated.toISOString();
+    }
     if (message.open !== 0) {
       obj.open = visibleToJSON(message.open);
     }
@@ -938,6 +978,7 @@ export const Room = {
     message.photoURL = object.photoURL ?? "";
     message.description = object.description ?? "";
     message.created = object.created ?? undefined;
+    message.updated = object.updated ?? undefined;
     message.open = object.open ?? 0;
     return message;
   },

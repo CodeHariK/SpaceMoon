@@ -101,7 +101,6 @@ async function grantModerateRole(uid: string) {
 }
 
 export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
-
     const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
         .where('user', '==', user.uid).get()
 
@@ -109,7 +108,6 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
     const batch = db.batch();
     roomUserQuery.forEach((doc) => {
         let ru = RoomUser.fromJSON(doc.data());
-        console.log(ru);
         admin.storage().bucket().deleteFiles({
             prefix: `tweet/${ru.room}/${ru.user}`
         });
@@ -130,7 +128,6 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
 });
 
 export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
-    console.log(event.params.userId)
     admin.auth().deleteUser(event.params.userId)
         .catch((error) => {
             console.error('Error deleteUser'/*, error*/);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -9,6 +8,7 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
@@ -27,7 +27,13 @@ class TweetBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomuser = ref.watch(currentRoomUserProvider).value;
+    final roomuserPro = ref.watch(currentRoomUserProvider);
+
+    // if (roomuserPro.isLoading) {
+    //   return const CircularProgressIndicator();
+    // }
+
+    final roomuser = roomuserPro.value;
 
     final box = Material(
       color: Colors.transparent,
@@ -149,7 +155,7 @@ class TweetBox extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const CircleAvatar(),
-              Text(DateFormat.jm().format(tweet.created.toDateTime()), style: context.ls),
+              Text(tweet.created.timeString, style: context.ls),
             ],
           ),
           (tweet.mediaType == MediaType.VIDEO || tweet.mediaType == MediaType.POST)

@@ -1,6 +1,6 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { Const, Role, Tweet } from "./Gen/data";
-import { getRoomUserById } from "./room";
+import { Const, Role, Room, Tweet } from "./Gen/data";
+import { getRoomUserById, roomToJson } from "./room";
 import { constName } from "./Helpers/const";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
@@ -26,6 +26,14 @@ export const sendTweet = onCall(async (request) => {
                 link: tweet.link,
                 gallery: tweet.gallery,
             })) as Map<string, any>
+        );
+
+        await admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
+            roomToJson(Room.create({
+                updated: new Date()
+            })
+            ),
+            { merge: true },
         );
 
         return sentTweet.path
@@ -106,7 +114,6 @@ export const deleteTweet = onCall(async (request) => {
         throw new HttpsError('invalid-argument', 'Not enough privilege')
     }
 });
-
 
 export const onTweetDeleted = onDocumentDeleted("rooms/{roomId}/tweets/{tweetId}", async (event) => {
     let path = `${Tweet.fromJSON(event.data?.data()).user}/${constName(Const.rooms)}/${event.params.roomId}/${constName(Const.tweets)}/${event.params.tweetId}`;

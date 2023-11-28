@@ -13,6 +13,5 @@ service cloud.firestore {
       // Allow write, update, and delete only if the authenticated user ID matches the user document ID
       allow write, update, delete: if request.auth != null && request.auth.uid == userId;
     }
-
   }
 }

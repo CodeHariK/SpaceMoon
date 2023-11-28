@@ -34,65 +34,73 @@ extension SuperRoom on Room {
   }
 }
 
+extension SuperRoomUser on RoomUser {
+  bool get isUserOrAdmin => role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
+  bool get isAdminOrMod => role == Role.ADMIN || role == Role.MODERATOR;
+  bool get isRequest => role == Role.REQUEST;
+
+  CollectionReference<Tweet?>? get tweetCol {
+    return FirebaseFirestore.instance.collection('${Const.rooms.name}/$room/${Const.tweets.name}').withConverter(
+      fromFirestore: (snapshot, options) {
+        return fromDocSnap(Tweet(), snapshot);
+      },
+      toFirestore: (value, options) {
+        return value?.toMap() ?? {};
+      },
+    );
+  }
+}
+
 @riverpod
-class RoomText extends _$RoomText {
+class SearchText extends _$SearchText {
   @override
-  Future<String?> build() async {
+  String? build() {
     return null;
   }
 
-  Future<void> change(String roomId) async {
-    state = await AsyncValue.guard(() async {
-      return roomId;
-    });
+  void change(String roomId) async {
+    state = roomId;
   }
 }
 
 @riverpod
-Future<List<Room>?> getRoom(GetRoomRef ref) async {
-  final roomId = ref.watch(roomTextProvider).value;
+Future<Room?> searchRoomByNick(SearchRoomByNickRef ref) async {
+  final nick = ref.watch(searchTextProvider);
 
-  if (roomId == null || roomId == '') return null;
+  if (nick == null || nick == '') return null;
 
-  List<Room>? room = await FirebaseFirestore.instance
+  List<Room>? rooms = await FirebaseFirestore.instance
       .collection(Const.rooms.name)
-      .where(Const.nick.name, isEqualTo: roomId)
+      .where(Const.nick.name, isEqualTo: nick)
       .get()
-      .then(
-    (value) {
-      return value.docs.map((e) => fromQuerySnap(Room(), e)!).toList();
-    },
-  );
-  return room;
+      .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
+
+  return rooms?.firstOrNull;
 }
 
 @Riverpod(keepAlive: true)
-Future<Room?> getRoomById(GetRoomByIdRef ref, String roomId) async {
-  Room? room = await FirebaseFirestore.instance
+Stream<Room?> getRoomById(GetRoomByIdRef ref, String roomId) {
+  Stream<Room?>? room = FirebaseFirestore.instance
       .collection(Const.rooms.name)
       .doc(roomId)
-      .get()
-      .then((value) => fromDocSnap(Room(), value));
+      .snapshots()
+      .map((event) => fromDocSnap(Room(), event));
   return room;
 }
 
-// @riverpod
-// FutureOr<int> allRoomUserCount(AllRoomUserCountRef ref) async {
-//   final room = ref.watch(currentRoomProvider).value;
-
-//   if (room == null) return 0;
-
-//   final uu = await FirebaseFirestore.instance
-//       .collection(Const.roomusers.name)
-//       .where('room', isEqualTo: room.uid)
-//       .count()
-//       .get();
-
-//   return uu.count;
-// }
+@riverpod
+FutureOr<int?> getNewTweetCount(GetNewTweetCountRef ref, RoomUser user) {
+  return user.tweetCol
+      ?.where(Const.created.name, isGreaterThan: user.updated.toDateTime().toString())
+      .count()
+      .get()
+      .then((value) {
+    return value.count;
+  });
+}
 
 @Riverpod(keepAlive: true)
-Stream<List<RoomUser?>> getAllMyUsers(GetAllMyUsersRef ref) {
+Stream<List<RoomUser?>> getAllRoomUsers(GetAllRoomUsersRef ref) {
   final room = ref.watch(currentRoomProvider).value;
 
   if (room == null) return const Stream.empty();
@@ -176,20 +184,15 @@ class CurrentRoom extends _$CurrentRoom {
           .get();
       state = AsyncValue.data(fromDocSnap(Room(), room));
     }
-    //
-    // else if (state.value != null) {
-    //   final room = await FirebaseFirestore.instance
-    //       .collection(
-    //         Const.rooms.name,
-    //       )
-    //       .doc(state.value!.uid)
-    //       .get();
-    //   state = AsyncValue.data(fromDocSnap(Room(), room));
-    // }
   }
 
-  void exitRoom() {
+  void exitRoom(RoomUser? roomUser) {
     lava('Room Exited');
+
+    if (roomUser != null) {
+      FirebaseFunctions.instance.httpsCallable('updateRoomUserTime').call(roomUser.toMap());
+    }
+
     state = const AsyncValue.data(null);
   }
 
@@ -229,19 +232,11 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> deleteRoom(RoomUser user) async {
     await FirebaseFunctions.instance.httpsCallable('deleteRoom').call(user.toMap());
-    exitRoom();
+    exitRoom(user);
     ref.invalidate(currentRoomUserProvider);
   }
 
   Future<void> deleteRoomUser(RoomUser user) async {
     await FirebaseFunctions.instance.httpsCallable('deleteRoomUser').call(user.toMap());
-    exitRoom();
-    ref.invalidate(currentRoomUserProvider);
   }
-}
-
-extension SuperRoomUser on RoomUser {
-  bool get isUserOrAdmin => role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
-  bool get isAdminOrMod => role == Role.ADMIN || role == Role.MODERATOR;
-  bool get isRequest => role == Role.REQUEST;
 }

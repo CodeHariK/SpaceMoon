@@ -60,6 +60,7 @@ message RoomUser {
     string room = 3;
     Role role = 10;
     google.protobuf.Timestamp created = 20;
+    google.protobuf.Timestamp updated = 30;
 }
 
 message Room {
@@ -69,8 +70,9 @@ message Room {
     string photoURL = 20;
     string description = 30;
     google.protobuf.Timestamp created = 40;
+    google.protobuf.Timestamp updated = 50;
     
-    Visible open = 50;
+    Visible open = 60;
 
     // int32 activeCount = 60; 
     // int32 totalCount = 70; 

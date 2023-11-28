@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 
 extension AppThemeNumber on num {
@@ -38,6 +39,9 @@ class AppTheme {
   );
 
   static bool get darkness => currentAppTheme.dark;
+  static Color get high =>
+      AppTheme.darkness ? const Color.fromARGB(255, 41, 41, 41) : const Color.fromARGB(255, 242, 242, 242);
+  static Color get prihigh => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
 
   static double get w => currentAppTheme.size.width;
   static double get dw => currentAppTheme.designSize.width;
@@ -142,17 +146,14 @@ class AppTheme {
         // onPrimaryContainer: Colors.white, //text font,
         // inversePrimary: Colors.cyan,
 
-        //
         // background: Colors.yellow, //Scaffold
         // onBackground: const Color.fromARGB(255, 255, 59, 190),
 
-        //
         // secondary: Colors.purple,
         // onSecondary: Colors.blue,
         // secondaryContainer: Colors.pink, //NavigationRail
         // onSecondaryContainer: Colors.green, //NavigationRail
 
-        //
         // surface: Colors.yellow, //card, appbar
         // onSurface: Colors.yellow, //font, underline
         // surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
@@ -161,21 +162,18 @@ class AppTheme {
         // surfaceVariant: Colors.blue, //tabBarDivider
         // onSurfaceVariant: Colors.yellow, //Textfield lable font
 
-        //
         // tertiary: Colors.purple,
         // onTertiary: Colors.blue,
         // tertiaryContainer: Colors.pink,
         // onTertiaryContainer: Colors.green,
 
-        //
         // error: Colors.green,
         // onError: Colors.lime,
         // errorContainer: const Color.fromARGB(255, 167, 242, 170),
         // onErrorContainer: const Color.fromARGB(255, 2, 135, 7),
 
-        //
         // outline: Colors.yellow, //textfield border
-        // outlineVariant: Colors.green,//Divider
+        // outlineVariant: Colors.green, //Divider
         // shadow: Colors.blue, //Shadow, elevation
         // scrim: Colors.orange,
       );

@@ -6,16 +6,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
+import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
+import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
+import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -23,7 +25,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class ChatRoute extends GoRouteData {
   final String chatId;
 
-  const ChatRoute(this.chatId);
+  const ChatRoute({required this.chatId});
 
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
@@ -78,13 +80,33 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   Widget build(BuildContext context) {
     final roomPro = ref.watch(roomStreamProvider);
     final room = roomPro.value;
+    // final room = ref.watch(
+    //   roomStreamProvider.select(
+    //     (room) => Room(
+    //       uid: room.value?.uid,
+    //       displayName: room.value?.displayName,
+    //       nick: room.value?.nick,
+    //       photoURL: room.value?.photoURL,
+    //     ),
+    //   ),
+    // );
 
     final meInRoomPro = ref.watch(currentRoomUserProvider);
     final meInRoom = meInRoomPro.value;
+    // final meInRoom = ref.watch(
+    //   currentRoomUserProvider.select(
+    //     (roomuser) => RoomUser(
+    //       uid: roomuser.value?.uid,
+    //       room: roomuser.value?.room,
+    //       user: roomuser.value?.user,
+    //       role: roomuser.value?.role
+    //     ),
+    //   ),
+    // );
 
-    if (roomPro.isLoading || meInRoomPro.isLoading) {
-      return const Scaffold();
-    }
+    // if (roomPro.isLoading || meInRoomPro.isLoading) {
+    //   return const Scaffold();
+    // }
 
     Query<Tweet?>? query = room?.tweetCol?.orderBy(
       Const.created.name,
@@ -95,10 +117,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       return const Error404Page();
     }
 
-    if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
+    if ((/*meInRoom == null ||*/ meInRoom?.role == Role.REQUEST) && room.open != Visible.OPEN) {
       return WillPopScope(
         onWillPop: () async {
-          ref.read(currentRoomProvider.notifier).exitRoom();
+          ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
           return true;
         },
         child: Scaffold(
@@ -134,7 +156,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
     return WillPopScope(
       onWillPop: () async {
-        ref.read(currentRoomProvider.notifier).exitRoom();
+        ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
         return true;
       },
       child: Scaffold(
@@ -149,8 +171,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             title: Text(room.displayName, style: context.tm, maxLines: 1),
             subtitle: Text(room.nick, style: context.ts, maxLines: 1),
             leading: CircleAvatar(
-                // backgroundImage: Image.network(room.photoURL).image,
-                ),
+              child: CustomCacheImage(
+                imageUrl: thumbImage(room.photoURL),
+                radius: 32,
+              ),
+            ),
           ),
         ),
         body: SafeArea(
@@ -160,9 +185,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 child: FirestoreQueryBuilder(
                   query: query,
                   builder: (context, allTweetSnap, child) {
-                    if (allTweetSnap.isFetching) {
-                      return const SizedBox.shrink();
-                    }
+                    // if (allTweetSnap.isFetching) {
+                    //   return const SizedBox.shrink();
+                    // }
                     if (allTweetSnap.hasError) {
                       return Text('error ${allTweetSnap.error}');
                     }
@@ -185,13 +210,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             if (index > 0 && index < allTweetSnap.docs.length) {
                               Tweet lastTweet = allTweetSnap.docs[index + 1].data()!;
 
-                              final lDate = lastTweet.created.toDateTime();
-                              final cDate = tweet.created.toDateTime();
+                              final lDate = lastTweet.created.date;
+                              final cDate = tweet.created.date;
 
                               if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
                                 return Chip(
                                   padding: EdgeInsets.zero,
-                                  label: Text(DateFormat.yMMMd().format(cDate)),
+                                  label: Text(tweet.created.dateString),
                                 );
                               }
                             }
@@ -217,8 +242,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                               final index = value?.$1;
                               if (index == null) return const SizedBox();
                               final show = value!.$2;
-                              final date =
-                                  DateFormat.yMMMd().format(allTweetSnap.docs[index].data()!.created.toDateTime());
+                              final date = allTweetSnap.docs[index].data()!.created.dateString;
 
                               return TweenAnimationBuilder(
                                 tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),

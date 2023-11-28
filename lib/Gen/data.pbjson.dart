@@ -161,6 +161,7 @@ const RoomUser$json = {
     {'1': 'room', '3': 3, '4': 1, '5': 9, '10': 'room'},
     {'1': 'role', '3': 10, '4': 1, '5': 14, '6': '.user.Role', '10': 'role'},
     {'1': 'created', '3': 20, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
+    {'1': 'updated', '3': 30, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updated'},
   ],
 };
 
@@ -168,7 +169,8 @@ const RoomUser$json = {
 final $typed_data.Uint8List roomUserDescriptor = $convert.base64Decode(
     'CghSb29tVXNlchIQCgN1aWQYASABKAlSA3VpZBISCgR1c2VyGAIgASgJUgR1c2VyEhIKBHJvb2'
     '0YAyABKAlSBHJvb20SHgoEcm9sZRgKIAEoDjIKLnVzZXIuUm9sZVIEcm9sZRI0CgdjcmVhdGVk'
-    'GBQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZA==');
+    'GBQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBI0Cgd1cGRhdGVkGB'
+    '4gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHdXBkYXRlZA==');
 
 @$core.Deprecated('Use roomDescriptor instead')
 const Room$json = {
@@ -180,7 +182,8 @@ const Room$json = {
     {'1': 'photoURL', '3': 20, '4': 1, '5': 9, '10': 'photoURL'},
     {'1': 'description', '3': 30, '4': 1, '5': 9, '10': 'description'},
     {'1': 'created', '3': 40, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'open', '3': 50, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
+    {'1': 'updated', '3': 50, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updated'},
+    {'1': 'open', '3': 60, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
   ],
 };
 
@@ -189,8 +192,9 @@ final $typed_data.Uint8List roomDescriptor = $convert.base64Decode(
     'CgRSb29tEhAKA3VpZBgBIAEoCVIDdWlkEhIKBG5pY2sYAiABKAlSBG5pY2sSIAoLZGlzcGxheU'
     '5hbWUYCiABKAlSC2Rpc3BsYXlOYW1lEhoKCHBob3RvVVJMGBQgASgJUghwaG90b1VSTBIgCgtk'
     'ZXNjcmlwdGlvbhgeIAEoCVILZGVzY3JpcHRpb24SNAoHY3JlYXRlZBgoIAEoCzIaLmdvb2dsZS'
-    '5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSIQoEb3BlbhgyIAEoDjINLnVzZXIuVmlzaWJs'
-    'ZVIEb3Blbg==');
+    '5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSNAoHdXBkYXRlZBgyIAEoCzIaLmdvb2dsZS5w'
+    'cm90b2J1Zi5UaW1lc3RhbXBSB3VwZGF0ZWQSIQoEb3Blbhg8IAEoDjINLnVzZXIuVmlzaWJsZV'
+    'IEb3Blbg==');
 
 @$core.Deprecated('Use tweetDescriptor instead')
 const Tweet$json = {

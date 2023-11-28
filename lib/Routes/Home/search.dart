@@ -6,8 +6,10 @@ import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:spacemoon/Providers/room.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/profile.dart';
 
 class SearchRoute extends GoRouteData {
   @override
@@ -22,7 +24,8 @@ class SearchPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomCon = useTextEditingController();
-    final searchRooms = ref.watch(getRoomProvider);
+    final searchRoom = ref.watch(searchRoomByNickProvider).value;
+    final searchUser = ref.watch(searchUserByNickProvider).value;
 
     return Scaffold(
       body: Padding(
@@ -34,65 +37,65 @@ class SearchPage extends HookConsumerWidget {
               con: roomCon,
               autofocus: true,
               decoration: (AsyncText value, roomCon) => const InputDecoration(
-                hintText: 'Find Rooms',
-                labelText: 'Find Rooms',
+                hintText: 'abc...',
+                labelText: 'Find Rooms or Users',
               ),
               milliseconds: 600,
               asyncValidator: (v) async {
-                if (v.length < 7) return 'Invalid';
+                if (v.length < 7) return 'more than 6 characters required';
 
-                if (v.startsWith('#')) {
-                  v = v.substring(1);
-                }
+                if (!isAlphanumeric(v)) return 'only alphanumeric characters are allowed';
 
-                if (!isAlphanumeric(v)) return 'Invalid';
-
-                await ref.read(roomTextProvider.notifier).change(v);
+                ref.read(searchTextProvider.notifier).change(v);
                 await 200.mil.delay();
 
                 return null;
               },
+              showSubmitSuffix: false,
             ),
-            if (searchRooms.value != null && searchRooms.value!.isNotEmpty)
+            if (searchRoom != null || searchUser != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
                 child: Text(
-                  'Found ${searchRooms.value!.length} rooms',
+                  'Found ${searchRoom != null ? 1 : 0} room, ${searchUser != null ? 1 : 0} user',
                   style: context.tl,
                 ),
               ),
-            Expanded(
-              child: searchRooms.map(
-                data: (rooms) {
-                  if (rooms.value == null || rooms.value?.isEmpty == true) {
-                    return Center(
-                      child: Text('No Room Found', style: context.hl),
-                    );
-                  }
-
-                  return ListView.separated(
-                    separatorBuilder: (context, index) => const Divider(),
-                    itemCount: rooms.value!.length,
-                    itemBuilder: (context, i) {
-                      final room = rooms.value?[i];
-                      return ListTile(
+            if (searchRoom == null && searchUser == null)
+              Expanded(
+                child: Center(
+                  child: Text('Nothing Found', style: context.hl),
+                ),
+              ),
+            if (searchRoom != null || searchUser != null)
+              Expanded(
+                child: ListView(
+                  children: [
+                    if (searchRoom != null)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
                         onTap: () {
-                          if (room != null) {
-                            if (context.mounted /*&& ref.read(isUserIsInRoomProvider)*/) {
-                              ChatRoute(room.uid).go(context);
-                            }
+                          if (context.mounted) {
+                            ChatRoute(chatId: searchRoom.uid).go(context);
                           }
                         },
-                        title: Text(room?.displayName ?? 'Name'),
-                        subtitle: Text(room?.description ?? 'Description'),
-                      );
-                    },
-                  );
-                },
-                error: (e) => Text(e.toString()),
-                loading: (o) => const Center(child: CircularProgressIndicator()),
+                        title: Text(searchRoom.displayName),
+                        trailing: const Text('Room'),
+                      ),
+                    if (searchUser != null)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        onTap: () {
+                          if (context.mounted) {
+                            ProfileRoute(userId: searchUser.uid).go(context);
+                          }
+                        },
+                        title: Text(searchUser.displayName),
+                        trailing: const Text('User'),
+                      ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),

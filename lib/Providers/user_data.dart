@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
+import 'package:spacemoon/Providers/room.dart';
 
 part 'user_data.g.dart';
 
@@ -20,6 +21,31 @@ Stream<User?> currentUserData(CurrentUserDataRef ref) {
     }
     return userData;
   });
+}
+
+@riverpod
+Future<User?> searchUserByNick(SearchUserByNickRef ref) async {
+  final nick = ref.watch(searchTextProvider);
+
+  if (nick == null || nick.isEmpty) return null;
+
+  final users = await FirebaseFirestore.instance
+      .collection(Const.users.name)
+      .where(Const.nick.name, isEqualTo: nick)
+      .get()
+      .then((value) => value.docs.map((e) => fromQuerySnap(User(), e)!).toList());
+
+  return users.firstOrNull;
+}
+
+@Riverpod(keepAlive: true)
+Future<User?> getUserById(GetUserByIdRef ref, String userId) async {
+  User? user = await FirebaseFirestore.instance
+      .collection(Const.users.name)
+      .doc(userId)
+      .get()
+      .then((value) => fromDocSnap(User(), value));
+  return user;
 }
 
 Future<int> countUserByNick(String nick) async {

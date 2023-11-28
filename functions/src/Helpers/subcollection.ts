@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 // Function to delete a Firestore collection and its documents in batches
 export async function deleteCollection(collectionPath: string, batchSize: number) {
     const collectionRef = admin.firestore().collection(collectionPath);
-    const query = collectionRef.orderBy('__name__').limit(batchSize);
+    const query = collectionRef.limit(batchSize);
 
     return deleteQueryBatch(query, batchSize);
 }
