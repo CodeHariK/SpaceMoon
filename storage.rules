@@ -5,8 +5,23 @@ rules_version = '2';
 //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
+
+    // // Allow users to upload files to their own tweet and profile paths
+  // match /tweet/{roomId}/{userId}/{tweetId} {
+    //   allow write, update, delete, read: if request.auth.uid == userId;
+    // }
+
+  // match /profile/users/{userId} {
+    //   allow write, update, delete, read: if request.auth.uid == userId;
+    // }
+
+  // match /profile/rooms/{roomId} {
+    //   allow write, update, delete, read: if request.auth.uid != null;
+    // }
+
+    // Default deny for all other paths
     match /{allPaths=**} {
-      allow read, write: if request.time < timestamp.date(2023, 12, 1);
+      allow read, write, delete, update: if request.auth.uid != null;
     }
   }
 }

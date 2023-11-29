@@ -78,7 +78,7 @@ class ProfilePage extends ConsumerWidget {
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
                               child: CustomCacheImage(
-                                imageUrl: thumbImage(user!.photoURL),
+                                imageUrl: spaceThumbImage(user!.photoURL),
                               ),
                             ),
                     ),
@@ -89,6 +89,7 @@ class ProfilePage extends ConsumerWidget {
                       text: user?.displayName,
                       style: context.hm,
                       textAlign: TextAlign.start,
+                      alphanumeric: false,
                       hintText: 'Name',
                       asyncValidator: (value) async {
                         return null;

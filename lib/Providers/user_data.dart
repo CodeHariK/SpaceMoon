@@ -16,9 +16,14 @@ Stream<User?> currentUserData(CurrentUserDataRef ref) {
   return FirebaseFirestore.instance.collection(Const.users.name).doc(user?.uid).snapshots().map((snapshot) {
     final userData = fromDocSnap(User(), snapshot);
 
-    if (userData == null || userData.uid != user?.uid) {
-      f.FirebaseAuth.instance.signOut();
-    }
+    // if (userData == null || userData.uid != user?.uid) {
+    //   print('');
+    //   print('Sign Out');
+    //   print(userData);
+    //   print(user);
+    //   print('');
+    //   f.FirebaseAuth.instance.signOut();
+    // }
     return userData;
   });
 }

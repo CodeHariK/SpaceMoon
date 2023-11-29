@@ -1,7 +1,10 @@
+import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
+import 'package:moonspace/helper/validator/validator.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -13,7 +16,6 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
-import 'package:spacemoon/Widget/Common/video_player.dart';
 
 class TweetBox extends ConsumerWidget {
   const TweetBox({
@@ -27,13 +29,25 @@ class TweetBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomuserPro = ref.watch(currentRoomUserProvider);
+    // final roomuserPro = ref.watch(currentRoomUserProvider);
+    // final roomuser = roomuserPro.value;
 
     // if (roomuserPro.isLoading) {
     //   return const CircularProgressIndicator();
     // }
 
-    final roomuser = roomuserPro.value;
+    final roomuser = ref.watch(
+      currentRoomUserProvider.select(
+        (user) => user.value == null
+            ? null
+            : RoomUser(
+                uid: user.value?.uid,
+                room: user.value?.room,
+                user: user.value?.user,
+                role: user.value?.role,
+              ),
+      ),
+    );
 
     final box = Material(
       color: Colors.transparent,
@@ -70,17 +84,6 @@ class TweetBox extends ConsumerWidget {
             // crossAxisAlignment: roomuser?.user == tweet.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // SuperLink(tweet.text),
-
-              //
-              if (tweet.mediaType == MediaType.VIDEO)
-                VideoPlayerBox(
-                  tweet: tweet
-                    ..text = 'Sintel'
-                    ..link = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-                  // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-                ),
-
               if (tweet.mediaType == MediaType.IMAGE)
                 ClipRRect(
                   borderRadius: 25.br,
@@ -119,19 +122,34 @@ class TweetBox extends ConsumerWidget {
                   ),
                 ),
 
-              if (isHero)
-                TextFormField(
-                  initialValue: tweet.text,
-                  minLines: 1,
-                  maxLines: 10,
-                  decoration: const InputDecoration(
-                    hintText: 'Type...',
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
+              if (isURL(tweet.text))
+                SizedBox(
+                  width: 300,
+                  child: Text.rich(
+                    TextSpan(
+                      text: tweet.text,
+                      style: const TextStyle(color: Colors.blue),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          safeLaunchUrl(tweet.text);
+                        },
+                    ),
                   ),
                 ),
-              if (tweet.mediaType == MediaType.TEXT && !isHero)
+
+              // if (isHero)
+              //   TextFormField(
+              //     initialValue: tweet.text,
+              //     minLines: 1,
+              //     maxLines: 10,
+              //     decoration: const InputDecoration(
+              //       hintText: 'Type...',
+              //       border: InputBorder.none,
+              //       enabledBorder: InputBorder.none,
+              //       focusedBorder: InputBorder.none,
+              //     ),
+              //   ),
+              if (tweet.mediaType == MediaType.TEXT && !isURL(tweet.text) /*&& !isHero*/)
                 Text(
                   tweet.text,
                   overflow: TextOverflow.ellipsis,
@@ -155,6 +173,7 @@ class TweetBox extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const CircleAvatar(),
+              const SizedBox(height: 5),
               Text(tweet.created.timeString, style: context.ls),
             ],
           ),
@@ -174,7 +193,7 @@ class TweetBox extends ConsumerWidget {
     );
 
     return isHero
-        ? (tweet.mediaType == MediaType.VIDEO)
+        ? (tweet.mediaType == MediaType.VIDEO || tweet.mediaType == MediaType.POST)
             ? box
             : Hero(
                 tag: tweet.path,

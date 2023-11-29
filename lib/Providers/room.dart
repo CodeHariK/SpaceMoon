@@ -7,6 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
+import 'package:spacemoon/Routes/Home/all_chat.dart';
 
 part 'room.g.dart';
 
@@ -38,6 +39,7 @@ extension SuperRoomUser on RoomUser {
   bool get isUserOrAdmin => role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
   bool get isAdminOrMod => role == Role.ADMIN || role == Role.MODERATOR;
   bool get isRequest => role == Role.REQUEST;
+  bool get isAdmin => role == Role.ADMIN;
 
   CollectionReference<Tweet?>? get tweetCol {
     return FirebaseFirestore.instance.collection('${Const.rooms.name}/$room/${Const.tweets.name}').withConverter(
@@ -58,8 +60,8 @@ class SearchText extends _$SearchText {
     return null;
   }
 
-  void change(String roomId) async {
-    state = roomId;
+  void change(String search) async {
+    state = search.toLowerCase();
   }
 }
 
@@ -90,11 +92,7 @@ Stream<Room?> getRoomById(GetRoomByIdRef ref, String roomId) {
 
 @riverpod
 FutureOr<int?> getNewTweetCount(GetNewTweetCountRef ref, RoomUser user) {
-  return user.tweetCol
-      ?.where(Const.created.name, isGreaterThan: user.updated.toDateTime().toString())
-      .count()
-      .get()
-      .then((value) {
+  return user.tweetCol?.where(Const.created.name, isGreaterThan: user.updated.isoDate).count().get().then((value) {
     return value.count;
   });
 }
@@ -123,6 +121,7 @@ Stream<List<RoomUser?>> getAllMyRooms(GetAllMyRoomsRef ref) {
   return FirebaseFirestore.instance
       .collection(Const.roomusers.name)
       .where('user', isEqualTo: user.uid)
+      .orderBy(Const.updated.name, descending: true)
       .snapshots()
       .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
 }
@@ -204,19 +203,15 @@ class CurrentRoom extends _$CurrentRoom {
     required Room room,
     required List<String> users,
   }) async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      final roomId = (await FirebaseFunctions.instance.httpsCallable('callCreateRoom').call(
-        {
-          'room': room.toMap(),
-          'users': users,
-        },
-      ))
-          .data as String;
+    final roomId = (await FirebaseFunctions.instance.httpsCallable('callCreateRoom').call(
+      {
+        'room': room.toMap(),
+        'users': users,
+      },
+    ))
+        .data as String;
 
-      return Room(uid: roomId);
-    });
-    return state.value;
+    return Room(uid: roomId);
   }
 
   Future<void> requestAccessToRoom() async {

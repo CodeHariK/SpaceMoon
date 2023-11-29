@@ -107,6 +107,7 @@ enum Const {
     
     status = 400;
     created = 600;
+    updated = 610;
     open = 700;
 
     members = 800;

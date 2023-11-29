@@ -111,6 +111,7 @@ class Const extends $pb.ProtobufEnum {
   static const Const fcmToken = Const._(350, _omitEnumNames ? '' : 'fcmToken');
   static const Const status = Const._(400, _omitEnumNames ? '' : 'status');
   static const Const created = Const._(600, _omitEnumNames ? '' : 'created');
+  static const Const updated = Const._(610, _omitEnumNames ? '' : 'updated');
   static const Const open = Const._(700, _omitEnumNames ? '' : 'open');
   static const Const members = Const._(800, _omitEnumNames ? '' : 'members');
   static const Const tweet_count = Const._(900, _omitEnumNames ? '' : 'tweet_count');
@@ -131,6 +132,7 @@ class Const extends $pb.ProtobufEnum {
     fcmToken,
     status,
     created,
+    updated,
     open,
     members,
     tweet_count,

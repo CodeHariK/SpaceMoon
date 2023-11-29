@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -48,26 +49,14 @@ class ChatInfoPage extends HookConsumerWidget {
     }, [room]);
 
     if (room == null) {
-      return const Scaffold();
+      return Scaffold(
+        appBar: AppBar(),
+      );
     }
 
     // if (allUsersPro.isLoading) {
     //   return const Scaffold();
     // }
-
-    if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: Center(
-          child: Column(
-            children: [
-              Text('Me in room : $meInRoom'),
-              Text(room.toString()),
-            ],
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -109,7 +98,7 @@ class ChatInfoPage extends HookConsumerWidget {
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
                               child: CustomCacheImage(
-                                imageUrl: thumbImage(room.photoURL),
+                                imageUrl: spaceThumbImage(room.photoURL),
                               ),
                             ),
                     ),
@@ -118,94 +107,105 @@ class ChatInfoPage extends HookConsumerWidget {
               ),
               SliverList.list(
                 children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: AsyncProfileField(
-                      text: room.displayName,
-                      style: context.hm,
-                      textAlign: TextAlign.start,
-                      hintText: 'Name',
-                      alphanumeric: false,
-                      asyncValidator: (value) async {
-                        return null;
-                      },
-                      onSubmit: (con) {
-                        ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                              Room(
-                                uid: room.uid,
-                                displayName: con.text,
-                              ),
-                            );
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: AsyncProfileField(
-                      text: room.nick,
-                      style: context.hs,
-                      textAlign: TextAlign.start,
-                      hintText: 'Nickname',
-                      prefix: const Text('#'),
-                      alphanumeric: false,
-                      asyncValidator: (value) async {
-                        return null;
-                      },
-                      onSubmit: (con) {
-                        ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                              Room(
-                                uid: room.uid,
-                                nick: con.text,
-                              ),
-                            );
-                      },
-                    ),
-                  ),
-                  AsyncProfileField(
-                    text: room.description,
-                    style: context.ts,
-                    textAlign: TextAlign.start,
-                    hintText: 'Description',
-                    alphanumeric: false,
-                    asyncValidator: (value) async {
-                      return null;
-                    },
-                    maxLines: null,
-                    onSubmit: (con) {
-                      ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                            Room(
-                              uid: room.uid,
-                              description: con.text,
-                            ),
-                          );
-                    },
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: DropdownButtonFormField(
-                      key: ValueKey(room.open),
-                      value: room.open,
-                      items: Visible.values
-                          .map(
-                            (e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e.name),
-                            ),
-                          )
-                          .toList(),
-                      borderRadius: 20.br,
-                      decoration: const InputDecoration(
-                        labelText: 'Visiblity',
-                        constraints: BoxConstraints(maxWidth: 200),
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
+                  IgnorePointer(
+                    ignoring: (meInRoom?.isAdmin != true),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: AsyncProfileField(
+                        text: room.displayName,
+                        style: context.hm,
+                        textAlign: TextAlign.start,
+                        hintText: 'Name',
+                        alphanumeric: false,
+                        asyncValidator: (value) async {
+                          return null;
+                        },
+                        onSubmit: (con) {
+                          ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                                Room(
+                                  uid: room.uid,
+                                  displayName: con.text,
+                                ),
+                              );
+                        },
                       ),
-                      onChanged: (value) {
-                        if (value != null) {
-                          room.open = value;
-                          ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
-                        }
+                    ),
+                  ),
+                  IgnorePointer(
+                    ignoring: (meInRoom?.isAdmin != true),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: AsyncProfileField(
+                        text: room.nick,
+                        style: context.hs,
+                        textAlign: TextAlign.start,
+                        hintText: 'Nickname',
+                        prefix: const Text('#'),
+                        asyncValidator: (value) async {
+                          return null;
+                        },
+                        onSubmit: (con) {
+                          ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                                Room(
+                                  uid: room.uid,
+                                  nick: con.text,
+                                ),
+                              );
+                        },
+                      ),
+                    ),
+                  ),
+                  IgnorePointer(
+                    ignoring: (meInRoom?.isAdmin != true),
+                    child: AsyncProfileField(
+                      text: room.description,
+                      style: context.ts,
+                      textAlign: TextAlign.start,
+                      hintText: 'Description',
+                      alphanumeric: false,
+                      asyncValidator: (value) async {
+                        return null;
                       },
+                      maxLines: null,
+                      onSubmit: (con) {
+                        ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                              Room(
+                                uid: room.uid,
+                                description: con.text,
+                              ),
+                            );
+                      },
+                    ),
+                  ),
+                  IgnorePointer(
+                    ignoring: (meInRoom?.isAdmin != true),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: DropdownButtonFormField(
+                        key: ValueKey(room.open),
+                        value: room.open,
+                        items: Visible.values
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e.name),
+                              ),
+                            )
+                            .toList(),
+                        borderRadius: 20.br,
+                        decoration: const InputDecoration(
+                          labelText: 'Visiblity',
+                          constraints: BoxConstraints(maxWidth: 200),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          if (value != null) {
+                            room.open = value;
+                            ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
+                          }
+                        },
+                      ),
                     ),
                   ),
                   ListTile(
@@ -226,11 +226,11 @@ class ChatInfoPage extends HookConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      if (meInRoom?.role == Role.ADMIN)
+                      if (meInRoom != null && meInRoom.isAdmin)
                         Align(
                           child: FilledButton(
                             onPressed: () async {
-                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom!);
+                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
                               if (context.mounted) {
                                 HomeRoute().go(context);
                               }
@@ -238,60 +238,73 @@ class ChatInfoPage extends HookConsumerWidget {
                             child: const Text('Delete Room'),
                           ),
                         ),
-                      Align(
-                        child: FilledButton(
-                          onPressed: () async {
-                            await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
-                            if (context.mounted) {
-                              HomeRoute().go(context);
-                            }
-                          },
-                          child: const Text('Leave Room'),
+                      if (meInRoom != null)
+                        Align(
+                          child: FilledButton(
+                            onPressed: () async {
+                              await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
+                              if (context.mounted) {
+                                HomeRoute().go(context);
+                              }
+                            },
+                            child: const Text('Leave Room'),
+                          ),
                         ),
-                      ),
+                      if (meInRoom == null && room.open == Visible.MODERATED)
+                        AsyncButton(
+                          icon: Icons.mail,
+                          asyncFn: () async {
+                            await ref.read(currentRoomProvider.notifier).requestAccessToRoom();
+                            return true;
+                          },
+                          name: 'Send Request',
+                        ),
+                      if (meInRoom?.role == Role.REQUEST) const Text('Request Sent'),
                     ],
                   ),
                   const SizedBox(height: 10),
                 ],
               ),
-              SliverList.list(
-                children: [
-                  const Divider(),
-                  Text('Members', textAlign: TextAlign.center, style: context.tl),
-                ],
-              ),
-              SliverList.builder(
-                itemBuilder: (context, index) {
-                  final roomUser = allUsers[index]!;
-                  return ListTile(
-                    title: Text(roomUser.user),
-                    subtitle: Text(roomUser.role.name),
-                    leading: Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (roomUser.isRequest)
-                          IconButton.filledTonal(
-                            onPressed: () {
-                              ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
-                            },
-                            icon: const Icon(Icons.check),
-                          ),
-                        if (!roomUser.isAdminOrMod && roomUser != meInRoom && meInRoom!.isAdminOrMod)
-                          IconButton(
-                            onPressed: () {
-                              ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
-                              ref.read(currentRoomProvider.notifier).exitRoom(roomUser);
-                              ref.invalidate(currentRoomUserProvider);
-                            },
-                            icon: const Icon(Icons.close),
-                          )
-                      ],
-                    ),
-                  );
-                },
-                itemCount: allUsers.length,
-              ),
+              if (meInRoom != null && meInRoom.isAdminOrMod)
+                SliverList.list(
+                  children: [
+                    const Divider(),
+                    Text('Members', textAlign: TextAlign.center, style: context.tl),
+                  ],
+                ),
+              if (meInRoom != null && meInRoom.isAdminOrMod)
+                SliverList.builder(
+                  itemBuilder: (context, index) {
+                    final roomUser = allUsers[index]!;
+                    return ListTile(
+                      title: Text(roomUser.user),
+                      subtitle: Text(roomUser.role.name),
+                      leading: Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (roomUser.isRequest)
+                            IconButton.filledTonal(
+                              onPressed: () {
+                                ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
+                              },
+                              icon: const Icon(Icons.check),
+                            ),
+                          if (!roomUser.isAdminOrMod && roomUser != meInRoom && meInRoom.isAdminOrMod)
+                            IconButton(
+                              onPressed: () {
+                                ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
+                                ref.read(currentRoomProvider.notifier).exitRoom(roomUser);
+                                ref.invalidate(currentRoomUserProvider);
+                              },
+                              icon: const Icon(Icons.close),
+                            )
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: allUsers.length,
+                ),
             ],
           ),
         ),

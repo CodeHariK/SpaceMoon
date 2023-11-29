@@ -1,22 +1,26 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerBox extends StatefulWidget {
   const VideoPlayerBox({
     super.key,
     this.videoOnlyOri = true,
-    required this.tweet,
+    required this.localUrl,
+    required this.url,
+    required this.title,
   });
 
-  final Tweet tweet;
   final bool videoOnlyOri;
+  final String title;
+  final String localUrl;
+  final String url;
 
   @override
   State<VideoPlayerBox> createState() => _VideoPlayerBoxState();
@@ -60,12 +64,17 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
   void initState() {
     super.initState();
     videoOnly = widget.videoOnlyOri;
-    _videoPlayerController = VideoPlayerController.networkUrl(
-      Uri.parse(widget.tweet.link),
-      videoPlayerOptions: VideoPlayerOptions(
-        allowBackgroundPlayback: false,
-      ),
-    )
+
+    _videoPlayerController = (widget.url.isNotEmpty)
+        ? VideoPlayerController.networkUrl(
+            Uri.parse(widget.url),
+            videoPlayerOptions: VideoPlayerOptions(
+              allowBackgroundPlayback: false,
+            ),
+          )
+        : VideoPlayerController.file(File(widget.localUrl));
+
+    _videoPlayerController
       ..addListener(() {
         // Inside the `addListener` callback of the `VideoPlayerController`
         if (_videoPlayerController.value.isInitialized && !_videoPlayerController.value.isBuffering) {
@@ -88,8 +97,8 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
           // _startHideControlsTimer();
           _videoPlayerController.play();
         } else {
-          _videoPlayerController
-              .seekTo(Duration(seconds: _videoPlayerController.value.duration.inSeconds ~/ (Random().nextInt(100))));
+          _videoPlayerController.seekTo(
+              Duration(seconds: _videoPlayerController.value.duration.inSeconds ~/ (Random().nextInt(100) + 1)));
         }
       });
 
@@ -179,7 +188,7 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           transitionBuilder: (child, animation) =>
-              ScaleTransition(scale: Tween<double>(begin: .2, end: 1).animate(animation), child: child),
+              ScaleTransition(scale: Tween<double>(begin: .9, end: 1).animate(animation), child: child),
           child: videoOnly
               ? (!_videoPlayerController.value.isInitialized
                   ? const SizedBox(
@@ -197,14 +206,26 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
                   : Stack(
                       alignment: Alignment.center,
                       children: [
-                        if (!videoOnly) appbar(context),
+                        if ((!_videoPlayerController.value.isPlaying || _showControls) && !_isFullScreen && !videoOnly)
+                          appbar(context),
 
                         video(),
 
+                        if ((!_videoPlayerController.value.isPlaying || _showControls) && !_isFullScreen && !videoOnly)
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: SizedBox(
+                              height: 120,
+                              child: appbar(context),
+                            ),
+                          ),
                         //
-                        if ((!_videoPlayerController.value.isPlaying || _showControls) && !videoOnly) ...[
+                        if ((!_videoPlayerController.value.isPlaying || _showControls) &&
+                            !_showReplayButton &&
+                            !videoOnly)
                           playPauseButton(),
-                        ],
                         if (_showReplayButton && !videoOnly) replayButton(),
                       ],
                     )),
@@ -228,13 +249,15 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 return FadeTransition(
                   opacity: animation,
-                  child: Hero(
-                    tag: widget.tweet.link,
-                    child: VideoPlayerBox(
-                      tweet: widget.tweet,
-                      videoOnlyOri: false,
-                    ),
+                  // child: Hero(
+                  //   tag: widget.link,
+                  child: VideoPlayerBox(
+                    url: widget.url,
+                    localUrl: widget.localUrl,
+                    title: widget.title,
+                    videoOnlyOri: false,
                   ),
+                  // ),
                 );
               },
               pageBuilder: (context, animation, secondaryAnimation) {
@@ -258,7 +281,8 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
           //   },
           // ),
         },
-        child: Hero(tag: widget.tweet.link, child: videoBox),
+        child: videoBox,
+        // child: Hero(tag: widget.link, child: videoBox),
       );
     } else {
       return Scaffold(
@@ -275,8 +299,10 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
 
   AppBar appbar(BuildContext context) {
     return AppBar(
-      title: Text(widget.tweet.text),
+      backgroundColor: const Color.fromARGB(153, 12, 12, 12),
+      title: Text(widget.title, style: const TextStyle(color: Colors.white)),
       leading: BackButton(
+        color: Colors.white,
         onPressed: () {
           if (!_isFullScreen) context.pop();
           if (_isFullScreen) _toggleFullScreen();
@@ -292,7 +318,7 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
         Container(
           foregroundDecoration: (videoOnly || _videoPlayerController.value.isPlaying)
               ? null
-              : const BoxDecoration(color: Color.fromARGB(54, 119, 119, 119)),
+              : const BoxDecoration(color: Color.fromARGB(100, 67, 67, 67)),
           child: _isFullScreen
               ? VideoPlayer(_videoPlayerController)
               : AspectRatio(
@@ -313,7 +339,7 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
     return AnimatedOpacity(
       opacity: _showControls ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
-      child: IconButton(
+      child: IconButton.filledTonal(
         onPressed: () {
           _hideControlsTimer?.cancel();
           setState(() {
@@ -330,8 +356,7 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
         icon: AnimatedIcon(
           icon: AnimatedIcons.pause_play,
           progress: _animationController,
-          size: 60,
-          color: Colors.white,
+          size: 40,
         ),
       ),
     );
@@ -417,7 +442,8 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
         bottom: 0,
         left: 0,
         right: 0,
-        child: Padding(
+        child: Container(
+          color: const Color.fromARGB(120, 67, 67, 67),
           padding: EdgeInsets.all(_isFullScreen ? 32.0 : 4),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -433,13 +459,14 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
                   inactiveColor: const Color.fromARGB(134, 255, 255, 255),
                 ),
               ),
-              IconButton(
-                onPressed: _toggleFullScreen,
-                icon: const Icon(
-                  Icons.fullscreen,
-                  color: Colors.white,
+              if (_videoPlayerController.value.aspectRatio > 1)
+                IconButton(
+                  onPressed: _toggleFullScreen,
+                  icon: const Icon(
+                    Icons.fullscreen,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

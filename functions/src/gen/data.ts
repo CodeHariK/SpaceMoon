@@ -222,6 +222,7 @@ export enum Const {
   fcmToken = 350,
   status = 400,
   created = 600,
+  updated = 610,
   open = 700,
   members = 800,
   tweet_count = 900,
@@ -271,6 +272,9 @@ export function constFromJSON(object: any): Const {
     case 600:
     case "created":
       return Const.created;
+    case 610:
+    case "updated":
+      return Const.updated;
     case 700:
     case "open":
       return Const.open;
@@ -321,6 +325,8 @@ export function constToJSON(object: Const): string {
       return "status";
     case Const.created:
       return "created";
+    case Const.updated:
+      return "updated";
     case Const.open:
       return "open";
     case Const.members:

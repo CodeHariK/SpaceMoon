@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:spacemoon/Static/theme.dart';
 
 class ShellData {
   final String name;
@@ -43,6 +45,50 @@ extension SuperShellData on List<ShellData> {
             label: e.name,
           ),
         ).toList(),
+      );
+
+  Widget googleBar(BuildContext context) => Container(
+        decoration: BoxDecoration(
+          color: AppTheme.high,
+          borderRadius: BorderRadius.circular(16),
+          // boxShadow: [
+          //   BoxShadow(
+          //     offset: const Offset(0, 4),
+          //     blurRadius: 4,
+          //     spreadRadius: 2,
+          //     color: AppTheme.darkness ? const Color.fromARGB(255, 47, 47, 47) : const Color.fromARGB(70, 72, 72, 72),
+          //   ),
+          // ],
+        ),
+        height: 76,
+        padding: const EdgeInsets.only(bottom: 2),
+        margin: context.mq.pad.copyWith(top: 0, left: 16, right: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: asMap()
+              .map(
+                (i, e) => MapEntry(
+                  i,
+                  InkWell(
+                    onTap: () {
+                      context.go(this[i].location);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: getCurrentIndex(context) != i ? Colors.transparent : null,
+                          child: e.icon,
+                        ),
+                        Text(e.name),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              .values
+              .toList(),
+        ),
       );
 
   TabBar tabBar(BuildContext context) => TabBar(

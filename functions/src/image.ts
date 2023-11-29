@@ -20,75 +20,106 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
     const contentType = event.data.contentType; // File content type.
 
     // Exit if this is triggered on a file that is not an image.
-    if (!contentType?.startsWith("image/")) {
-        return logger.log("This is not an image.");
-    }
-    // Exit if the image is already a thumbnail.
-    var fileName = path.basename(filePath);
-    if (fileName.startsWith("thumb_")) {
-        return logger.log("Already a Thumbnail.");
-    }
-
-    // Download file into memory from bucket.
-    const bucket = getStorage().bucket(fileBucket);
-    const downloadResponse = await bucket.file(filePath).download();
-    const imageBuffer = downloadResponse[0];
-    logger.log("Image downloaded!");
-
-    const sharpImageMetaData = (await sharp(imageBuffer).metadata());
-
-    // Generate a thumbnail using sharp.
-    const thumbnailBuffer = await sharp(imageBuffer).resize({
-        width: 300,
-        height: 300,
-        withoutEnlargement: true,
-    }).withMetadata().toBuffer();
-    logger.log("Thumbnail created");
-
-    // Prefix 'thumb_' to file name.
-    const thumbFileName = `thumb_${fileName}`;
-    const thumbFilePath = path.join(path.dirname(filePath), thumbFileName);
-
-    // Upload the thumbnail.
-    const metadata = { contentType: contentType };
-    await bucket.file(thumbFilePath).save(thumbnailBuffer, {
-        metadata: metadata,
-    });
-
-    //------------------
-
-    let docpath = event.data.metadata!.path;
-
-    if (event.data.metadata?.single) {
-        admin.firestore().doc(docpath).update({
-            [event.data.metadata?.single]: event.data.mediaLink
+    if (contentType?.startsWith("image/")) {
+        // Exit if the image is already a thumbnail.
+        var fileName = path.basename(filePath);
+        if (fileName.startsWith("thumb_")) {
+            return logger.log("Already a Thumbnail.");
         }
-        );
-    }
-    if (event.data.metadata?.multi) {
 
-        let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
-            return imgData.localUrl == event.data.metadata?.localUrl;
-        })
+        // Download file into memory from bucket.
+        const bucket = getStorage().bucket(fileBucket);
+        const downloadResponse = await bucket.file(filePath).download();
+        const imageBuffer = downloadResponse[0];
+        logger.log("Image downloaded!");
 
-        if (!oldImageData) return;
+        const sharpImageMetaData = (await sharp(imageBuffer).metadata());
 
-        let newImageData = ImageMetadata.fromPartial(oldImageData)
-        newImageData.url = event.data.mediaLink!
-        newImageData.localUrl = '';
-        newImageData.path = filePath;
-        newImageData.width = sharpImageMetaData.width!;
-        newImageData.height = sharpImageMetaData.height!;
+        // Generate a thumbnail using sharp.
+        const thumbnailBuffer = await sharp(imageBuffer).resize({
+            width: 300,
+            height: 300,
+            withoutEnlargement: true,
+        }).withMetadata().toBuffer();
+        logger.log("Thumbnail created");
 
-        await admin.firestore().doc(docpath).update({
-            [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
-        },
-        );
-        await admin.firestore().doc(docpath).update({
-            [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
+        // Prefix 'thumb_' to file name.
+        const thumbFileName = `thumb_${fileName}`;
+        const thumbFilePath = path.join(path.dirname(filePath), thumbFileName);
+
+        // Upload the thumbnail.
+        const metadata = { contentType: contentType };
+        await bucket.file(thumbFilePath).save(thumbnailBuffer, {
+            metadata: metadata,
+        });
+
+        //------------------
+
+        let docpath = event.data.metadata!.path;
+
+        if (event.data.metadata?.single) {
+            admin.firestore().doc(docpath).update({
+                [event.data.metadata?.single]: event.data.mediaLink
+            });
         }
-        );
+        if (event.data.metadata?.multi) {
+
+            let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
+                return imgData.localUrl == event.data.metadata?.localUrl;
+            })
+
+            if (!oldImageData) return;
+
+            let newImageData = ImageMetadata.fromPartial(oldImageData)
+            newImageData.url = event.data.mediaLink!
+            newImageData.localUrl = '';
+            newImageData.path = filePath;
+            newImageData.width = sharpImageMetaData.width!;
+            newImageData.height = sharpImageMetaData.height!;
+
+            await admin.firestore().doc(docpath).update({
+                [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
+            });
+            await admin.firestore().doc(docpath).update({
+                [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
+            });
+        }
+
+        return logger.log("Thumbnail uploaded!");
     }
 
-    return logger.log("Thumbnail uploaded!");
+    if (contentType?.startsWith("video/")) {
+        let docpath = event.data.metadata!.path;
+
+        if (event.data.metadata?.single) {
+            admin.firestore().doc(docpath).update({
+                [event.data.metadata?.single]: event.data.mediaLink
+            });
+        }
+
+        if (event.data.metadata?.multi) {
+
+            let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
+                return imgData.localUrl == event.data.metadata?.localUrl;
+            })
+
+            if (!oldImageData) return;
+
+            let newImageData = ImageMetadata.fromPartial(oldImageData)
+            newImageData.url = event.data.mediaLink!
+            newImageData.localUrl = '';
+            newImageData.path = filePath;
+
+            await admin.firestore().doc(docpath).update({
+                [event.data.metadata?.multi!]: FieldValue.arrayRemove(...[ImageMetadata.toJSON(oldImageData)]),
+            });
+            await admin.firestore().doc(docpath).update({
+                [event.data.metadata?.multi!]: FieldValue.arrayUnion(...[ImageMetadata.toJSON(newImageData)])
+            });
+        }
+
+        return logger.log("Video uploaded!");
+    }
+
+    return 'File Error';
 });

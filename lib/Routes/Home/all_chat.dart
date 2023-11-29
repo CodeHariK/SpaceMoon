@@ -1,17 +1,23 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/animated/animated_counter.dart';
+import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Gen/google/protobuf/timestamp.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Widget/Chat/gallery.dart';
 
 extension SupetTimeStamp on Timestamp {
   DateTime get date => toDateTime().toLocal();
+  String get isoDate => toDateTime().toLocal().toIso8601String();
   String get timeString => hasSeconds() ? DateFormat.jm().format(toDateTime().toLocal()) : '';
   String get dateString => hasSeconds() ? DateFormat.yMMMd().format(toDateTime().toLocal()) : '';
 }
@@ -52,9 +58,24 @@ class AllChatPage extends ConsumerWidget {
                           return ListTile(
                             title: Text(room.displayName),
                             subtitle: Text(room.nick),
-                            // leading: const Icon(Icons.panorama_fish_eye_sharp),
-                            leading: (count != null) ? Text(count.toString()) : const SizedBox(),
-                            trailing: Text(room.updated.timeString),
+                            leading: CircleAvatar(
+                              child: CustomCacheImage(
+                                imageUrl: spaceThumbImage(room.photoURL),
+                                radius: 32,
+                              ),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(room.updated.timeString),
+                                const SizedBox(width: 10),
+                                AnimatedFlipCounter(
+                                  value: (count == null) ? 0 : min(99, count),
+                                  wholeDigits: 1,
+                                  duration: const Duration(seconds: 1),
+                                ),
+                              ],
+                            ),
                             onTap: () {
                               ChatRoute(chatId: room.uid).go(context);
                             },
@@ -68,62 +89,31 @@ class AllChatPage extends ConsumerWidget {
           error: (error, stackTrace) {
             return Text(error.toString());
           },
-          loading: () => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Lottie.asset(
-              //   LottieAnimation.loading.fullPath,
-              //   reverse: true,
-              //   repeat: true,
-              // ),
-              Text('Loading...', style: context.hl),
-            ],
-          ),
+          loading: () => null,
         ),
       ),
-      floatingActionButton: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            heroTag: 'Create Room',
-            onPressed: () async {
-              ref.read(currentRoomProvider.notifier).createRoom(
-                room: Room(
-                  nick: 'nickle',
-                  description: 'Description',
-                  displayName: 'Hello',
-                  open: Visible.MODERATED,
-                ),
-                users: [
-                  randomString(5),
-                  randomString(5),
-                  randomString(5),
-                ],
-              );
-            },
-            child: const Icon(Icons.add),
-          ),
-          const SizedBox(width: 8),
-          FloatingActionButton(
-            heroTag: 'Create Dummy Room',
-            onPressed: () async {
-              ref.read(currentRoomProvider.notifier).createRoom(
-                room: Room(
-                  nick: randomString(7),
-                  description: 'Description',
-                  displayName: 'Hello',
-                  open: Visible.MODERATED,
-                ),
-                users: [
-                  randomString(5),
-                  randomString(5),
-                  randomString(5),
-                ],
-              );
-            },
-            child: const Icon(Icons.pest_control_rodent_outlined),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'Create Room',
+        onPressed: () async {
+          await ref.read(currentRoomProvider.notifier).createRoom(
+            room: Room(
+              displayName: randomString(7),
+              nick: randomString(7),
+              description: 'Description',
+              open: Visible.MODERATED,
+            ),
+            users: [],
+          );
+
+          if (context.mounted) {
+            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+              const SnackBar(
+                content: Text('Room Created'),
+              ),
+            );
+          }
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

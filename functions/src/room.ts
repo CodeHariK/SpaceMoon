@@ -32,12 +32,14 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
     let members = m.map((e) => {
         return RoomUser.create({
             user: e,
-            role: (e == currentUID) ? Role.ADMIN : Role.USER,
+            role: (e == currentUID) ? Role.ADMIN : Role.REQUEST,
             created: new Date(),
+            updated: new Date(),
         });
     });
 
     _room.created = new Date()
+    _room.updated = new Date()
 
     if (currentUID != null) {
         let roomDoc = await admin.firestore().collection(constName(Const.rooms)).add(roomToJson(_room),);
@@ -225,7 +227,7 @@ export const updateRoomInfo = onCall(async (request): Promise<string> => {
     let r = roomToMap(Room.create({
         description: room.description,
         displayName: room.displayName,
-        nick: room.nick,
+        nick: room.nick?.toLowerCase(),
         photoURL: room.photoURL,
         open: room.open,
     }));

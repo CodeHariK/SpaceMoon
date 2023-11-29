@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mime/mime.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
@@ -14,6 +15,7 @@ import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:spacemoon/Widget/Common/video_player.dart';
 
 class GalleryImage extends StatelessWidget {
   const GalleryImage({
@@ -29,7 +31,36 @@ class GalleryImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var imageMetadata = tweet.gallery[index];
+    final imageMetadata = tweet.gallery[index];
+
+    final isVideo = lookupMimeType(spaceFileName(imageMetadata.url))?.startsWith('video/') == true ||
+        lookupMimeType(imageMetadata.localUrl)?.startsWith('video/') == true;
+
+    if (isVideo) {
+      return IgnorePointer(
+        ignoring: !inScaffold,
+        child: Container(
+          height: 320,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+          alignment: Alignment.center,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Transform.scale(
+                scale: 1.4,
+                child: VideoPlayerBox(
+                  title: imageMetadata.caption,
+                  url: imageMetadata.url,
+                  localUrl: imageMetadata.localUrl,
+                ),
+              ),
+              const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
+            ],
+          ),
+        ),
+      );
+    }
 
     return GestureDetector(
       onTap: !inScaffold
@@ -38,8 +69,8 @@ class GalleryImage extends StatelessWidget {
               context.bSlidePush(
                 Scaffold(
                   appBar: AppBar(
-                      // title: Text('Send Image'),
-                      ),
+                    title: Text(imageMetadata.caption),
+                  ),
                   body: Stack(
                     children: [
                       Container(
@@ -74,7 +105,7 @@ class GalleryImage extends StatelessWidget {
             children: [
               if (imageMetadata.url.isNotEmpty)
                 CustomCacheImage(
-                  imageUrl: inScaffold ? imageMetadata.url : thumbImage(imageMetadata.url),
+                  imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
                   // blurHash: imageMetadata.blurhash,
                 ),
               if (imageMetadata.localUrl.isNotEmpty)
@@ -346,50 +377,54 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
               ]
             ],
           ),
-          body: ListView.builder(
-            cacheExtent: 2000,
-            itemCount: tweet.gallery.length,
-            itemBuilder: (context, index) {
-              void selector() {
-                if (selected.contains(tweet.gallery[index])) {
-                  selected.remove(tweet.gallery[index]);
-                } else {
-                  selected.add(tweet.gallery[index]);
+          body: Container(
+            alignment: Alignment.center,
+            color: Colors.blueGrey,
+            child: ListView.builder(
+              cacheExtent: 2000,
+              itemCount: tweet.gallery.length,
+              itemBuilder: (context, index) {
+                void selector() {
+                  if (selected.contains(tweet.gallery[index])) {
+                    selected.remove(tweet.gallery[index]);
+                  } else {
+                    selected.add(tweet.gallery[index]);
+                  }
+                  setState(() {});
                 }
-                setState(() {});
-              }
 
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onLongPress: () {
-                  setState(() => startSelection = true);
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onLongPress: () {
+                    setState(() => startSelection = true);
 
-                  selector();
-                },
-                onTap: !startSelection ? null : selector,
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    IgnorePointer(
-                      ignoring: startSelection,
-                      child: GalleryImage(
-                        key: ObjectKey(tweet.gallery[index].hashCode + index),
-                        tweet: tweet,
-                        index: index,
-                        inScaffold: true,
+                    selector();
+                  },
+                  onTap: !startSelection ? null : selector,
+                  child: Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      IgnorePointer(
+                        ignoring: startSelection,
+                        child: GalleryImage(
+                          key: ObjectKey(tweet.gallery[index].hashCode + index),
+                          tweet: tweet,
+                          index: index,
+                          inScaffold: true,
+                        ),
                       ),
-                    ),
-                    if (startSelection)
-                      Checkbox(
-                        value: selected.contains(tweet.gallery[index]),
-                        onChanged: (v) {
-                          selector();
-                        },
-                      ),
-                  ],
-                ),
-              );
-            },
+                      if (startSelection)
+                        Checkbox(
+                          value: selected.contains(tweet.gallery[index]),
+                          onChanged: (v) {
+                            selector();
+                          },
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         );
       },
@@ -463,9 +498,16 @@ class GalleryUploaderButton extends StatelessWidget {
   }
 }
 
-String thumbImage(String u) {
+String spaceThumbImage(String u) {
   if (!u.contains(spacemoonStorageBucket)) return u;
   final uri = Uri.parse(u);
   final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
   return u.replaceFirst(base, 'thumb_$base');
+}
+
+String spaceFileName(String u) {
+  if (!u.contains(spacemoonStorageBucket)) return u;
+  final uri = Uri.parse(u);
+  final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
+  return base;
 }

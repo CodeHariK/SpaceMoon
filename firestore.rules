@@ -4,13 +4,12 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2023, 12, 1);
+      allow read, write, update, delete: if request.auth != null;
     }
 
     match /users/{userId} {
       allow read: if request.auth != null;
 
-      // Allow write, update, and delete only if the authenticated user ID matches the user document ID
       allow write, update, delete: if request.auth != null && request.auth.uid == userId;
     }
   }

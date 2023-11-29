@@ -66,7 +66,7 @@ class HomeShellRoute extends ShellRouteData {
 
   static List<ShellData> data = [
     ShellData(name: 'TabHome', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
-    ShellData(name: 'AllChat', location: AppRouter.home, icon: const Icon(Icons.chat_bubble_outline)),
+    ShellData(name: 'Spacemoon', location: AppRouter.home, icon: const Icon(Icons.chat_bubble_outline)),
     ShellData(name: 'Search', location: AppRouter.search, icon: const Icon(Icons.search)),
     ShellData(name: 'Profile', location: AppRouter.profile, icon: const Icon(Icons.face_2_outlined)),
   ];
@@ -86,7 +86,7 @@ class HomeShellRoute extends ShellRouteData {
         ],
       ),
       body: navigator,
-      bottomNavigationBar: HomeShellRoute.data.navigationBar(context),
+      bottomNavigationBar: HomeShellRoute.data.googleBar(context),
     );
   }
 }

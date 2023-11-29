@@ -35,7 +35,7 @@ export const callUserUpdate = onCall((request): void => {
 
     const user = User.create({
         displayName: displayName,
-        nick: nick,
+        nick: nick?.toLowerCase(),
         photoURL: photoURL,
     });
 

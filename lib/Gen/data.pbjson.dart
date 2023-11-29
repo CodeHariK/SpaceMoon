@@ -96,6 +96,7 @@ const Const$json = {
     {'1': 'fcmToken', '2': 350},
     {'1': 'status', '2': 400},
     {'1': 'created', '2': 600},
+    {'1': 'updated', '2': 610},
     {'1': 'open', '2': 700},
     {'1': 'members', '2': 800},
     {'1': 'tweet_count', '2': 900},
@@ -109,8 +110,8 @@ final $typed_data.Uint8List constDescriptor = $convert.base64Decode(
     'CgVDb25zdBIJCgV1c2VycxAAEgkKBXJvb21zEAoSCgoGdHdlZXRzEBQSDQoJcm9vbXVzZXJzEB'
     '4SBwoDdWlkEGQSCAoEbmljaxBuEhAKC2Rpc3BsYXlOYW1lEJYBEgoKBWVtYWlsEMgBEhAKC3Bo'
     'b25lTnVtYmVyEPoBEg0KCHBob3RvVVJMEKwCEg0KCGZjbVRva2VuEN4CEgsKBnN0YXR1cxCQAx'
-    'IMCgdjcmVhdGVkENgEEgkKBG9wZW4QvAUSDAoHbWVtYmVycxCgBhIQCgt0d2VldF9jb3VudBCE'
-    'BxIQCgtkZXNjcmlwdGlvbhDoBxIMCgdnYWxsZXJ5EMwI');
+    'IMCgdjcmVhdGVkENgEEgwKB3VwZGF0ZWQQ4gQSCQoEb3BlbhC8BRIMCgdtZW1iZXJzEKAGEhAK'
+    'C3R3ZWV0X2NvdW50EIQHEhAKC2Rlc2NyaXB0aW9uEOgHEgwKB2dhbGxlcnkQzAg=');
 
 @$core.Deprecated('Use userDescriptor instead')
 const User$json = {

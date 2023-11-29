@@ -8,7 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -16,6 +15,7 @@ import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
@@ -78,46 +78,47 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final roomPro = ref.watch(roomStreamProvider);
-    final room = roomPro.value;
-    // final room = ref.watch(
-    //   roomStreamProvider.select(
-    //     (room) => Room(
-    //       uid: room.value?.uid,
-    //       displayName: room.value?.displayName,
-    //       nick: room.value?.nick,
-    //       photoURL: room.value?.photoURL,
-    //     ),
-    //   ),
-    // );
-
-    final meInRoomPro = ref.watch(currentRoomUserProvider);
-    final meInRoom = meInRoomPro.value;
-    // final meInRoom = ref.watch(
-    //   currentRoomUserProvider.select(
-    //     (roomuser) => RoomUser(
-    //       uid: roomuser.value?.uid,
-    //       room: roomuser.value?.room,
-    //       user: roomuser.value?.user,
-    //       role: roomuser.value?.role
-    //     ),
-    //   ),
-    // );
-
-    // if (roomPro.isLoading || meInRoomPro.isLoading) {
-    //   return const Scaffold();
-    // }
-
-    Query<Tweet?>? query = room?.tweetCol?.orderBy(
-      Const.created.name,
-      descending: true,
+    // final roomPro = ref.watch(roomStreamProvider);
+    // final room = roomPro.value;
+    final room = ref.watch(
+      roomStreamProvider.select(
+        (room) => room.value == null
+            ? null
+            : Room(
+                uid: room.value?.uid,
+                displayName: room.value?.displayName,
+                nick: room.value?.nick,
+                photoURL: room.value?.photoURL,
+              ),
+      ),
     );
 
-    if (query == null || room == null) {
-      return const Error404Page();
-    }
+    // final meInRoomPro = ref.watch(currentRoomUserProvider);
+    // final meInRoom = meInRoomPro.value;
+    final meInRoom = ref.watch(
+      currentRoomUserProvider.select(
+        (roomuser) => roomuser.value == null
+            ? null
+            : RoomUser(
+                uid: roomuser.value?.uid,
+                room: roomuser.value?.room,
+                user: roomuser.value?.user,
+                role: roomuser.value?.role),
+      ),
+    );
 
-    if ((/*meInRoom == null ||*/ meInRoom?.role == Role.REQUEST) && room.open != Visible.OPEN) {
+    // if (roomPro.isLoading) {
+    //   return const Scaffold(
+    //     backgroundColor: Colors.red,
+    //   );
+    // }
+    // if (meInRoomPro.isLoading) {
+    //   return const Scaffold(
+    //     backgroundColor: Colors.blue,
+    //   );
+    // }
+
+    if (room == null) {
       return WillPopScope(
         onWillPop: () async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
@@ -125,32 +126,26 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         },
         child: Scaffold(
           appBar: AppBar(),
-          body: Center(
-            child: Column(
-              children: [
-                Text('Me in room : $meInRoom'),
-                Text(room.toString()),
-                if (meInRoom?.role == Role.REQUEST)
-                  FilledButton(
-                    onPressed: () {
-                      ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom!);
-                    },
-                    child: const Text('Leave Room'),
-                  ),
-                if (meInRoom == null && room.open == Visible.MODERATED)
-                  AsyncButton(
-                    icon: Icons.mail,
-                    asyncFn: () async {
-                      await ref.read(currentRoomProvider.notifier).requestAccessToRoom();
-                      return true;
-                    },
-                    name: 'Send Request',
-                  ),
-                if (meInRoom?.role == Role.REQUEST) const Text('Request Sent'),
-              ],
-            ),
-          ),
         ),
+      );
+    }
+
+    Query<Tweet?>? query = room.tweetCol?.orderBy(
+      Const.created.name,
+      descending: true,
+    );
+
+    if (query == null) {
+      return const Error404Page();
+    }
+
+    if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
+      return WillPopScope(
+        onWillPop: () async {
+          ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
+          return true;
+        },
+        child: ChatInfoPage(chatId: room.uid),
       );
     }
 
@@ -172,9 +167,25 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             subtitle: Text(room.nick, style: context.ts, maxLines: 1),
             leading: CircleAvatar(
               child: CustomCacheImage(
-                imageUrl: thumbImage(room.photoURL),
+                imageUrl: spaceThumbImage(room.photoURL),
                 radius: 32,
               ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    context.bSlidePush(
+                      SearchPage(
+                        room: room,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                ),
+                const SizedBox(width: 5)
+              ],
             ),
           ),
         ),
@@ -188,6 +199,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     // if (allTweetSnap.isFetching) {
                     //   return const SizedBox.shrink();
                     // }
+
                     if (allTweetSnap.hasError) {
                       return Text('error ${allTweetSnap.error}');
                     }
@@ -196,7 +208,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       alignment: Alignment.topCenter,
                       children: [
                         ScrollablePositionedList.separated(
-                          minCacheExtent: 600,
+                          // minCacheExtent: 600,
                           itemScrollController: itemScrollController,
                           scrollOffsetController: scrollOffsetController,
                           itemPositionsListener: itemPositionsListener,
@@ -240,7 +252,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             builder: (context, dateSnapshot) {
                               final value = dateSnapshot.data;
                               final index = value?.$1;
-                              if (index == null) return const SizedBox();
+                              if (index == null || allTweetSnap.docs.length <= index) return const SizedBox();
                               final show = value!.$2;
                               final date = allTweetSnap.docs[index].data()!.created.dateString;
 

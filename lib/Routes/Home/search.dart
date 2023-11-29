@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
+import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
@@ -19,7 +20,12 @@ class SearchRoute extends GoRouteData {
 }
 
 class SearchPage extends HookConsumerWidget {
-  const SearchPage({super.key});
+  const SearchPage({
+    super.key,
+    this.room,
+  });
+
+  final Room? room;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,6 +34,7 @@ class SearchPage extends HookConsumerWidget {
     final searchUser = ref.watch(searchUserByNickProvider).value;
 
     return Scaffold(
+      appBar: room != null ? AppBar(title: const Text('Invite Members')) : null,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -38,7 +45,7 @@ class SearchPage extends HookConsumerWidget {
               autofocus: true,
               decoration: (AsyncText value, roomCon) => const InputDecoration(
                 hintText: 'abc...',
-                labelText: 'Find Rooms or Users',
+                labelText: 'Find Rooms or Users by nickname',
               ),
               milliseconds: 600,
               asyncValidator: (v) async {
