@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
@@ -11,6 +12,7 @@ import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
+import 'package:spacemoon/Static/assets.dart';
 
 class SearchRoute extends GoRouteData {
   @override
@@ -71,7 +73,11 @@ class SearchPage extends HookConsumerWidget {
             if (searchRoom == null && searchUser == null)
               Expanded(
                 child: Center(
-                  child: Text('Nothing Found', style: context.hl),
+                  child: Lottie.asset(
+                    Asset.lDot,
+                    reverse: false,
+                    repeat: true,
+                  ),
                 ),
               ),
             if (searchRoom != null || searchUser != null)
@@ -94,7 +100,7 @@ class SearchPage extends HookConsumerWidget {
                         contentPadding: EdgeInsets.zero,
                         onTap: () {
                           if (context.mounted) {
-                            ProfileRoute(userId: searchUser.uid).go(context);
+                            ProfileRoute($extra: ProfileObj(user: searchUser)).go(context);
                           }
                         },
                         title: Text(searchUser.displayName),

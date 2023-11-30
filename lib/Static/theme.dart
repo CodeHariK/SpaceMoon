@@ -39,9 +39,10 @@ class AppTheme {
   );
 
   static bool get darkness => currentAppTheme.dark;
-  static Color get high =>
-      AppTheme.darkness ? const Color.fromARGB(255, 41, 41, 41) : const Color.fromARGB(255, 242, 242, 242);
-  static Color get prihigh => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
+  static Color get background => AppTheme.darkness ? const Color.fromARGB(255, 60, 60, 60) : Colors.white;
+  static Color get card =>
+      AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 248, 248, 248);
+  static Color get seedCard => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
 
   static double get w => currentAppTheme.size.width;
   static double get dw => currentAppTheme.designSize.width;
@@ -74,7 +75,7 @@ class AppTheme {
 
   static Color get seedColor => currentAppTheme.appColor;
 
-  FilledButtonThemeData get filledButton => FilledButtonThemeData(
+  FilledButtonThemeData get filledButtonTheme => FilledButtonThemeData(
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           padding: EdgeInsets.all(12.c),
@@ -82,7 +83,7 @@ class AppTheme {
         ),
       );
 
-  ElevatedButtonThemeData get elevatedButton => ElevatedButtonThemeData(
+  ElevatedButtonThemeData get elevatedButtonTheme => ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           padding: EdgeInsets.all(12.c),
@@ -90,7 +91,7 @@ class AppTheme {
         ),
       );
 
-  OutlinedButtonThemeData get outlinedButton => OutlinedButtonThemeData(
+  OutlinedButtonThemeData get outlinedButtonTheme => OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           padding: EdgeInsets.all(12.c),
@@ -106,7 +107,7 @@ class AppTheme {
         ),
       );
 
-  InputDecorationTheme get inputDecoration => InputDecorationTheme(
+  static InputDecorationTheme get inputDecoration => InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -117,6 +118,15 @@ class AppTheme {
 
         // labelStyle: AppTheme.tx.titleMedium,
         // contentPadding: EdgeInsets.all(12.c),
+      );
+
+  static InputDecoration get uInputDecoration => InputDecoration(
+        enabledBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        // border: InputBorder.none,
+        focusedBorder: 1.bs.c(const Color.fromARGB(50, 103, 103, 103)).uline,
+        errorBorder: 1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
+        focusedErrorBorder: 1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
       );
 
   DialogTheme get dialogTheme => DialogTheme(
@@ -130,9 +140,19 @@ class AppTheme {
         ),
       );
 
+  AppBarTheme get appBarTheme => AppBarTheme(
+        color: AppTheme.card,
+        surfaceTintColor: Colors.white,
+      );
+
   CardTheme get cardTheme => CardTheme(
         color: AppTheme.darkness ? const Color.fromARGB(255, 68, 61, 71) : const Color.fromARGB(255, 250, 239, 255),
         elevation: 0,
+      );
+
+  ListTileThemeData get listTileTheme => const ListTileThemeData(
+      // tileColor: AppTheme.card,
+      // shape: 1.bs.c(AppTheme.seedCard).border,
       );
 
   ColorScheme get colorScheme => ColorScheme.fromSeed(
@@ -146,7 +166,7 @@ class AppTheme {
         // onPrimaryContainer: Colors.white, //text font,
         // inversePrimary: Colors.cyan,
 
-        // background: Colors.yellow, //Scaffold
+        // background: AppTheme.background, //Scaffold
         // onBackground: const Color.fromARGB(255, 255, 59, 190),
 
         // secondary: Colors.purple,
@@ -192,7 +212,7 @@ class AppTheme {
         bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
         bodyMedium: poppins,
         bodySmall: poppins,
-        labelLarge: const TextStyle(),
+        labelLarge: TextStyle(letterSpacing: .5.c, fontWeight: FontWeight.w400),
         labelMedium: const TextStyle(),
         labelSmall: const TextStyle(),
       );
@@ -210,10 +230,17 @@ class AppTheme {
         //
         inputDecorationTheme: inputDecoration,
 
+        scaffoldBackgroundColor: AppTheme.background,
+        // splashColor: ,
+        appBarTheme: appBarTheme,
+
         //
-        outlinedButtonTheme: outlinedButton,
-        filledButtonTheme: filledButton,
-        elevatedButtonTheme: elevatedButton,
+        listTileTheme: listTileTheme,
+
+        //
+        outlinedButtonTheme: outlinedButtonTheme,
+        filledButtonTheme: filledButtonTheme,
+        elevatedButtonTheme: elevatedButtonTheme,
         textButtonTheme: textButton,
 
         //

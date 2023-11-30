@@ -49,9 +49,7 @@ class Tweets extends _$Tweets {
     return res.data;
   }
 
-  updateTweet({
-    required Tweet tweet,
-  }) async {
+  Future<void> updateTweet({required Tweet tweet}) async {
     await FirebaseFunctions.instance.httpsCallable('updateTweet').call(tweet.toMap());
   }
 

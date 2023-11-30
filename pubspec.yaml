@@ -77,6 +77,7 @@ dependencies:
   mime: ^1.0.4
   saver_gallery: ^3.0.1
   flutter_svg: ^2.0.9
+  lottie: ^2.7.0
 
   barcode_widget: ^2.0.4
 
@@ -114,6 +115,7 @@ flutter:
   assets:
     - assets/images/
     - assets/onboard/
+    - assets/lottie/
 
 flutter_launcher_icons:
   android: "ic_spacemoon"

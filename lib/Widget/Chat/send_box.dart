@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/tweets.dart';
@@ -115,43 +116,48 @@ class SendButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FloatingActionButton(
-      elevation: 0,
-      // onPressed: () {
-      //   final roomUser = ref.read(currentRoomUserProvider).value;
-      //   if (roomUser == null) return;
-      //   for (int i = 0; i < 10; i++) {
-      //     FirebaseFirestore.instance.collection('rooms/${roomUser.room}/tweets').add(
-      //       {
-      //         'created': DateTime.now().subtract(Duration(days: Random().nextInt(30) + 1)).toIso8601String(),
-      //         'text': randomString(Random().nextInt(Random().nextBool() ? 20 : 300)),
-      //         'user': Random().nextBool() ? roomUser.user : randomString(28),
-      //       },
-      //     );
-      //   }
-      // },
-      onPressed: () async {
-        final sendText = tweetCon?.text ?? text ?? '';
+    return AsyncLock(
+      builder: (loading, status, lock, open, setStatus) => FloatingActionButton(
+        elevation: 0,
+        // onPressed: () {
+        //   final roomUser = ref.read(currentRoomUserProvider).value;
+        //   if (roomUser == null) return;
+        //   for (int i = 0; i < 10; i++) {
+        //     FirebaseFirestore.instance.collection('rooms/${roomUser.room}/tweets').add(
+        //       {
+        //         'created': DateTime.now().subtract(Duration(days: Random().nextInt(30) + 1)).toIso8601String(),
+        //         'text': randomString(Random().nextInt(Random().nextBool() ? 20 : 300)),
+        //         'user': Random().nextBool() ? roomUser.user : randomString(28),
+        //       },
+        //     );
+        //   }
+        // },
+        onPressed: () async {
+          lock();
+          final sendText = tweetCon?.text ?? text ?? '';
 
-        if (sendText.isNotEmpty == true) {
-          //
-          ref.read(tweetsProvider.notifier).sendTweet(
-                tweet: Tweet(
-                  text: sendText,
-                  mediaType: mediaType,
-                  link: link,
-                ),
-              );
+          if (sendText.isNotEmpty == true) {
+            //
+            await ref.read(tweetsProvider.notifier).sendTweet(
+                  tweet: Tweet(
+                    text: sendText,
+                    mediaType: mediaType,
+                    link: link,
+                  ),
+                );
 
-          tweetCon?.clear();
-          FocusManager.instance.primaryFocus?.unfocus();
+            open();
 
-          if (mediaType != MediaType.TEXT) {
-            context.pop();
+            tweetCon?.clear();
+            FocusManager.instance.primaryFocus?.unfocus();
+
+            if (mediaType != MediaType.TEXT && context.mounted) {
+              context.pop();
+            }
           }
-        }
-      },
-      child: const Icon(Icons.send),
+        },
+        child: const Icon(Icons.send),
+      ),
     );
   }
 }

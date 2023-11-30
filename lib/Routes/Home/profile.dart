@@ -14,34 +14,40 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 
-class ProfileRoute extends GoRouteData {
-  final String? userId;
+class ProfileObj {
+  final User? user;
 
-  const ProfileRoute({this.userId});
+  ProfileObj({required this.user});
+}
+
+class ProfileRoute extends GoRouteData {
+  final ProfileObj? $extra;
+
+  const ProfileRoute({this.$extra});
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const ProfilePage();
+    return ProfilePage(
+      searchuser: $extra,
+    );
   }
 }
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({
     super.key,
-    this.userId,
+    this.searchuser,
   });
 
-  final String? userId;
+  final ProfileObj? searchuser;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userPro = userId == null ? ref.watch(currentUserDataProvider) : ref.watch(GetUserByIdProvider(userId!));
-    final user = userPro.value;
-
-    if (userPro.isLoading) return const Scaffold();
+    final user = searchuser?.user ?? ref.watch(currentUserDataProvider).value;
 
     return Scaffold(
       body: SafeArea(
@@ -57,19 +63,21 @@ class ProfilePage extends ConsumerWidget {
                     padding: const EdgeInsets.all(8),
                     child: InkWell(
                       splashFactory: InkSplash.splashFactory,
-                      onTap: () async {
-                        final imageMetadata = await selectImageMedia();
+                      onTap: searchuser?.user != null
+                          ? null
+                          : () async {
+                              final imageMetadata = await selectImageMedia();
 
-                        if (imageMetadata == null) return;
+                              if (imageMetadata == null) return;
 
-                        await uploadFire(
-                          meta: imageMetadata,
-                          imageName: 'profile',
-                          storagePath: 'profile/users/${user!.uid}',
-                          docPath: 'users/${user.uid}',
-                          singlepath: Const.photoURL.name,
-                        );
-                      },
+                              await uploadFire(
+                                meta: imageMetadata,
+                                imageName: 'profile',
+                                storagePath: 'profile/users/${user!.uid}',
+                                docPath: 'users/${user.uid}',
+                                singlepath: Const.photoURL.name,
+                              );
+                            },
                       child: user?.photoURL == null || user?.photoURL.isEmpty == true
                           ? const Icon(
                               CupertinoIcons.person_crop_circle_badge_plus,
@@ -83,37 +91,59 @@ class ProfilePage extends ConsumerWidget {
                             ),
                     ),
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: AsyncProfileField(
-                      text: user?.displayName,
-                      style: context.hm,
-                      textAlign: TextAlign.start,
-                      alphanumeric: false,
+                  AsyncTextFormField(
+                    key: ValueKey('Name ${user?.displayName}'),
+                    initialValue: user?.displayName,
+                    enabled: searchuser?.user == null,
+                    style: context.hm,
+                    asyncValidator: (value) async {
+                      if (value.length < 7) {
+                        return 'more than 6 characters required';
+                      }
+
+                      return null;
+                    },
+                    maxLines: 1,
+                    showPrefix: false,
+                    textInputAction: TextInputAction.done,
+                    onSubmit: (con) async => await callUserUpdate(User(displayName: con.text)),
+                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
                       hintText: 'Name',
-                      asyncValidator: (value) async {
-                        return null;
-                      },
-                      onSubmit: (con) => callUserUpdate(User(displayName: con.text)),
                     ),
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: AsyncProfileField(
-                      text: user?.nick,
-                      style: context.tl,
-                      textAlign: TextAlign.start,
-                      hintText: 'Nick name',
-                      prefix: const Text('Nick name : @ '),
-                      asyncValidator: (value) async {
-                        final count = await countUserByNick(value);
+                  const SizedBox(height: 10),
+                  AsyncTextFormField(
+                    key: ValueKey('Nick ${user?.nick}'),
+                    initialValue: user?.nick,
+                    enabled: searchuser?.user == null,
+                    style: context.tl,
+                    maxLines: 1,
+                    asyncValidator: (value) async {
+                      if (!isAlphanumeric(value) || !isLowercase(value)) {
+                        return 'only lowercase characters and digits are allowed';
+                      }
 
-                        if (count != 0) {
-                          return 'Not available';
-                        }
+                      if (value.length < 7) {
+                        return 'more than 6 characters required';
+                      }
+
+                      if (user?.nick == value) {
                         return null;
-                      },
-                      onSubmit: (con) => callUserUpdate(User(nick: con.text)),
+                      }
+
+                      final count = await countUserByNick(value);
+
+                      if (count != 0) {
+                        return 'Not available';
+                      }
+                      return null;
+                    },
+                    showPrefix: false,
+                    textInputAction: TextInputAction.done,
+                    onSubmit: (con) async => await callUserUpdate(User(nick: con.text)),
+                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                      hintText: 'Nick name',
+                      prefix: const Text('Nick name : @'),
                     ),
                   ),
                   ListTile(
@@ -143,65 +173,6 @@ class ProfilePage extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class AsyncProfileField extends StatelessWidget {
-  const AsyncProfileField({
-    super.key,
-    required this.text,
-    this.style,
-    this.alphanumeric = true,
-    required this.asyncValidator,
-    required this.textAlign,
-    required this.hintText,
-    this.prefix,
-    this.maxLines,
-    required this.onSubmit,
-  });
-
-  final String? text;
-  final TextStyle? style;
-  final bool alphanumeric;
-  final Future<String?> Function(String) asyncValidator;
-  final TextAlign textAlign;
-  final String hintText;
-  final Widget? prefix;
-  final int? maxLines;
-  final Function(TextEditingController textcon) onSubmit;
-
-  @override
-  Widget build(BuildContext context) {
-    return AsyncTextFormField(
-      key: ValueKey(text),
-      initialValue: text,
-      style: style,
-      asyncValidator: (value) async {
-        if (alphanumeric && !isAlphanumeric(value)) {
-          return 'only alphanumeric characters are allowed';
-        }
-
-        if (value.length < 7) {
-          return 'more than 6 characters required';
-        }
-
-        return (await asyncValidator(value));
-      },
-      maxLines: maxLines,
-      textAlign: textAlign,
-      showPrefix: false,
-      decoration: (AsyncText value, nickCon) => InputDecoration(
-        hintText: hintText,
-        // contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        enabledBorder: 1.bs.c(Colors.transparent).uline,
-        focusedBorder: 1.bs.c(const Color.fromARGB(50, 103, 103, 103)).uline,
-        errorBorder: 1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
-        focusedErrorBorder: 1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
-        prefix: prefix,
-      ),
-      textInputAction: TextInputAction.done,
-      onSubmit: onSubmit,
     );
   }
 }

@@ -7,8 +7,9 @@ import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/animated/animated_buttons.dart';
+import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
@@ -22,33 +23,17 @@ class TweetBox extends ConsumerWidget {
     super.key,
     required this.tweet,
     this.isHero = false,
+    required this.room,
+    required this.user,
   });
 
   final Tweet tweet;
+  final Room room;
+  final User user;
   final bool isHero;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final roomuserPro = ref.watch(currentRoomUserProvider);
-    // final roomuser = roomuserPro.value;
-
-    // if (roomuserPro.isLoading) {
-    //   return const CircularProgressIndicator();
-    // }
-
-    final roomuser = ref.watch(
-      currentRoomUserProvider.select(
-        (user) => user.value == null
-            ? null
-            : RoomUser(
-                uid: user.value?.uid,
-                room: user.value?.room,
-                user: user.value?.user,
-                role: user.value?.role,
-              ),
-      ),
-    );
-
     final box = Material(
       color: Colors.transparent,
       child: Container(
@@ -72,8 +57,8 @@ class TweetBox extends ConsumerWidget {
                 // color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(80) : Color.fromARGB(66, 238, 238, 238),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
-                  bottomLeft: Radius.circular(((roomuser?.user == tweet.user) ? 20 : 0)),
-                  bottomRight: Radius.circular((roomuser?.user == tweet.user) ? 0 : 20),
+                  bottomLeft: Radius.circular(((user.uid == tweet.user) ? 20 : 0)),
+                  bottomRight: Radius.circular((user.uid == tweet.user) ? 0 : 20),
                   topRight: const Radius.circular(20),
                 ),
               ),
@@ -81,7 +66,6 @@ class TweetBox extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            // crossAxisAlignment: roomuser?.user == tweet.user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               if (tweet.mediaType == MediaType.IMAGE)
@@ -172,7 +156,14 @@ class TweetBox extends ConsumerWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircleAvatar(),
+              CircleAvatar(
+                child: (!isURL(user.photoURL))
+                    ? null
+                    : CustomCacheImage(
+                        imageUrl: spaceThumbImage(user.photoURL),
+                        radius: 32,
+                      ),
+              ),
               const SizedBox(height: 5),
               Text(tweet.created.timeString, style: context.ls),
             ],
@@ -187,7 +178,7 @@ class TweetBox extends ConsumerWidget {
                   ),
                 ),
         ]..sort(
-            (_, __) => roomuser?.user == tweet.user ? -1 : 1,
+            (_, __) => user.uid == tweet.user ? -1 : 1,
           ),
       ),
     );
@@ -206,8 +197,12 @@ class TweetBox extends ConsumerWidget {
                 : () {
                     TweetRoute(
                       chatId: tweet.room,
-                      tweetPath: tweet.path,
-                      $extra: tweet,
+                      tweetId: tweet.uid,
+                      $extra: TweetRouteObj(
+                        tweet: tweet,
+                        room: room,
+                        user: user,
+                      ),
                     ).navPush(context);
                   },
             child: child,
@@ -233,14 +228,26 @@ class DialogPage extends Page<String> {
   }
 }
 
+class TweetRouteObj {
+  final Tweet tweet;
+  final Room room;
+  final User user;
+
+  TweetRouteObj({
+    required this.tweet,
+    required this.room,
+    required this.user,
+  });
+}
+
 class TweetRoute extends GoRouteData {
   final String chatId;
-  final String tweetPath;
-  final Tweet $extra;
+  final String tweetId;
+  final TweetRouteObj $extra;
 
   const TweetRoute({
     required this.chatId,
-    required this.tweetPath,
+    required this.tweetId,
     required this.$extra,
   });
 
@@ -252,8 +259,10 @@ class TweetRoute extends GoRouteData {
       key: state.pageKey,
       child: TweetDialog(
         chatId: chatId,
-        dialog: true,
-        tweet: $extra,
+        tweetId: tweetId,
+        tweet: $extra.tweet,
+        room: $extra.room,
+        user: $extra.user,
       ),
     );
   }
@@ -273,8 +282,10 @@ class TweetRoute extends GoRouteData {
         pageBuilder: (BuildContext context, _, __) {
           return TweetDialog(
             chatId: chatId,
-            dialog: true,
-            tweet: $extra,
+            tweetId: tweetId,
+            tweet: $extra.tweet,
+            room: $extra.room,
+            user: $extra.user,
           );
         },
       ),
@@ -285,29 +296,47 @@ class TweetRoute extends GoRouteData {
 class TweetDialog extends ConsumerWidget {
   const TweetDialog({
     super.key,
-    this.dialog = true,
     required this.chatId,
+    required this.tweetId,
     required this.tweet,
+    required this.room,
+    required this.user,
   });
 
   final String chatId;
-  final bool dialog;
+  final String tweetId;
   final Tweet tweet;
+  final Room room;
+  final User user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () => GoRouter.maybeOf(context)?.pop('Hello'),
       child: AlertDialog(
+        // title: Text('$chatId : $tweetId'),
         contentPadding: const EdgeInsets.all(4),
-        content: TweetBox(tweet: tweet, isHero: true),
+        content: TweetBox(
+          tweet: tweet,
+          isHero: true,
+          room: room,
+          user: user,
+        ),
         actions: [
-          OutlinedButton(
-            onPressed: () {
-              ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
-              context.pop();
+          AsyncLock(
+            builder: (loading, status, lock, open, setStatus) {
+              return OutlinedButton(
+                onPressed: () async {
+                  lock();
+                  await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+                  open();
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
+                child: const Text('Delete'),
+              );
             },
-            child: const Text('Delete'),
           ),
         ],
       ),

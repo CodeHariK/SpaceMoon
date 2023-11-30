@@ -14,6 +14,12 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
 
     let _room = Room.fromJSON(room);
 
+    if (await roomNickExist(_room.nick)) {
+        console.log('nick exist');
+        throw new HttpsError('aborted', 'Nick name already present');
+    }
+    console.log('continue');
+
     const f = await Promise.all(
         ((users ?? []) as string[])
             .filter(user => user !== currentUID)
@@ -98,13 +104,13 @@ export const acceptAccessToRoom = onCall(async (request) => {
 
     if (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)) {
         await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid)
-            .set(RoomUser.toJSON(RoomUser.create({
-                user: _roomuser.user,
-                room: _roomuser.room,
-                role: Role.USER,
-                created: new Date(),
-            })) as Map<string, any>,
-                { merge: true }
+            .update(
+                Object.fromEntries(roomUserToJson(RoomUser.create({
+                    user: _roomuser.user,
+                    room: _roomuser.room,
+                    role: Role.USER,
+                    created: new Date(),
+                })))
             );
 
         // admin.firestore().collection(constName(Const.rooms)).doc(_roomuser.room).set(
@@ -209,20 +215,38 @@ export const updateRoomUserTime = onCall(async (request): Promise<string> => {
 
     if (roomUser.user != userId) return 'Not enough permission';
 
-    await admin.firestore().collection(constName(Const.roomusers)).doc(roomUser.uid).set(
-        roomUserToJson(RoomUser.create({
-            updated: new Date()
-        })
-        ),
-        { merge: true },
-    );
+
+    await admin.firestore().collection(constName(Const.roomusers)).doc(roomUser.uid)
+        .update(
+            Object.fromEntries(roomUserToMap(RoomUser.create({
+                updated: new Date()
+            })))
+        ).catch((err) => {
+            throw new HttpsError('aborted', 'updateRoomUserTime error');
+        });
     return 'Updated';
 });
+
+async function roomNickExist(nick: string) {
+    if (nick != null) {
+        let nickCount = await admin.firestore().collection(constName(Const.rooms)).where(constName(Const.nick), '==', nick?.toLowerCase()).count().get().then((v) => v.data().count);
+        console.log(nickCount);
+        if (nickCount != 0) {
+            return true;
+        }
+    }
+    console.log('false');
+    return false;
+}
 
 export const updateRoomInfo = onCall(async (request): Promise<string> => {
     let userId: string = request.auth!.uid;
 
     let room = Room.fromJSON(request.data)
+
+    if (await roomNickExist(room.nick)) {
+        throw new HttpsError('aborted', 'Nick name already present');
+    }
 
     let r = roomToMap(Room.create({
         description: room.description,
@@ -237,9 +261,8 @@ export const updateRoomInfo = onCall(async (request): Promise<string> => {
     try {
         let roomUser = await getRoomUserById(userId, room.uid)
         if (roomUser && roomUser.role == Role.ADMIN) {
-            await admin.firestore().collection(constName(Const.rooms)).doc(room.uid).set(
+            await admin.firestore().collection(constName(Const.rooms)).doc(room.uid).update(
                 Object.fromEntries(m),
-                { merge: true },
             );
         }
         return 'Done';
@@ -265,8 +288,8 @@ export const getRoomUserById = async (userId: string, roomId: string) => {
 
 // Helper Functions ___________________________________________
 
-export function roomUserToMap(obj: any) {
-    return RoomUser.toJSON(RoomUser.create(obj)) as Map<string, any>;
+export function roomUserToMap(roomuser: RoomUser) {
+    return toMap(RoomUser.toJSON(RoomUser.create(roomuser))!);
 }
 
 export function roomUserToJson(roomUser: RoomUser) {

@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions/v1";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Const, RoomUser, User } from "./Gen/data";
 import { constName } from "./Helpers/const";
@@ -28,7 +28,7 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
     return 'Created';
 });
 
-export const callUserUpdate = onCall((request): void => {
+export const callUserUpdate = onCall(async (request): Promise<void> => {
     let uid = request.auth?.uid;
 
     const { displayName, nick, photoURL } = request.data;
@@ -38,6 +38,13 @@ export const callUserUpdate = onCall((request): void => {
         nick: nick?.toLowerCase(),
         photoURL: photoURL,
     });
+
+    if (user.nick != null) {
+        let nickCount = await admin.firestore().collection(constName(Const.users)).where(constName(Const.nick), '==', user.nick?.toLowerCase()).count().get().then((v) => v.data().count);
+        if (nickCount != 0) {
+            throw new HttpsError('aborted', 'Nick name already present');
+        }
+    }
 
     if (uid != null) {
         admin.auth().updateUser(uid, User.toJSON(user)!)
@@ -63,6 +70,8 @@ export const callFCMtokenUpdate = onCall((request): void => {
             }).catch((error) => {
                 console.error('Error adding new field to custom claims'/*, error*/);
             });
+    } else {
+        throw new HttpsError('aborted', 'No user error');
     }
 });
 

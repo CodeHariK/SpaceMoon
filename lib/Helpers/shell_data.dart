@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/painter/wave_clipper.dart';
 import 'package:spacemoon/Static/theme.dart';
 
 class ShellData {
@@ -48,46 +49,45 @@ extension SuperShellData on List<ShellData> {
       );
 
   Widget googleBar(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: AppTheme.high,
-          borderRadius: BorderRadius.circular(16),
-          // boxShadow: [
-          //   BoxShadow(
-          //     offset: const Offset(0, 4),
-          //     blurRadius: 4,
-          //     spreadRadius: 2,
-          //     color: AppTheme.darkness ? const Color.fromARGB(255, 47, 47, 47) : const Color.fromARGB(70, 72, 72, 72),
-          //   ),
-          // ],
-        ),
-        height: 76,
-        padding: const EdgeInsets.only(bottom: 2),
+        color: Colors.transparent,
         margin: context.mq.pad.copyWith(top: 0, left: 16, right: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: asMap()
-              .map(
-                (i, e) => MapEntry(
-                  i,
-                  InkWell(
-                    onTap: () {
-                      context.go(this[i].location);
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: getCurrentIndex(context) != i ? Colors.transparent : null,
-                          child: e.icon,
+        child: PhysicalShape(
+          color: AppTheme.card,
+          elevation: 1,
+          clipBehavior: Clip.antiAlias,
+          clipper: const WaveClipper(
+            numXDiv: 16,
+          ),
+          child: Container(
+            height: 78,
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: asMap()
+                  .map(
+                    (i, e) => MapEntry(
+                      i,
+                      InkWell(
+                        onTap: () {
+                          context.go(this[i].location);
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: getCurrentIndex(context) != i ? Colors.transparent : null,
+                              child: e.icon,
+                            ),
+                            Text(e.name, style: context.ls),
+                          ],
                         ),
-                        Text(e.name),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              )
-              .values
-              .toList(),
+                  )
+                  .values
+                  .toList(),
+            ),
+          ),
         ),
       );
 

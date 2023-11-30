@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -78,6 +79,17 @@ Future<Room?> searchRoomByNick(SearchRoomByNickRef ref) async {
       .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
 
   return rooms?.firstOrNull;
+}
+
+Future<int> countRoomByNick(String nick) async {
+  final count = await FirebaseFirestore.instance
+      .collection(Const.rooms.name)
+      .where(Const.nick.name, isEqualTo: nick)
+      .count()
+      .get()
+      .then((value) => value.count);
+
+  return count;
 }
 
 @Riverpod(keepAlive: true)
@@ -195,23 +207,28 @@ class CurrentRoom extends _$CurrentRoom {
     state = const AsyncValue.data(null);
   }
 
-  void updateRoomInfo(Room room) {
-    FirebaseFunctions.instance.httpsCallable('updateRoomInfo').call(room.toMap());
+  Future<void> updateRoomInfo(Room room) async {
+    await FirebaseFunctions.instance.httpsCallable('updateRoomInfo').call(room.toMap());
   }
 
   Future<Room?> createRoom({
     required Room room,
     required List<String> users,
   }) async {
-    final roomId = (await FirebaseFunctions.instance.httpsCallable('callCreateRoom').call(
-      {
-        'room': room.toMap(),
-        'users': users,
-      },
-    ))
-        .data as String;
+    try {
+      final roomId = (await FirebaseFunctions.instance.httpsCallable('callCreateRoom').call(
+        {
+          'room': room.toMap(),
+          'users': users,
+        },
+      ))
+          .data as String;
 
-    return Room(uid: roomId);
+      return Room(uid: roomId);
+    } catch (e) {
+      debugPrint('Error Creating room');
+    }
+    return null;
   }
 
   Future<void> requestAccessToRoom() async {
@@ -220,7 +237,7 @@ class CurrentRoom extends _$CurrentRoom {
     ref.invalidate(currentRoomUserProvider);
   }
 
-  void acceptAccessToRoom(RoomUser user) async {
+  Future<void> acceptAccessToRoom(RoomUser user) async {
     await FirebaseFunctions.instance.httpsCallable('acceptAccessToRoom').call(user.toMap());
     ref.invalidate(currentRoomUserProvider);
   }

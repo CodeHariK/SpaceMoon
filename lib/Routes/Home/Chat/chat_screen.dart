@@ -8,10 +8,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -93,6 +95,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
     );
 
+    final user = ref.watch(currentUserDataProvider).value;
+
     // final meInRoomPro = ref.watch(currentRoomUserProvider);
     // final meInRoom = meInRoomPro.value;
     final meInRoom = ref.watch(
@@ -118,7 +122,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     //   );
     // }
 
-    if (room == null) {
+    if (room == null || user == null || meInRoom == null) {
       return WillPopScope(
         onWillPop: () async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
@@ -139,7 +143,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       return const Error404Page();
     }
 
-    if ((meInRoom == null || meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
+    if ((meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
       return WillPopScope(
         onWillPop: () async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
@@ -161,15 +165,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             titleAlignment: ListTileTitleAlignment.center,
             contentPadding: EdgeInsets.zero,
             onTap: () {
-              ChatInfoRoute(widget.chatId).go(context);
+              ChatInfoRoute(chatId: widget.chatId).go(context);
             },
             title: Text(room.displayName, style: context.tm, maxLines: 1),
             subtitle: Text(room.nick, style: context.ts, maxLines: 1),
             leading: CircleAvatar(
-              child: CustomCacheImage(
-                imageUrl: spaceThumbImage(room.photoURL),
-                radius: 32,
-              ),
+              child: (!isURL(room.photoURL))
+                  ? null
+                  : CustomCacheImage(
+                      imageUrl: spaceThumbImage(room.photoURL),
+                      radius: 32,
+                    ),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -243,7 +249,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             tweet.room = widget.chatId;
                             tweet.path = doc.reference.path;
 
-                            return TweetBox(tweet: tweet);
+                            return TweetBox(
+                              tweet: tweet,
+                              room: room,
+                              user: user,
+                            );
                           },
                         ),
                         if (allTweetSnap.docs.isNotEmpty)
@@ -278,7 +288,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   },
                 ),
               ),
-              if (meInRoom != null) SendBox(roomUser: meInRoom),
+              SendBox(roomUser: meInRoom),
             ],
           ),
         ),

@@ -43,16 +43,6 @@ Future<User?> searchUserByNick(SearchUserByNickRef ref) async {
   return users.firstOrNull;
 }
 
-@Riverpod(keepAlive: true)
-Future<User?> getUserById(GetUserByIdRef ref, String userId) async {
-  User? user = await FirebaseFirestore.instance
-      .collection(Const.users.name)
-      .doc(userId)
-      .get()
-      .then((value) => fromDocSnap(User(), value));
-  return user;
-}
-
 Future<int> countUserByNick(String nick) async {
   final count = await FirebaseFirestore.instance
       .collection(Const.users.name)
@@ -64,6 +54,16 @@ Future<int> countUserByNick(String nick) async {
   return count;
 }
 
-void callUserUpdate(User user) {
-  FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
+@Riverpod(keepAlive: true)
+Future<User?> getUserById(GetUserByIdRef ref, String userId) async {
+  User? user = await FirebaseFirestore.instance
+      .collection(Const.users.name)
+      .doc(userId)
+      .get()
+      .then((value) => fromDocSnap(User(), value));
+  return user;
+}
+
+Future<void> callUserUpdate(User user) async {
+  await FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
 }

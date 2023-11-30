@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -11,14 +13,14 @@ import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
-import 'package:spacemoon/Routes/Home/profile.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 
 class ChatInfoRoute extends GoRouteData {
   final String chatId;
 
-  const ChatInfoRoute(this.chatId);
+  const ChatInfoRoute({required this.chatId});
 
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
@@ -107,103 +109,139 @@ class ChatInfoPage extends HookConsumerWidget {
               ),
               SliverList.list(
                 children: [
-                  IgnorePointer(
-                    ignoring: (meInRoom?.isAdmin != true),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: AsyncProfileField(
-                        text: room.displayName,
-                        style: context.hm,
-                        textAlign: TextAlign.start,
-                        hintText: 'Name',
-                        alphanumeric: false,
-                        asyncValidator: (value) async {
-                          return null;
-                        },
-                        onSubmit: (con) {
-                          ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                                Room(
-                                  uid: room.uid,
-                                  displayName: con.text,
-                                ),
-                              );
-                        },
-                      ),
+                  AsyncTextFormField(
+                    key: ValueKey(room.displayName),
+                    initialValue: room.displayName,
+                    enabled: meInRoom?.isAdmin == true,
+                    style: context.hm,
+                    asyncValidator: (value) async {
+                      if (value.length < 7) {
+                        return 'more than 6 characters required';
+                      }
+
+                      return null;
+                    },
+                    maxLines: 1,
+                    showPrefix: false,
+                    textInputAction: TextInputAction.done,
+                    onSubmit: (con) async {
+                      await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                            Room(
+                              uid: room.uid,
+                              displayName: con.text,
+                            ),
+                          );
+                    },
+                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                      hintText: 'Name',
                     ),
                   ),
-                  IgnorePointer(
-                    ignoring: (meInRoom?.isAdmin != true),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: AsyncProfileField(
-                        text: room.nick,
-                        style: context.hs,
-                        textAlign: TextAlign.start,
-                        hintText: 'Nickname',
-                        prefix: const Text('#'),
-                        asyncValidator: (value) async {
-                          return null;
-                        },
-                        onSubmit: (con) {
-                          ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                                Room(
-                                  uid: room.uid,
-                                  nick: con.text,
-                                ),
-                              );
-                        },
-                      ),
-                    ),
-                  ),
-                  IgnorePointer(
-                    ignoring: (meInRoom?.isAdmin != true),
-                    child: AsyncProfileField(
-                      text: room.description,
-                      style: context.ts,
-                      textAlign: TextAlign.start,
-                      hintText: 'Description',
-                      alphanumeric: false,
-                      asyncValidator: (value) async {
+                  AsyncTextFormField(
+                    key: ValueKey(room.nick),
+                    initialValue: room.nick,
+                    maxLines: 1,
+                    enabled: meInRoom?.isAdmin == true,
+                    style: context.hs,
+                    asyncValidator: (value) async {
+                      if (!isAlphanumeric(value) || !isLowercase(value)) {
+                        return 'only lowercase characters and digits are allowed';
+                      }
+
+                      if (value.length < 7) {
+                        return 'more than 6 characters required';
+                      }
+
+                      if (room.nick == value) {
                         return null;
-                      },
-                      maxLines: null,
-                      onSubmit: (con) {
-                        ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                              Room(
-                                uid: room.uid,
-                                description: con.text,
-                              ),
-                            );
-                      },
+                      }
+
+                      final r = await countRoomByNick(value);
+
+                      if (r != 0) {
+                        return 'Not available';
+                      }
+                      return null;
+                    },
+                    showPrefix: false,
+                    textInputAction: TextInputAction.done,
+                    onSubmit: (con) async {
+                      await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                            Room(
+                              uid: room.uid,
+                              nick: con.text,
+                            ),
+                          );
+                    },
+                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                      hintText: '  abc...',
+                      prefixIcon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Nickname : #', style: context.tl),
+                        ],
+                      ),
+                    ),
+                  ),
+                  AsyncTextFormField(
+                    key: ValueKey(room.description),
+                    initialValue: room.description,
+                    enabled: meInRoom?.isAdmin == true,
+                    style: context.ts,
+                    maxLines: null,
+                    asyncValidator: (value) async {
+                      if (value.length < 7) {
+                        return 'more than 6 characters required';
+                      }
+
+                      return null;
+                    },
+                    showPrefix: false,
+                    textInputAction: TextInputAction.done,
+                    onSubmit: (con) async {
+                      await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                            Room(
+                              uid: room.uid,
+                              description: con.text,
+                            ),
+                          );
+                    },
+                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                      hintText: 'Description',
                     ),
                   ),
                   IgnorePointer(
                     ignoring: (meInRoom?.isAdmin != true),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: DropdownButtonFormField(
-                        key: ValueKey(room.open),
-                        value: room.open,
-                        items: Visible.values
-                            .map(
-                              (e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(e.name),
-                              ),
-                            )
-                            .toList(),
-                        borderRadius: 20.br,
-                        decoration: const InputDecoration(
-                          labelText: 'Visiblity',
-                          constraints: BoxConstraints(maxWidth: 200),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                        ),
-                        onChanged: (value) {
-                          if (value != null) {
-                            room.open = value;
-                            ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
-                          }
+                      child: AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return DropdownButtonFormField(
+                            key: ValueKey(room.open),
+                            value: room.open,
+                            items: Visible.values
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e.name),
+                                  ),
+                                )
+                                .toList(),
+                            borderRadius: 20.br,
+                            decoration: const InputDecoration(
+                              labelText: 'Visiblity',
+                              constraints: BoxConstraints(maxWidth: 200),
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                            ),
+                            onChanged: (value) async {
+                              if (value != null) {
+                                room.open = value;
+                                lock();
+                                await ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
+                                open();
+                              }
+                            },
+                          );
                         },
                       ),
                     ),
@@ -228,36 +266,55 @@ class ChatInfoPage extends HookConsumerWidget {
                     children: [
                       if (meInRoom != null && meInRoom.isAdmin)
                         Align(
-                          child: FilledButton(
-                            onPressed: () async {
-                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
-                              if (context.mounted) {
-                                HomeRoute().go(context);
-                              }
+                          child: AsyncLock(
+                            builder: (loading, status, lock, open, setStatus) {
+                              return OutlinedButton(
+                                onPressed: () async {
+                                  lock();
+                                  await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
+                                  if (context.mounted) {
+                                    HomeRoute().go(context);
+                                  }
+                                  open();
+                                },
+                                child: const Text('Delete Room'),
+                              );
                             },
-                            child: const Text('Delete Room'),
                           ),
                         ),
                       if (meInRoom != null)
                         Align(
-                          child: FilledButton(
-                            onPressed: () async {
-                              await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
-                              if (context.mounted) {
-                                HomeRoute().go(context);
-                              }
+                          child: AsyncLock(
+                            builder: (loading, status, lock, open, setStatus) {
+                              return OutlinedButton(
+                                onPressed: () async {
+                                  lock();
+                                  await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
+                                  ref.read(currentRoomProvider.notifier).exitRoom(null);
+                                  ref.invalidate(currentRoomUserProvider);
+                                  if (context.mounted) {
+                                    HomeRoute().go(context);
+                                  }
+                                  open();
+                                },
+                                child: const Text('Leave Room'),
+                              );
                             },
-                            child: const Text('Leave Room'),
                           ),
                         ),
                       if (meInRoom == null && room.open == Visible.MODERATED)
-                        AsyncButton(
-                          icon: Icons.mail,
-                          asyncFn: () async {
-                            await ref.read(currentRoomProvider.notifier).requestAccessToRoom();
-                            return true;
+                        AsyncLock(
+                          builder: (loading, status, lock, open, setStatus) {
+                            return FilledButton.icon(
+                              onPressed: () async {
+                                lock();
+                                await ref.read(currentRoomProvider.notifier).requestAccessToRoom();
+                                open();
+                              },
+                              icon: const Icon(Icons.mail),
+                              label: const Text('Send Request'),
+                            );
                           },
-                          name: 'Send Request',
                         ),
                       if (meInRoom?.role == Role.REQUEST) const Text('Request Sent'),
                     ],
@@ -284,21 +341,36 @@ class ChatInfoPage extends HookConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (roomUser.isRequest)
-                            IconButton.filledTonal(
-                              onPressed: () {
-                                ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
+                            AsyncLock(
+                              builder: (loading, status, lock, open, setStatus) {
+                                return IconButton.filledTonal(
+                                  onPressed: () async {
+                                    lock();
+                                    await ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
+                                    open();
+                                  },
+                                  icon: !loading ? const Icon(Icons.check) : const CircularProgress(size: 20),
+                                );
                               },
-                              icon: const Icon(Icons.check),
                             ),
                           if (!roomUser.isAdminOrMod && roomUser != meInRoom && meInRoom.isAdminOrMod)
-                            IconButton(
-                              onPressed: () {
-                                ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
-                                ref.read(currentRoomProvider.notifier).exitRoom(roomUser);
-                                ref.invalidate(currentRoomUserProvider);
+                            AsyncLock(
+                              builder: (loading, status, lock, open, setStatus) {
+                                return IconButton.filledTonal(
+                                  onPressed: () async {
+                                    lock();
+                                    await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
+                                    open();
+                                    ref.read(currentRoomProvider.notifier).exitRoom(null);
+                                    ref.invalidate(currentRoomUserProvider);
+                                    if (context.mounted) {
+                                      HomeRoute().go(context);
+                                    }
+                                  },
+                                  icon: !loading ? const Icon(Icons.close) : const CircularProgress(size: 20),
+                                );
                               },
-                              icon: const Icon(Icons.close),
-                            )
+                            ),
                         ],
                       ),
                     );
