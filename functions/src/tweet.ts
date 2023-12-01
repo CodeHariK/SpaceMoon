@@ -5,7 +5,9 @@ import { constName } from "./Helpers/const";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 
-export const sendTweet = onCall(async (request) => {
+export const sendTweet = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let userId = request.auth!.uid;
 
     let tweet = Tweet.fromJSON(request.data)
@@ -42,7 +44,9 @@ export const sendTweet = onCall(async (request) => {
     }
 });
 
-export const updateTweet = onCall(async (request) => {
+export const updateTweet = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let userId = request.auth!.uid;
 
     let tweet = Tweet.fromJSON(request.data)
@@ -55,6 +59,8 @@ export const updateTweet = onCall(async (request) => {
     }
 
     let fetchTweet = await getTweetById(tweet.uid, tweet.room);
+
+    console.log(`${userId}   ${fetchTweet?.user}`)
 
     if (fetchTweet && userId === fetchTweet.user && fetchTweet?.gallery.length != tweet?.gallery.length && tweet?.gallery.length == 0) {
         await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`)
@@ -81,7 +87,9 @@ export const updateTweet = onCall(async (request) => {
     }
 });
 
-export const deleteTweet = onCall(async (request) => {
+export const deleteTweet = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let userId = request.auth!.uid;
 
     let tweet = Tweet.fromJSON(request.data)

@@ -106,7 +106,11 @@ class ProfilePage extends ConsumerWidget {
                     maxLines: 1,
                     showPrefix: false,
                     textInputAction: TextInputAction.done,
-                    onSubmit: (con) async => await callUserUpdate(User(displayName: con.text)),
+                    onSubmit: (con) async => await callUserUpdate(
+                      User(
+                        displayName: con.text,
+                      ),
+                    ),
                     decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
                       hintText: 'Name',
                     ),
@@ -119,8 +123,8 @@ class ProfilePage extends ConsumerWidget {
                     style: context.tl,
                     maxLines: 1,
                     asyncValidator: (value) async {
-                      if (!isAlphanumeric(value) || !isLowercase(value)) {
-                        return 'only lowercase characters and digits are allowed';
+                      if (!isAlphanumeric(value)) {
+                        return 'only (a-z) (A-Z) (0-9) allowed';
                       }
 
                       if (value.length < 7) {
@@ -140,7 +144,11 @@ class ProfilePage extends ConsumerWidget {
                     },
                     showPrefix: false,
                     textInputAction: TextInputAction.done,
-                    onSubmit: (con) async => await callUserUpdate(User(nick: con.text)),
+                    onSubmit: (con) async => await callUserUpdate(
+                      User(
+                        nick: con.text,
+                      ),
+                    ),
                     decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
                       hintText: 'Nick name',
                       prefix: const Text('Nick name : @'),
@@ -201,8 +209,8 @@ class RefreshTokenDisplay extends ConsumerWidget {
         future: user?.getIdToken(),
         builder: (context, snapshot) {
           final refreshToken = snapshot.data;
-          // return SelectableText(refreshToken ?? '-');
-          return SelectableText((beautifyMap(jwtParse(refreshToken))).toString());
+          // return Text(refreshToken ?? '-');
+          return Text((beautifyMap(jwtParse(refreshToken))).toString());
         },
       );
     }

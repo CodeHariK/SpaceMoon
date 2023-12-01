@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
+import 'package:spacemoon/Routes/Special/onboard.dart';
 
 @immutable
 class SettingsRoute extends GoRouteData {
@@ -112,6 +114,13 @@ class SettingsPage extends ConsumerWidget {
             },
             title: Text('Developer Info', style: context.tm),
           ),
+          if (kDebugMode)
+            CupertinoListTile.notched(
+              onTap: () {
+                ref.read(onboardedProvider.notifier).set(false);
+              },
+              title: Text('Onboard false', style: context.tm),
+            ),
         ],
       ),
     );

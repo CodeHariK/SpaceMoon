@@ -1,7 +1,9 @@
 import * as admin from "firebase-admin";
 import { onCall } from "firebase-functions/v2/https";
 
-export const sendMessage = onCall((request): void => {
+export const sendMessage = onCall({
+    enforceAppCheck: true,
+}, (request): void => {
     admin.messaging().send({
         token: "device token",
         data: {

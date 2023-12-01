@@ -62,23 +62,23 @@ class SearchText extends _$SearchText {
   }
 
   void change(String search) async {
-    state = search.toLowerCase();
+    state = search;
   }
 }
 
 @riverpod
-Future<Room?> searchRoomByNick(SearchRoomByNickRef ref) async {
+Future<List<Room?>> searchRoomByNick(SearchRoomByNickRef ref) async {
   final nick = ref.watch(searchTextProvider);
 
-  if (nick == null || nick == '') return null;
+  if (nick == null || nick == '') return [];
 
-  List<Room>? rooms = await FirebaseFirestore.instance
+  final rooms = await FirebaseFirestore.instance
       .collection(Const.rooms.name)
       .where(Const.nick.name, isEqualTo: nick)
       .get()
       .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
 
-  return rooms?.firstOrNull;
+  return rooms;
 }
 
 Future<int> countRoomByNick(String nick) async {
@@ -103,9 +103,20 @@ Stream<Room?> getRoomById(GetRoomByIdRef ref, String roomId) {
 }
 
 @riverpod
-FutureOr<int?> getNewTweetCount(GetNewTweetCountRef ref, RoomUser user) {
-  return user.tweetCol?.where(Const.created.name, isGreaterThan: user.updated.isoDate).count().get().then((value) {
+Future<int?> getNewTweetCount(GetNewTweetCountRef ref, RoomUser user) async {
+  return await user.tweetCol
+      ?.where(
+        Const.created.name,
+        isGreaterThan: user.updated.isoDate,
+      )
+      .count()
+      .get()
+      .then((value) {
     return value.count;
+  }).catchError((e, s) {
+    lava(e);
+    lava(s);
+    return 0;
   });
 }
 
@@ -187,13 +198,15 @@ class CurrentRoom extends _$CurrentRoom {
     }
     //
     else if (id != null && id != state.value?.uid) {
-      final room = await FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection(
             Const.rooms.name,
           )
           .doc(id)
-          .get();
-      state = AsyncValue.data(fromDocSnap(Room(), room));
+          .get()
+          .then((value) {
+        state = AsyncValue.data(fromDocSnap(Room(), value));
+      }).onError((error, stackTrace) => lava(error));
     }
   }
 
@@ -201,14 +214,23 @@ class CurrentRoom extends _$CurrentRoom {
     lava('Room Exited');
 
     if (roomUser != null) {
-      FirebaseFunctions.instance.httpsCallable('updateRoomUserTime').call(roomUser.toMap());
+      try {
+        FirebaseFunctions.instance.httpsCallable('updateRoomUserTime').call(roomUser.toMap());
+      } catch (e) {
+        debugPrint('updateRoomUserTime Failed');
+      }
     }
 
     state = const AsyncValue.data(null);
   }
 
   Future<void> updateRoomInfo(Room room) async {
-    await FirebaseFunctions.instance.httpsCallable('updateRoomInfo').call(room.toMap());
+    try {
+      await FirebaseFunctions.instance.httpsCallable('updateRoomInfo').call(room.toMap());
+    } catch (e) {
+      debugPrint('updateRoomInfo Failed');
+    }
+    return;
   }
 
   Future<Room?> createRoom({
@@ -226,29 +248,45 @@ class CurrentRoom extends _$CurrentRoom {
 
       return Room(uid: roomId);
     } catch (e) {
-      debugPrint('Error Creating room');
+      debugPrint('callCreateRoom Failed');
     }
     return null;
   }
 
   Future<void> requestAccessToRoom() async {
     final room = state.value;
-    await FirebaseFunctions.instance.httpsCallable('requestAccessToRoom').call(RoomUser(room: room?.uid).toMap());
+    try {
+      await FirebaseFunctions.instance.httpsCallable('requestAccessToRoom').call(RoomUser(room: room?.uid).toMap());
+    } catch (e) {
+      debugPrint('requestAccessToRoom Failed');
+    }
     ref.invalidate(currentRoomUserProvider);
   }
 
   Future<void> acceptAccessToRoom(RoomUser user) async {
-    await FirebaseFunctions.instance.httpsCallable('acceptAccessToRoom').call(user.toMap());
+    try {
+      await FirebaseFunctions.instance.httpsCallable('acceptAccessToRoom').call(user.toMap());
+    } catch (e) {
+      debugPrint('acceptAccessToRoom Failed');
+    }
     ref.invalidate(currentRoomUserProvider);
   }
 
   Future<void> deleteRoom(RoomUser user) async {
-    await FirebaseFunctions.instance.httpsCallable('deleteRoom').call(user.toMap());
+    try {
+      await FirebaseFunctions.instance.httpsCallable('deleteRoom').call(user.toMap());
+    } catch (e) {
+      debugPrint('deleteRoom Failed');
+    }
     exitRoom(user);
     ref.invalidate(currentRoomUserProvider);
   }
 
   Future<void> deleteRoomUser(RoomUser user) async {
-    await FirebaseFunctions.instance.httpsCallable('deleteRoomUser').call(user.toMap());
+    try {
+      await FirebaseFunctions.instance.httpsCallable('deleteRoomUser').call(user.toMap());
+    } catch (e) {
+      debugPrint('deleteRoomUser Failed');
+    }
   }
 }

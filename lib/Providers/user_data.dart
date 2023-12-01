@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart' as f;
+// import 'package:firebase_auth/firebase_auth.dart' as f;
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -29,10 +30,10 @@ Stream<User?> currentUserData(CurrentUserDataRef ref) {
 }
 
 @riverpod
-Future<User?> searchUserByNick(SearchUserByNickRef ref) async {
+Future<List<User?>> searchUserByNick(SearchUserByNickRef ref) async {
   final nick = ref.watch(searchTextProvider);
 
-  if (nick == null || nick.isEmpty) return null;
+  if (nick == null || nick.isEmpty) return [];
 
   final users = await FirebaseFirestore.instance
       .collection(Const.users.name)
@@ -40,7 +41,7 @@ Future<User?> searchUserByNick(SearchUserByNickRef ref) async {
       .get()
       .then((value) => value.docs.map((e) => fromQuerySnap(User(), e)!).toList());
 
-  return users.firstOrNull;
+  return users;
 }
 
 Future<int> countUserByNick(String nick) async {
@@ -65,5 +66,9 @@ Future<User?> getUserById(GetUserByIdRef ref, String userId) async {
 }
 
 Future<void> callUserUpdate(User user) async {
-  await FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
+  try {
+    await FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
+  } catch (e) {
+    debugPrint('deleteTweet Failed');
+  }
 }

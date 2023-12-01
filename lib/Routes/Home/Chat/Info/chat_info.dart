@@ -52,7 +52,9 @@ class ChatInfoPage extends HookConsumerWidget {
 
     if (room == null) {
       return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: const Text('Info'),
+        ),
       );
     }
 
@@ -143,8 +145,8 @@ class ChatInfoPage extends HookConsumerWidget {
                     enabled: meInRoom?.isAdmin == true,
                     style: context.hs,
                     asyncValidator: (value) async {
-                      if (!isAlphanumeric(value) || !isLowercase(value)) {
-                        return 'only lowercase characters and digits are allowed';
+                      if (!isAlphanumeric(value)) {
+                        return 'only (a-z) (A-Z) (0-9) allowed';
                       }
 
                       if (value.length < 7) {
@@ -235,9 +237,13 @@ class ChatInfoPage extends HookConsumerWidget {
                             ),
                             onChanged: (value) async {
                               if (value != null) {
-                                room.open = value;
                                 lock();
-                                await ref.read(currentRoomProvider.notifier).updateRoomInfo(room);
+                                await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                                      Room(
+                                        uid: room.uid,
+                                        open: value,
+                                      ),
+                                    );
                                 open();
                               }
                             },

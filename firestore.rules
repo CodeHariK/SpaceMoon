@@ -4,13 +4,35 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /{document=**} {
-      allow read, write, update, delete: if request.auth != null;
+      allow read, write, update, delete: if false;
     }
 
     match /users/{userId} {
-      allow read: if request.auth != null;
+      allow read: if request.auth.uid != null;
+      allow write: if request.auth.uid != null && request.auth.uid == userId;
+    }
 
-      allow write, update, delete: if request.auth != null && request.auth.uid == userId;
+    match /roomusers/{roomuserId} {
+      allow read, write: if request.auth.uid != null;
+    }
+
+    match /rooms/{roomId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+  // function roomUserExist(roomId) {
+    //   let roomuserId = request.auth.uid + '_' + roomId;
+    //   return request.auth.uid != null && exists(/databases/$(database)/documents/roomusers/$(roomuserId));
+    // }
+    function roomUserIsAuthenticated(roomId) {
+      let roomuserId = request.auth.uid + '_' + roomId;
+      let role = get(/databases/$(database)/documents/roomusers/$(roomuserId)).data.role;
+
+      return role == 'ADMIN' || role == 'MODERATOR' || role == 'USER';
+    }
+    match /rooms/{roomId}/tweets/{tweetId} {
+      allow read, write: if roomUserIsAuthenticated(roomId);
     }
   }
 }

@@ -1,9 +1,9 @@
-import 'dart:io';
-
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Gen/data.pbenum.dart';
 
@@ -15,11 +15,11 @@ Future<void> firebaseMessagingSetup() async {
 
   dino(apnsToken);
 
-  if (apnsToken == null && Platform.isIOS) {
+  if (apnsToken == null && Device.isIos) {
     return;
   }
 
-  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+  if (Device.isMobile) {
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
@@ -78,9 +78,14 @@ void firebaseTokenUpdate() async {
 }
 
 void callFCMtokenUpdate(String? fcmToken) {
+  if (fcmToken == null || FirebaseAuth.instance.currentUser == null) {
+    return;
+  }
   try {
     FirebaseFunctions.instance.httpsCallable('callFCMtokenUpdate').call({
       Const.fcmToken.name: fcmToken,
     });
-  } catch (e) {}
+  } catch (e) {
+    debugPrint('callFCMtokenUpdate Failed');
+  }
 }

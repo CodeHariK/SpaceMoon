@@ -32,8 +32,8 @@ class SearchPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomCon = useTextEditingController();
-    final searchRoom = ref.watch(searchRoomByNickProvider).value;
-    final searchUser = ref.watch(searchUserByNickProvider).value;
+    final searchRooms = ref.watch(searchRoomByNickProvider).value ?? [];
+    final searchUsers = ref.watch(searchUserByNickProvider).value ?? [];
 
     return Scaffold(
       appBar: room != null ? AppBar(title: const Text('Invite Members')) : null,
@@ -43,17 +43,20 @@ class SearchPage extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AsyncTextFormField(
-              con: roomCon,
+              controller: roomCon,
               autofocus: true,
               decoration: (AsyncText value, roomCon) => const InputDecoration(
                 hintText: 'abc...',
                 labelText: 'Find Rooms or Users by nickname',
               ),
               milliseconds: 600,
+              textInputAction: TextInputAction.done,
               asyncValidator: (v) async {
                 if (v.length < 7) return 'more than 6 characters required';
 
-                if (!isAlphanumeric(v)) return 'only alphanumeric characters are allowed';
+                if (!isAlphanumeric(v)) {
+                  return 'only (a-z) (A-Z) (0-9) allowed';
+                }
 
                 ref.read(searchTextProvider.notifier).change(v);
                 await 200.mil.delay();
@@ -62,15 +65,16 @@ class SearchPage extends HookConsumerWidget {
               },
               showSubmitSuffix: false,
             ),
-            if (searchRoom != null || searchUser != null)
+            if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
                 child: Text(
-                  'Found ${searchRoom != null ? 1 : 0} room, ${searchUser != null ? 1 : 0} user',
+                  'Found ${searchRooms.isNotEmpty ? searchRooms.length : 0} room,'
+                  ' ${searchUsers.isNotEmpty ? searchUsers.length : 0} user',
                   style: context.tl,
                 ),
               ),
-            if (searchRoom == null && searchUser == null)
+            if (searchRooms.isEmpty && searchUsers.isEmpty)
               Expanded(
                 child: Center(
                   child: Lottie.asset(
@@ -80,32 +84,36 @@ class SearchPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-            if (searchRoom != null || searchUser != null)
+            if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)
               Expanded(
                 child: ListView(
                   children: [
-                    if (searchRoom != null)
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        onTap: () {
-                          if (context.mounted) {
-                            ChatRoute(chatId: searchRoom.uid).go(context);
-                          }
-                        },
-                        title: Text(searchRoom.displayName),
-                        trailing: const Text('Room'),
-                      ),
-                    if (searchUser != null)
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        onTap: () {
-                          if (context.mounted) {
-                            ProfileRoute($extra: ProfileObj(user: searchUser)).go(context);
-                          }
-                        },
-                        title: Text(searchUser.displayName),
-                        trailing: const Text('User'),
-                      ),
+                    if (searchRooms.isNotEmpty)
+                      ...searchRooms.map((searchRoom) {
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          onTap: () {
+                            if (context.mounted && searchRoom?.uid != null) {
+                              ChatRoute(chatId: searchRoom!.uid).push(context);
+                            }
+                          },
+                          title: Text(searchRoom?.displayName ?? 'Name'),
+                          trailing: const Text('Room'),
+                        );
+                      }),
+                    if (searchUsers.isNotEmpty)
+                      ...searchUsers.map((searchUser) {
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          onTap: () {
+                            if (context.mounted) {
+                              ProfileRoute($extra: ProfileObj(user: searchUser)).go(context);
+                            }
+                          },
+                          title: Text(searchUser?.displayName ?? 'Name'),
+                          trailing: const Text('User'),
+                        );
+                      }),
                   ],
                 ),
               ),

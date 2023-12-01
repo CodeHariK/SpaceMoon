@@ -122,14 +122,16 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     //   );
     // }
 
-    if (room == null || user == null || meInRoom == null) {
+    if (room == null || user == null) {
       return WillPopScope(
         onWillPop: () async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
           return true;
         },
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            title: const Text('Chat'),
+          ),
         ),
       );
     }
@@ -143,7 +145,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       return const Error404Page();
     }
 
-    if ((meInRoom.role == Role.REQUEST) && room.open != Visible.OPEN) {
+    if (meInRoom == null || meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/) {
       return WillPopScope(
         onWillPop: () async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);

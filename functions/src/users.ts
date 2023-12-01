@@ -5,6 +5,8 @@ import * as admin from "firebase-admin";
 import { Const, RoomUser, User } from "./Gen/data";
 import { constName } from "./Helpers/const";
 import { toMap } from "./Helpers/map";
+import { generateRandomAnimal, generateRandomString } from "./name_gen";
+import { isAlphanumeric } from "./Helpers/regex";
 
 export const onUserCreate = functions.auth.user().onCreate((user) => {
     const { uid, email, displayName, phoneNumber, photoURL } = user;
@@ -13,8 +15,8 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
         .set(
             User.toJSON(User.create({
                 email: email,
-                nick: uid,
-                displayName: displayName ?? uid,
+                nick: generateRandomString(8),
+                displayName: displayName ?? generateRandomAnimal(),
                 phoneNumber: phoneNumber,
                 photoURL: photoURL,
                 created: new Date(),
@@ -28,19 +30,24 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
     return 'Created';
 });
 
-export const callUserUpdate = onCall(async (request): Promise<void> => {
+export const callUserUpdate = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<void> => {
     let uid = request.auth?.uid;
 
     const { displayName, nick, photoURL } = request.data;
 
     const user = User.create({
         displayName: displayName,
-        nick: nick?.toLowerCase(),
+        nick: nick,
         photoURL: photoURL,
     });
 
-    if (user.nick != null) {
-        let nickCount = await admin.firestore().collection(constName(Const.users)).where(constName(Const.nick), '==', user.nick?.toLowerCase()).count().get().then((v) => v.data().count);
+    if (user.nick != null && user.nick != '') {
+        if (!isAlphanumeric(user.nick) || user.nick.length < 7) {
+            throw new HttpsError('aborted', 'Nick name error');
+        }
+        let nickCount = await admin.firestore().collection(constName(Const.users)).where(constName(Const.nick), '==', user.nick).count().get().then((v) => v.data().count);
         if (nickCount != 0) {
             throw new HttpsError('aborted', 'Nick name already present');
         }
@@ -55,7 +62,9 @@ export const callUserUpdate = onCall(async (request): Promise<void> => {
     }
 });
 
-export const callFCMtokenUpdate = onCall((request): void => {
+export const callFCMtokenUpdate = onCall({
+    enforceAppCheck: true,
+}, (request): void => {
     let uid = request.auth?.uid;
 
     const { fcmToken } = request.data;
@@ -68,7 +77,7 @@ export const callFCMtokenUpdate = onCall((request): void => {
 
                 return admin.auth().setCustomUserClaims(uid!, currentCustomClaims);
             }).catch((error) => {
-                console.error('Error adding new field to custom claims'/*, error*/);
+                throw new HttpsError('aborted', 'Error adding new field to custom claims');
             });
     } else {
         throw new HttpsError('aborted', 'No user error');
@@ -84,7 +93,9 @@ export const getUserById = async (userId: string) => {
     return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).data();
 }
 
-export const addAdmin = onCall(async (request) => {
+export const addAdmin = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     if (request.auth?.token.moderator !== true) {
         return {
             error: "Request not authorized. User is not moderator  to fulfill request.",

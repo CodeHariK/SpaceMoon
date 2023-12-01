@@ -5,7 +5,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
@@ -60,10 +59,10 @@ class AllChatPage extends ConsumerWidget {
           Expanded(
             child: Center(
               child: allRoomsUsers.when(
-                data: (roomUser) {
+                data: (roomUsers) {
                   return Animate(
                     effects: const [FadeEffect()],
-                    child: (roomUser.isEmpty)
+                    child: (roomUsers.isEmpty)
                         ? Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -77,10 +76,12 @@ class AllChatPage extends ConsumerWidget {
                         : ListView.builder(
                             itemBuilder: (context, index) {
                               return Consumer(builder: (context, ref, child) {
-                                final room = ref.watch(GetRoomByIdProvider(roomUser[index]!.room)).value;
+                                final roomuser = roomUsers[index] ?? RoomUser();
+
+                                final room = ref.watch(GetRoomByIdProvider(roomuser.room)).value;
                                 if (room == null) return const SizedBox.shrink();
 
-                                final count = ref.watch(GetNewTweetCountProvider(roomUser[index]!)).value;
+                                final count = ref.watch(GetNewTweetCountProvider(roomuser)).value;
 
                                 return ListTile(
                                   tileColor: index % 2 == 1 ? AppTheme.card : null,
@@ -106,6 +107,8 @@ class AllChatPage extends ConsumerWidget {
                                           wholeDigits: 1,
                                           duration: const Duration(seconds: 1),
                                         ),
+                                      if (roomuser.role == Role.REQUEST) const SizedBox(width: 10),
+                                      if (roomuser.role == Role.REQUEST) const Icon(Icons.pets_rounded),
                                     ],
                                   ),
                                   onTap: () {
@@ -114,7 +117,7 @@ class AllChatPage extends ConsumerWidget {
                                 );
                               });
                             },
-                            itemCount: roomUser.length,
+                            itemCount: roomUsers.length,
                           ),
                   );
                 },
@@ -135,8 +138,6 @@ class AllChatPage extends ConsumerWidget {
               lock();
               final room = await ref.read(currentRoomProvider.notifier).createRoom(
                 room: Room(
-                  displayName: randomString(7),
-                  nick: randomString(16),
                   description: 'Description',
                   open: Visible.MODERATED,
                 ),

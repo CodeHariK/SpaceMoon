@@ -156,14 +156,14 @@ class TweetBox extends ConsumerWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                child: (!isURL(user.photoURL))
-                    ? null
-                    : CustomCacheImage(
-                        imageUrl: spaceThumbImage(user.photoURL),
-                        radius: 32,
-                      ),
-              ),
+              // CircleAvatar(
+              //   child: (!isURL(user.photoURL))
+              //       ? null
+              //       : CustomCacheImage(
+              //           imageUrl: spaceThumbImage(user.photoURL),
+              //           radius: 32,
+              //         ),
+              // ),
               const SizedBox(height: 5),
               Text(tweet.created.timeString, style: context.ls),
             ],

@@ -78,7 +78,7 @@ extension SuperShellData on List<ShellData> {
                               backgroundColor: getCurrentIndex(context) != i ? Colors.transparent : null,
                               child: e.icon,
                             ),
-                            Text(e.name, style: context.ls),
+                            // Text(e.name, style: context.ls),
                           ],
                         ),
                       ),

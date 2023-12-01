@@ -6,16 +6,22 @@ import { checkUserExists } from "./users";
 import { toMap } from "./Helpers/map";
 import { deleteCollection } from "./Helpers/subcollection";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
+import { generateRandomAnimal, generateRandomString } from "./name_gen";
+import { isAlphanumeric } from "./Helpers/regex";
 
-export const callCreateRoom = onCall(async (request): Promise<string | undefined> => {
+export const callCreateRoom = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;
 
     const { room, users } = request.data;
 
     let _room = Room.fromJSON(room);
 
+    _room.displayName = room.displayName ?? generateRandomAnimal();
+    _room.nick = generateRandomString(8)
+
     if (await roomNickExist(_room.nick)) {
-        console.log('nick exist');
         throw new HttpsError('aborted', 'Nick name already present');
     }
     console.log('continue');
@@ -52,7 +58,7 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
 
         members.forEach(async (e) => {
             e.room = roomDoc.id;
-            await admin.firestore().collection(constName(Const.roomusers)).add(
+            await admin.firestore().collection(constName(Const.roomusers)).doc(e.user + '_' + e.room).create(
                 RoomUser.toJSON(e) as Map<string, any>
             );
         });
@@ -68,7 +74,9 @@ export const callCreateRoom = onCall(async (request): Promise<string | undefined
     return;
 });
 
-export const requestAccessToRoom = onCall(async (request) => {
+export const requestAccessToRoom = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let userId = request.auth!.uid;
     let _roomuser = RoomUser.fromJSON(request.data)
 
@@ -79,7 +87,7 @@ export const requestAccessToRoom = onCall(async (request) => {
     let u = await getRoomUserById(userId, _roomuser.room)
 
     if (!u) {
-        await admin.firestore().collection(constName(Const.roomusers)).add(
+        await admin.firestore().collection(constName(Const.roomusers)).doc(userId + '_' + _roomuser.room).create(
             RoomUser.toJSON(RoomUser.create({
                 user: userId,
                 room: _roomuser.room,
@@ -92,7 +100,9 @@ export const requestAccessToRoom = onCall(async (request) => {
     return;
 });
 
-export const acceptAccessToRoom = onCall(async (request) => {
+export const acceptAccessToRoom = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let adminId = request.auth!.uid;
     let _roomuser = RoomUser.fromJSON(request.data)
 
@@ -105,7 +115,7 @@ export const acceptAccessToRoom = onCall(async (request) => {
     if (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)) {
         await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid)
             .update(
-                Object.fromEntries(roomUserToJson(RoomUser.create({
+                Object.fromEntries(roomUserToMap(RoomUser.create({
                     user: _roomuser.user,
                     room: _roomuser.room,
                     role: Role.USER,
@@ -125,7 +135,9 @@ export const acceptAccessToRoom = onCall(async (request) => {
     }
 });
 
-export const deleteRoom = onCall(async (request) => {
+export const deleteRoom = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let adminId = request.auth!.uid;
     let roomUser = RoomUser.fromJSON(request.data)
 
@@ -173,7 +185,9 @@ export const onRoomDeleted = onDocumentDeleted("rooms/{room}", async (event) => 
     deleteCollection(`${constName(Const.rooms)}/${room}/tweets`, 100);
 });
 
-export const deleteRoomUser = onCall(async (request) => {
+export const deleteRoomUser = onCall({
+    enforceAppCheck: true,
+}, async (request) => {
     let adminId = request.auth!.uid;
     let _roomuser = RoomUser.fromJSON(request.data)
 
@@ -207,7 +221,9 @@ export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (even
     return null;
 });
 
-export const updateRoomUserTime = onCall(async (request): Promise<string> => {
+export const updateRoomUserTime = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<string> => {
 
     let userId: string = request.auth!.uid;
 
@@ -229,29 +245,31 @@ export const updateRoomUserTime = onCall(async (request): Promise<string> => {
 
 async function roomNickExist(nick: string) {
     if (nick != null) {
-        let nickCount = await admin.firestore().collection(constName(Const.rooms)).where(constName(Const.nick), '==', nick?.toLowerCase()).count().get().then((v) => v.data().count);
-        console.log(nickCount);
+        let nickCount = await admin.firestore().collection(constName(Const.rooms)).where(constName(Const.nick), '==', nick).count().get().then((v) => v.data().count);
         if (nickCount != 0) {
             return true;
         }
     }
-    console.log('false');
     return false;
 }
 
-export const updateRoomInfo = onCall(async (request): Promise<string> => {
+export const updateRoomInfo = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<string> => {
     let userId: string = request.auth!.uid;
 
     let room = Room.fromJSON(request.data)
 
-    if (await roomNickExist(room.nick)) {
-        throw new HttpsError('aborted', 'Nick name already present');
+    if (room.nick != null && room.nick != '') {
+        if (!isAlphanumeric(room.nick) || room.nick?.length < 7 || (await roomNickExist(room.nick))) {
+            throw new HttpsError('aborted', 'Nick name error');
+        }
     }
 
     let r = roomToMap(Room.create({
         description: room.description,
         displayName: room.displayName,
-        nick: room.nick?.toLowerCase(),
+        nick: room.nick,
         photoURL: room.photoURL,
         open: room.open,
     }));

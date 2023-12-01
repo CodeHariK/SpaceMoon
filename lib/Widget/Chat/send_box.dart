@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -39,7 +40,14 @@ class SendBox extends HookConsumerWidget {
       child: Row(
         children: [
           Expanded(
-            child: TextFormField(
+            child: AsyncTextFormField(
+              asyncValidator: (value) async {
+                return null;
+              },
+              onSubmit: (controller) async {
+                sendTweet(context, tweetCon, null, ref, mediaType, link);
+              },
+              textInputAction: TextInputAction.done,
               controller: tweetCon,
               minLines: 1,
               maxLines: mediaType == MediaType.QR ? 60 : 4,
@@ -51,11 +59,15 @@ class SendBox extends HookConsumerWidget {
                     })
                   : null,
               maxLength: mediaType == MediaType.QR ? 1200 : null,
-              decoration: InputDecoration(
+              showPrefix: false,
+              showSubmitSuffix: false,
+              suffix: [
+                if (mediaType != MediaType.QR) SendActionMenu(roomUser: roomUser),
+              ],
+              decoration: (asyncText, textCon) => InputDecoration(
                 hintText: mediaType == MediaType.QR ? 'Type to generate QR Code' : 'Type...',
                 contentPadding: 16.e,
                 prefixIcon: const Icon(Icons.star),
-                suffixIcon: (mediaType == MediaType.QR) ? null : SendActionMenu(roomUser: roomUser),
               ),
             ),
           ),
@@ -134,30 +146,40 @@ class SendButton extends ConsumerWidget {
         // },
         onPressed: () async {
           lock();
-          final sendText = tweetCon?.text ?? text ?? '';
-
-          if (sendText.isNotEmpty == true) {
-            //
-            await ref.read(tweetsProvider.notifier).sendTweet(
-                  tweet: Tweet(
-                    text: sendText,
-                    mediaType: mediaType,
-                    link: link,
-                  ),
-                );
-
-            open();
-
-            tweetCon?.clear();
-            FocusManager.instance.primaryFocus?.unfocus();
-
-            if (mediaType != MediaType.TEXT && context.mounted) {
-              context.pop();
-            }
-          }
+          await sendTweet(context, tweetCon, text, ref, mediaType, link);
+          open();
         },
         child: const Icon(Icons.send),
       ),
     );
+  }
+}
+
+Future<void> sendTweet(
+  BuildContext context,
+  TextEditingController? tweetCon,
+  String? text,
+  WidgetRef ref,
+  MediaType? mediaType,
+  String? link,
+) async {
+  final sendText = tweetCon?.text ?? text ?? '';
+
+  if (sendText.isNotEmpty == true) {
+    //
+    await ref.read(tweetsProvider.notifier).sendTweet(
+          tweet: Tweet(
+            text: sendText,
+            mediaType: mediaType,
+            link: link,
+          ),
+        );
+
+    tweetCon?.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (mediaType != MediaType.TEXT && context.mounted) {
+      context.pop();
+    }
   }
 }

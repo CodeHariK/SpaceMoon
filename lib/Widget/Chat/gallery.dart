@@ -379,7 +379,6 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
           ),
           body: Container(
             alignment: Alignment.center,
-            color: Colors.blueGrey,
             child: ListView.builder(
               cacheExtent: 2000,
               itemCount: tweet.gallery.length,
@@ -466,20 +465,22 @@ class GalleryUploaderButton extends StatelessWidget {
       }
 
       for (var img in imgs) {
-        try {
-          final p = path.split('/');
-          final roomId = p[1];
-          final tweetId = p[3];
+        if (path != null) {
+          try {
+            final p = path.split('/');
+            final roomId = p[1];
+            final tweetId = p[3];
 
-          await uploadFire(
-            imageName: randomString(12),
-            meta: img!,
-            storagePath: 'tweet/$roomId/${meInRoom!.user}/$tweetId',
-            docPath: 'rooms/$roomId/tweets/$tweetId',
-            multipath: Const.gallery.name,
-          );
-        } catch (e) {
-          debugPrint(e.toString());
+            await uploadFire(
+              imageName: randomString(12),
+              meta: img!,
+              storagePath: 'tweet/$roomId/${meInRoom!.user}/$tweetId',
+              docPath: 'rooms/$roomId/tweets/$tweetId',
+              multipath: Const.gallery.name,
+            );
+          } catch (e) {
+            debugPrint(e.toString());
+          }
         }
       }
     }
