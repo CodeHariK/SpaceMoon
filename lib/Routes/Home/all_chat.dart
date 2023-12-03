@@ -137,10 +137,7 @@ class AllChatPage extends ConsumerWidget {
             onPressed: () async {
               lock();
               final room = await ref.read(currentRoomProvider.notifier).createRoom(
-                room: Room(
-                  description: 'Description',
-                  open: Visible.MODERATED,
-                ),
+                room: Room(),
                 users: [],
               );
 

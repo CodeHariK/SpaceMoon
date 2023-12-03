@@ -14,13 +14,15 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class Role extends $pb.ProtobufEnum {
-  static const Role BLOCKED = Role._(0, _omitEnumNames ? '' : 'BLOCKED');
+  static const Role INVALIDROLE = Role._(0, _omitEnumNames ? '' : 'INVALIDROLE');
+  static const Role BLOCKED = Role._(1, _omitEnumNames ? '' : 'BLOCKED');
   static const Role REQUEST = Role._(10, _omitEnumNames ? '' : 'REQUEST');
   static const Role USER = Role._(20, _omitEnumNames ? '' : 'USER');
   static const Role MODERATOR = Role._(30, _omitEnumNames ? '' : 'MODERATOR');
   static const Role ADMIN = Role._(40, _omitEnumNames ? '' : 'ADMIN');
 
   static const $core.List<Role> values = <Role> [
+    INVALIDROLE,
     BLOCKED,
     REQUEST,
     USER,
@@ -35,7 +37,8 @@ class Role extends $pb.ProtobufEnum {
 }
 
 class MediaType extends $pb.ProtobufEnum {
-  static const MediaType TEXT = MediaType._(0, _omitEnumNames ? '' : 'TEXT');
+  static const MediaType INVALIDMEDIATYPE = MediaType._(0, _omitEnumNames ? '' : 'INVALIDMEDIATYPE');
+  static const MediaType TEXT = MediaType._(1, _omitEnumNames ? '' : 'TEXT');
   static const MediaType IMAGE = MediaType._(5, _omitEnumNames ? '' : 'IMAGE');
   static const MediaType VIDEO = MediaType._(10, _omitEnumNames ? '' : 'VIDEO');
   static const MediaType AUDIO = MediaType._(15, _omitEnumNames ? '' : 'AUDIO');
@@ -46,6 +49,7 @@ class MediaType extends $pb.ProtobufEnum {
   static const MediaType GALLERY = MediaType._(60, _omitEnumNames ? '' : 'GALLERY');
 
   static const $core.List<MediaType> values = <MediaType> [
+    INVALIDMEDIATYPE,
     TEXT,
     IMAGE,
     VIDEO,
@@ -64,11 +68,13 @@ class MediaType extends $pb.ProtobufEnum {
 }
 
 class Active extends $pb.ProtobufEnum {
-  static const Active OFFLINE = Active._(0, _omitEnumNames ? '' : 'OFFLINE');
+  static const Active INVALIDACTIVE = Active._(0, _omitEnumNames ? '' : 'INVALIDACTIVE');
+  static const Active OFFLINE = Active._(1, _omitEnumNames ? '' : 'OFFLINE');
   static const Active ONLINE = Active._(10, _omitEnumNames ? '' : 'ONLINE');
   static const Active TYPING = Active._(20, _omitEnumNames ? '' : 'TYPING');
 
   static const $core.List<Active> values = <Active> [
+    INVALIDACTIVE,
     OFFLINE,
     ONLINE,
     TYPING,
@@ -81,11 +87,13 @@ class Active extends $pb.ProtobufEnum {
 }
 
 class Visible extends $pb.ProtobufEnum {
-  static const Visible CLOSE = Visible._(0, _omitEnumNames ? '' : 'CLOSE');
+  static const Visible INVALIDVISIBLE = Visible._(0, _omitEnumNames ? '' : 'INVALIDVISIBLE');
+  static const Visible CLOSE = Visible._(1, _omitEnumNames ? '' : 'CLOSE');
   static const Visible MODERATED = Visible._(10, _omitEnumNames ? '' : 'MODERATED');
   static const Visible OPEN = Visible._(20, _omitEnumNames ? '' : 'OPEN');
 
   static const $core.List<Visible> values = <Visible> [
+    INVALIDVISIBLE,
     CLOSE,
     MODERATED,
     OPEN,

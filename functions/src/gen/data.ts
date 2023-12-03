@@ -5,7 +5,8 @@ import { Timestamp } from "./google/protobuf/timestamp";
 export const protobufPackage = "user";
 
 export enum Role {
-  BLOCKED = 0,
+  INVALIDROLE = 0,
+  BLOCKED = 1,
   REQUEST = 10,
   USER = 20,
   MODERATOR = 30,
@@ -16,6 +17,9 @@ export enum Role {
 export function roleFromJSON(object: any): Role {
   switch (object) {
     case 0:
+    case "INVALIDROLE":
+      return Role.INVALIDROLE;
+    case 1:
     case "BLOCKED":
       return Role.BLOCKED;
     case 10:
@@ -39,6 +43,8 @@ export function roleFromJSON(object: any): Role {
 
 export function roleToJSON(object: Role): string {
   switch (object) {
+    case Role.INVALIDROLE:
+      return "INVALIDROLE";
     case Role.BLOCKED:
       return "BLOCKED";
     case Role.REQUEST:
@@ -56,7 +62,8 @@ export function roleToJSON(object: Role): string {
 }
 
 export enum MediaType {
-  TEXT = 0,
+  INVALIDMEDIATYPE = 0,
+  TEXT = 1,
   IMAGE = 5,
   VIDEO = 10,
   AUDIO = 15,
@@ -71,6 +78,9 @@ export enum MediaType {
 export function mediaTypeFromJSON(object: any): MediaType {
   switch (object) {
     case 0:
+    case "INVALIDMEDIATYPE":
+      return MediaType.INVALIDMEDIATYPE;
+    case 1:
     case "TEXT":
       return MediaType.TEXT;
     case 5:
@@ -106,6 +116,8 @@ export function mediaTypeFromJSON(object: any): MediaType {
 
 export function mediaTypeToJSON(object: MediaType): string {
   switch (object) {
+    case MediaType.INVALIDMEDIATYPE:
+      return "INVALIDMEDIATYPE";
     case MediaType.TEXT:
       return "TEXT";
     case MediaType.IMAGE:
@@ -131,7 +143,8 @@ export function mediaTypeToJSON(object: MediaType): string {
 }
 
 export enum Active {
-  OFFLINE = 0,
+  INVALIDACTIVE = 0,
+  OFFLINE = 1,
   ONLINE = 10,
   TYPING = 20,
   UNRECOGNIZED = -1,
@@ -140,6 +153,9 @@ export enum Active {
 export function activeFromJSON(object: any): Active {
   switch (object) {
     case 0:
+    case "INVALIDACTIVE":
+      return Active.INVALIDACTIVE;
+    case 1:
     case "OFFLINE":
       return Active.OFFLINE;
     case 10:
@@ -157,6 +173,8 @@ export function activeFromJSON(object: any): Active {
 
 export function activeToJSON(object: Active): string {
   switch (object) {
+    case Active.INVALIDACTIVE:
+      return "INVALIDACTIVE";
     case Active.OFFLINE:
       return "OFFLINE";
     case Active.ONLINE:
@@ -170,7 +188,8 @@ export function activeToJSON(object: Active): string {
 }
 
 export enum Visible {
-  CLOSE = 0,
+  INVALIDVISIBLE = 0,
+  CLOSE = 1,
   MODERATED = 10,
   OPEN = 20,
   UNRECOGNIZED = -1,
@@ -179,6 +198,9 @@ export enum Visible {
 export function visibleFromJSON(object: any): Visible {
   switch (object) {
     case 0:
+    case "INVALIDVISIBLE":
+      return Visible.INVALIDVISIBLE;
+    case 1:
     case "CLOSE":
       return Visible.CLOSE;
     case 10:
@@ -196,6 +218,8 @@ export function visibleFromJSON(object: any): Visible {
 
 export function visibleToJSON(object: Visible): string {
   switch (object) {
+    case Visible.INVALIDVISIBLE:
+      return "INVALIDVISIBLE";
     case Visible.CLOSE:
       return "CLOSE";
     case Visible.MODERATED:

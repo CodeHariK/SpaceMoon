@@ -77,12 +77,12 @@ void firebaseTokenUpdate() async {
   callFCMtokenUpdate(token);
 }
 
-void callFCMtokenUpdate(String? fcmToken) {
+void callFCMtokenUpdate(String? fcmToken) async {
   if (fcmToken == null || FirebaseAuth.instance.currentUser == null) {
     return;
   }
   try {
-    FirebaseFunctions.instance.httpsCallable('callFCMtokenUpdate').call({
+    await FirebaseFunctions.instance.httpsCallable('callFCMtokenUpdate').call({
       Const.fcmToken.name: fcmToken,
     });
   } catch (e) {

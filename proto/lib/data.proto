@@ -5,7 +5,8 @@ import 'google/protobuf/timestamp.proto';
 package user;
 
 enum Role {
-    BLOCKED = 0;
+    INVALIDROLE = 0;
+    BLOCKED = 1;
     REQUEST = 10;
     USER = 20;
     MODERATOR = 30;
@@ -13,7 +14,8 @@ enum Role {
 }
 
 enum MediaType {
-    TEXT = 0;
+    INVALIDMEDIATYPE = 0;
+    TEXT = 1;
     IMAGE = 5;
     VIDEO = 10;
     AUDIO = 15;
@@ -25,13 +27,15 @@ enum MediaType {
 }
 
 enum Active {
-    OFFLINE = 0;
+    INVALIDACTIVE = 0;
+    OFFLINE = 1;
     ONLINE = 10;
     TYPING = 20;
 }
 
 enum Visible {
-    CLOSE = 0;
+    INVALIDVISIBLE = 0;
+    CLOSE = 1;
     MODERATED = 10;
     OPEN = 20;
 }

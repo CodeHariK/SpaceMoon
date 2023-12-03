@@ -249,6 +249,7 @@ class CurrentRoom extends _$CurrentRoom {
       return Room(uid: roomId);
     } catch (e) {
       debugPrint('callCreateRoom Failed');
+      debugPrint(e.toString());
     }
     return null;
   }

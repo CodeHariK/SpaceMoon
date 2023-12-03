@@ -79,11 +79,11 @@ class User extends $pb.GeneratedMessage {
     ..aOS(300, _omitFieldNames ? '' : 'email')
     ..aOS(400, _omitFieldNames ? '' : 'phoneNumber', protoName: 'phoneNumber')
     ..aOS(500, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
-    ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.OFFLINE, valueOf: Active.valueOf, enumValues: Active.values)
+    ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.INVALIDACTIVE, valueOf: Active.valueOf, enumValues: Active.values)
     ..pPS(700, _omitFieldNames ? '' : 'friends')
     ..pPS(800, _omitFieldNames ? '' : 'roomRequest', protoName: 'roomRequest')
     ..aOM<$0.Timestamp>(900, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.INVALIDVISIBLE, valueOf: Visible.valueOf, enumValues: Visible.values)
     ..hasRequiredFields = false
   ;
 
@@ -286,7 +286,7 @@ class RoomUser extends $pb.GeneratedMessage {
     ..aOS(1, _omitFieldNames ? '' : 'uid')
     ..aOS(2, _omitFieldNames ? '' : 'user')
     ..aOS(3, _omitFieldNames ? '' : 'room')
-    ..e<Role>(10, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: Role.BLOCKED, valueOf: Role.valueOf, enumValues: Role.values)
+    ..e<Role>(10, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: Role.INVALIDROLE, valueOf: Role.valueOf, enumValues: Role.values)
     ..aOM<$0.Timestamp>(20, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..aOM<$0.Timestamp>(30, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
     ..hasRequiredFields = false
@@ -422,7 +422,7 @@ class Room extends $pb.GeneratedMessage {
     ..aOS(30, _omitFieldNames ? '' : 'description')
     ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..aOM<$0.Timestamp>(50, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(60, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..e<Visible>(60, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.INVALIDVISIBLE, valueOf: Visible.valueOf, enumValues: Visible.values)
     ..hasRequiredFields = false
   ;
 
@@ -576,7 +576,7 @@ class Tweet extends $pb.GeneratedMessage {
     ..aOS(20, _omitFieldNames ? '' : 'room')
     ..aOS(30, _omitFieldNames ? '' : 'path')
     ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..e<MediaType>(50, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
+    ..e<MediaType>(50, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.INVALIDMEDIATYPE, valueOf: MediaType.valueOf, enumValues: MediaType.values)
     ..aOS(60, _omitFieldNames ? '' : 'text')
     ..aOS(70, _omitFieldNames ? '' : 'link')
     ..pc<ImageMetadata>(80, _omitFieldNames ? '' : 'gallery', $pb.PbFieldType.PM, subBuilder: ImageMetadata.create)

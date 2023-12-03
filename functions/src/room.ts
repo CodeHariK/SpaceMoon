@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { Const, Role, Room, RoomUser } from "./Gen/data";
+import { Const, Role, Room, RoomUser, Visible } from "./Gen/data";
 import { constName, visibleName } from "./Helpers/const";
 import { checkUserExists } from "./users";
 import { toMap } from "./Helpers/map";
@@ -20,11 +20,11 @@ export const callCreateRoom = onCall({
 
     _room.displayName = room.displayName ?? generateRandomAnimal();
     _room.nick = generateRandomString(8)
+    _room.open = Visible.CLOSE
 
     if (await roomNickExist(_room.nick)) {
         throw new HttpsError('aborted', 'Nick name already present');
     }
-    console.log('continue');
 
     const f = await Promise.all(
         ((users ?? []) as string[])
@@ -77,6 +77,7 @@ export const callCreateRoom = onCall({
 export const requestAccessToRoom = onCall({
     enforceAppCheck: true,
 }, async (request) => {
+
     let userId = request.auth!.uid;
     let _roomuser = RoomUser.fromJSON(request.data)
 
@@ -94,10 +95,14 @@ export const requestAccessToRoom = onCall({
                 created: new Date(),
                 role: Role.REQUEST,
             })) as Map<string, any>
-        );
+        ).then(() => {
+            console.log(`Room User Created ${userId + '_' + _roomuser.room}`);
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
-    return;
+    return `Room User Created ${userId + '_' + _roomuser.room}`;
 });
 
 export const acceptAccessToRoom = onCall({
@@ -120,6 +125,7 @@ export const acceptAccessToRoom = onCall({
                     room: _roomuser.room,
                     role: Role.USER,
                     created: new Date(),
+                    updated: new Date(),
                 })))
             );
 
@@ -150,16 +156,13 @@ export const deleteRoom = onCall({
     if ((adminId === roomUser.user) || (adminUser && (adminUser.role == Role.ADMIN))) {
 
         await admin.firestore().collection(constName(Const.rooms))
-            .doc(roomUser.room).delete().then(() => {
-                console.log('Room deleted');
-            });
+            .doc(roomUser.room).delete();
 
         return { message: 'Room Deleted.' };
     } else {
         throw new HttpsError('permission-denied', 'You do not have permission to delete room.');
     }
 });
-
 
 export const onRoomDeleted = onDocumentDeleted("rooms/{room}", async (event) => {
 
@@ -215,7 +218,7 @@ export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (even
 
     if (roomUsersQuery == 0) {
         await admin.firestore().doc(`rooms/${roomId}`).delete();
-        console.log(`Room ${roomId} deleted because it has no more room users.`);
+        return `Room ${roomId} deleted because it has no more room users.`;
     }
 
     return null;
@@ -227,17 +230,17 @@ export const updateRoomUserTime = onCall({
 
     let userId: string = request.auth!.uid;
 
-    let roomUser = RoomUser.fromJSON(request.data)
+    let _roomuser = RoomUser.fromJSON(request.data)
 
-    if (roomUser.user != userId) return 'Not enough permission';
+    let roomUser = await getRoomUserById(userId, _roomuser.room)
 
+    if (roomUser?.user != userId) return 'Not enough permission';
 
-    await admin.firestore().collection(constName(Const.roomusers)).doc(roomUser.uid)
-        .update(
-            Object.fromEntries(roomUserToMap(RoomUser.create({
-                updated: new Date()
-            })))
-        ).catch((err) => {
+    await admin.firestore().collection(constName(Const.roomusers)).doc(`${userId}_${_roomuser.room}`)
+        .update(Object.fromEntries(roomUserToMap(RoomUser.create({
+            updated: new Date()
+        }))))
+        .catch((err) => {
             throw new HttpsError('aborted', 'updateRoomUserTime error');
         });
     return 'Updated';
@@ -266,21 +269,17 @@ export const updateRoomInfo = onCall({
         }
     }
 
-    let r = roomToMap(Room.create({
-        description: room.description,
-        displayName: room.displayName,
-        nick: room.nick,
-        photoURL: room.photoURL,
-        open: room.open,
-    }));
+    let r = roomToMap(room);
 
-    let m = r.set(constName(Const.open), visibleName(room.open))
+    if (room.open == Visible.INVALIDVISIBLE)
+        r.delete(constName(Const.open))
+    r.delete(constName(Const.uid))
 
     try {
         let roomUser = await getRoomUserById(userId, room.uid)
         if (roomUser && roomUser.role == Role.ADMIN) {
             await admin.firestore().collection(constName(Const.rooms)).doc(room.uid).update(
-                Object.fromEntries(m),
+                Object.fromEntries(r),
             );
         }
         return 'Done';
@@ -291,17 +290,14 @@ export const updateRoomInfo = onCall({
 });
 
 export const getRoomUserById = async (userId: string, roomId: string) => {
-    const roomUserQuery = admin.firestore().collection(constName(Const.roomusers))
-        .where('user', '==', userId)
-        .where('room', '==', roomId).limit(1);
-
-    const roomUserDocs = await roomUserQuery.get();
-
-    if (roomUserDocs.size === 0) {
-        return null;
-    }
-
-    return RoomUser.fromJSON(roomUserDocs.docs.at(0)?.data());
+    console.log(`${userId}_${roomId}`)
+    return await admin.firestore().collection(constName(Const.roomusers)).doc(`${userId}_${roomId}`).get().then((roomUser) => {
+        let data = roomUser.data()
+        return data == undefined ? undefined : RoomUser.fromJSON(data);
+    }).catch((error) => {
+        console.log(error)
+        return undefined;
+    });
 }
 
 // Helper Functions ___________________________________________
@@ -313,7 +309,6 @@ export function roomUserToMap(roomuser: RoomUser) {
 export function roomUserToJson(roomUser: RoomUser) {
     return RoomUser.toJSON(roomUser)! as Map<String, any>;
 }
-
 
 export function roomToMap(room: Room) {
     return toMap(Room.toJSON(room)!);

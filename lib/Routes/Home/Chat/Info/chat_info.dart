@@ -11,6 +11,7 @@ import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -41,8 +42,8 @@ class ChatInfoPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(roomStreamProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
-    final allUsersPro = ref.watch(getAllRoomUsersProvider);
-    final allUsers = allUsersPro.value ?? [];
+    final allRoomUsersPro = ref.watch(getAllRoomUsersProvider);
+    final allRoomUsers = allRoomUsersPro.value ?? [];
 
     useEffect(() {
       ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
@@ -221,6 +222,7 @@ class ChatInfoPage extends HookConsumerWidget {
                             key: ValueKey(room.open),
                             value: room.open,
                             items: Visible.values
+                                .where((element) => element != Visible.INVALIDVISIBLE)
                                 .map(
                                   (e) => DropdownMenuItem(
                                     value: e,
@@ -308,7 +310,7 @@ class ChatInfoPage extends HookConsumerWidget {
                             },
                           ),
                         ),
-                      if (meInRoom == null && room.open == Visible.MODERATED)
+                      if (meInRoom == null && room.open.value >= Visible.MODERATED.value)
                         AsyncLock(
                           builder: (loading, status, lock, open, setStatus) {
                             return FilledButton.icon(
@@ -338,50 +340,57 @@ class ChatInfoPage extends HookConsumerWidget {
               if (meInRoom != null && meInRoom.isAdminOrMod)
                 SliverList.builder(
                   itemBuilder: (context, index) {
-                    final roomUser = allUsers[index]!;
-                    return ListTile(
-                      title: Text(roomUser.user),
-                      subtitle: Text(roomUser.role.name),
-                      leading: Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (roomUser.isRequest)
-                            AsyncLock(
-                              builder: (loading, status, lock, open, setStatus) {
-                                return IconButton.filledTonal(
-                                  onPressed: () async {
-                                    lock();
-                                    await ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
-                                    open();
+                    return Consumer(
+                      builder: (context, ref, child) {
+                        final roomUser = allRoomUsers[index]!;
+
+                        final user = ref.watch(getUserByIdProvider(roomUser.user)).value;
+
+                        return ListTile(
+                          title: Text(user?.displayName ?? roomUser.user),
+                          subtitle: Text(roomUser.role.name),
+                          leading: Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (roomUser.isRequest)
+                                AsyncLock(
+                                  builder: (loading, status, lock, open, setStatus) {
+                                    return IconButton.filledTonal(
+                                      onPressed: () async {
+                                        lock();
+                                        await ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
+                                        open();
+                                      },
+                                      icon: !loading ? const Icon(Icons.check) : const CircularProgress(size: 20),
+                                    );
                                   },
-                                  icon: !loading ? const Icon(Icons.check) : const CircularProgress(size: 20),
-                                );
-                              },
-                            ),
-                          if (!roomUser.isAdminOrMod && roomUser != meInRoom && meInRoom.isAdminOrMod)
-                            AsyncLock(
-                              builder: (loading, status, lock, open, setStatus) {
-                                return IconButton.filledTonal(
-                                  onPressed: () async {
-                                    lock();
-                                    await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
-                                    open();
-                                    ref.read(currentRoomProvider.notifier).exitRoom(null);
-                                    ref.invalidate(currentRoomUserProvider);
-                                    if (context.mounted) {
-                                      HomeRoute().go(context);
-                                    }
+                                ),
+                              if (!roomUser.isAdminOrMod && roomUser != meInRoom && meInRoom.isAdminOrMod)
+                                AsyncLock(
+                                  builder: (loading, status, lock, open, setStatus) {
+                                    return IconButton.filledTonal(
+                                      onPressed: () async {
+                                        lock();
+                                        await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
+                                        open();
+                                        ref.read(currentRoomProvider.notifier).exitRoom(null);
+                                        ref.invalidate(currentRoomUserProvider);
+                                        if (context.mounted) {
+                                          HomeRoute().go(context);
+                                        }
+                                      },
+                                      icon: !loading ? const Icon(Icons.close) : const CircularProgress(size: 20),
+                                    );
                                   },
-                                  icon: !loading ? const Icon(Icons.close) : const CircularProgress(size: 20),
-                                );
-                              },
-                            ),
-                        ],
-                      ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
-                  itemCount: allUsers.length,
+                  itemCount: allRoomUsers.length,
                 ),
             ],
           ),

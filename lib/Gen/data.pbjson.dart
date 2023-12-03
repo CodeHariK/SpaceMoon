@@ -17,7 +17,8 @@ import 'dart:typed_data' as $typed_data;
 const Role$json = {
   '1': 'Role',
   '2': [
-    {'1': 'BLOCKED', '2': 0},
+    {'1': 'INVALIDROLE', '2': 0},
+    {'1': 'BLOCKED', '2': 1},
     {'1': 'REQUEST', '2': 10},
     {'1': 'USER', '2': 20},
     {'1': 'MODERATOR', '2': 30},
@@ -27,14 +28,15 @@ const Role$json = {
 
 /// Descriptor for `Role`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List roleDescriptor = $convert.base64Decode(
-    'CgRSb2xlEgsKB0JMT0NLRUQQABILCgdSRVFVRVNUEAoSCAoEVVNFUhAUEg0KCU1PREVSQVRPUh'
-    'AeEgkKBUFETUlOECg=');
+    'CgRSb2xlEg8KC0lOVkFMSURST0xFEAASCwoHQkxPQ0tFRBABEgsKB1JFUVVFU1QQChIICgRVU0'
+    'VSEBQSDQoJTU9ERVJBVE9SEB4SCQoFQURNSU4QKA==');
 
 @$core.Deprecated('Use mediaTypeDescriptor instead')
 const MediaType$json = {
   '1': 'MediaType',
   '2': [
-    {'1': 'TEXT', '2': 0},
+    {'1': 'INVALIDMEDIATYPE', '2': 0},
+    {'1': 'TEXT', '2': 1},
     {'1': 'IMAGE', '2': 5},
     {'1': 'VIDEO', '2': 10},
     {'1': 'AUDIO', '2': 15},
@@ -48,14 +50,16 @@ const MediaType$json = {
 
 /// Descriptor for `MediaType`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List mediaTypeDescriptor = $convert.base64Decode(
-    'CglNZWRpYVR5cGUSCAoEVEVYVBAAEgkKBUlNQUdFEAUSCQoFVklERU8QChIJCgVBVURJTxAPEg'
-    'cKA1BERhAUEggKBEZJTEUQHhIGCgJRUhAjEggKBFBPU1QQMhILCgdHQUxMRVJZEDw=');
+    'CglNZWRpYVR5cGUSFAoQSU5WQUxJRE1FRElBVFlQRRAAEggKBFRFWFQQARIJCgVJTUFHRRAFEg'
+    'kKBVZJREVPEAoSCQoFQVVESU8QDxIHCgNQREYQFBIICgRGSUxFEB4SBgoCUVIQIxIICgRQT1NU'
+    'EDISCwoHR0FMTEVSWRA8');
 
 @$core.Deprecated('Use activeDescriptor instead')
 const Active$json = {
   '1': 'Active',
   '2': [
-    {'1': 'OFFLINE', '2': 0},
+    {'1': 'INVALIDACTIVE', '2': 0},
+    {'1': 'OFFLINE', '2': 1},
     {'1': 'ONLINE', '2': 10},
     {'1': 'TYPING', '2': 20},
   ],
@@ -63,13 +67,15 @@ const Active$json = {
 
 /// Descriptor for `Active`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List activeDescriptor = $convert.base64Decode(
-    'CgZBY3RpdmUSCwoHT0ZGTElORRAAEgoKBk9OTElORRAKEgoKBlRZUElORxAU');
+    'CgZBY3RpdmUSEQoNSU5WQUxJREFDVElWRRAAEgsKB09GRkxJTkUQARIKCgZPTkxJTkUQChIKCg'
+    'ZUWVBJTkcQFA==');
 
 @$core.Deprecated('Use visibleDescriptor instead')
 const Visible$json = {
   '1': 'Visible',
   '2': [
-    {'1': 'CLOSE', '2': 0},
+    {'1': 'INVALIDVISIBLE', '2': 0},
+    {'1': 'CLOSE', '2': 1},
     {'1': 'MODERATED', '2': 10},
     {'1': 'OPEN', '2': 20},
   ],
@@ -77,7 +83,8 @@ const Visible$json = {
 
 /// Descriptor for `Visible`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List visibleDescriptor = $convert.base64Decode(
-    'CgdWaXNpYmxlEgkKBUNMT1NFEAASDQoJTU9ERVJBVEVEEAoSCAoET1BFThAU');
+    'CgdWaXNpYmxlEhIKDklOVkFMSURWSVNJQkxFEAASCQoFQ0xPU0UQARINCglNT0RFUkFURUQQCh'
+    'IICgRPUEVOEBQ=');
 
 @$core.Deprecated('Use constDescriptor instead')
 const Const$json = {
