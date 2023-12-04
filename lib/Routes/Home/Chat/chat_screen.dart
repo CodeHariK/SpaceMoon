@@ -11,11 +11,11 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
+import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
-import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
@@ -95,8 +95,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
     );
 
-    final user = ref.watch(currentUserDataProvider).value;
-
     // final meInRoomPro = ref.watch(currentRoomUserProvider);
     // final meInRoom = meInRoomPro.value;
     final meInRoom = ref.watch(
@@ -122,7 +120,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     //   );
     // }
 
-    if (room == null || user == null) {
+    if (room == null) {
       return WillPopScope(
         onWillPop: () async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
@@ -254,7 +252,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             return TweetBox(
                               tweet: tweet,
                               room: room,
-                              user: user,
                             );
                           },
                         ),

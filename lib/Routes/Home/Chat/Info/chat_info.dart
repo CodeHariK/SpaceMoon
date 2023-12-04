@@ -5,14 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
+import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/user_data.dart';
-import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
@@ -118,11 +120,7 @@ class ChatInfoPage extends HookConsumerWidget {
                     enabled: meInRoom?.isAdmin == true,
                     style: context.hm,
                     asyncValidator: (value) async {
-                      if (value.length < 7) {
-                        return 'more than 6 characters required';
-                      }
-
-                      return null;
+                      return value.checkMin(8);
                     },
                     maxLines: 1,
                     showPrefix: false,
@@ -146,14 +144,12 @@ class ChatInfoPage extends HookConsumerWidget {
                     enabled: meInRoom?.isAdmin == true,
                     style: context.hs,
                     asyncValidator: (value) async {
-                      if (!isAlphanumeric(value)) {
-                        return 'only (a-z) (A-Z) (0-9) allowed';
+                      if (value.checkMin(8) != null) {
+                        return value.checkMin(8);
                       }
-
-                      if (value.length < 7) {
-                        return 'more than 6 characters required';
+                      if (value.checkAlphanumeric() != null) {
+                        return value.checkAlphanumeric();
                       }
-
                       if (room.nick == value) {
                         return null;
                       }
@@ -192,11 +188,7 @@ class ChatInfoPage extends HookConsumerWidget {
                     style: context.ts,
                     maxLines: null,
                     asyncValidator: (value) async {
-                      if (value.length < 7) {
-                        return 'more than 6 characters required';
-                      }
-
-                      return null;
+                      return value.checkMin(8);
                     },
                     showPrefix: false,
                     textInputAction: TextInputAction.done,
@@ -349,24 +341,40 @@ class ChatInfoPage extends HookConsumerWidget {
                         return ListTile(
                           title: Text(user?.displayName ?? roomUser.user),
                           subtitle: Text(roomUser.role.name),
-                          leading: Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle),
+                          leading: (user == null)
+                              ? Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle)
+                              : CircleAvatar(
+                                  child: (!isURL(user.photoURL))
+                                      ? null
+                                      : CustomCacheImage(
+                                          imageUrl: spaceThumbImage(user.photoURL),
+                                          radius: 32,
+                                        ),
+                                ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (roomUser.isRequest)
-                                AsyncLock(
-                                  builder: (loading, status, lock, open, setStatus) {
-                                    return IconButton.filledTonal(
-                                      onPressed: () async {
-                                        lock();
-                                        await ref.read(currentRoomProvider.notifier).acceptAccessToRoom(roomUser);
-                                        open();
-                                      },
-                                      icon: !loading ? const Icon(Icons.check) : const CircularProgress(size: 20),
-                                    );
-                                  },
-                                ),
-                              if (!roomUser.isAdminOrMod && roomUser != meInRoom && meInRoom.isAdminOrMod)
+                              AsyncLock(
+                                builder: (loading, status, lock, open, setStatus) {
+                                  return IconButton.filledTonal(
+                                    onPressed: roomUser.isAdmin
+                                        ? null
+                                        : () async {
+                                            lock();
+                                            await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(roomUser);
+                                            open();
+                                          },
+                                    icon: !loading
+                                        ? Icon(roomUser.isRequest
+                                            ? Icons.check
+                                            : (roomUser.isAdmin ? Icons.star : Icons.star_border))
+                                        : const CircularProgress(size: 20),
+                                  );
+                                },
+                              ),
+                              if (roomUser.role.value < meInRoom.role.value &&
+                                  roomUser != meInRoom &&
+                                  meInRoom.isAdminOrMod)
                                 AsyncLock(
                                   builder: (loading, status, lock, open, setStatus) {
                                     return IconButton.filledTonal(

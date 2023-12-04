@@ -15,7 +15,6 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 class Role extends $pb.ProtobufEnum {
   static const Role INVALIDROLE = Role._(0, _omitEnumNames ? '' : 'INVALIDROLE');
-  static const Role BLOCKED = Role._(1, _omitEnumNames ? '' : 'BLOCKED');
   static const Role REQUEST = Role._(10, _omitEnumNames ? '' : 'REQUEST');
   static const Role USER = Role._(20, _omitEnumNames ? '' : 'USER');
   static const Role MODERATOR = Role._(30, _omitEnumNames ? '' : 'MODERATOR');
@@ -23,7 +22,6 @@ class Role extends $pb.ProtobufEnum {
 
   static const $core.List<Role> values = <Role> [
     INVALIDROLE,
-    BLOCKED,
     REQUEST,
     USER,
     MODERATOR,

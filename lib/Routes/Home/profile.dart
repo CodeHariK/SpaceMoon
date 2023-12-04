@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
+import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
-import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/user_data.dart';
-import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
@@ -97,11 +97,7 @@ class ProfilePage extends ConsumerWidget {
                     enabled: searchuser?.user == null,
                     style: context.hm,
                     asyncValidator: (value) async {
-                      if (value.length < 7) {
-                        return 'more than 6 characters required';
-                      }
-
-                      return null;
+                      return value.checkMin(8);
                     },
                     maxLines: 1,
                     showPrefix: false,
@@ -123,20 +119,17 @@ class ProfilePage extends ConsumerWidget {
                     style: context.tl,
                     maxLines: 1,
                     asyncValidator: (value) async {
-                      if (!isAlphanumeric(value)) {
-                        return 'only (a-z) (A-Z) (0-9) allowed';
+                      if (value.checkMin(8) != null) {
+                        return value.checkMin(8);
                       }
-
-                      if (value.length < 7) {
-                        return 'more than 6 characters required';
+                      if (value.checkAlphanumeric() != null) {
+                        return value.checkAlphanumeric();
                       }
-
                       if (user?.nick == value) {
                         return null;
                       }
 
                       final count = await countUserByNick(value);
-
                       if (count != 0) {
                         return 'Not available';
                       }

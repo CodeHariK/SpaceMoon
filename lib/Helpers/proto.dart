@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:spacemoon/Gen/data.pbenum.dart';
@@ -8,6 +9,13 @@ import 'package:spacemoon/Gen/google/protobuf/timestamp.pbserver.dart' as time;
 
 extension TimestampeDateTime on DateTime {
   time.Timestamp get timestamp => time.Timestamp.fromDateTime(this);
+}
+
+extension SupetTimeStamp on time.Timestamp {
+  DateTime get date => toDateTime().toLocal();
+  String get isoDate => toDateTime().toLocal().toIso8601String();
+  String get timeString => hasSeconds() ? DateFormat.jm().format(toDateTime().toLocal()) : '';
+  String get dateString => hasSeconds() ? DateFormat.yMMMd().format(toDateTime().toLocal()) : '';
 }
 
 extension ProtoParse on GeneratedMessage {

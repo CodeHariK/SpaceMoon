@@ -18,7 +18,6 @@ const Role$json = {
   '1': 'Role',
   '2': [
     {'1': 'INVALIDROLE', '2': 0},
-    {'1': 'BLOCKED', '2': 1},
     {'1': 'REQUEST', '2': 10},
     {'1': 'USER', '2': 20},
     {'1': 'MODERATOR', '2': 30},
@@ -28,8 +27,8 @@ const Role$json = {
 
 /// Descriptor for `Role`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List roleDescriptor = $convert.base64Decode(
-    'CgRSb2xlEg8KC0lOVkFMSURST0xFEAASCwoHQkxPQ0tFRBABEgsKB1JFUVVFU1QQChIICgRVU0'
-    'VSEBQSDQoJTU9ERVJBVE9SEB4SCQoFQURNSU4QKA==');
+    'CgRSb2xlEg8KC0lOVkFMSURST0xFEAASCwoHUkVRVUVTVBAKEggKBFVTRVIQFBINCglNT0RFUk'
+    'FUT1IQHhIJCgVBRE1JThAo');
 
 @$core.Deprecated('Use mediaTypeDescriptor instead')
 const MediaType$json = {
@@ -132,9 +131,8 @@ const User$json = {
     {'1': 'photoURL', '3': 500, '4': 1, '5': 9, '10': 'photoURL'},
     {'1': 'status', '3': 600, '4': 1, '5': 14, '6': '.user.Active', '10': 'status'},
     {'1': 'friends', '3': 700, '4': 3, '5': 9, '10': 'friends'},
-    {'1': 'roomRequest', '3': 800, '4': 3, '5': 9, '10': 'roomRequest'},
-    {'1': 'created', '3': 900, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'open', '3': 1000, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
+    {'1': 'created', '3': 800, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
+    {'1': 'open', '3': 900, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
   ],
 };
 
@@ -144,9 +142,8 @@ final $typed_data.Uint8List userDescriptor = $convert.base64Decode(
     '5hbWUSEwoEbmljaxj6ASABKAlSBG5pY2sSFQoFZW1haWwYrAIgASgJUgVlbWFpbBIhCgtwaG9u'
     'ZU51bWJlchiQAyABKAlSC3Bob25lTnVtYmVyEhsKCHBob3RvVVJMGPQDIAEoCVIIcGhvdG9VUk'
     'wSJQoGc3RhdHVzGNgEIAEoDjIMLnVzZXIuQWN0aXZlUgZzdGF0dXMSGQoHZnJpZW5kcxi8BSAD'
-    'KAlSB2ZyaWVuZHMSIQoLcm9vbVJlcXVlc3QYoAYgAygJUgtyb29tUmVxdWVzdBI1CgdjcmVhdG'
-    'VkGIQHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSB2NyZWF0ZWQSIgoEb3Blbhjo'
-    'ByABKA4yDS51c2VyLlZpc2libGVSBG9wZW4=');
+    'KAlSB2ZyaWVuZHMSNQoHY3JlYXRlZBigBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW'
+    '1wUgdjcmVhdGVkEiIKBG9wZW4YhAcgASgOMg0udXNlci5WaXNpYmxlUgRvcGVu');
 
 @$core.Deprecated('Use userClaimsDescriptor instead')
 const UserClaims$json = {

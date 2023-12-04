@@ -1,9 +1,10 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { Const, Role, Room, Tweet } from "./Gen/data";
-import { getRoomUserById, roomToJson } from "./room";
 import { constName } from "./Helpers/const";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
+import { getRoomUserById } from "./roomuser";
+import { roomToJson } from "./Helpers/convertors";
 
 export const sendTweet = onCall({
     enforceAppCheck: true,
@@ -60,8 +61,6 @@ export const updateTweet = onCall({
 
     let fetchTweet = await getTweetById(tweet.uid, tweet.room);
 
-    console.log(`${userId}   ${fetchTweet?.user}`)
-
     if (fetchTweet && userId === fetchTweet.user && fetchTweet?.gallery.length != tweet?.gallery.length && tweet?.gallery.length == 0) {
         await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`)
             .doc(tweet.uid).delete();
@@ -93,8 +92,6 @@ export const deleteTweet = onCall({
     let userId = request.auth!.uid;
 
     let tweet = Tweet.fromJSON(request.data)
-
-    console.log(tweet)
 
     if (!tweet.room) {
         throw new HttpsError('invalid-argument', 'Invalid Room ID')
@@ -132,13 +129,10 @@ export const onTweetDeleted = onDocumentDeleted("rooms/{roomId}/tweets/{tweetId}
 });
 
 export const getTweetById = async (tweetId: string, roomId: string) => {
-    const tweetQuery = admin.firestore().collection(`${constName(Const.rooms)}/${roomId}/${constName(Const.tweets)}`).doc(tweetId)
+    const tweetQuery = admin.firestore()
+        .collection(`${constName(Const.rooms)}/${roomId}/${constName(Const.tweets)}`).doc(tweetId)
 
     const tweetMap = (await tweetQuery.get()).data();
 
-    if (!tweetMap) {
-        return null;
-    }
-
-    return Tweet.fromJSON(tweetMap);
+    return !tweetMap ? null : Tweet.fromJSON(tweetMap);
 }

@@ -6,7 +6,6 @@ package user;
 
 enum Role {
     INVALIDROLE = 0;
-    BLOCKED = 1;
     REQUEST = 10;
     USER = 20;
     MODERATOR = 30;
@@ -49,9 +48,8 @@ message User {
     string photoURL = 500;
     Active status = 600;
     repeated string friends = 700;
-    repeated string roomRequest = 800;
-    google.protobuf.Timestamp created = 900;
-    Visible open = 1000;
+    google.protobuf.Timestamp created = 800;
+    Visible open = 900;
 }
 
 message UserClaims {
@@ -77,10 +75,6 @@ message Room {
     google.protobuf.Timestamp updated = 50;
     
     Visible open = 60;
-
-    // int32 activeCount = 60; 
-    // int32 totalCount = 70; 
-    // int32 tweetCount = 80;
 }
 
 message Tweet {

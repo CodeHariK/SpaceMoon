@@ -5,7 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/helper/validator/validator.dart';
+import 'package:moonspace/helper/validator/checkers.dart';
+import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/user_data.dart';
@@ -52,10 +53,11 @@ class SearchPage extends HookConsumerWidget {
               milliseconds: 600,
               textInputAction: TextInputAction.done,
               asyncValidator: (v) async {
-                if (v.length < 7) return 'more than 6 characters required';
-
-                if (!isAlphanumeric(v)) {
-                  return 'only (a-z) (A-Z) (0-9) allowed';
+                if (v.checkMin(8) != null) {
+                  return v.checkMin(8);
+                }
+                if (v.checkAlphanumeric() != null) {
+                  return v.checkAlphanumeric();
                 }
 
                 ref.read(searchTextProvider.notifier).change(v);
@@ -111,7 +113,34 @@ class SearchPage extends HookConsumerWidget {
                             }
                           },
                           title: Text(searchUser?.displayName ?? 'Name'),
-                          trailing: const Text('User'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('User'),
+                              AsyncLock(
+                                builder: (loading, status, lock, open, setStatus) {
+                                  return IconButton.filledTonal(
+                                    onPressed: () async {
+                                      lock();
+                                      await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
+                                            RoomUser(
+                                              user: searchUser?.uid,
+                                              room: room?.uid,
+                                            ),
+                                          );
+                                      open();
+                                      if (context.mounted) {
+                                        context.pop();
+                                      }
+                                    },
+                                    icon: !loading
+                                        ? const Icon(Icons.add_circle_outline_outlined)
+                                        : const CircularProgress(size: 20),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         );
                       }),
                   ],

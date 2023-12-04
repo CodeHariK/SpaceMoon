@@ -1,11 +1,8 @@
 import * as admin from "firebase-admin";
-// import { firestore } from "firebase-functions";
 import { onCall, onRequest } from "firebase-functions/v2/https";
-// import { beforeUserCreated, AuthBlockingEvent } from "firebase-functions/v2/identity";
-// import { onDocumentWritten, onDocumentCreated, onDocumentDeleted } from "firebase-functions/v2/firestore";
-// import { FieldValue } from "firebase-admin/firestore";
 import * as users from "./users";
-import * as chat from "./room";
+import * as room from "./room";
+import * as roomuser from "./roomuser";
 import * as tweet from "./tweet";
 import * as image from "./image";
 
@@ -16,20 +13,20 @@ admin.initializeApp({
 
 export const onUserCreate = users.onUserCreate;
 export const callUserUpdate = users.callUserUpdate;
-export const addAdmin = users.addAdmin;
 export const callFCMtokenUpdate = users.callFCMtokenUpdate;
 export const deleteAuthUser = users.deleteAuthUser;
 export const deleteUser = users.deleteUser;
 
-export const callCreateRoom = chat.callCreateRoom;
-export const requestAccessToRoom = chat.requestAccessToRoom;
-export const deleteRoomUser = chat.deleteRoomUser;
-export const acceptAccessToRoom = chat.acceptAccessToRoom;
-export const updateRoomInfo = chat.updateRoomInfo;
-export const deleteRoom = chat.deleteRoom;
-export const onRoomDeleted = chat.onRoomDeleted;
-export const onRoomUserDeleted = chat.onRoomUserDeleted;
-export const updateRoomUserTime = chat.updateRoomUserTime;
+export const callCreateRoom = room.callCreateRoom;
+export const updateRoomInfo = room.updateRoomInfo;
+export const deleteRoom = room.deleteRoom;
+export const onRoomDeleted = room.onRoomDeleted;
+
+export const deleteRoomUser = roomuser.deleteRoomUser;
+export const onRoomUserDeleted = roomuser.onRoomUserDeleted;
+export const updateRoomUserTime = roomuser.updateRoomUserTime;
+export const requestAccessToRoom = roomuser.requestAccessToRoom;
+export const upgradeAccessToRoom = roomuser.upgradeAccessToRoom;
 
 export const sendTweet = tweet.sendTweet;
 export const updateTweet = tweet.updateTweet;

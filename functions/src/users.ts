@@ -4,9 +4,9 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Const, RoomUser, User } from "./Gen/data";
 import { constName } from "./Helpers/const";
-import { toMap } from "./Helpers/map";
 import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
+import { userObj } from "./Helpers/convertors";
 
 export const onUserCreate = functions.auth.user().onCreate((user) => {
     const { uid, email, displayName, phoneNumber, photoURL } = user;
@@ -88,42 +88,6 @@ export const callFCMtokenUpdate = onCall({
     }
 });
 
-
-export const checkUserExists = async (userId: string) => {
-    return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).exists;
-}
-
-export const getUserById = async (userId: string) => {
-    return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).data();
-}
-
-export const addAdmin = onCall({
-    enforceAppCheck: true,
-}, async (request) => {
-    if (request.auth?.token.moderator !== true) {
-        return {
-            error: "Request not authorized. User is not moderator  to fulfill request.",
-        };
-    }
-    const uid = request.data.uid;
-    return grantModerateRole(uid).then(() => {
-        return {
-            result: `Request fulfilled! ${uid} is now a moderator.`,
-        };
-    });
-});
-
-async function grantModerateRole(uid: string) {
-    const user = await admin.auth().getUser(uid);
-    if (user.customClaims && (user.customClaims as any).moderator === true) {
-        return;
-    }
-    return admin.auth().setCustomUserClaims(user.uid, {
-        moderator: true,
-        manager: true,
-    });
-}
-
 export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
     const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
         .where('user', '==', user.uid).get()
@@ -158,16 +122,6 @@ export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
         });
 });
 
-// Helper Functions ___________________________________________
-
-export function userToMap(user: User) {
-    return toMap(userToJson(user)!);
-}
-
-export function userToJson(user: User) {
-    return User.toJSON(user)! as Map<String, any>;
-}
-
-export function userObj(user: User) {
-    return Object.fromEntries(userToMap(user));
+export const checkUserExists = async (userId: string) => {
+    return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).exists;
 }

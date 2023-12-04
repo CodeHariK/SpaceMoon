@@ -6,7 +6,6 @@ export const protobufPackage = "user";
 
 export enum Role {
   INVALIDROLE = 0,
-  BLOCKED = 1,
   REQUEST = 10,
   USER = 20,
   MODERATOR = 30,
@@ -19,9 +18,6 @@ export function roleFromJSON(object: any): Role {
     case 0:
     case "INVALIDROLE":
       return Role.INVALIDROLE;
-    case 1:
-    case "BLOCKED":
-      return Role.BLOCKED;
     case 10:
     case "REQUEST":
       return Role.REQUEST;
@@ -45,8 +41,6 @@ export function roleToJSON(object: Role): string {
   switch (object) {
     case Role.INVALIDROLE:
       return "INVALIDROLE";
-    case Role.BLOCKED:
-      return "BLOCKED";
     case Role.REQUEST:
       return "REQUEST";
     case Role.USER:
@@ -376,7 +370,6 @@ export interface User {
   photoURL: string;
   status: Active;
   friends: string[];
-  roomRequest: string[];
   created: Date | undefined;
   open: Visible;
 }
@@ -437,7 +430,6 @@ function createBaseUser(): User {
     photoURL: "",
     status: 0,
     friends: [],
-    roomRequest: [],
     created: undefined,
     open: 0,
   };
@@ -469,14 +461,11 @@ export const User = {
     for (const v of message.friends) {
       writer.uint32(5602).string(v!);
     }
-    for (const v of message.roomRequest) {
-      writer.uint32(6402).string(v!);
-    }
     if (message.created !== undefined) {
-      Timestamp.encode(toTimestamp(message.created), writer.uint32(7202).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(6402).fork()).ldelim();
     }
     if (message.open !== 0) {
-      writer.uint32(8000).int32(message.open);
+      writer.uint32(7200).int32(message.open);
     }
     return writer;
   },
@@ -549,17 +538,10 @@ export const User = {
             break;
           }
 
-          message.roomRequest.push(reader.string());
-          continue;
-        case 900:
-          if (tag !== 7202) {
-            break;
-          }
-
           message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
-        case 1000:
-          if (tag !== 8000) {
+        case 900:
+          if (tag !== 7200) {
             break;
           }
 
@@ -584,9 +566,6 @@ export const User = {
       photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : "",
       status: isSet(object.status) ? activeFromJSON(object.status) : 0,
       friends: globalThis.Array.isArray(object?.friends) ? object.friends.map((e: any) => globalThis.String(e)) : [],
-      roomRequest: globalThis.Array.isArray(object?.roomRequest)
-        ? object.roomRequest.map((e: any) => globalThis.String(e))
-        : [],
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
     };
@@ -618,9 +597,6 @@ export const User = {
     if (message.friends?.length) {
       obj.friends = message.friends;
     }
-    if (message.roomRequest?.length) {
-      obj.roomRequest = message.roomRequest;
-    }
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
     }
@@ -643,7 +619,6 @@ export const User = {
     message.photoURL = object.photoURL ?? "";
     message.status = object.status ?? 0;
     message.friends = object.friends?.map((e) => e) || [];
-    message.roomRequest = object.roomRequest?.map((e) => e) || [];
     message.created = object.created ?? undefined;
     message.open = object.open ?? 0;
     return message;

@@ -28,7 +28,6 @@ class User extends $pb.GeneratedMessage {
     $core.String? photoURL,
     Active? status,
     $core.Iterable<$core.String>? friends,
-    $core.Iterable<$core.String>? roomRequest,
     $0.Timestamp? created,
     Visible? open,
   }) {
@@ -57,9 +56,6 @@ class User extends $pb.GeneratedMessage {
     if (friends != null) {
       $result.friends.addAll(friends);
     }
-    if (roomRequest != null) {
-      $result.roomRequest.addAll(roomRequest);
-    }
     if (created != null) {
       $result.created = created;
     }
@@ -81,9 +77,8 @@ class User extends $pb.GeneratedMessage {
     ..aOS(500, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
     ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.INVALIDACTIVE, valueOf: Active.valueOf, enumValues: Active.values)
     ..pPS(700, _omitFieldNames ? '' : 'friends')
-    ..pPS(800, _omitFieldNames ? '' : 'roomRequest', protoName: 'roomRequest')
-    ..aOM<$0.Timestamp>(900, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.INVALIDVISIBLE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOM<$0.Timestamp>(800, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..e<Visible>(900, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.INVALIDVISIBLE, valueOf: Visible.valueOf, enumValues: Visible.values)
     ..hasRequiredFields = false
   ;
 
@@ -175,27 +170,24 @@ class User extends $pb.GeneratedMessage {
   $core.List<$core.String> get friends => $_getList(7);
 
   @$pb.TagNumber(800)
-  $core.List<$core.String> get roomRequest => $_getList(8);
+  $0.Timestamp get created => $_getN(8);
+  @$pb.TagNumber(800)
+  set created($0.Timestamp v) { setField(800, v); }
+  @$pb.TagNumber(800)
+  $core.bool hasCreated() => $_has(8);
+  @$pb.TagNumber(800)
+  void clearCreated() => clearField(800);
+  @$pb.TagNumber(800)
+  $0.Timestamp ensureCreated() => $_ensure(8);
 
   @$pb.TagNumber(900)
-  $0.Timestamp get created => $_getN(9);
+  Visible get open => $_getN(9);
   @$pb.TagNumber(900)
-  set created($0.Timestamp v) { setField(900, v); }
+  set open(Visible v) { setField(900, v); }
   @$pb.TagNumber(900)
-  $core.bool hasCreated() => $_has(9);
+  $core.bool hasOpen() => $_has(9);
   @$pb.TagNumber(900)
-  void clearCreated() => clearField(900);
-  @$pb.TagNumber(900)
-  $0.Timestamp ensureCreated() => $_ensure(9);
-
-  @$pb.TagNumber(1000)
-  Visible get open => $_getN(10);
-  @$pb.TagNumber(1000)
-  set open(Visible v) { setField(1000, v); }
-  @$pb.TagNumber(1000)
-  $core.bool hasOpen() => $_has(10);
-  @$pb.TagNumber(1000)
-  void clearOpen() => clearField(1000);
+  void clearOpen() => clearField(900);
 }
 
 class UserClaims extends $pb.GeneratedMessage {

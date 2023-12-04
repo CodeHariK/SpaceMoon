@@ -10,9 +10,10 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Routes/Home/all_chat.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
@@ -24,16 +25,17 @@ class TweetBox extends ConsumerWidget {
     required this.tweet,
     this.isHero = false,
     required this.room,
-    required this.user,
   });
 
   final Tweet tweet;
   final Room room;
-  final User user;
   final bool isHero;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserDataProvider).value;
+    final tweetuser = ref.watch(getUserByIdProvider(tweet.user)).value;
+
     final box = Material(
       color: Colors.transparent,
       child: Container(
@@ -57,8 +59,8 @@ class TweetBox extends ConsumerWidget {
                 // color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(80) : Color.fromARGB(66, 238, 238, 238),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
-                  bottomLeft: Radius.circular(((user.uid == tweet.user) ? 20 : 0)),
-                  bottomRight: Radius.circular((user.uid == tweet.user) ? 0 : 20),
+                  bottomLeft: Radius.circular(((user?.uid == tweet.user) ? 20 : 0)),
+                  bottomRight: Radius.circular((user?.uid == tweet.user) ? 0 : 20),
                   topRight: const Radius.circular(20),
                 ),
               ),
@@ -156,14 +158,15 @@ class TweetBox extends ConsumerWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // CircleAvatar(
-              //   child: (!isURL(user.photoURL))
-              //       ? null
-              //       : CustomCacheImage(
-              //           imageUrl: spaceThumbImage(user.photoURL),
-              //           radius: 32,
-              //         ),
-              // ),
+              if (tweetuser != null)
+                CircleAvatar(
+                  child: (!isURL(tweetuser.photoURL))
+                      ? null
+                      : CustomCacheImage(
+                          imageUrl: spaceThumbImage(tweetuser.photoURL),
+                          radius: 32,
+                        ),
+                ),
               const SizedBox(height: 5),
               Text(tweet.created.timeString, style: context.ls),
             ],
@@ -178,7 +181,7 @@ class TweetBox extends ConsumerWidget {
                   ),
                 ),
         ]..sort(
-            (_, __) => user.uid == tweet.user ? -1 : 1,
+            (_, __) => user?.uid == tweet.user ? -1 : 1,
           ),
       ),
     );
@@ -201,7 +204,6 @@ class TweetBox extends ConsumerWidget {
                       $extra: TweetRouteObj(
                         tweet: tweet,
                         room: room,
-                        user: user,
                       ),
                     ).navPush(context);
                   },
@@ -231,12 +233,10 @@ class DialogPage extends Page<String> {
 class TweetRouteObj {
   final Tweet tweet;
   final Room room;
-  final User user;
 
   TweetRouteObj({
     required this.tweet,
     required this.room,
-    required this.user,
   });
 }
 
@@ -262,7 +262,6 @@ class TweetRoute extends GoRouteData {
         tweetId: tweetId,
         tweet: $extra.tweet,
         room: $extra.room,
-        user: $extra.user,
       ),
     );
   }
@@ -285,7 +284,6 @@ class TweetRoute extends GoRouteData {
             tweetId: tweetId,
             tweet: $extra.tweet,
             room: $extra.room,
-            user: $extra.user,
           );
         },
       ),
@@ -300,14 +298,12 @@ class TweetDialog extends ConsumerWidget {
     required this.tweetId,
     required this.tweet,
     required this.room,
-    required this.user,
   });
 
   final String chatId;
   final String tweetId;
   final Tweet tweet;
   final Room room;
-  final User user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -320,7 +316,6 @@ class TweetDialog extends ConsumerWidget {
           tweet: tweet,
           isHero: true,
           room: room,
-          user: user,
         ),
         actions: [
           AsyncLock(

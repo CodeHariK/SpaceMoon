@@ -123,6 +123,8 @@ class _Tab1PageState extends State<Tab1Page> {
       ),
       body: res == null ? null : Grid(res),
       // body: res == null ? null : UnslashRow(res),
+      extendBody: true,
+      bottomNavigationBar: SizedBox(height: context.mq.pad.bottom),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           page += 1;

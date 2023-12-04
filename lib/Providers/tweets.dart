@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
-import 'package:spacemoon/Providers/room.dart';
+import 'package:spacemoon/Providers/roomuser.dart';
 
 part 'tweets.g.dart';
 
@@ -72,4 +73,21 @@ class Tweets extends _$Tweets {
       debugPrint('deleteTweet Failed');
     }
   }
+}
+
+@riverpod
+Future<int?> getNewTweetCount(GetNewTweetCountRef ref, RoomUser user) async {
+  return await user.tweetCol
+      ?.where(
+        Const.created.name,
+        isGreaterThan: user.updated.isoDate,
+      )
+      .count()
+      .get()
+      .then((value) {
+    return value.count;
+  }).catchError((e, s) {
+    lava(e);
+    return 0;
+  });
 }
