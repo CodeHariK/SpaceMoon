@@ -72,9 +72,15 @@ export const deleteRoomUser = onCall({
         throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
     }
 
+    const curUser = await getRoomUserById(_roomuser.user, _roomuser.room);
     const adminUser = await getRoomUserById(adminId, _roomuser.room);
 
-    if ((adminId === _roomuser.user) || (adminUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR))) {
+    if (
+        (adminId === _roomuser.user) ||
+        (adminUser
+            && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)
+            && adminUser.role > curUser!.role)
+    ) {
         await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid).delete();
 
         return { message: 'The target user has been removed from the room.' };
@@ -83,81 +89,89 @@ export const deleteRoomUser = onCall({
     }
 });
 
-export const requestAccessToRoom = onCall({
-    enforceAppCheck: true,
-}, async (request) => {
-
-    let userId = request.auth!.uid;
-    let _roomuser = RoomUser.fromJSON(request.data)
-
-    if (!_roomuser.room) {
-        throw new HttpsError('invalid-argument', 'Invalid Room ID')
-    }
-
-    let u = await getRoomUserById(userId, _roomuser.room)
-    let room = await getRoomById(_roomuser.room);
-
-    if (!u && room) {
-        await admin.firestore().collection(constName(Const.roomusers)).doc(userId + '_' + _roomuser.room).create(
-            RoomUser.toJSON(RoomUser.create({
-                user: userId,
-                room: _roomuser.room,
-                created: new Date(),
-                updated: new Date(),
-                role: room.open == Visible.OPEN ? Role.USER : Role.REQUEST,
-            })) as Map<string, any>
-        ).then(() => {
-            console.log(`Room User Created ${userId + '_' + _roomuser.room}`);
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
-
-    return `Room User Created ${userId + '_' + _roomuser.room}`;
-});
-
 export const upgradeAccessToRoom = onCall({
     enforceAppCheck: true,
 }, async (request) => {
-    let adminId = request.auth!.uid;
-    let _roomuser = RoomUser.fromJSON(request.data)
+    const adminId = request.auth!.uid;
+    const roomUser = RoomUser.fromJSON(request.data)
 
-    if (!_roomuser.room || !_roomuser.user) {
+    if (!roomUser.room || !roomUser.user) {
         throw new HttpsError('invalid-argument', 'Invalid RoomUser.');
     }
 
-    const curUser = await getRoomUserById(_roomuser.user, _roomuser.room);
-    const adminUser = adminId == _roomuser.user ? curUser : await getRoomUserById(adminId, _roomuser.room);
+    const curUser = await getRoomUserById(roomUser.user, roomUser.room);
+    if (curUser && adminId == curUser.user && (curUser.role != Role.INVITE)) {
+        //Self Upgrade
+        //ADMIN == USER
+        //DENY
+        console.log('Self upgrade denied')
+        throw new HttpsError('permission-denied', 'Self upgrade denied');
+    }
 
-    let room = await getRoomById(_roomuser.room);
+    const adminUser = adminId == curUser?.user ? null : await getRoomUserById(adminId, roomUser.room);
 
-    console.log(adminUser)
-    console.log(curUser)
+    const room = await getRoomById(roomUser.room);
 
-    if (room && (adminId == _roomuser.user || adminUser)) {
+    // console.log(roomUser)
+    // console.log(adminUser)
+    // console.log(curUser)
 
-        let currole = curUser?.role
-        let adminrole = adminUser?.role
+    if (room) {
+        const currole = curUser?.role
+        const adminrole = adminUser?.role
+        const defaultRole = (room.open == Visible.OPEN ? Role.USER : Role.REQUEST)
+        const upgradedRole = !currole ? null : (currole == Role.REQUEST ? Role.USER : (currole == Role.USER ? Role.MODERATOR : Role.ADMIN))
 
-        let defaultRole = (room.open == Visible.OPEN ? Role.USER : Role.REQUEST)
+        let role = null
 
-        let role = curUser == null
-            ? defaultRole
-            : (currole == Role.REQUEST ? Role.USER : (currole == Role.USER ? Role.MODERATOR : Role.ADMIN))
+        if (!curUser && !adminUser) {
+            //Req : No User
+            //DEFAULTROLE
+            console.log('Request')
+            role = defaultRole
+        }
 
-        console.log(adminId)
-        console.log(adminUser)
-        console.log(curUser)
-        console.log(adminrole)
-        console.log(role)
+        if (currole == Role.INVITE && adminId == curUser?.user) {
+            console.log('Accept Invite')
+            role = Role.USER
+        }
 
-        if ((role > defaultRole && !adminrole) || (adminrole && role > adminrole)) return 'Error upgradeAccessToRoom';
+        if (adminUser && !curUser) {
+            //Invite
+            //ADMIN != USER
+            //Role.Request
+            console.log('Invite')
+            role = Role.INVITE
+        }
 
-        await admin.firestore().collection(constName(Const.roomusers)).doc(`${_roomuser.user}_${_roomuser.room}`)
+        if (adminUser && curUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)) {
+            //Upgrade
+            //ADMIN != USER
+            //UPGRADE
+            console.log('Upgrade')
+            role = upgradedRole
+        }
+
+        // console.log(adminrole)
+        // console.log(currole)
+        // console.log(role)
+        // console.log(defaultRole)
+
+        if (!role
+            || (role == currole)
+            || (currole == Role.INVITE && adminId != curUser?.user)
+            || (role > defaultRole && !adminrole && currole != Role.INVITE)
+            || (room.open == Visible.CLOSE && !adminUser)
+            || (adminrole && role > adminrole)) {
+            console.log('Error upgradeAccessToRoom')
+            throw new HttpsError('permission-denied', 'Error upgradeAccessToRoom');
+        }
+
+        await admin.firestore().collection(constName(Const.roomusers)).doc(`${roomUser.user}_${roomUser.room}`)
             .set(
                 Object.fromEntries(roomUserToMap(RoomUser.create({
-                    user: _roomuser.user,
-                    room: _roomuser.room,
+                    user: roomUser.user,
+                    room: roomUser.room,
                     role: role,
                     created: new Date(),
                     updated: new Date(),
@@ -166,6 +180,7 @@ export const upgradeAccessToRoom = onCall({
 
         return { message: 'The target user has been added to the room.' };
     } else {
+        console.log('You do not have permission to kick users from this room.')
         throw new HttpsError('permission-denied', 'You do not have permission to kick users from this room.');
     }
 });

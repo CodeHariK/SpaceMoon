@@ -101,8 +101,8 @@ class AllChatPage extends ConsumerWidget {
                                           wholeDigits: 1,
                                           duration: const Duration(seconds: 1),
                                         ),
-                                      if (roomuser.role == Role.REQUEST) const SizedBox(width: 10),
-                                      if (roomuser.role == Role.REQUEST) const Icon(Icons.pets_rounded),
+                                      if (roomuser.isRequest || roomuser.isInvite) const SizedBox(width: 10),
+                                      if (roomuser.isRequest || roomuser.isInvite) const Icon(Icons.pets_rounded),
                                     ],
                                   ),
                                   onTap: () {
@@ -124,6 +124,7 @@ class AllChatPage extends ConsumerWidget {
           ),
         ],
       ),
+      extendBody: true,
       floatingActionButton: AsyncLock(
         builder: (loading, status, lock, open, setStatus) {
           return FloatingActionButton(

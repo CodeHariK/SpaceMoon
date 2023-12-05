@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
+import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -177,22 +178,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       radius: 32,
                     ),
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    context.bSlidePush(
-                      SearchPage(
-                        room: room,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.add),
-                ),
-                const SizedBox(width: 5)
-              ],
-            ),
+            trailing: InviteButton(room: room),
           ),
         ),
         body: SafeArea(
@@ -207,7 +193,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     // }
 
                     if (allTweetSnap.hasError) {
-                      return Text('error ${allTweetSnap.error}');
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'error ${allTweetSnap.error}',
+                            style: context.tm,
+                          ),
+                        ),
+                      );
                     }
 
                     return Stack(
@@ -287,11 +281,79 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   },
                 ),
               ),
-              SendBox(roomUser: meInRoom),
+              if (meInRoom.isInvite)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: MaterialBanner(
+                    elevation: 2,
+                    content: const Text('Invited to room'),
+                    actions: [
+                      AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return OutlinedButton(
+                            onPressed: () async {
+                              lock();
+                              await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
+                              ref.read(currentRoomProvider.notifier).exitRoom(null);
+                              ref.invalidate(currentRoomUserProvider);
+                              if (context.mounted) {
+                                HomeRoute().go(context);
+                              }
+                              open();
+                            },
+                            child: const Text('Decline'),
+                          );
+                        },
+                      ),
+                      AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return FilledButton(
+                            onPressed: () async {
+                              lock();
+                              await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(meInRoom);
+                              open();
+                            },
+                            child: const Text('Accept'),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              if (meInRoom.isUserOrAdmin) SendBox(roomUser: meInRoom),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class InviteButton extends StatelessWidget {
+  const InviteButton({
+    super.key,
+    required this.room,
+  });
+
+  final Room? room;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: () {
+            context.bSlidePush(
+              SearchPage(
+                room: room,
+              ),
+            );
+          },
+          icon: const Icon(Icons.add_circle_outline),
+        ),
+        const SizedBox(width: 5)
+      ],
     );
   }
 }

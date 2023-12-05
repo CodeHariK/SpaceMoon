@@ -15,6 +15,7 @@ import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/user_data.dart';
+import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
@@ -43,6 +44,7 @@ class ChatInfoPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(roomStreamProvider).value;
+    final meUser = ref.watch(currentUserDataProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     final allRoomUsersPro = ref.watch(getAllRoomUsersProvider);
     final allRoomUsers = allRoomUsersPro.value ?? [];
@@ -67,7 +69,10 @@ class ChatInfoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Info'),
+        title: Text(room.displayName),
+        actions: [
+          InviteButton(room: room),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -308,7 +313,12 @@ class ChatInfoPage extends HookConsumerWidget {
                             return FilledButton.icon(
                               onPressed: () async {
                                 lock();
-                                await ref.read(currentRoomProvider.notifier).requestAccessToRoom();
+                                await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
+                                      RoomUser(
+                                        user: meUser?.uid,
+                                        room: room.uid,
+                                      ),
+                                    );
                                 open();
                               },
                               icon: const Icon(Icons.mail),
@@ -329,7 +339,7 @@ class ChatInfoPage extends HookConsumerWidget {
                     Text('Members', textAlign: TextAlign.center, style: context.tl),
                   ],
                 ),
-              if (meInRoom != null && meInRoom.isAdminOrMod)
+              if (meInRoom != null)
                 SliverList.builder(
                   itemBuilder: (context, index) {
                     return Consumer(
@@ -354,24 +364,30 @@ class ChatInfoPage extends HookConsumerWidget {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AsyncLock(
-                                builder: (loading, status, lock, open, setStatus) {
-                                  return IconButton.filledTonal(
-                                    onPressed: roomUser.isAdmin
-                                        ? null
-                                        : () async {
-                                            lock();
-                                            await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(roomUser);
-                                            open();
-                                          },
-                                    icon: !loading
-                                        ? Icon(roomUser.isRequest
-                                            ? Icons.check
-                                            : (roomUser.isAdmin ? Icons.star : Icons.star_border))
-                                        : const CircularProgress(size: 20),
-                                  );
-                                },
-                              ),
+                              if (roomUser.role.value < meInRoom.role.value &&
+                                  roomUser != meInRoom &&
+                                  !roomUser.isInvite &&
+                                  meInRoom.isAdminOrMod)
+                                AsyncLock(
+                                  builder: (loading, status, lock, open, setStatus) {
+                                    return IconButton.filledTonal(
+                                      onPressed: roomUser.isAdmin
+                                          ? null
+                                          : () async {
+                                              lock();
+                                              await ref
+                                                  .read(currentRoomProvider.notifier)
+                                                  .upgradeAccessToRoom(roomUser);
+                                              open();
+                                            },
+                                      icon: !loading
+                                          ? Icon(roomUser.isRequest
+                                              ? Icons.check
+                                              : (roomUser.isAdmin ? Icons.star : Icons.star_border))
+                                          : const CircularProgress(size: 20),
+                                    );
+                                  },
+                                ),
                               if (roomUser.role.value < meInRoom.role.value &&
                                   roomUser != meInRoom &&
                                   meInRoom.isAdminOrMod)

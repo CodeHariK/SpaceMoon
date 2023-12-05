@@ -42,15 +42,21 @@ service cloud.firestore {
       let roomuserId = request.auth.uid + '_' + roomId;
       let role = get(/databases/$(database)/documents/roomusers/$(roomuserId)).data.role;
 
-      return role == 'ADMIN' || role == 'MODERATOR' || role == 'USER';
+      return role == 'ADMIN' || role == 'MODERATOR' || role == 'USER' || role == 'INVITE';
+    }
+  // function roomUserUMA(roomId) {
+    //   let roomuserId = request.auth.uid + '_' + roomId;
+    //   let role = get(/databases/$(database)/documents/roomusers/$(roomuserId)).data.role;
+
+    //   return role == 'ADMIN' || role == 'MODERATOR' || role == 'USER';
+    // }
+
+    match /rooms/{roomId}/tweets {
+      allow read, write: if false;
     }
 
     match /rooms/{roomId}/tweets/{tweetId} {
       allow read: if roomUserIsAuthenticated(roomId);
-      ///
-      ///
-      ///
-      /// \\\
       allow write: if resource.data.user == request.auth.uid;
       allow delete: if resource.data.user == request.auth.uid || roomUserIsAdminOrMod(roomId);
     }

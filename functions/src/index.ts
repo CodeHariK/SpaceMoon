@@ -25,7 +25,6 @@ export const onRoomDeleted = room.onRoomDeleted;
 export const deleteRoomUser = roomuser.deleteRoomUser;
 export const onRoomUserDeleted = roomuser.onRoomUserDeleted;
 export const updateRoomUserTime = roomuser.updateRoomUserTime;
-export const requestAccessToRoom = roomuser.requestAccessToRoom;
 export const upgradeAccessToRoom = roomuser.upgradeAccessToRoom;
 
 export const sendTweet = tweet.sendTweet;

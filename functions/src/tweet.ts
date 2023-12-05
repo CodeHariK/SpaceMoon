@@ -17,9 +17,9 @@ export const sendTweet = onCall({
         throw new HttpsError('invalid-argument', 'Invalid Room ID')
     }
 
-    let u = await getRoomUserById(userId, tweet.room)
+    let user = await getRoomUserById(userId, tweet.room)
 
-    if (u && u.role >= Role.USER) {
+    if (user && user.role >= Role.USER && user.role != Role.INVITE) {
         const sentTweet = await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
             Tweet.toJSON(Tweet.create({
                 user: userId,
@@ -41,6 +41,7 @@ export const sendTweet = onCall({
 
         return sentTweet.path
     } else {
+        console.log('Invalid User')
         throw new HttpsError('invalid-argument', 'Invalid User')
     }
 });

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
-import 'package:spacemoon/Routes/Home/TabShell/tabhome.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
@@ -33,10 +32,10 @@ class Home {
     //   ]),
     // ]),
 
-    TypedShellRoute<TabShellRoute>(routes: [
-      TypedGoRoute<Tab1Route>(path: '/tabhome/tab1'),
-      TypedGoRoute<Tab2Route>(path: '/tabhome/tab2'),
-    ]),
+    // TypedShellRoute<TabShellRoute>(routes: [
+    //   TypedGoRoute<UnsplashRoute>(path: '/tabhome/tab1'),
+    //   TypedGoRoute<Tab2Route>(path: '/tabhome/tab2'),
+    // ]),
 
     //
     TypedGoRoute<HomeRoute>(
@@ -64,7 +63,7 @@ class HomeShellRoute extends ShellRouteData {
   static final GlobalKey<NavigatorState> $navigatorKey = AppRouter.homeShellNavigatorKey;
 
   static List<ShellData> data = [
-    ShellData(name: 'TabHome', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
+    // ShellData(name: 'TabHome', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
     ShellData(name: 'Spacemoon', location: AppRouter.home, icon: const Icon(Icons.chat_bubble_outline)),
     ShellData(name: 'Search', location: AppRouter.search, icon: const Icon(Icons.search)),
     ShellData(name: 'Profile', location: AppRouter.profile, icon: const Icon(Icons.face_2_outlined)),

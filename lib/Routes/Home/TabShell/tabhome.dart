@@ -4,42 +4,45 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
+import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/shimmer_boxes.dart';
-import 'package:spacemoon/Helpers/shell_data.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Static/theme.dart';
+import 'package:spacemoon/Widget/Chat/send_box.dart';
 
-final GlobalKey<NavigatorState> tabShellNavigatorKey = GlobalKey<NavigatorState>();
+// final GlobalKey<NavigatorState> tabShellNavigatorKey = GlobalKey<NavigatorState>();
 
-class TabShellRoute extends ShellRouteData {
-  const TabShellRoute();
+// class TabShellRoute extends ShellRouteData {
+//   const TabShellRoute();
 
-  static final GlobalKey<NavigatorState> $navigatorKey = tabShellNavigatorKey;
+//   static final GlobalKey<NavigatorState> $navigatorKey = tabShellNavigatorKey;
 
-  static List<ShellData> data = [
-    ShellData(name: 'Tab1', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
-    ShellData(name: 'Tab2', location: '/tabhome/tab2', icon: const Icon(Icons.face_2_outlined)),
-  ];
+//   static List<ShellData> data = [
+//     ShellData(name: 'Tab1', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
+//     ShellData(name: 'Tab2', location: '/tabhome/tab2', icon: const Icon(Icons.face_2_outlined)),
+//   ];
 
-  @override
-  Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        body: Column(
-          children: [
-            TabShellRoute.data.tabBar(context),
-            Expanded(
-              child: navigator,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
+//     return DefaultTabController(
+//       length: 2,
+//       child: Scaffold(
+//         body: Column(
+//           children: [
+//             TabShellRoute.data.tabBar(context),
+//             Expanded(
+//               child: navigator,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // class TabHomeRoute extends GoRouteData {
 //   @override
@@ -69,23 +72,49 @@ class TabShellRoute extends ShellRouteData {
 //   }
 // }
 
-class Tab1Route extends GoRouteData {
+class UnsplashButton extends StatelessWidget {
+  const UnsplashButton({
+    super.key,
+    required this.roomUser,
+  });
+
+  final RoomUser roomUser;
+
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const Tab1Page();
+  Widget build(BuildContext context) {
+    return IconButton.filledTonal(
+      icon: const Icon(Icons.sailing_outlined),
+      onPressed: () {
+        context.cPush(
+          UnsplashPage(
+            roomUser: roomUser,
+          ),
+        );
+        ContextMenu.hide();
+      },
+    );
   }
 }
 
-class Tab1Page extends StatefulWidget {
-  const Tab1Page({super.key});
+// class UnsplashRoute extends GoRouteData {
+//   @override
+//   Widget build(BuildContext context, GoRouterState state) {
+//     return const UnsplashPage();
+//   }
+// }
+
+class UnsplashPage extends StatefulWidget {
+  const UnsplashPage({super.key, required this.roomUser});
+
+  final RoomUser roomUser;
 
   @override
-  State<Tab1Page> createState() => _Tab1PageState();
+  State<UnsplashPage> createState() => _UnsplashPageState();
 }
 
-class _Tab1PageState extends State<Tab1Page> {
+class _UnsplashPageState extends State<UnsplashPage> {
   int page = 1;
-  String query = 'krishna';
+  String query = 'art';
   Unsplash? res;
 
   @override
@@ -96,7 +125,7 @@ class _Tab1PageState extends State<Tab1Page> {
 
   Future<void> fetch() async {
     final r = await http.get(Uri.parse(
-        'https://api.unsplash.com/search/photos?page=$page&query=$query&orientation=portrait&client_id=i2I0ZoWiW1efbC6m-hc9aSfJJk7DnhQixKWhhDdq5Bo'));
+        'https://api.unsplash.com/search/photos?per_page=21&page=$page&query=$query&orientation=portrait&client_id=i2I0ZoWiW1efbC6m-hc9aSfJJk7DnhQixKWhhDdq5Bo'));
     res = Unsplash.fromJson(r.body);
     setState(() {});
   }
@@ -105,7 +134,7 @@ class _Tab1PageState extends State<Tab1Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tab1'),
+        title: const Text('Unsplash'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -121,7 +150,7 @@ class _Tab1PageState extends State<Tab1Page> {
           ),
         ),
       ),
-      body: res == null ? null : Grid(res),
+      body: res == null ? null : UnsplashGrid(res: res, roomUser: widget.roomUser),
       // body: res == null ? null : UnslashRow(res),
       extendBody: true,
       bottomNavigationBar: SizedBox(height: context.mq.pad.bottom),
@@ -131,7 +160,7 @@ class _Tab1PageState extends State<Tab1Page> {
           fetch();
         },
         child: const Icon(
-          Icons.fence,
+          Icons.replay_outlined,
         ),
       ),
     );
@@ -152,6 +181,7 @@ class UnslashRow extends StatelessWidget {
         SizedBox(
           height: 400,
           child: PageView.builder(
+            pageSnapping: false,
             controller: PageController(viewportFraction: .8),
             itemCount: res?.results?.length,
             itemBuilder: (context, index) {
@@ -204,19 +234,21 @@ class UnslashRow extends StatelessWidget {
   }
 }
 
-class Grid extends StatelessWidget {
-  const Grid(
-    this.res, {
+class UnsplashGrid extends StatelessWidget {
+  const UnsplashGrid({
     super.key,
+    this.res,
+    required this.roomUser,
   });
 
   final Unsplash? res;
+  final RoomUser roomUser;
 
   @override
   Widget build(BuildContext context) {
     return GridView.count(
       physics: const BouncingScrollPhysics(),
-      crossAxisCount: 2,
+      crossAxisCount: 3,
       children: res?.results?.map(
             (e) {
               final url = e.urls?.small ?? e.urls?.regular ?? e.urls?.full;
@@ -238,6 +270,16 @@ class Grid extends StatelessWidget {
                                       imageUrl: url,
                                       // blurHash: e.blurHash,
                                     ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 32,
+                                  child: Container(
+                                    color: AppTheme.card,
+                                    padding: const EdgeInsets.all(16),
+                                    height: 100,
+                                    width: context.mq.w,
+                                    child: SendBox(roomUser: roomUser),
                                   ),
                                 ),
                                 Container(

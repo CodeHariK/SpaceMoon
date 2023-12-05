@@ -8,6 +8,7 @@ export enum Role {
   INVALIDROLE = 0,
   REQUEST = 10,
   USER = 20,
+  INVITE = 25,
   MODERATOR = 30,
   ADMIN = 40,
   UNRECOGNIZED = -1,
@@ -24,6 +25,9 @@ export function roleFromJSON(object: any): Role {
     case 20:
     case "USER":
       return Role.USER;
+    case 25:
+    case "INVITE":
+      return Role.INVITE;
     case 30:
     case "MODERATOR":
       return Role.MODERATOR;
@@ -45,6 +49,8 @@ export function roleToJSON(object: Role): string {
       return "REQUEST";
     case Role.USER:
       return "USER";
+    case Role.INVITE:
+      return "INVITE";
     case Role.MODERATOR:
       return "MODERATOR";
     case Role.ADMIN:

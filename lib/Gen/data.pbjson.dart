@@ -20,6 +20,7 @@ const Role$json = {
     {'1': 'INVALIDROLE', '2': 0},
     {'1': 'REQUEST', '2': 10},
     {'1': 'USER', '2': 20},
+    {'1': 'INVITE', '2': 25},
     {'1': 'MODERATOR', '2': 30},
     {'1': 'ADMIN', '2': 40},
   ],
@@ -27,8 +28,8 @@ const Role$json = {
 
 /// Descriptor for `Role`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List roleDescriptor = $convert.base64Decode(
-    'CgRSb2xlEg8KC0lOVkFMSURST0xFEAASCwoHUkVRVUVTVBAKEggKBFVTRVIQFBINCglNT0RFUk'
-    'FUT1IQHhIJCgVBRE1JThAo');
+    'CgRSb2xlEg8KC0lOVkFMSURST0xFEAASCwoHUkVRVUVTVBAKEggKBFVTRVIQFBIKCgZJTlZJVE'
+    'UQGRINCglNT0RFUkFUT1IQHhIJCgVBRE1JThAo');
 
 @$core.Deprecated('Use mediaTypeDescriptor instead')
 const MediaType$json = {

@@ -17,6 +17,7 @@ class Role extends $pb.ProtobufEnum {
   static const Role INVALIDROLE = Role._(0, _omitEnumNames ? '' : 'INVALIDROLE');
   static const Role REQUEST = Role._(10, _omitEnumNames ? '' : 'REQUEST');
   static const Role USER = Role._(20, _omitEnumNames ? '' : 'USER');
+  static const Role INVITE = Role._(25, _omitEnumNames ? '' : 'INVITE');
   static const Role MODERATOR = Role._(30, _omitEnumNames ? '' : 'MODERATOR');
   static const Role ADMIN = Role._(40, _omitEnumNames ? '' : 'ADMIN');
 
@@ -24,6 +25,7 @@ class Role extends $pb.ProtobufEnum {
     INVALIDROLE,
     REQUEST,
     USER,
+    INVITE,
     MODERATOR,
     ADMIN,
   ];

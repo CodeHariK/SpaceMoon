@@ -8,6 +8,7 @@ enum Role {
     INVALIDROLE = 0;
     REQUEST = 10;
     USER = 20;
+    INVITE = 25;
     MODERATOR = 30;
     ADMIN = 40;
 }

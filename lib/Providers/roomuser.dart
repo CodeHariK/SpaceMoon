@@ -12,6 +12,7 @@ extension SuperRoomUser on RoomUser {
   bool get isAdminOrMod => role == Role.ADMIN || role == Role.MODERATOR;
   bool get isRequest => role == Role.REQUEST;
   bool get isAdmin => role == Role.ADMIN;
+  bool get isInvite => role == Role.INVITE;
 
   CollectionReference<Tweet?>? get tweetCol {
     return FirebaseFirestore.instance.collection('${Const.rooms.name}/$room/${Const.tweets.name}').withConverter(

@@ -43,29 +43,32 @@ class SearchPage extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AsyncTextFormField(
-              controller: roomCon,
-              autofocus: true,
-              decoration: (AsyncText value, roomCon) => const InputDecoration(
-                hintText: 'abc...',
-                labelText: 'Find Rooms or Users by nickname',
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AsyncTextFormField(
+                controller: roomCon,
+                autofocus: true,
+                decoration: (AsyncText value, roomCon) => const InputDecoration(
+                  hintText: 'abc...',
+                  labelText: 'Find Rooms or Users by nickname',
+                ),
+                milliseconds: 600,
+                textInputAction: TextInputAction.done,
+                asyncValidator: (v) async {
+                  if (v.checkMin(8) != null) {
+                    return v.checkMin(8);
+                  }
+                  if (v.checkAlphanumeric() != null) {
+                    return v.checkAlphanumeric();
+                  }
+
+                  ref.read(searchTextProvider.notifier).change(v);
+                  await 200.mil.delay();
+
+                  return null;
+                },
+                showSubmitSuffix: false,
               ),
-              milliseconds: 600,
-              textInputAction: TextInputAction.done,
-              asyncValidator: (v) async {
-                if (v.checkMin(8) != null) {
-                  return v.checkMin(8);
-                }
-                if (v.checkAlphanumeric() != null) {
-                  return v.checkAlphanumeric();
-                }
-
-                ref.read(searchTextProvider.notifier).change(v);
-                await 200.mil.delay();
-
-                return null;
-              },
-              showSubmitSuffix: false,
             ),
             if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)
               Padding(
@@ -117,28 +120,30 @@ class SearchPage extends HookConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Text('User'),
-                              AsyncLock(
-                                builder: (loading, status, lock, open, setStatus) {
-                                  return IconButton.filledTonal(
-                                    onPressed: () async {
-                                      lock();
-                                      await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
-                                            RoomUser(
-                                              user: searchUser?.uid,
-                                              room: room?.uid,
-                                            ),
-                                          );
-                                      open();
-                                      if (context.mounted) {
-                                        context.pop();
-                                      }
-                                    },
-                                    icon: !loading
-                                        ? const Icon(Icons.add_circle_outline_outlined)
-                                        : const CircularProgress(size: 20),
-                                  );
-                                },
-                              ),
+                              const SizedBox(width: 10),
+                              if (room != null)
+                                AsyncLock(
+                                  builder: (loading, status, lock, open, setStatus) {
+                                    return IconButton.filledTonal(
+                                      onPressed: () async {
+                                        lock();
+                                        await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
+                                              RoomUser(
+                                                user: searchUser?.uid,
+                                                room: room?.uid,
+                                              ),
+                                            );
+                                        open();
+                                        if (context.mounted) {
+                                          context.pop();
+                                        }
+                                      },
+                                      icon: !loading
+                                          ? const Icon(Icons.add_circle_outline_outlined)
+                                          : const CircularProgress(size: 20),
+                                    );
+                                  },
+                                ),
                             ],
                           ),
                         );

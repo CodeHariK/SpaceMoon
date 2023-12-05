@@ -169,16 +169,6 @@ class CurrentRoom extends _$CurrentRoom {
     return null;
   }
 
-  Future<void> requestAccessToRoom() async {
-    final room = state.value;
-    try {
-      await FirebaseFunctions.instance.httpsCallable('requestAccessToRoom').call(RoomUser(room: room?.uid).toMap());
-    } catch (e) {
-      debugPrint('requestAccessToRoom Failed');
-    }
-    ref.invalidate(currentRoomUserProvider);
-  }
-
   Future<void> upgradeAccessToRoom(RoomUser user) async {
     try {
       await FirebaseFunctions.instance.httpsCallable('upgradeAccessToRoom').call(user.toMap());
