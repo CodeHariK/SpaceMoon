@@ -20,7 +20,7 @@ export const sendTweet = onCall({
     let user = await getRoomUserById(userId, tweet.room)
 
     if (user && user.role >= Role.USER && user.role != Role.INVITE) {
-        const sentTweet = await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
+        const sent = await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
             Tweet.toJSON(Tweet.create({
                 user: userId,
                 created: new Date(),
@@ -31,6 +31,18 @@ export const sendTweet = onCall({
             })) as Map<string, any>
         );
 
+        admin.messaging().sendToTopic(
+            tweet.room,
+            {
+                'data': {
+                    'type': 'new_message',
+                    'user': userId,
+                    'messageId': sent.path,
+                    'content': 'Hello, world! ' + tweet.text,
+                },
+            }
+        );
+
         await admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
             roomToJson(Room.create({
                 updated: new Date()
@@ -39,7 +51,7 @@ export const sendTweet = onCall({
             { merge: true },
         );
 
-        return sentTweet.path
+        return sent.path
     } else {
         console.log('Invalid User')
         throw new HttpsError('invalid-argument', 'Invalid User')

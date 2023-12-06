@@ -1,3 +1,4 @@
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -102,11 +103,18 @@ class SettingsPage extends ConsumerWidget {
             },
             title: Text('Account Management', style: context.tm),
           ),
+          const Divider(),
           CupertinoListTile.notched(
             onTap: () {
               showLicensePage(context: context);
             },
             title: Text('License', style: context.tm),
+          ),
+          CupertinoListTile.notched(
+            onTap: () {
+              safeLaunchUrl('Privacy Policy');
+            },
+            title: Text('Privacy Policy', style: context.tm),
           ),
           CupertinoListTile.notched(
             onTap: () {

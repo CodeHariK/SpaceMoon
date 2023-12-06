@@ -44,6 +44,7 @@ Future<void> firebaseMessagingSetup() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       dino('Got a message whilst in the foreground!');
       dino('Message data: ${message.data}');
+      dino(message);
 
       if (message.notification != null) {
         dino('Message also contained a notification: ${message.notification}');
