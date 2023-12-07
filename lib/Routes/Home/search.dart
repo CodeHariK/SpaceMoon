@@ -35,6 +35,7 @@ class SearchPage extends HookConsumerWidget {
     final roomCon = useTextEditingController();
     final searchRooms = ref.watch(searchRoomByNickProvider).value ?? [];
     final searchUsers = ref.watch(searchUserByNickProvider).value ?? [];
+    final me = ref.watch(currentUserDataProvider).value;
 
     return Scaffold(
       appBar: room != null ? AppBar(title: const Text('Invite Members')) : null,
@@ -121,22 +122,37 @@ class SearchPage extends HookConsumerWidget {
                             children: [
                               const Text('User'),
                               const SizedBox(width: 10),
-                              if (room != null)
+                              if (searchUser?.uid != me?.uid)
                                 AsyncLock(
                                   builder: (loading, status, lock, open, setStatus) {
                                     return IconButton.filledTonal(
                                       onPressed: () async {
                                         lock();
-                                        await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
-                                              RoomUser(
-                                                user: searchUser?.uid,
-                                                room: room?.uid,
-                                              ),
+                                        if (room != null) {
+                                          await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
+                                                RoomUser(
+                                                  user: searchUser?.uid,
+                                                  room: room?.uid,
+                                                ),
+                                              );
+                                          if (context.mounted) {
+                                            context.pop();
+                                          }
+                                        } else {
+                                          if (me != null && searchUser != null) {
+                                            final room = await ref.read(currentRoomProvider.notifier).createRoom(
+                                              room: Room(displayName: '${me.displayName} ${searchUser.displayName}'),
+                                              users: [
+                                                me.uid,
+                                                searchUser.uid,
+                                              ],
                                             );
-                                        open();
-                                        if (context.mounted) {
-                                          context.pop();
+                                            if (room != null && context.mounted) {
+                                              ChatRoute(chatId: room.uid).go(context);
+                                            }
+                                          }
                                         }
+                                        open();
                                       },
                                       icon: !loading
                                           ? const Icon(Icons.add_circle_outline_outlined)

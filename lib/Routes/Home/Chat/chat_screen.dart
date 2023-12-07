@@ -10,12 +10,12 @@ import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
@@ -24,6 +24,7 @@ import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class ChatRoute extends GoRouteData {
   final String chatId;
@@ -96,6 +97,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
     );
 
+    final user = ref.watch(currentUserDataProvider).value;
+
     // final meInRoomPro = ref.watch(currentRoomUserProvider);
     // final meInRoom = meInRoomPro.value;
     final meInRoom = ref.watch(
@@ -122,10 +125,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     // }
 
     if (room == null) {
-      return WillPopScope(
-        onWillPop: () async {
+      return PopScope(
+        onPopInvoked: (pop) async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
-          return true;
         },
         child: Scaffold(
           appBar: AppBar(
@@ -145,19 +147,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     }
 
     if (meInRoom == null || meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/) {
-      return WillPopScope(
-        onWillPop: () async {
+      return PopScope(
+        onPopInvoked: (pop) async {
           ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
-          return true;
         },
         child: ChatInfoPage(chatId: room.uid),
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvoked: (pop) async {
         ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
-        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -168,7 +168,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             onTap: () {
               ChatInfoRoute(chatId: widget.chatId).go(context);
             },
-            title: Text(room.displayName, style: context.tm, maxLines: 1),
+            title: Text(
+              room.displayName.replaceAll(user?.displayName ?? '***', '').trim(),
+              style: context.tm,
+              maxLines: 1,
+            ),
             subtitle: Text(room.nick, style: context.ts, maxLines: 1),
             leading: CircleAvatar(
               child: (!isURL(room.photoURL))
@@ -178,7 +182,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       radius: 32,
                     ),
             ),
-            trailing: InviteButton(room: room),
+            trailing: (meInRoom.isUserOrAdmin) ? InviteButton(room: room) : null,
           ),
         ),
         body: SafeArea(
@@ -255,7 +259,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             builder: (context, dateSnapshot) {
                               final value = dateSnapshot.data;
                               final index = value?.$1;
-                              if (index == null || allTweetSnap.docs.length <= index) return const SizedBox();
+                              if (index == null || allTweetSnap.docs.length <= index) {
+                                return const SizedBox();
+                              }
                               final show = value!.$2;
                               final date = allTweetSnap.docs[index].data()!.created.dateString;
 

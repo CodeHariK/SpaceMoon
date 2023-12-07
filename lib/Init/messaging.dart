@@ -13,7 +13,7 @@ Future<void> firebaseMessagingSetup() async {
   // For apple platforms, ensure the APNS token is available before making any FCM plugin API calls
   final apnsToken = await messaging.getAPNSToken();
 
-  dino(apnsToken);
+  dino('ApnsToken : $apnsToken');
 
   if (apnsToken == null && Device.isIos) {
     return;
@@ -41,10 +41,14 @@ Future<void> firebaseMessagingSetup() async {
     // lava('init : $token');
     // firebaseTokenUpdate(token);
 
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    dino(initialMessage?.toMap());
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       dino('Got a message whilst in the foreground!');
       dino('Message data: ${message.data}');
       dino(message);
+      print('Listen');
 
       if (message.notification != null) {
         dino('Message also contained a notification: ${message.notification}');
@@ -72,9 +76,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void firebaseTokenUpdate() async {
   String? token = await FirebaseMessaging.instance.getToken(
-    vapidKey: 'BFjqeePbCMx5kxv-bTVBte9_maDaqJ6wjydfReBGHaIWJR3Oz54H26XnCXjuXpdF38zCUKkvcbHndNKzvYEf1uQ',
+    vapidKey: 'BEjtF-d72Aa2Jx4x1KCoaPjdH2QRtzXLujB2LjcJH1Arepn2rWqfJaTEby9qznl7SXi_fcO94iWSFUGgoGpMJYU',
   );
-  dino('firebaseTokenUpdate : $token');
+
+  dino('FirebaseTokenUpdate : $token');
   callFCMtokenUpdate(token);
 }
 

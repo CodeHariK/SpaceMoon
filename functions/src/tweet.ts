@@ -31,17 +31,17 @@ export const sendTweet = onCall({
             })) as Map<string, any>
         );
 
-        admin.messaging().sendToTopic(
-            tweet.room,
-            {
-                'data': {
-                    'type': 'new_message',
-                    'user': userId,
-                    'messageId': sent.path,
-                    'content': 'Hello, world! ' + tweet.text,
-                },
-            }
-        );
+        // admin.messaging().sendToTopic(
+        //     tweet.room,
+        //     {
+        //         'data': {
+        //             'type': 'new_message',
+        //             'user': userId,
+        //             'messageId': sent.path,
+        //             'content': 'Hello, world! ' + tweet.text,
+        //         },
+        //     }
+        // );
 
         await admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
             roomToJson(Room.create({

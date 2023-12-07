@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,12 +8,12 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/animated/animated_counter.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -22,20 +21,19 @@ import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class AllChatPage extends ConsumerWidget {
   const AllChatPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
     final allRoomsUsers = ref.watch(getAllMyRoomsProvider);
+    final user = ref.watch(currentUserDataProvider).value;
 
     allRoomsUsers.whenData((value) {
       for (RoomUser? element in value) {
-        if (element != null) {
-          messaging.subscribeToTopic(element.room);
-        }
+        if (element != null) {}
       }
     });
 
@@ -46,12 +44,13 @@ class AllChatPage extends ConsumerWidget {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Hero(
               tag: 'Search',
               child: TextFormField(
                 decoration: const InputDecoration(
                   hintText: 'abc...',
+                  prefixIcon: Icon(Icons.search),
                   labelText: 'Find Rooms or Users by nickname',
                 ),
                 onTap: () {
@@ -83,13 +82,15 @@ class AllChatPage extends ConsumerWidget {
                                 final roomuser = roomUsers[index] ?? RoomUser();
 
                                 final room = ref.watch(GetRoomByIdProvider(roomuser.room)).value;
-                                if (room == null) return const SizedBox.shrink();
+                                if (room == null) {
+                                  return const SizedBox.shrink();
+                                }
 
                                 final count = ref.watch(GetNewTweetCountProvider(roomuser)).value;
 
                                 return ListTile(
                                   tileColor: index % 2 == 1 ? AppTheme.card : null,
-                                  title: Text(room.displayName),
+                                  title: Text(room.displayName.replaceAll(user?.displayName ?? '***', '').trim()),
                                   subtitle: Text(room.nick),
                                   leading: CircleAvatar(
                                     radius: 28,

@@ -71,10 +71,9 @@ class _AppFlowyState extends State<AppFlowy> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvoked: (pop) async {
         context.pop(toFile);
-        return true;
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -208,14 +207,20 @@ class MobileEditor extends StatelessWidget {
           child: MobileFloatingToolbar(
             editorState: editorState,
             editorScrollController: editorScrollController,
-            toolbarBuilder: (context, anchor) {
+            toolbarBuilder: (context, anchor, closeToolbar) {
               return AdaptiveTextSelectionToolbar.editable(
-                onLiveTextInput: () {},
+                onLookUp: () {},
+                onSearchWeb: () {},
+                onShare: () {},
                 clipboardStatus: ClipboardStatus.pasteable,
-                onCopy: () => copyCommand.execute(editorState),
+                onCopy: () {
+                  copyCommand.execute(editorState);
+                  closeToolbar();
+                },
                 onCut: () => cutCommand.execute(editorState),
                 onPaste: () => pasteCommand.execute(editorState),
                 onSelectAll: () => selectAllCommand.execute(editorState),
+                onLiveTextInput: null,
                 anchors: TextSelectionToolbarAnchors(
                   primaryAnchor: anchor,
                 ),
@@ -282,11 +287,14 @@ EditorStyle customizeEditorStyle() {
       // ),
       code: TextStyle(
         color: Colors.blue,
-        backgroundColor: AppTheme.darkness ? const Color.fromARGB(255, 66, 66, 66) : const Color.fromARGB(15, 0, 0, 0),
+        backgroundColor: AppTheme.darkness
+            ? const Color.fromARGB(255, 66, 66, 66)
+            : const Color.fromARGB(15, 0, 0, 0),
       ),
     ),
-    textSpanDecorator:
-        PlatformExtension.isDesktopOrWeb ? defaultTextSpanDecoratorForAttribute : mobileTextSpanDecoratorForAttribute,
+    textSpanDecorator: PlatformExtension.isDesktopOrWeb
+        ? defaultTextSpanDecoratorForAttribute
+        : mobileTextSpanDecoratorForAttribute,
     // textSpanDecorator: (context, node, index, text, textSpan) {
     //   final attributes = text.attributes;
     //   final href = attributes?[AppFlowyRichTextKeys.href];
@@ -338,7 +346,8 @@ Map<String, BlockComponentBuilder> buildBlockComponentBuilders(
         final checked = node.attributes[TodoListBlockKeys.checked] as bool;
         return GestureDetector(
           onTap: () => editorState.apply(
-            editorState.transaction..updateNode(node, {TodoListBlockKeys.checked: !checked}),
+            editorState.transaction
+              ..updateNode(node, {TodoListBlockKeys.checked: !checked}),
           ),
           child: Padding(
             padding: const EdgeInsets.only(right: 6.0),

@@ -159,6 +159,7 @@ export const upgradeAccessToRoom = onCall({
 
         if (!role
             || (role == currole)
+            || (adminrole == Role.INVITE)
             || (currole == Role.INVITE && adminId != curUser?.user)
             || (role > defaultRole && !adminrole && currole != Role.INVITE)
             || (room.open == Visible.CLOSE && !adminUser)
@@ -180,7 +181,7 @@ export const upgradeAccessToRoom = onCall({
 
         return { message: 'The target user has been added to the room.' };
     } else {
-        console.log('You do not have permission to kick users from this room.')
-        throw new HttpsError('permission-denied', 'You do not have permission to kick users from this room.');
+        console.log('You do not have permission to upgradeAccessToRoom.')
+        throw new HttpsError('permission-denied', 'You do not have permission to upgradeAccessToRoom.');
     }
 });

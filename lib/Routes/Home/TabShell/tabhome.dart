@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Static/theme.dart';
-import 'package:spacemoon/Widget/Chat/send_box.dart';
+import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 // final GlobalKey<NavigatorState> tabShellNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -203,7 +203,7 @@ class UnslashRow extends StatelessWidget {
                 ),
                 margin: const EdgeInsets.all(8.0),
                 child: Hero(
-                  tag: e.id!,
+                  tag: e.id ?? 'e.id',
                   child: CustomCacheImage(
                     imageUrl: url,
                     radius: 12,
@@ -234,7 +234,7 @@ class UnslashRow extends StatelessWidget {
   }
 }
 
-class UnsplashGrid extends StatelessWidget {
+class UnsplashGrid extends ConsumerWidget {
   const UnsplashGrid({
     super.key,
     this.res,
@@ -245,7 +245,7 @@ class UnsplashGrid extends StatelessWidget {
   final RoomUser roomUser;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GridView.count(
       physics: const BouncingScrollPhysics(),
       crossAxisCount: 3,
@@ -260,6 +260,27 @@ class UnsplashGrid extends StatelessWidget {
                         fullscreenDialog: true,
                         pageBuilder: (context, animation, secondaryAnimation) {
                           return Scaffold(
+                            floatingActionButton: FloatingActionButton(
+                              onPressed: () async {
+                                await ref.read(tweetsProvider.notifier).sendTweet(
+                                      tweet: Tweet(
+                                        room: roomUser.room,
+                                        user: roomUser.user,
+                                        mediaType: MediaType.GALLERY,
+                                        gallery: [
+                                          ImageMetadata(
+                                            url: url,
+                                            caption: e.description,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                if (context.mounted) {
+                                  context.pop();
+                                }
+                              },
+                              child: const Icon(Icons.send),
+                            ),
                             appBar: AppBar(),
                             body: Stack(
                               children: [
@@ -270,16 +291,6 @@ class UnsplashGrid extends StatelessWidget {
                                       imageUrl: url,
                                       // blurHash: e.blurHash,
                                     ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 32,
-                                  child: Container(
-                                    color: AppTheme.card,
-                                    padding: const EdgeInsets.all(16),
-                                    height: 100,
-                                    width: context.mq.w,
-                                    child: SendBox(roomUser: roomUser),
                                   ),
                                 ),
                                 Container(

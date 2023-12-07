@@ -38,16 +38,17 @@ dependencies:
   cloud_functions: ^4.5.2
   firebase_storage: ^11.4.0
   firebase_auth: ^4.12.1
-  firebase_ui_auth: ^1.10.0
-  firebase_ui_oauth_google: ^1.2.13
-  firebase_ui_oauth_apple: ^1.2.13
+  firebase_ui_auth: ^1.11.0
+  firebase_ui_oauth_google: ^1.2.15
+  firebase_ui_oauth_apple: ^1.2.15
   firebase_ui_firestore: ^1.5.13
+  firebase_ui_localizations: ^1.9.0
 
   intl: ^0.18.1
 
   protobuf: ^3.1.0
 
-  http: ^1.1.0
+  http: ^1.1.2
 
   google_fonts: ^6.1.0
 
@@ -68,6 +69,9 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
 
   flutter_animate: ^4.2.0+1
+  cached_network_image: ^3.3.0
+  flutter_blurhash: ^0.8.2
+  flutter_cache_manager: ^3.3.1
 
   rxdart: ^0.27.7
 
@@ -83,11 +87,11 @@ dependencies:
 
   any_link_preview: ^3.0.1
 
-  appflowy_editor: ^1.5.2
+  appflowy_editor: ^2.0.0
 
   mobile_scanner: ^3.5.2
 
-  flutter_native_splash: ^2.3.6
+  flutter_native_splash: ^2.3.7
 
   moonspace:
     git:

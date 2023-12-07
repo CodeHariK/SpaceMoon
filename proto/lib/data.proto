@@ -15,15 +15,11 @@ enum Role {
 
 enum MediaType {
     INVALIDMEDIATYPE = 0;
-    TEXT = 1;
-    IMAGE = 5;
-    VIDEO = 10;
-    AUDIO = 15;
-    PDF = 20;
-    FILE = 30;
-    QR = 35;
-    POST = 50;
-    GALLERY = 60;
+    TEXT = 10;
+    FILE = 20;
+    QR = 30;
+    POST = 40;
+    GALLERY = 50;
 }
 
 enum Active {

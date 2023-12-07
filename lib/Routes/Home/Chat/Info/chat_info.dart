@@ -8,7 +8,6 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -20,6 +19,7 @@ import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class ChatInfoRoute extends GoRouteData {
   final String chatId;
@@ -69,9 +69,11 @@ class ChatInfoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(room.displayName),
+        title: Text(
+          room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim(),
+        ),
         actions: [
-          InviteButton(room: room),
+          if (meInRoom?.isUserOrAdmin == true) InviteButton(room: room),
         ],
       ),
       body: SafeArea(

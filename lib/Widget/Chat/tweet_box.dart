@@ -8,7 +8,6 @@ import 'package:moonspace/helper/validator/validator.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -18,6 +17,7 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class TweetBox extends ConsumerWidget {
   const TweetBox({
@@ -70,19 +70,6 @@ class TweetBox extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (tweet.mediaType == MediaType.IMAGE)
-                ClipRRect(
-                  borderRadius: 25.br,
-                  child: SizedBox(
-                    height: 300,
-                    width: 300,
-                    child: Image.network(
-                      tweet.link,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-
               if (tweet.mediaType == MediaType.QR)
                 SizedBox(
                   height: 300,
@@ -171,7 +158,7 @@ class TweetBox extends ConsumerWidget {
               Text(tweet.created.timeString, style: context.ls),
             ],
           ),
-          (tweet.mediaType == MediaType.VIDEO || tweet.mediaType == MediaType.POST)
+          (tweet.mediaType == MediaType.POST)
               ? box
               : LimitedBox(
                   maxWidth: AppTheme.w * .7,
@@ -187,7 +174,7 @@ class TweetBox extends ConsumerWidget {
     );
 
     return isHero
-        ? (tweet.mediaType == MediaType.VIDEO || tweet.mediaType == MediaType.POST)
+        ? (tweet.mediaType == MediaType.POST)
             ? box
             : Hero(
                 tag: tweet.path,
@@ -195,18 +182,16 @@ class TweetBox extends ConsumerWidget {
               )
         : GestureDetector(
             onLongPress: () {},
-            onTap: (tweet.mediaType == MediaType.VIDEO)
-                ? null
-                : () {
-                    TweetRoute(
-                      chatId: tweet.room,
-                      tweetId: tweet.uid,
-                      $extra: TweetRouteObj(
-                        tweet: tweet,
-                        room: room,
-                      ),
-                    ).navPush(context);
-                  },
+            onTap: () {
+              TweetRoute(
+                chatId: tweet.room,
+                tweetId: tweet.uid,
+                $extra: TweetRouteObj(
+                  tweet: tweet,
+                  room: room,
+                ),
+              ).navPush(context);
+            },
             child: child,
           );
   }

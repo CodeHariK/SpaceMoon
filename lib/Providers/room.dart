@@ -172,10 +172,10 @@ class CurrentRoom extends _$CurrentRoom {
   Future<void> upgradeAccessToRoom(RoomUser user) async {
     try {
       await FirebaseFunctions.instance.httpsCallable('upgradeAccessToRoom').call(user.toMap());
+      ref.invalidate(currentRoomUserProvider);
     } catch (e) {
       debugPrint('upgradeAccessToRoom Failed');
     }
-    ref.invalidate(currentRoomUserProvider);
   }
 
   Future<void> deleteRoom(RoomUser user) async {

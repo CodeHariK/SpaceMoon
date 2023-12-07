@@ -5,6 +5,16 @@
 
 A Step by step guide on how to create and publish Flutter Firebase app to Google play store and Apple app store.
 
+## How to build
+
+```dart
+flutterfire configure
+dart run build_runner watch --delete-conflicting-outputs
+flutter pub upgrade
+
+For local emulator cloud function, configure appcheck debug token
+```
+
 ## Getting Started
 
 ### Step 1 : [Creating Project and Configuring Firebase](./docs/steps/Create.md)

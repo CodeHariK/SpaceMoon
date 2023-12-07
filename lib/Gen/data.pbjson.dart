@@ -36,23 +36,18 @@ const MediaType$json = {
   '1': 'MediaType',
   '2': [
     {'1': 'INVALIDMEDIATYPE', '2': 0},
-    {'1': 'TEXT', '2': 1},
-    {'1': 'IMAGE', '2': 5},
-    {'1': 'VIDEO', '2': 10},
-    {'1': 'AUDIO', '2': 15},
-    {'1': 'PDF', '2': 20},
-    {'1': 'FILE', '2': 30},
-    {'1': 'QR', '2': 35},
-    {'1': 'POST', '2': 50},
-    {'1': 'GALLERY', '2': 60},
+    {'1': 'TEXT', '2': 10},
+    {'1': 'FILE', '2': 20},
+    {'1': 'QR', '2': 30},
+    {'1': 'POST', '2': 40},
+    {'1': 'GALLERY', '2': 50},
   ],
 };
 
 /// Descriptor for `MediaType`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List mediaTypeDescriptor = $convert.base64Decode(
-    'CglNZWRpYVR5cGUSFAoQSU5WQUxJRE1FRElBVFlQRRAAEggKBFRFWFQQARIJCgVJTUFHRRAFEg'
-    'kKBVZJREVPEAoSCQoFQVVESU8QDxIHCgNQREYQFBIICgRGSUxFEB4SBgoCUVIQIxIICgRQT1NU'
-    'EDISCwoHR0FMTEVSWRA8');
+    'CglNZWRpYVR5cGUSFAoQSU5WQUxJRE1FRElBVFlQRRAAEggKBFRFWFQQChIICgRGSUxFEBQSBg'
+    'oCUVIQHhIICgRQT1NUECgSCwoHR0FMTEVSWRAy');
 
 @$core.Deprecated('Use activeDescriptor instead')
 const Active$json = {

@@ -8,13 +8,13 @@ import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Init/firebase.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
 
 class GalleryImage extends StatelessWidget {
@@ -33,7 +33,9 @@ class GalleryImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageMetadata = tweet.gallery[index];
 
-    final isVideo = lookupMimeType(spaceFileName(imageMetadata.url))?.startsWith('video/') == true ||
+    final isVideo = lookupMimeType(spaceFileName(imageMetadata.url))
+                ?.startsWith('video/') ==
+            true ||
         lookupMimeType(imageMetadata.localUrl)?.startsWith('video/') == true;
 
     if (isVideo) {
@@ -55,7 +57,8 @@ class GalleryImage extends StatelessWidget {
                   localUrl: imageMetadata.localUrl,
                 ),
               ),
-              const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
+              const IgnorePointer(
+                  child: Icon(Icons.play_circle_fill, size: 40)),
             ],
           ),
         ),
@@ -105,7 +108,9 @@ class GalleryImage extends StatelessWidget {
             children: [
               if (imageMetadata.url.isNotEmpty)
                 CustomCacheImage(
-                  imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
+                  imageUrl: inScaffold
+                      ? imageMetadata.url
+                      : spaceThumbImage(imageMetadata.url),
                   // blurHash: imageMetadata.blurhash,
                 ),
               if (imageMetadata.localUrl.isNotEmpty)
@@ -138,7 +143,10 @@ class GalleryImage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                           color: Colors.black,
                           boxShadow: const [
-                            BoxShadow(color: Color.fromARGB(160, 255, 255, 255), blurRadius: 2, spreadRadius: 4),
+                            BoxShadow(
+                                color: Color.fromARGB(160, 255, 255, 255),
+                                blurRadius: 2,
+                                spreadRadius: 4),
                           ],
                         ),
                         child: IconButton(
@@ -153,7 +161,8 @@ class GalleryImage extends StatelessWidget {
 
                               await uploadFire(
                                 imageName: randomString(12),
-                                storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                                storagePath:
+                                    'tweet/$roomId/${tweet.user}/$tweetId',
                                 docPath: 'rooms/$roomId/tweets/$tweetId',
                                 meta: imageMetadata,
                                 multipath: Const.gallery.name,
@@ -175,17 +184,21 @@ class GalleryImage extends StatelessWidget {
                   builder: (_, ref, ___) => AsyncTextFormField(
                     initialValue: imageMetadata.caption,
                     asyncValidator: (value) async {
-                      final uIndex = tweet.gallery.indexWhere((element) => element == imageMetadata);
+                      final uIndex = tweet.gallery
+                          .indexWhere((element) => element == imageMetadata);
                       tweet.gallery[uIndex].caption = value;
 
-                      ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                      ref
+                          .read(tweetsProvider.notifier)
+                          .updateTweet(tweet: tweet);
 
                       return null;
                     },
                     style: context.hm.c(Colors.white),
                     showPrefix: false,
                     milliseconds: 1000,
-                    decoration: (AsyncText value, galleryCon) => const InputDecoration(
+                    decoration: (AsyncText value, galleryCon) =>
+                        const InputDecoration(
                       fillColor: Colors.black38,
                       hintStyle: TextStyle(color: Colors.white70),
                       filled: true,
@@ -204,8 +217,10 @@ class GalleryImage extends StatelessWidget {
 }
 
 extension SuperImageMetadata on Tweet {
-  List<ImageMetadata> get avaiable => gallery.where((element) => element.url.isNotEmpty).toList();
-  List<ImageMetadata> get notAvaiable => gallery.where((element) => element.localUrl.isNotEmpty).toList();
+  List<ImageMetadata> get avaiable =>
+      gallery.where((element) => element.url.isNotEmpty).toList();
+  List<ImageMetadata> get notAvaiable =>
+      gallery.where((element) => element.localUrl.isNotEmpty).toList();
   int get uploaded => avaiable.length;
   int get total => gallery.length;
 }
@@ -220,7 +235,8 @@ class GalleryBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uploaded = tweet.gallery.where((element) => element.url.isNotEmpty).length;
+    final uploaded =
+        tweet.gallery.where((element) => element.url.isNotEmpty).length;
     final total = tweet.gallery.length;
 
     final child = Stack(
@@ -235,7 +251,8 @@ class GalleryBox extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(child: GalleryImage(tweet: tweet, index: 0)),
-                    if (tweet.gallery.length > 1) Expanded(child: GalleryImage(tweet: tweet, index: 1)),
+                    if (tweet.gallery.length > 1)
+                      Expanded(child: GalleryImage(tweet: tweet, index: 1)),
                   ],
                 ),
               ),
@@ -243,8 +260,10 @@ class GalleryBox extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      if (tweet.gallery.length > 2) Expanded(child: GalleryImage(tweet: tweet, index: 2)),
-                      if (tweet.gallery.length > 3) Expanded(child: GalleryImage(tweet: tweet, index: 3)),
+                      if (tweet.gallery.length > 2)
+                        Expanded(child: GalleryImage(tweet: tweet, index: 2)),
+                      if (tweet.gallery.length > 3)
+                        Expanded(child: GalleryImage(tweet: tweet, index: 3)),
                     ],
                   ),
                 ),
@@ -304,7 +323,8 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
     return StreamBuilder(
       stream: tweet.stream,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active && snapshot.data?.data() == null) {
+        if (snapshot.connectionState == ConnectionState.active &&
+            snapshot.data?.data() == null) {
           Future.delayed(const Duration(milliseconds: 50), () {
             context.nav.pop();
           });
@@ -322,9 +342,12 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
                   builder: (context, ref, child) {
                     return InkWell(
                       onTap: () {
-                        tweet.gallery.removeWhere((element) => selected.contains(element));
+                        tweet.gallery.removeWhere(
+                            (element) => selected.contains(element));
 
-                        ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                        ref
+                            .read(tweetsProvider.notifier)
+                            .updateTweet(tweet: tweet);
 
                         setState(() => startSelection = false);
                       },
@@ -353,7 +376,8 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
               if (tweet.uploaded != tweet.total) ...[
                 const SizedBox(width: 10),
                 FloatingActionButton(
-                  child: const Icon(CupertinoIcons.refresh_circled_solid, size: 40),
+                  child: const Icon(CupertinoIcons.refresh_circled_solid,
+                      size: 40),
                   onPressed: () async {
                     for (var img in tweet.notAvaiable) {
                       try {
@@ -448,7 +472,8 @@ class GalleryUploaderButton extends StatelessWidget {
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     void func() async {
       ContextMenu.hide();
-      final imgs = (await selectMultiMedia()).where((element) => element != null);
+      final imgs =
+          (await selectMultiMedia()).where((element) => element != null);
       if (imgs.isEmpty) return;
       final path = tweet?.path ??
           await ref.read(tweetsProvider.notifier).sendTweet(

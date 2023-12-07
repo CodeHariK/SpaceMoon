@@ -8,6 +8,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart' as auth;
 import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Init/messaging.dart';
 import 'package:spacemoon/firebase_options.dart';
@@ -40,7 +41,9 @@ Future<void> initFirebase({required bool useEmulator}) async {
     await emulator();
   }
 
-  await firebaseMessagingSetup();
+  if (!Device.isWeb) {
+    await firebaseMessagingSetup();
+  }
 }
 
 Future<void> emulator() async {

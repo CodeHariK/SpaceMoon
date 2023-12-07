@@ -9,7 +9,6 @@ import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/shimmer_boxes.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
@@ -17,6 +16,7 @@ import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
+import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class ProfileObj {
   final User? user;
@@ -186,7 +186,7 @@ class RefreshTokenDisplay extends ConsumerWidget {
     if (jwt != null && jwt.length > 1) {
       String token = jwt[1];
       int l = (token.length % 4);
-      token += List.generate(l, (index) => '=').join();
+      token += List.generate((4 - l) % 4, (index) => '=').join();
       final decoded = base64.decode(token);
       token = utf8.decode(decoded);
       return json.decode(token) as Map<String, dynamic>;

@@ -63,15 +63,11 @@ export function roleToJSON(object: Role): string {
 
 export enum MediaType {
   INVALIDMEDIATYPE = 0,
-  TEXT = 1,
-  IMAGE = 5,
-  VIDEO = 10,
-  AUDIO = 15,
-  PDF = 20,
-  FILE = 30,
-  QR = 35,
-  POST = 50,
-  GALLERY = 60,
+  TEXT = 10,
+  FILE = 20,
+  QR = 30,
+  POST = 40,
+  GALLERY = 50,
   UNRECOGNIZED = -1,
 }
 
@@ -80,31 +76,19 @@ export function mediaTypeFromJSON(object: any): MediaType {
     case 0:
     case "INVALIDMEDIATYPE":
       return MediaType.INVALIDMEDIATYPE;
-    case 1:
+    case 10:
     case "TEXT":
       return MediaType.TEXT;
-    case 5:
-    case "IMAGE":
-      return MediaType.IMAGE;
-    case 10:
-    case "VIDEO":
-      return MediaType.VIDEO;
-    case 15:
-    case "AUDIO":
-      return MediaType.AUDIO;
     case 20:
-    case "PDF":
-      return MediaType.PDF;
-    case 30:
     case "FILE":
       return MediaType.FILE;
-    case 35:
+    case 30:
     case "QR":
       return MediaType.QR;
-    case 50:
+    case 40:
     case "POST":
       return MediaType.POST;
-    case 60:
+    case 50:
     case "GALLERY":
       return MediaType.GALLERY;
     case -1:
@@ -120,14 +104,6 @@ export function mediaTypeToJSON(object: MediaType): string {
       return "INVALIDMEDIATYPE";
     case MediaType.TEXT:
       return "TEXT";
-    case MediaType.IMAGE:
-      return "IMAGE";
-    case MediaType.VIDEO:
-      return "VIDEO";
-    case MediaType.AUDIO:
-      return "AUDIO";
-    case MediaType.PDF:
-      return "PDF";
     case MediaType.FILE:
       return "FILE";
     case MediaType.QR:

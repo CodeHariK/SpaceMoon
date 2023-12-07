@@ -38,23 +38,15 @@ class Role extends $pb.ProtobufEnum {
 
 class MediaType extends $pb.ProtobufEnum {
   static const MediaType INVALIDMEDIATYPE = MediaType._(0, _omitEnumNames ? '' : 'INVALIDMEDIATYPE');
-  static const MediaType TEXT = MediaType._(1, _omitEnumNames ? '' : 'TEXT');
-  static const MediaType IMAGE = MediaType._(5, _omitEnumNames ? '' : 'IMAGE');
-  static const MediaType VIDEO = MediaType._(10, _omitEnumNames ? '' : 'VIDEO');
-  static const MediaType AUDIO = MediaType._(15, _omitEnumNames ? '' : 'AUDIO');
-  static const MediaType PDF = MediaType._(20, _omitEnumNames ? '' : 'PDF');
-  static const MediaType FILE = MediaType._(30, _omitEnumNames ? '' : 'FILE');
-  static const MediaType QR = MediaType._(35, _omitEnumNames ? '' : 'QR');
-  static const MediaType POST = MediaType._(50, _omitEnumNames ? '' : 'POST');
-  static const MediaType GALLERY = MediaType._(60, _omitEnumNames ? '' : 'GALLERY');
+  static const MediaType TEXT = MediaType._(10, _omitEnumNames ? '' : 'TEXT');
+  static const MediaType FILE = MediaType._(20, _omitEnumNames ? '' : 'FILE');
+  static const MediaType QR = MediaType._(30, _omitEnumNames ? '' : 'QR');
+  static const MediaType POST = MediaType._(40, _omitEnumNames ? '' : 'POST');
+  static const MediaType GALLERY = MediaType._(50, _omitEnumNames ? '' : 'GALLERY');
 
   static const $core.List<MediaType> values = <MediaType> [
     INVALIDMEDIATYPE,
     TEXT,
-    IMAGE,
-    VIDEO,
-    AUDIO,
-    PDF,
     FILE,
     QR,
     POST,
