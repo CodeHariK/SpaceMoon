@@ -49,7 +49,8 @@ Future<void> initFirebase({required bool useEmulator}) async {
 Future<void> emulator() async {
   if (kDebugMode) {
     try {
-      final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? '10.0.2.2' : 'localhost';
+      const computerIp = '192.168.1.4';
+      final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? computerIp : 'localhost';
 
       FirebaseFirestore.instance.settings = Settings(
         host: '$emulatorHost:8080',

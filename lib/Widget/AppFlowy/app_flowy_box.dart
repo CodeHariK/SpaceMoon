@@ -18,17 +18,18 @@ class AppFlowyBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () async {
-        final data = await context.cPush(
+        await context.cPush(
           Hero(
             tag: '${tweet.hashCode} Appflowy',
             child: AppFlowy(
               jsonData: tweet.text,
+              onPopInvoked: (pop, data) async {
+                tweet.text = data;
+                ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+              },
             ),
           ),
         );
-
-        tweet.text = data;
-        ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
       },
       child: IgnorePointer(
         child: SizedBox(
@@ -61,22 +62,22 @@ class AppFlowyActionButton extends StatelessWidget {
     return IconButton.filledTonal(
       onPressed: () async {
         ContextMenu.hide();
-        final res = await context.cPush<String>(
+        await context.cPush<String>(
           Hero(
             tag: 'Appflowy',
             child: AppFlowy(
               jsonData: exampleJson,
+              onPopInvoked: (pop, data) async {
+                ref.read(tweetsProvider.notifier).sendTweet(
+                      tweet: Tweet(
+                        text: data,
+                        mediaType: MediaType.POST,
+                      ),
+                    );
+              },
             ),
           ),
         );
-        if (res != null) {
-          ref.read(tweetsProvider.notifier).sendTweet(
-                tweet: Tweet(
-                  text: res,
-                  mediaType: MediaType.POST,
-                ),
-              );
-        }
       },
       icon: const Icon(Icons.post_add),
     );

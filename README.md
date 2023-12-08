@@ -12,7 +12,9 @@ flutterfire configure
 dart run build_runner watch --delete-conflicting-outputs
 flutter pub upgrade
 
-For local emulator cloud function, configure appcheck debug token
+For local emulator cloud function, configure appcheck debug token.
+
+For android local emulator, change computerIp in firebase.dart to your computer ip address.
 ```
 
 ## Getting Started

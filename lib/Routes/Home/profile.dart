@@ -30,9 +30,11 @@ class ProfileRoute extends GoRouteData {
   const ProfileRoute({this.$extra});
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return ProfilePage(
-      searchuser: $extra,
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return CupertinoPage(
+      child: ProfilePage(
+        searchuser: $extra,
+      ),
     );
   }
 }

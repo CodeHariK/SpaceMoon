@@ -643,12 +643,12 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.24):
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
-  - cloud_firestore (4.13.3):
+  - cloud_firestore (4.13.5):
     - Firebase/Firestore (= 10.18.0)
     - firebase_core
     - Flutter
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - cloud_functions (4.5.6):
+  - cloud_functions (4.5.8):
     - Firebase/Functions (= 10.18.0)
     - firebase_core
     - Flutter
@@ -708,27 +708,27 @@ PODS:
   - Firebase/Storage (10.18.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.18.0)
-  - firebase_app_check (0.2.1-6):
+  - firebase_app_check (0.2.1-8):
     - Firebase/CoreOnly (~> 10.18.0)
     - firebase_core
     - FirebaseAppCheck (~> 10.18.0-beta)
     - Flutter
-  - firebase_auth (4.15.0):
+  - firebase_auth (4.15.2):
     - Firebase/Auth (= 10.18.0)
     - firebase_core
     - Flutter
-  - firebase_core (2.24.0):
+  - firebase_core (2.24.2):
     - Firebase/CoreOnly (= 10.18.0)
     - Flutter
-  - firebase_dynamic_links (5.4.6):
+  - firebase_dynamic_links (5.4.8):
     - Firebase/DynamicLinks (= 10.18.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (14.7.6):
+  - firebase_messaging (14.7.8):
     - Firebase/Messaging (= 10.18.0)
     - firebase_core
     - Flutter
-  - firebase_storage (11.5.3):
+  - firebase_storage (11.5.5):
     - Firebase/Storage (= 10.18.0)
     - firebase_core
     - Flutter
@@ -807,6 +807,8 @@ PODS:
     - FirebaseCoreExtension (~> 10.0)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
   - Flutter (1.0.0)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
   - flutter_native_splash (0.0.1):
     - Flutter
   - FMDB (2.7.5):
@@ -992,6 +994,7 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -1075,6 +1078,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   google_sign_in_ios:
@@ -1105,19 +1110,19 @@ SPEC CHECKSUMS:
   AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   AppCheckCore: 4687c03428947d5b26a6bf9bb5566b39f5473bf1
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
-  cloud_firestore: 9b25b77371a845d07a48e5146799f6d4552f5940
-  cloud_functions: 48b727dad9a2fffb8173e428f36a240139575c29
+  cloud_firestore: d2707a9ead952efd2a89e82347e46dc4b9c32e8d
+  cloud_functions: 8a6f73ee01574ce51bd4d027dbbce520c43a2996
   desktop_webview_auth: d645139460ef203d50bd0cdb33356785dd939cce
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
   Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
-  firebase_app_check: 1b1986f696705c793cb6bac2f429f2cbe65f0fbc
-  firebase_auth: 02d1a6340f81020cc302fb8fea8518908c546cec
-  firebase_core: f802c5c1f6caff9b8d38b591a36e7b25f8878936
-  firebase_dynamic_links: 212953c972f7e952c853f69896dc4da0fa5cb06e
-  firebase_messaging: ca2fc59ddd52ef032d80f1a717d12eae8fa0e994
-  firebase_storage: 95b470ab32351049dfd3d97b595460ce7a189971
+  firebase_app_check: 375d2482bc2219ef06df67f2ad659c377b2c1075
+  firebase_auth: 0099901926d85bda1688f6e451755b413c16154d
+  firebase_core: 0af4a2b24f62071f9bf283691c0ee41556dcb3f5
+  firebase_dynamic_links: b626a11f5eb02033981ae377377c3f297eb4c1b0
+  firebase_messaging: d4e4603f091c7b716b3f6c55550b2fa5dbf62ffd
+  firebase_storage: 3f15388480a9459b76522a2e9348a0fab0760aa3
   FirebaseAppCheck: f34226df40cf6057dc54916ab5a5d461bb51ee68
   FirebaseAppCheckInterop: 3cd914842ba46f4304050874cd284de82f154ffd
   FirebaseAuth: 12314b438fa76048540c8fb86d6cfc9e08595176
@@ -1135,6 +1140,7 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: 62e248642c0582324d0390706cadd314687c116b
   FirebaseStorage: 8333c4b183764cdd170d9539a61322b71c23adff
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   google_sign_in_ios: 1256ff9d941db546373826966720b0c24804bcdd

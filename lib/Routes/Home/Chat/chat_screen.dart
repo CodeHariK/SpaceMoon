@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -34,9 +35,11 @@ class ChatRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return ChatPage(
-      chatId: chatId,
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return CupertinoPage(
+      child: ChatPage(
+        chatId: chatId,
+      ),
     );
   }
 }

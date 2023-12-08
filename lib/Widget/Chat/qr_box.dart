@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:moonspace/helper/extensions/string.dart';
+import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -167,26 +168,30 @@ class QrDialog extends HookWidget {
                         if (qrtext.value.isNotEmpty)
                           OutlinedButton(
                             onPressed: () async {
-                              RenderRepaintBoundary boundary =
-                                  repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-                              var image = await boundary.toImage(pixelRatio: 1 + (qrtext.value.length ~/ 120) / 10);
-                              var byteData = await image.toByteData(format: ImageByteFormat.png);
-                              var pngBytes = byteData?.buffer.asUint8List();
+                              try {
+                                RenderRepaintBoundary boundary =
+                                    repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+                                var image = await boundary.toImage(pixelRatio: 1 + (qrtext.value.length ~/ 120) / 10);
+                                var byteData = await image.toByteData(format: ImageByteFormat.png);
+                                var pngBytes = byteData?.buffer.asUint8List();
 
-                              if (pngBytes != null) {
-                                final saved = await SaverGallery.saveImage(
-                                  pngBytes,
-                                  name: '${randomString(12)}.png',
-                                  androidRelativePath: "Spacemoon/QrCodes/",
-                                  androidExistNotSave: false,
-                                );
-                                if (context.mounted) {
-                                  if (saved.isSuccess) {
-                                    marioBar(context: context, content: 'Image saved');
-                                  } else {
-                                    marioBar(context: context, content: 'Error : Cannot Save image');
+                                if (pngBytes != null) {
+                                  final saved = await SaverGallery.saveImage(
+                                    pngBytes,
+                                    name: '${randomString(12)}.png',
+                                    androidRelativePath: "Pictures/Spacemoon/QrCodes/",
+                                    androidExistNotSave: false,
+                                  );
+                                  if (context.mounted) {
+                                    if (saved.isSuccess) {
+                                      marioBar(context: context, content: 'Image saved');
+                                    } else {
+                                      marioBar(context: context, content: 'Error : Cannot Save image');
+                                    }
                                   }
                                 }
+                              } catch (e) {
+                                lava(e);
                               }
                             },
                             child: const Text('Download'),

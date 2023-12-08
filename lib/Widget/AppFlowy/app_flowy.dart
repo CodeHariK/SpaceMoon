@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:spacemoon/Static/theme.dart';
 
@@ -17,6 +16,7 @@ class AppFlowy extends StatefulWidget {
     this.footer,
     this.editable = true,
     this.showAppbar = true,
+    this.onPopInvoked,
   });
 
   final String jsonData;
@@ -24,6 +24,7 @@ class AppFlowy extends StatefulWidget {
   final Widget? footer;
   final bool editable;
   final bool showAppbar;
+  final void Function(bool pop, String data)? onPopInvoked;
 
   @override
   State<AppFlowy> createState() => _AppFlowyState();
@@ -72,9 +73,7 @@ class _AppFlowyState extends State<AppFlowy> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (pop) async {
-        context.pop(toFile);
-      },
+      onPopInvoked: (didPop) => widget.onPopInvoked?.call(didPop, toFile),
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         extendBodyBehindAppBar: PlatformExtension.isDesktopOrWeb,
@@ -287,14 +286,11 @@ EditorStyle customizeEditorStyle() {
       // ),
       code: TextStyle(
         color: Colors.blue,
-        backgroundColor: AppTheme.darkness
-            ? const Color.fromARGB(255, 66, 66, 66)
-            : const Color.fromARGB(15, 0, 0, 0),
+        backgroundColor: AppTheme.darkness ? const Color.fromARGB(255, 66, 66, 66) : const Color.fromARGB(15, 0, 0, 0),
       ),
     ),
-    textSpanDecorator: PlatformExtension.isDesktopOrWeb
-        ? defaultTextSpanDecoratorForAttribute
-        : mobileTextSpanDecoratorForAttribute,
+    textSpanDecorator:
+        PlatformExtension.isDesktopOrWeb ? defaultTextSpanDecoratorForAttribute : mobileTextSpanDecoratorForAttribute,
     // textSpanDecorator: (context, node, index, text, textSpan) {
     //   final attributes = text.attributes;
     //   final href = attributes?[AppFlowyRichTextKeys.href];
@@ -346,8 +342,7 @@ Map<String, BlockComponentBuilder> buildBlockComponentBuilders(
         final checked = node.attributes[TodoListBlockKeys.checked] as bool;
         return GestureDetector(
           onTap: () => editorState.apply(
-            editorState.transaction
-              ..updateNode(node, {TodoListBlockKeys.checked: !checked}),
+            editorState.transaction..updateNode(node, {TodoListBlockKeys.checked: !checked}),
           ),
           child: Padding(
             padding: const EdgeInsets.only(right: 6.0),

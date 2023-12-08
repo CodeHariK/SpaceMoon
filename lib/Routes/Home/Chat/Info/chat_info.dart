@@ -29,9 +29,11 @@ class ChatInfoRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return ChatInfoPage(
-      chatId: chatId,
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return CupertinoPage(
+      child: ChatInfoPage(
+        chatId: chatId,
+      ),
     );
   }
 }

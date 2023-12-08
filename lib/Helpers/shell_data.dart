@@ -50,7 +50,7 @@ extension SuperShellData on List<ShellData> {
 
   Widget googleBar(BuildContext context) => Container(
         color: Colors.transparent,
-        margin: context.mq.pad.copyWith(top: 0, left: 16, right: 16),
+        margin: context.mq.pad.copyWith(bottom: 16, top: 0, left: 16, right: 16),
         child: PhysicalShape(
           color: AppTheme.card,
           elevation: 1,
@@ -58,9 +58,8 @@ extension SuperShellData on List<ShellData> {
           clipper: const WaveClipper(
             numXDiv: 16,
           ),
-          child: Container(
+          child: SizedBox(
             height: 78,
-            padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: asMap()

@@ -55,11 +55,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   void initState() {
-    pageCon.addListener(() {
-      if ((pageCon.page ?? 0) >= 2.2) {
-        ref.read(onboardedProvider.notifier).set(true);
-      }
-    });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {});
     });
@@ -117,6 +112,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
+                    if ((pageCon.page ?? 3) > 2) {
+                      ref.read(onboardedProvider.notifier).set(true);
+                    }
                   },
                   icon: SizedBox(
                     width: 160,
@@ -125,7 +123,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       painter: SunflowerPainter(
                         seeds: (400 * value).toInt(),
                         turns: 0.6281,
-                        scaleFactor: 3 + 1 * value,
+                        scaleFactor: 2.4 + 1 * value,
                       ),
                     ),
                   ),

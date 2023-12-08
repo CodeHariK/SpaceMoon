@@ -79,6 +79,8 @@ void firebaseTokenUpdate() async {
     vapidKey: 'BEjtF-d72Aa2Jx4x1KCoaPjdH2QRtzXLujB2LjcJH1Arepn2rWqfJaTEby9qznl7SXi_fcO94iWSFUGgoGpMJYU',
   );
 
+  print('--------');
+  print('FirebaseTokenUpdate : $token');
   dino('FirebaseTokenUpdate : $token');
   callFCMtokenUpdate(token);
 }

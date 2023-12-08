@@ -49,7 +49,7 @@ class TweetBox extends ConsumerWidget {
                     spreadRadius: 1,
                     color: AppTheme.darkness
                         ? const Color.fromARGB(255, 67, 67, 67)
-                        : const Color.fromARGB(77, 50, 158, 158),
+                        : const Color.fromARGB(77, 162, 162, 162),
                   ),
                 ],
                 color: AppTheme.darkness ? const Color.fromARGB(221, 50, 50, 50) : Colors.white,
