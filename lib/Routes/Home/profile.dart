@@ -30,13 +30,20 @@ class ProfileRoute extends GoRouteData {
   const ProfileRoute({this.$extra});
 
   @override
-  Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return CupertinoPage(
-      child: ProfilePage(
-        searchuser: $extra,
-      ),
+  Widget build(BuildContext context, GoRouterState state) {
+    return ProfilePage(
+      searchuser: $extra,
     );
   }
+
+  // @override
+  // Page<void> buildPage(BuildContext context, GoRouterState state) {
+  //   return CupertinoPage(
+  //     child: ProfilePage(
+  //       searchuser: $extra,
+  //     ),
+  //   );
+  // }
 }
 
 class ProfilePage extends ConsumerWidget {
@@ -52,6 +59,7 @@ class ProfilePage extends ConsumerWidget {
     final user = searchuser?.user ?? ref.watch(currentUserDataProvider).value;
 
     return Scaffold(
+      appBar: searchuser != null ? AppBar() : null,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

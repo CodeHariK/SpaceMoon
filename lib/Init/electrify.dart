@@ -187,8 +187,7 @@ class SpaceMoonHome extends HookConsumerWidget {
         // showSemanticsDebugger: true,
         // showPerformanceOverlay: true,
 
-        supportedLocales:
-            supportedLocales ?? const <Locale>[Locale('en', 'US')],
+        supportedLocales: supportedLocales ?? const <Locale>[Locale('en', 'US')],
 
         builder: (context, child) {
           initializeDateFormatting();

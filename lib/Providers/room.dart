@@ -7,7 +7,6 @@ import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
-import 'package:spacemoon/Providers/roomuser.dart';
 
 part 'room.g.dart';
 
@@ -172,7 +171,6 @@ class CurrentRoom extends _$CurrentRoom {
   Future<void> upgradeAccessToRoom(RoomUser user) async {
     try {
       await FirebaseFunctions.instance.httpsCallable('upgradeAccessToRoom').call(user.toMap());
-      ref.invalidate(currentRoomUserProvider);
     } catch (e) {
       debugPrint('upgradeAccessToRoom Failed');
     }
@@ -185,7 +183,6 @@ class CurrentRoom extends _$CurrentRoom {
       debugPrint('deleteRoom Failed');
     }
     exitRoom(user);
-    ref.invalidate(currentRoomUserProvider);
   }
 
   Future<void> deleteRoomUser(RoomUser user) async {

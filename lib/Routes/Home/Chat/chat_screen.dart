@@ -304,7 +304,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                               lock();
                               await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
                               ref.read(currentRoomProvider.notifier).exitRoom(null);
-                              ref.invalidate(currentRoomUserProvider);
                               if (context.mounted) {
                                 HomeRoute().go(context);
                               }
@@ -320,6 +319,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                             onPressed: () async {
                               lock();
                               await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(meInRoom);
+                              ref.invalidate(currentRoomUserProvider);
                               open();
                             },
                             child: const Text('Accept'),

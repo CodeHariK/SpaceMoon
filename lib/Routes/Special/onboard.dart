@@ -55,6 +55,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   void initState() {
+    pageCon.addListener(() {
+      if ((pageCon.page ?? 0) >= 2.5) {
+        ref.read(onboardedProvider.notifier).set(true);
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {});
     });

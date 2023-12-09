@@ -13,6 +13,7 @@ import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Providers/user_data.dart';
+import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
@@ -142,21 +143,26 @@ class TweetBox extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (tweetuser != null)
-                CircleAvatar(
-                  child: (!isURL(tweetuser.photoURL))
-                      ? null
-                      : CustomCacheImage(
-                          imageUrl: spaceThumbImage(tweetuser.photoURL),
-                          radius: 32,
-                        ),
-                ),
-              const SizedBox(height: 5),
-              Text(tweet.created.timeString, style: context.ls),
-            ],
+          InkWell(
+            onTap: () {
+              context.cPush(ProfilePage(searchuser: ProfileObj(user: tweetuser)));
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (tweetuser != null)
+                  CircleAvatar(
+                    child: (!isURL(tweetuser.photoURL))
+                        ? null
+                        : CustomCacheImage(
+                            imageUrl: spaceThumbImage(tweetuser.photoURL),
+                            radius: 32,
+                          ),
+                  ),
+                const SizedBox(height: 5),
+                Text(tweet.created.timeString, style: context.ls),
+              ],
+            ),
           ),
           (tweet.mediaType == MediaType.POST)
               ? box
@@ -198,12 +204,8 @@ class TweetBox extends ConsumerWidget {
 }
 
 class DialogPage extends Page<String> {
-  /// A page to display a dialog.
   const DialogPage({required this.child, super.key});
-
-  /// The widget to be displayed which is usually a [Dialog] widget.
   final Widget child;
-
   @override
   Route<String> createRoute(BuildContext context) {
     return DialogRoute<String>(
@@ -218,7 +220,6 @@ class DialogPage extends Page<String> {
 class TweetRouteObj {
   final Tweet tweet;
   final Room room;
-
   TweetRouteObj({
     required this.tweet,
     required this.room,

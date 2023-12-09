@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -31,7 +32,10 @@ Future<RoomUser?> currentRoomUser(CurrentRoomUserRef ref) async {
   final user = ref.watch(currentUserProvider).value;
   final room = ref.watch(currentRoomProvider).value;
 
-  if (room == null || user == null) return null;
+  if (room == null || user == null) {
+    lava('NO Current Room User');
+    return null;
+  }
 
   final s = await FirebaseFirestore.instance
       .collection(Const.roomusers.name)

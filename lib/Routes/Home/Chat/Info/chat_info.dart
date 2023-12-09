@@ -300,7 +300,6 @@ class ChatInfoPage extends HookConsumerWidget {
                                   lock();
                                   await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
                                   ref.read(currentRoomProvider.notifier).exitRoom(null);
-                                  ref.invalidate(currentRoomUserProvider);
                                   if (context.mounted) {
                                     HomeRoute().go(context);
                                   }
@@ -323,6 +322,8 @@ class ChatInfoPage extends HookConsumerWidget {
                                         room: room.uid,
                                       ),
                                     );
+
+                                ref.invalidate(currentRoomUserProvider);
                                 open();
                               },
                               icon: const Icon(Icons.mail),
@@ -382,6 +383,7 @@ class ChatInfoPage extends HookConsumerWidget {
                                               await ref
                                                   .read(currentRoomProvider.notifier)
                                                   .upgradeAccessToRoom(roomUser);
+                                              ref.invalidate(currentRoomUserProvider);
                                               open();
                                             },
                                       icon: !loading
@@ -402,11 +404,11 @@ class ChatInfoPage extends HookConsumerWidget {
                                         lock();
                                         await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
                                         open();
-                                        ref.read(currentRoomProvider.notifier).exitRoom(null);
-                                        ref.invalidate(currentRoomUserProvider);
-                                        if (context.mounted) {
-                                          HomeRoute().go(context);
-                                        }
+                                        // ref.read(currentRoomProvider.notifier).exitRoom(null);
+                                        // // ref.invalidate(currentRoomUserProvider);
+                                        // // if (context.mounted) {
+                                        // //   HomeRoute().go(context);
+                                        // // }
                                       },
                                       icon: !loading ? const Icon(Icons.close) : const CircularProgress(size: 20),
                                     );

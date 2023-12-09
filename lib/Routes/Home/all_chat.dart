@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +34,9 @@ class AllChatPage extends ConsumerWidget {
 
     allRoomsUsers.whenData((value) {
       for (RoomUser? element in value) {
-        if (element != null) {}
+        if (element != null) {
+          FirebaseMessaging.instance.subscribeToTopic(element.room);
+        }
       }
     });
 

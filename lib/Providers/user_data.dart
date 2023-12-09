@@ -14,6 +14,10 @@ part 'user_data.g.dart';
 Stream<User?> currentUserData(CurrentUserDataRef ref) {
   final user = ref.watch(currentUserProvider).value;
 
+  if (user?.uid == null) {
+    return const Stream.empty();
+  }
+
   return FirebaseFirestore.instance.collection(Const.users.name).doc(user?.uid).snapshots().map((snapshot) {
     final userData = fromDocSnap(User(), snapshot);
 

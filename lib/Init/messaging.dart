@@ -3,9 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
-import 'package:spacemoon/Gen/data.pbenum.dart';
+import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
 
 Future<void> firebaseMessagingSetup() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -38,22 +43,16 @@ Future<void> firebaseMessagingSetup() async {
       lava('User declined or has not accepted permission');
     }
 
-    // lava('init : $token');
-    // firebaseTokenUpdate(token);
+    firebaseTokenUpdate();
 
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     dino(initialMessage?.toMap());
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      dino('Got a message whilst in the foreground!');
-      dino('Message data: ${message.data}');
-      dino(message);
-      print('Listen');
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true);
 
-      if (message.notification != null) {
-        dino('Message also contained a notification: ${message.notification}');
-      }
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) => messageHandler(message, true, 'onMessageOpened'));
+    FirebaseMessaging.onMessage.listen((message) => messageHandler(message, true, 'onMessage'));
+    FirebaseMessaging.onBackgroundMessage((message) => messageHandler(message, true, 'Background'));
 
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       lava('tokenRefresh : $fcmToken');
@@ -61,17 +60,46 @@ Future<void> firebaseMessagingSetup() async {
     }).onError((err) {
       lava(err);
     });
-
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 }
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
+Future<void> messageHandler(RemoteMessage message, bool background, String type) async {
+  if (background) {
+    await Firebase.initializeApp();
+  }
 
+  try {
+    final t1 = Tweet()..mergeFromProto3Json(message.data);
+    t1.uid = message.data['uid'];
+    BuildContext? context = AppRouter.rootNavigatorKey.currentContext;
+    if (context != null && context.mounted) {
+      // ChatRoute(chatId: t1.room).go(context);
+      // context = AppRouter.scaffoldMessengerKey.currentContext ?? AppRouter.scaffoldMessengerKey.currentState?.context;
+      // if (context != null) {
+      //   lava('------- toast');
+      //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(content: Text('Hello')));
+      //   // toastification.show(
+      //   //   context: context,
+      //   //   title: 'Hello, world!',
+      //   //   autoCloseDuration: const Duration(seconds: 5),
+      //   // );
+      // } else {
+      //   lava('----- no context');
+      // }
+    }
+
+    dino("$t1");
+  } catch (e) {
+    lava('Error t1 $e');
+  }
+
+  dino(type);
   dino("Handling a background message: ${message.messageId}");
+  dino("Handling a background message: ${message.notification?.title}");
+  dino("Handling a background message: ${message.notification?.body}");
+  dino("Handling a background message: ${message.data}");
+  dino("Handling a background message: ${message.senderId}");
+  dino("Handling a background message: ${message.messageType}");
 }
 
 void firebaseTokenUpdate() async {
@@ -79,8 +107,6 @@ void firebaseTokenUpdate() async {
     vapidKey: 'BEjtF-d72Aa2Jx4x1KCoaPjdH2QRtzXLujB2LjcJH1Arepn2rWqfJaTEby9qznl7SXi_fcO94iWSFUGgoGpMJYU',
   );
 
-  print('--------');
-  print('FirebaseTokenUpdate : $token');
   dino('FirebaseTokenUpdate : $token');
   callFCMtokenUpdate(token);
 }

@@ -115,7 +115,7 @@ class SearchPage extends HookConsumerWidget {
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           onTap: () {
-                            if (context.mounted) {
+                            if (context.mounted && searchUser?.uid != null) {
                               ProfileRoute($extra: ProfileObj(user: searchUser)).go(context);
                             }
                           },

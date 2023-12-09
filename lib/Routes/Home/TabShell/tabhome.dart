@@ -114,7 +114,7 @@ class UnsplashPage extends StatefulWidget {
 
 class _UnsplashPageState extends State<UnsplashPage> {
   int page = 1;
-  String query = 'art';
+  String query = 'india';
   Unsplash? res;
 
   @override
@@ -125,7 +125,7 @@ class _UnsplashPageState extends State<UnsplashPage> {
 
   Future<void> fetch() async {
     final r = await http.get(Uri.parse(
-        'https://api.unsplash.com/search/photos?per_page=21&page=$page&query=$query&orientation=portrait&client_id=i2I0ZoWiW1efbC6m-hc9aSfJJk7DnhQixKWhhDdq5Bo'));
+        'https://api.unsplash.com/search/photos?per_page=20&page=$page&query=$query&orientation=portrait&client_id=i2I0ZoWiW1efbC6m-hc9aSfJJk7DnhQixKWhhDdq5Bo'));
     res = Unsplash.fromJson(r.body);
     setState(() {});
   }
@@ -140,6 +140,9 @@ class _UnsplashPageState extends State<UnsplashPage> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: AsyncTextFormField(
+              initialValue: query,
+              showPrefix: false,
+              showSubmitSuffix: false,
               asyncValidator: (value) async {
                 query = value;
                 page = 1;
@@ -248,7 +251,7 @@ class UnsplashGrid extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GridView.count(
       physics: const BouncingScrollPhysics(),
-      crossAxisCount: 3,
+      crossAxisCount: 2,
       children: res?.results?.map(
             (e) {
               final url = e.urls?.small ?? e.urls?.regular ?? e.urls?.full;
