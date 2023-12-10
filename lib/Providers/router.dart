@@ -17,6 +17,7 @@ extension ValidateRouterState on GoRouterState {
 }
 
 class AppRouter {
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> homeShellNavigatorKey = GlobalKey<NavigatorState>();
 

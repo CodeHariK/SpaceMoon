@@ -5,6 +5,7 @@ import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomUserById } from "./roomuser";
 import { roomToJson } from "./Helpers/convertors";
+import { updateRoomTime } from "./room";
 
 export const sendTweet = onCall({
     enforceAppCheck: true,
@@ -36,8 +37,7 @@ export const sendTweet = onCall({
 
         tweet.uid = sent.id;
 
-        console.log(tweet)
-
+        // console.log(tweet)
 
         // admin.messaging().sendToTopic('Hello', {
         //     data: Tweet.toJSON(tweet) as {},
@@ -97,7 +97,7 @@ export const sendTweet = onCall({
                 data: Tweet.toJSON(tweet) as {},
                 notification: {
                     "title": user?.uid,
-                    "body": tweet.text,
+                    "body": tweet.text.substring(0, 30),
                     imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTE5fPhctwNLodS9VmAniEw_UiLWHgKs0fs1w&usqp=CAU',
                 }
             }
@@ -139,13 +139,7 @@ export const sendTweet = onCall({
         //     }
         // );
 
-        await admin.firestore().collection(constName(Const.rooms)).doc(tweet.room).set(
-            roomToJson(Room.create({
-                updated: new Date()
-            })
-            ),
-            { merge: true },
-        );
+        await updateRoomTime(tweet.room);
 
         return sent.path
     } else {

@@ -9,6 +9,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spacemoon/Helpers/gorouter.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -27,20 +28,9 @@ class AboutRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
   @override
-  Page<void> buildPage(BuildContext context, GoRouterState state) => CustomTransitionPage<void>(
-        key: state.pageKey,
-        child: const AboutPage(),
-        transitionDuration: const Duration(milliseconds: 700),
-        transitionsBuilder:
-            (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-          var curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic);
-
-          return FadeTransition(
-            opacity: curvedAnimation,
-            child: child,
-          );
-        },
-      );
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return fadePage(context, state, const AboutPage());
+  }
 }
 
 class ShimmmerCurve extends Curve {

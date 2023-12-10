@@ -40,6 +40,7 @@ class AppTheme {
 
   static bool get darkness => currentAppTheme.dark;
   static Color get background => AppTheme.darkness ? const Color.fromARGB(255, 60, 60, 60) : Colors.white;
+  static Color get op => AppTheme.darkness ? Colors.white : const Color.fromARGB(255, 55, 55, 55);
   static Color get card =>
       AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 248, 248, 248);
   static Color get seedCard => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
@@ -175,7 +176,7 @@ class AppTheme {
         // onSecondaryContainer: Colors.green, //NavigationRail
 
         // surface: Colors.yellow, //card, appbar
-        // onSurface: Colors.yellow, //font, underline
+        onSurface: AppTheme.op, //font, underline
         // surfaceTint: const Color.fromARGB(0, 255, 255, 255), //card tint
         // inverseSurface: Colors.red, //Snackbar background
         // onInverseSurface: Colors.blue[900],

@@ -61,7 +61,7 @@ class AppFlowyActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
       onPressed: () async {
-        ContextMenu.hide();
+        AnimatedOverlay.hide();
         await context.cPush<String>(
           Hero(
             tag: 'Appflowy',

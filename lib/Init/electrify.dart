@@ -173,6 +173,7 @@ class SpaceMoonHome extends HookConsumerWidget {
       return MaterialApp.router(
         routerConfig: router,
         title: title,
+        scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
         locale: const Locale('en'),
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,

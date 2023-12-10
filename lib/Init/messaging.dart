@@ -2,9 +2,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -74,18 +73,69 @@ Future<void> messageHandler(RemoteMessage message, bool background, String type)
     BuildContext? context = AppRouter.rootNavigatorKey.currentContext;
     if (context != null && context.mounted) {
       // ChatRoute(chatId: t1.room).go(context);
-      // context = AppRouter.scaffoldMessengerKey.currentContext ?? AppRouter.scaffoldMessengerKey.currentState?.context;
-      // if (context != null) {
-      //   lava('------- toast');
-      //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(content: Text('Hello')));
-      //   // toastification.show(
-      //   //   context: context,
-      //   //   title: 'Hello, world!',
-      //   //   autoCloseDuration: const Duration(seconds: 5),
-      //   // );
-      // } else {
-      //   lava('----- no context');
-      // }
+      context = AppRouter.scaffoldMessengerKey.currentContext ?? AppRouter.scaffoldMessengerKey.currentState?.context;
+      if (context != null) {
+        lava('------- toast');
+
+        AnimatedSnackbar(
+          content: 'content',
+          title: 'title',
+        ).show(
+          AppRouter.rootNavigatorKey.currentContext!,
+          alignment: Alignment.center,
+        );
+
+        AppRouter.scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 3),
+            margin: EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
+            // content: Animate(
+            //   effects: [
+            //     AlignEffect(
+            //       duration: Duration(seconds: 2),
+            //       begin: Alignment.bottomRight,
+            //       end: Alignment.topLeft,
+            //     ),
+            //     FadeEffect(),
+            //   ],
+            //   child: Container(
+            //     height: 100,
+            //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(32)),
+            //     child: Text('HelloHelloHelloHelloHelloHelloHelloHello'),
+            //   ),
+            // ),
+            content: TweenAnimationBuilder(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: Duration(seconds: 2),
+              builder: (context, value, child) {
+                return AnimatedAlign(
+                  duration: Duration(seconds: 2),
+                  alignment:
+                      AlignmentGeometry.lerp(Alignment.bottomCenter, Alignment.centerRight, value) ?? Alignment.center,
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    child: Text('Hello Hello Hello Hello Hello Hello Hello Hello'),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+        // toastification.show(
+        //   context: context,
+        //   title: 'Hello, world!',
+        //   autoCloseDuration: const Duration(seconds: 5),
+        // );
+      } else {
+        lava('----- no context');
+      }
     }
 
     dino("$t1");

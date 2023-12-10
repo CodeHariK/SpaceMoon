@@ -95,21 +95,28 @@ class SendActionMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ContextMenu(
-      boxSize: const Size(200, 200),
-      optionChild: GridView.count(
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        padding: const EdgeInsets.all(8),
-        crossAxisCount: 3,
-        children: [
-          QrActionButton(roomUser: roomUser),
-          GalleryUploaderButton(ref: ref),
-          AppFlowyActionButton(ref: ref),
-          UnsplashButton(roomUser: roomUser)
-        ],
+    return IconButton(
+      icon: const Icon(
+        Icons.add_circle_outline_sharp,
+        size: 20,
       ),
-      child: const Icon(Icons.add_circle_outline_sharp),
+      onPressed: () {
+        AnimatedDialogBox(
+          boxSize: const Size(200, 200),
+          child: GridView.count(
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            padding: const EdgeInsets.all(8),
+            crossAxisCount: 3,
+            children: [
+              QrActionButton(roomUser: roomUser),
+              GalleryUploaderButton(ref: ref),
+              AppFlowyActionButton(ref: ref),
+              UnsplashButton(roomUser: roomUser)
+            ],
+          ),
+        ).show(context);
+      },
     );
   }
 }

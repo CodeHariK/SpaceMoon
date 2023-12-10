@@ -239,7 +239,7 @@ class QrActionButton extends StatelessWidget {
             roomUser: roomUser,
           ),
         );
-        ContextMenu.hide();
+        AnimatedOverlay.hide();
       },
     );
   }

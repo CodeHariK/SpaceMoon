@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spacemoon/Helpers/gorouter.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
@@ -94,8 +94,6 @@ class HomeShellRoute extends ShellRouteData {
 class HomeRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return const CupertinoPage(
-      child: AllChatPage(),
-    );
+    return fadePage(context, state, const AllChatPage());
   }
 }

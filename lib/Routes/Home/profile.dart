@@ -10,6 +10,7 @@ import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Helpers/gorouter.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/user_data.dart';
@@ -30,20 +31,15 @@ class ProfileRoute extends GoRouteData {
   const ProfileRoute({this.$extra});
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return ProfilePage(
-      searchuser: $extra,
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return fadePage(
+      context,
+      state,
+      ProfilePage(
+        searchuser: $extra,
+      ),
     );
   }
-
-  // @override
-  // Page<void> buildPage(BuildContext context, GoRouterState state) {
-  //   return CupertinoPage(
-  //     child: ProfilePage(
-  //       searchuser: $extra,
-  //     ),
-  //   );
-  // }
 }
 
 class ProfilePage extends ConsumerWidget {

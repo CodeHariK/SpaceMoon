@@ -1,5 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,7 @@ import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
+import 'package:spacemoon/Routes/Special/onboard.dart';
 
 @immutable
 class SettingsRoute extends GoRouteData {
@@ -110,7 +112,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           CupertinoListTile.notched(
             onTap: () {
-              safeLaunchUrl('Privacy Policy');
+              safeLaunchUrl('https://spacemoon.shark.run/privacy_policy.html');
             },
             title: Text('Privacy Policy', style: context.tm),
           ),
@@ -122,25 +124,36 @@ class SettingsPage extends ConsumerWidget {
           ),
           CupertinoListTile.notched(
             onTap: () {
-              context.cPush(
-                const Scaffold(
-                  body: Column(
-                    children: [
-                      Text('Unsplash Api'),
-                    ],
-                  ),
-                ),
-              );
+              context.cPush(const AttibutionPage());
             },
             title: Text('Attribution', style: context.tm),
           ),
-          // if (kDebugMode)
-          //   CupertinoListTile.notched(
-          //     onTap: () {
-          //       ref.read(onboardedProvider.notifier).set(false);
-          //     },
-          //     title: Text('Onboard false', style: context.tm),
-          //   ),
+          if (kDebugMode)
+            CupertinoListTile.notched(
+              onTap: () {
+                ref.read(onboardedProvider.notifier).set(false);
+              },
+              title: Text('Onboard false', style: context.tm),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class AttibutionPage extends StatelessWidget {
+  const AttibutionPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Attribution')),
+      body: const Column(
+        children: [
+          ListTile(
+            title: Text('Unsplash'),
+            subtitle: Text('For their wonderful open api'),
+          ),
         ],
       ),
     );

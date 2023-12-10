@@ -178,3 +178,14 @@ export const getRoomById = async (roomId: string) => {
         return null;
     });
 }
+
+export async function updateRoomTime(roomId: string) {
+    await admin.firestore().collection(constName(Const.rooms)).doc(roomId).set(
+        roomToJson(Room.create({
+            updated: new Date()
+        })
+        ),
+        { merge: true }
+    );
+}
+

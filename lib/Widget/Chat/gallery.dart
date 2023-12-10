@@ -448,7 +448,7 @@ class GalleryUploaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     void func() async {
-      ContextMenu.hide();
+      AnimatedOverlay.hide();
       final imgs = (await selectMultiMedia()).where((element) => element != null);
       if (imgs.isEmpty) return;
       final path = tweet?.path ??

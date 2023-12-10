@@ -4,8 +4,7 @@ import { constName } from "./Helpers/const";
 import * as admin from "firebase-admin";
 import { roomUserToMap } from "./Helpers/convertors";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { getRoomById } from "./room";
-import { toArray, toMap } from "./Helpers/map";
+import { getRoomById, updateRoomTime } from "./room";
 
 export const getRoomUserById = async (userId: string, roomId: string) => {
     return await admin.firestore().collection(constName(Const.roomusers))
@@ -59,6 +58,8 @@ export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (even
         return `Room ${roomId} deleted because it has no more room users.`;
     }
 
+    await updateRoomTime(roomId);
+
     return null;
 });
 
@@ -66,22 +67,22 @@ export const deleteRoomUser = onCall({
     enforceAppCheck: true,
 }, async (request) => {
     let adminId = request.auth!.uid;
-    let _roomuser = RoomUser.fromJSON(request.data)
+    let roomUser = RoomUser.fromJSON(request.data)
 
-    if (!_roomuser.room) {
+    if (!roomUser.room) {
         throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
     }
 
-    const curUser = await getRoomUserById(_roomuser.user, _roomuser.room);
-    const adminUser = await getRoomUserById(adminId, _roomuser.room);
+    const curUser = await getRoomUserById(roomUser.user, roomUser.room);
+    const adminUser = await getRoomUserById(adminId, roomUser.room);
 
     if (
-        (adminId === _roomuser.user) ||
+        (adminId === roomUser.user) ||
         (adminUser
             && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)
             && adminUser.role > curUser!.role)
     ) {
-        await admin.firestore().collection(constName(Const.roomusers)).doc(_roomuser.uid).delete();
+        await admin.firestore().collection(constName(Const.roomusers)).doc(roomUser.uid).delete();
 
         return { message: 'The target user has been removed from the room.' };
     } else {
@@ -178,6 +179,8 @@ export const upgradeAccessToRoom = onCall({
                     updated: new Date(),
                 })))
             );
+
+        await updateRoomTime(roomUser.room);
 
         return { message: 'The target user has been added to the room.' };
     } else {

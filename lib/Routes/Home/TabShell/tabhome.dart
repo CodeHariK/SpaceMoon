@@ -90,7 +90,7 @@ class UnsplashButton extends StatelessWidget {
             roomUser: roomUser,
           ),
         );
-        ContextMenu.hide();
+        AnimatedOverlay.hide();
       },
     );
   }
