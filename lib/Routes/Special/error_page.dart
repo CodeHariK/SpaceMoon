@@ -8,14 +8,14 @@ class Error404Page extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GoRouterState state = GoRouterState.of(context);
+    // GoRouterState state = GoRouterState.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Page not found')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('${state.uri} does not exist'),
+            // Text('${state.uri} does not exist'),
             ElevatedButton(onPressed: () => context.go('/'), child: const Text('Go to home')),
           ],
         ),

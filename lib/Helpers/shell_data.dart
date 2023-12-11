@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -19,6 +20,8 @@ class ShellData {
 }
 
 extension SuperShellData on List<ShellData> {
+  String title(BuildContext context) => this[getCurrentIndex(context)].name;
+
   BottomNavigationBar bottomNavigationBar(BuildContext context) => BottomNavigationBar(
         currentIndex: getCurrentIndex(context),
         onTap: (v) {
@@ -33,12 +36,23 @@ extension SuperShellData on List<ShellData> {
         type: BottomNavigationBarType.fixed,
       );
 
-  String title(BuildContext context) => this[getCurrentIndex(context)].name;
+  CupertinoTabBar cupertinoTabBar(BuildContext context) => CupertinoTabBar(
+        currentIndex: getCurrentIndex(context),
+        onTap: (v) {
+          context.go(this[v].location);
+        },
+        items: map(
+          (e) => BottomNavigationBarItem(
+            icon: e.icon,
+            label: e.name,
+          ),
+        ).toList(),
+      );
 
   NavigationBar navigationBar(BuildContext context) => NavigationBar(
         selectedIndex: getCurrentIndex(context),
         onDestinationSelected: (v) {
-          context.go(this[v].location);
+          context.goNamed(this[v].location);
         },
         destinations: map(
           (e) => NavigationDestination(
@@ -50,7 +64,7 @@ extension SuperShellData on List<ShellData> {
 
   Widget googleBar(BuildContext context) => Container(
         color: Colors.transparent,
-        margin: context.mq.pad.copyWith(bottom: 16, top: 0, left: 16, right: 16),
+        margin: context.mq.pad.copyWith(top: 0, left: 16, right: 16),
         child: PhysicalShape(
           color: AppTheme.card,
           elevation: 1,

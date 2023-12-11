@@ -9,7 +9,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spacemoon/Helpers/gorouter.dart';
+import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Static/theme.dart';

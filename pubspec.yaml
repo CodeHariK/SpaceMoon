@@ -38,6 +38,7 @@ dependencies:
   cloud_functions: ^4.5.2
   firebase_storage: ^11.4.0
   firebase_auth: ^4.12.1
+  firebase_crashlytics: ^3.4.8
   firebase_ui_auth: ^1.11.0
   firebase_ui_oauth_google: ^1.2.15
   firebase_ui_oauth_apple: ^1.2.15

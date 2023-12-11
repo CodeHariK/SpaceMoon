@@ -22,6 +22,10 @@
 
 * [Request location permissions](https://developer.android.com/develop/sensors-and-location/location/permissions)
 
+* [Use of All files access (MANAGE_EXTERNAL_STORAGE) permission](https://support.google.com/googleplay/android-developer/answer/10467955?sjid=4367038160915296245-AP&visit_id=638374701509709871-1663754941)
+
+* [READ_MEDIA_IMAGES](https://developer.android.com/reference/android/Manifest.permission#READ_MEDIA_IMAGES)
+
 ### IOS
 
 * [Requesting access to protected resources](https://developer.apple.com/documentation/uikit/protecting_the_user_s_privacy/requesting_access_to_protected_resources/)

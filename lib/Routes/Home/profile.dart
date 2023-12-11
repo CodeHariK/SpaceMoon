@@ -10,7 +10,7 @@ import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Helpers/gorouter.dart';
+import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/user_data.dart';
@@ -58,7 +58,7 @@ class ProfilePage extends ConsumerWidget {
       appBar: searchuser != null ? AppBar() : null,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Center(
             child: SingleChildScrollView(
               child: Column(

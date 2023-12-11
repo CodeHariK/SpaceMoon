@@ -53,3 +53,5 @@ firebase_app_id_file.json
 GoogleService-Info.plist
 
 proto/node_modules
+
+serviceAccountKey.json

@@ -6,7 +6,9 @@ import * as roomuser from "./roomuser";
 import * as tweet from "./tweet";
 import * as image from "./image";
 
+let serviceAccount = require("../serviceAccountKey.json");
 admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
     projectId: "spacemoonfire",
     storageBucket: 'spacemoonfire.appspot.com',
 });

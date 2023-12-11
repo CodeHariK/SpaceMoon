@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,20 +64,20 @@ void electrify({
           debugPrint(exception.toString());
           debugPrintStack(stackTrace: stackTrace);
         } else {
-          //
-          // FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-          //
+          FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+
           Zone.current.handleUncaughtError(exception, stackTrace!);
         }
       };
 
       // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
       PlatformDispatcher.instance.onError = (error, stack) {
-        //
-        // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        //
-        debugPrint(error.toString());
-        debugPrintStack(stackTrace: stack);
+        if (kDebugMode) {
+          debugPrint(error.toString());
+          debugPrintStack(stackTrace: stack);
+        } else {
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        }
         return true;
       };
 
@@ -113,12 +114,7 @@ void electrify({
         debugPrint(error.toString());
         debugPrintStack(stackTrace: stack);
       } else {
-        // In production
-        // Report errors to a reporting service such as Sentry or Crashlytics
-
-        // FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
-
-        // exit(1); // you may exit the app
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       }
     },
   );
@@ -169,39 +165,51 @@ class SpaceMoonHome extends HookConsumerWidget {
       size: MediaQuery.of(context).size,
       appColor: appColor,
     );
-    return Builder(builder: (context) {
-      return MaterialApp.router(
-        routerConfig: router,
-        title: title,
-        scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
-        locale: const Locale('en'),
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          ...?localizationsDelegates,
-        ],
-        theme: AppTheme.currentAppTheme.theme,
-        themeAnimationCurve: Curves.ease,
-        debugShowCheckedModeBanner: kDebugMode,
 
-        // showSemanticsDebugger: true,
-        // showPerformanceOverlay: true,
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        body: Overlay(
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) {
+                return MaterialApp.router(
+                  routerConfig: router,
+                  title: title,
+                  scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
+                  locale: const Locale('en'),
+                  localizationsDelegates: [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                    ...?localizationsDelegates,
+                  ],
+                  theme: AppTheme.currentAppTheme.theme,
+                  themeAnimationCurve: Curves.ease,
+                  debugShowCheckedModeBanner: kDebugMode,
 
-        supportedLocales: supportedLocales ?? const <Locale>[Locale('en', 'US')],
+                  // showSemanticsDebugger: true,
+                  // showPerformanceOverlay: true,
 
-        builder: (context, child) {
-          initializeDateFormatting();
+                  supportedLocales: supportedLocales ?? const <Locale>[Locale('en', 'US')],
 
-          return CupertinoTheme(
-            data: CupertinoThemeData(
-              brightness: brightness,
-              primaryColor: AppTheme.seedColor,
+                  builder: (context, child) {
+                    initializeDateFormatting();
+
+                    return CupertinoTheme(
+                      data: CupertinoThemeData(
+                        brightness: brightness,
+                        primaryColor: AppTheme.seedColor,
+                      ),
+                      child: child ?? const SimpleError(),
+                    );
+                  },
+                );
+              },
             ),
-            child: child ?? const SimpleError(),
-          );
-        },
-      );
-    });
+          ],
+        ),
+      ),
+    );
   }
 }

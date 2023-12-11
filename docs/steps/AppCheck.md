@@ -1,5 +1,7 @@
 # App Check : Protect your APIs
 
+## [Play Store Requirements](https://firebase.google.com/docs/app-check/android/play-integrity-provider#project-setup)
+
 [App Check](https://firebase.google.com/products/app-check)
 
 App Check is an additional layer of security that helps protect access to your services by attesting that incoming traffic is coming from your app, and blocking traffic that doesn't have valid credentials. It helps protect your backend from abuse, such as billing fraud, phishing, app impersonation, and data poisoning.

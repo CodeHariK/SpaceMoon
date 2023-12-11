@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
@@ -20,20 +21,18 @@ Future<void> initFirebase({required bool useEmulator}) async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // if (kReleaseMode) {
   await FirebaseAppCheck.instance.activate(
     webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
     androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
-  // }
 
-  const GOOGLE_CLIENT_ID = '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com';
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
 
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),
     PhoneAuthProvider(),
-    GoogleProvider(clientId: GOOGLE_CLIENT_ID),
+    GoogleProvider(clientId: '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com'),
     auth.AppleProvider(),
   ]);
 
@@ -49,7 +48,7 @@ Future<void> initFirebase({required bool useEmulator}) async {
 Future<void> emulator() async {
   if (kDebugMode) {
     try {
-      const computerIp = '192.168.1.4';
+      const computerIp = '192.168.1.2';
       final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? computerIp : 'localhost';
 
       FirebaseFirestore.instance.settings = Settings(

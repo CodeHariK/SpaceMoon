@@ -50,6 +50,20 @@ Future<RoomUser?> currentRoomUser(CurrentRoomUserRef ref) async {
 }
 
 @Riverpod(keepAlive: true)
+Future<RoomUser?> getRoomUser(GetRoomUserRef ref, {required String roomId, required String userId}) async {
+  final s = await FirebaseFirestore.instance
+      .collection(Const.roomusers.name)
+      .where('user', isEqualTo: userId)
+      .where('room', isEqualTo: roomId)
+      .limit(1)
+      .get();
+  if (s.docs.isNotEmpty) {
+    return fromDocSnap(RoomUser(), s.docs.first);
+  }
+  return null;
+}
+
+@Riverpod(keepAlive: true)
 Stream<List<RoomUser?>> getAllMyRooms(GetAllMyRoomsRef ref) {
   final user = ref.watch(currentUserProvider).value;
 

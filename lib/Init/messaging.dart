@@ -81,8 +81,8 @@ Future<void> messageHandler(RemoteMessage message, bool background, String type)
           content: 'content',
           title: 'title',
         ).show(
-          AppRouter.rootNavigatorKey.currentContext!,
-          alignment: Alignment.center,
+          AppRouter.scaffoldMessengerKey.currentContext!,
+          alignment: Alignment.topCenter,
         );
 
         AppRouter.scaffoldMessengerKey.currentState?.showSnackBar(

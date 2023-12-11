@@ -21,6 +21,9 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> homeShellNavigatorKey = GlobalKey<NavigatorState>();
 
+  //
+  static const String restorationScopeId = 'SpacemoonRouterRestorationScopeId';
+
   //Auth
   static const String login = '/auth/login';
   static const String phone = '/auth/phone';
@@ -31,13 +34,14 @@ class AppRouter {
 
   //HomeShell
   static const String home = '/';
+  static const String allchat = 'allchat';
+  static const String search = 'search';
+  static const String profile = 'profile';
   /*-*/ static const String account = 'account';
   /*-*/ static const String settings = 'settings';
   /*-*/ static const String chat = 'chat/:chatId';
   /*-----*/ static const String chatInfo = 'info';
   /*-----*/ static const String tweet = 'tweet/:tweetId';
-  static const String profile = '/profile';
-  static const String search = '/search';
 
   //
   static const String onboard = '/onboard';
@@ -55,6 +59,7 @@ final GoRouter router = GoRouter.routingConfig(
   initialLocation: AppRouter.onboard,
   errorPageBuilder: (context, state) => const MaterialPage(child: Error404Page()),
   debugLogDiagnostics: true,
+  restorationScopeId: AppRouter.restorationScopeId,
 );
 
 RoutingConfig _generateRoutingConfig({required bool authenticated, required bool onboarded}) {

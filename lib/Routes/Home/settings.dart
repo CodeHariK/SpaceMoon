@@ -1,4 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -134,6 +135,13 @@ class SettingsPage extends ConsumerWidget {
                 ref.read(onboardedProvider.notifier).set(false);
               },
               title: Text('Onboard false', style: context.tm),
+            ),
+          if (kDebugMode)
+            CupertinoListTile.notched(
+              onTap: () {
+                FirebaseMessaging.instance.deleteToken();
+              },
+              title: Text('Firebase Messaging Token delete', style: context.tm),
             ),
         ],
       ),
