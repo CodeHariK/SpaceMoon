@@ -6,6 +6,10 @@
 flutter pub add firebase_messaging
 ```
 
+[Managing Cloud Messaging Tokens](https://firebase.blog/posts/2023/04/managing-cloud-messaging-tokens/)
+
+[Best practices for FCM registration token management](https://firebase.google.com/docs/cloud-messaging/manage-tokens)
+
 [Firebase Cloud Messaging](https://firebase.flutter.dev/docs/messaging/overview/)
 
 [Set up a Firebase Cloud Messaging client app on Flutter](https://firebase.google.com/docs/cloud-messaging/flutter/client)

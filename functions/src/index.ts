@@ -5,6 +5,7 @@ import * as room from "./room";
 import * as roomuser from "./roomuser";
 import * as tweet from "./tweet";
 import * as image from "./image";
+import * as messaging from "./messaging";
 
 let serviceAccount = require("../serviceAccountKey.json");
 admin.initializeApp({
@@ -15,7 +16,6 @@ admin.initializeApp({
 
 export const onUserCreate = users.onUserCreate;
 export const callUserUpdate = users.callUserUpdate;
-export const callFCMtokenUpdate = users.callFCMtokenUpdate;
 export const deleteAuthUser = users.deleteAuthUser;
 export const deleteUser = users.deleteUser;
 
@@ -35,6 +35,8 @@ export const onTweetDeleted = tweet.onTweetDeleted;
 export const deleteTweet = tweet.deleteTweet;
 
 export const generateThumbnail = image.generateThumbnail;
+
+export const pruneTokens = messaging.pruneTokens;
 
 export const helloWorld = onRequest((request, response) => {
     console.log(request.query);

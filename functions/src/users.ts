@@ -62,32 +62,6 @@ export const callUserUpdate = onCall({
     }
 });
 
-export const callFCMtokenUpdate = onCall({
-    enforceAppCheck: true,
-}, (request): void => {
-    let uid = request.auth?.uid;
-
-    const { fcmToken } = request.data;
-
-    if (uid != null) {
-        admin.auth().getUser(uid)
-            .then(async (userRecord) => {
-                const currentCustomClaims = userRecord.customClaims || {};
-                currentCustomClaims.fcmToken = fcmToken;
-
-                await admin.auth().setCustomUserClaims(uid!, currentCustomClaims).then(() => {
-                    console.log(`Custom claim set ${fcmToken}`);
-                }).catch((err) => {
-                    console.log(err)
-                });
-            }).catch((error) => {
-                throw new HttpsError('aborted', 'Error adding new field to custom claims');
-            });
-    } else {
-        throw new HttpsError('aborted', 'No user error');
-    }
-});
-
 export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
     const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
         .where('user', '==', user.uid).get()

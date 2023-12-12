@@ -12,6 +12,10 @@ service cloud.firestore {
       allow write: if request.auth.uid != null && request.auth.uid == userId;
     }
 
+    match /fcmTokens/{userId} {
+      allow read, write: if request.auth.uid != null && request.auth.uid == userId;
+    }
+
     match /roomusers/{roomuserId} {
       allow read: if request.auth.uid != null;
       allow write: if request.auth.uid != null && request.auth.uid == resource.data.user ;

@@ -9,24 +9,37 @@ import 'package:spacemoon/Static/theme.dart';
 
 class ShellData {
   final String name;
-  final String location;
+  final List<String> location;
   final Icon icon;
 
   ShellData({
     required this.name,
     required this.location,
     required this.icon,
-  });
+  }) : assert(location.isNotEmpty);
 }
 
 extension SuperShellData on List<ShellData> {
   String title(BuildContext context) => this[getCurrentIndex(context)].name;
 
+  int getCurrentIndex(BuildContext context) {
+    try {
+      final String location = GoRouterState.of(context).uri.toString();
+      final i = indexWhere((e) {
+        return e.location.indexWhere((element) => location.endsWith(element)) != -1;
+      });
+      return i == -1 ? 0 : i;
+    } catch (e) {
+      log('Error : $e');
+    }
+    return 0;
+  }
+
+  void goToIndex(BuildContext context, int v) => context.goNamed(this[v].location.first);
+
   BottomNavigationBar bottomNavigationBar(BuildContext context) => BottomNavigationBar(
         currentIndex: getCurrentIndex(context),
-        onTap: (v) {
-          context.go(this[v].location);
-        },
+        onTap: (v) => goToIndex(context, v),
         items: map(
           (e) => BottomNavigationBarItem(
             icon: e.icon,
@@ -38,9 +51,7 @@ extension SuperShellData on List<ShellData> {
 
   CupertinoTabBar cupertinoTabBar(BuildContext context) => CupertinoTabBar(
         currentIndex: getCurrentIndex(context),
-        onTap: (v) {
-          context.go(this[v].location);
-        },
+        onTap: (v) => goToIndex(context, v),
         items: map(
           (e) => BottomNavigationBarItem(
             icon: e.icon,
@@ -51,9 +62,7 @@ extension SuperShellData on List<ShellData> {
 
   NavigationBar navigationBar(BuildContext context) => NavigationBar(
         selectedIndex: getCurrentIndex(context),
-        onDestinationSelected: (v) {
-          context.goNamed(this[v].location);
-        },
+        onDestinationSelected: (v) => goToIndex(context, v),
         destinations: map(
           (e) => NavigationDestination(
             icon: e.icon,
@@ -82,7 +91,7 @@ extension SuperShellData on List<ShellData> {
                       i,
                       InkWell(
                         onTap: () {
-                          context.go(this[i].location);
+                          goToIndex(context, i);
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -104,10 +113,10 @@ extension SuperShellData on List<ShellData> {
         ),
       );
 
-  TabBar tabBar(BuildContext context) => TabBar(
-        onTap: (v) {
-          context.go(this[v].location);
-        },
+  TabBar tabBar(BuildContext context, {TabController? controller}) => TabBar(
+        controller: controller,
+        onTap: (v) => goToIndex(context, v),
+        indicatorSize: TabBarIndicatorSize.tab,
         tabs: map(
           (e) => Tab(
             // icon: e.icon,
@@ -115,17 +124,4 @@ extension SuperShellData on List<ShellData> {
           ),
         ).toList(),
       );
-
-  int getCurrentIndex(BuildContext context) {
-    try {
-      final String location = GoRouterState.of(context).uri.toString();
-      final i = indexWhere((e) {
-        return location.endsWith(e.location);
-      });
-      return i == -1 ? 0 : i;
-    } catch (e) {
-      log('Error : $e');
-    }
-    return 0;
-  }
 }

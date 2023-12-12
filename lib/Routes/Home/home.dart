@@ -8,6 +8,7 @@ import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
+import 'package:spacemoon/Routes/Home/notifications.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Home/settings.dart';
@@ -41,11 +42,20 @@ class Home {
         TypedGoRoute<AllChatRoute>(name: AppRouter.allchat, path: AppRouter.allchat),
         TypedGoRoute<SearchRoute>(name: AppRouter.search, path: AppRouter.search),
         TypedGoRoute<ProfileRoute>(name: AppRouter.profile, path: AppRouter.profile),
-
-        // TypedShellRoute<TabShellRoute>(routes: [
-        //   TypedGoRoute<UnsplashRoute>(path: '/tabhome/tab1'),
-        //   TypedGoRoute<Tab2Route>(path: '/tabhome/tab2'),
-        // ]),
+        TypedStatefulShellRoute<NotificationShell>(
+          branches: [
+            TypedStatefulShellBranch<NotificationShellBranchData>(
+              routes: <TypedRoute<RouteData>>[
+                TypedGoRoute<NotificationsRoute>(name: 'notification', path: 'notification'),
+              ],
+            ),
+            TypedStatefulShellBranch<NotificationShellBranchData>(
+              routes: <TypedRoute<RouteData>>[
+                TypedGoRoute<SubscriptionsRoute>(name: 'subscription', path: 'subscription'),
+              ],
+            ),
+          ],
+        ),
       ],
     )
   ],
@@ -91,10 +101,13 @@ class HomeShell extends StatelessWidget {
   final Widget navigator;
 
   static List<ShellData> data = [
-    // ShellData(name: 'TabHome', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
-    ShellData(name: 'Spacemoon', location: AppRouter.allchat, icon: const Icon(Icons.chat_bubble_outline)),
-    ShellData(name: 'Search', location: AppRouter.search, icon: const Icon(Icons.search)),
-    ShellData(name: 'Profile', location: AppRouter.profile, icon: const Icon(Icons.face_2_outlined)),
+    ShellData(name: 'Spacemoon', location: [AppRouter.allchat], icon: const Icon(Icons.chat_bubble_outline)),
+    ShellData(name: 'Search', location: [AppRouter.search], icon: const Icon(Icons.search)),
+    ShellData(
+        name: 'Notification',
+        location: ['notification', 'subscription'],
+        icon: const Icon(Icons.notifications_none_rounded)),
+    ShellData(name: 'Profile', location: [AppRouter.profile], icon: const Icon(Icons.face_2_outlined)),
   ];
 
   @override

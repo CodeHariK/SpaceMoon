@@ -14,64 +14,6 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
-// final GlobalKey<NavigatorState> tabShellNavigatorKey = GlobalKey<NavigatorState>();
-
-// class TabShellRoute extends ShellRouteData {
-//   const TabShellRoute();
-
-//   static final GlobalKey<NavigatorState> $navigatorKey = tabShellNavigatorKey;
-
-//   static List<ShellData> data = [
-//     ShellData(name: 'Tab1', location: '/tabhome/tab1', icon: const Icon(Icons.mode_of_travel)),
-//     ShellData(name: 'Tab2', location: '/tabhome/tab2', icon: const Icon(Icons.face_2_outlined)),
-//   ];
-
-//   @override
-//   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
-//     return DefaultTabController(
-//       length: 2,
-//       child: Scaffold(
-//         body: Column(
-//           children: [
-//             TabShellRoute.data.tabBar(context),
-//             Expanded(
-//               child: navigator,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class TabHomeRoute extends GoRouteData {
-//   @override
-//   Widget build(BuildContext context, GoRouterState state) {
-//     return const TabHomePage();
-//   }
-
-//   @override
-//   FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-//     return '/tabhome/tab1';
-//   }
-// }
-
-// class TabHomePage extends StatelessWidget {
-//   const TabHomePage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('TabHome'),
-//       ),
-//       body: const Column(
-//         children: [],
-//       ),
-//     );
-//   }
-// }
-
 class UnsplashButton extends StatelessWidget {
   const UnsplashButton({
     super.key,
@@ -95,13 +37,6 @@ class UnsplashButton extends StatelessWidget {
     );
   }
 }
-
-// class UnsplashRoute extends GoRouteData {
-//   @override
-//   Widget build(BuildContext context, GoRouterState state) {
-//     return const UnsplashPage();
-//   }
-// }
 
 class UnsplashPage extends StatefulWidget {
   const UnsplashPage({super.key, required this.roomUser});
@@ -352,29 +287,6 @@ class UnsplashGrid extends ConsumerWidget {
             },
           ).toList() ??
           [],
-    );
-  }
-}
-
-class Tab2Route extends GoRouteData {
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const Tab2Page();
-  }
-}
-
-class Tab2Page extends StatelessWidget {
-  const Tab2Page({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tab2'),
-      ),
-      body: const Column(
-        children: [],
-      ),
     );
   }
 }

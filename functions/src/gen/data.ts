@@ -356,8 +356,10 @@ export interface User {
   open: Visible;
 }
 
-export interface UserClaims {
+export interface Messaging {
   fcmToken: string;
+  created: Date | undefined;
+  roomtopics: string[];
 }
 
 export interface RoomUser {
@@ -607,22 +609,28 @@ export const User = {
   },
 };
 
-function createBaseUserClaims(): UserClaims {
-  return { fcmToken: "" };
+function createBaseMessaging(): Messaging {
+  return { fcmToken: "", created: undefined, roomtopics: [] };
 }
 
-export const UserClaims = {
-  encode(message: UserClaims, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const Messaging = {
+  encode(message: Messaging, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.fcmToken !== "") {
       writer.uint32(802).string(message.fcmToken);
+    }
+    if (message.created !== undefined) {
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(1602).fork()).ldelim();
+    }
+    for (const v of message.roomtopics) {
+      writer.uint32(2402).string(v!);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UserClaims {
+  decode(input: _m0.Reader | Uint8Array, length?: number): Messaging {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserClaims();
+    const message = createBaseMessaging();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -633,6 +641,20 @@ export const UserClaims = {
 
           message.fcmToken = reader.string();
           continue;
+        case 200:
+          if (tag !== 1602) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 300:
+          if (tag !== 2402) {
+            break;
+          }
+
+          message.roomtopics.push(reader.string());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -642,24 +664,38 @@ export const UserClaims = {
     return message;
   },
 
-  fromJSON(object: any): UserClaims {
-    return { fcmToken: isSet(object.fcmToken) ? globalThis.String(object.fcmToken) : "" };
+  fromJSON(object: any): Messaging {
+    return {
+      fcmToken: isSet(object.fcmToken) ? globalThis.String(object.fcmToken) : "",
+      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+      roomtopics: globalThis.Array.isArray(object?.roomtopics)
+        ? object.roomtopics.map((e: any) => globalThis.String(e))
+        : [],
+    };
   },
 
-  toJSON(message: UserClaims): unknown {
+  toJSON(message: Messaging): unknown {
     const obj: any = {};
     if (message.fcmToken !== "") {
       obj.fcmToken = message.fcmToken;
     }
+    if (message.created !== undefined) {
+      obj.created = message.created.toISOString();
+    }
+    if (message.roomtopics?.length) {
+      obj.roomtopics = message.roomtopics;
+    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UserClaims>, I>>(base?: I): UserClaims {
-    return UserClaims.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<Messaging>, I>>(base?: I): Messaging {
+    return Messaging.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UserClaims>, I>>(object: I): UserClaims {
-    const message = createBaseUserClaims();
+  fromPartial<I extends Exact<DeepPartial<Messaging>, I>>(object: I): Messaging {
+    const message = createBaseMessaging();
     message.fcmToken = object.fcmToken ?? "";
+    message.created = object.created ?? undefined;
+    message.roomtopics = object.roomtopics?.map((e) => e) || [];
     return message;
   },
 };

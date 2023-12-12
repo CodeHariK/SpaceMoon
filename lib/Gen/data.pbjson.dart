@@ -141,17 +141,21 @@ final $typed_data.Uint8List userDescriptor = $convert.base64Decode(
     'KAlSB2ZyaWVuZHMSNQoHY3JlYXRlZBigBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW'
     '1wUgdjcmVhdGVkEiIKBG9wZW4YhAcgASgOMg0udXNlci5WaXNpYmxlUgRvcGVu');
 
-@$core.Deprecated('Use userClaimsDescriptor instead')
-const UserClaims$json = {
-  '1': 'UserClaims',
+@$core.Deprecated('Use messagingDescriptor instead')
+const Messaging$json = {
+  '1': 'Messaging',
   '2': [
     {'1': 'fcmToken', '3': 100, '4': 1, '5': 9, '10': 'fcmToken'},
+    {'1': 'created', '3': 200, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
+    {'1': 'roomtopics', '3': 300, '4': 3, '5': 9, '10': 'roomtopics'},
   ],
 };
 
-/// Descriptor for `UserClaims`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List userClaimsDescriptor = $convert.base64Decode(
-    'CgpVc2VyQ2xhaW1zEhoKCGZjbVRva2VuGGQgASgJUghmY21Ub2tlbg==');
+/// Descriptor for `Messaging`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List messagingDescriptor = $convert.base64Decode(
+    'CglNZXNzYWdpbmcSGgoIZmNtVG9rZW4YZCABKAlSCGZjbVRva2VuEjUKB2NyZWF0ZWQYyAEgAS'
+    'gLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBIfCgpyb29tdG9waWNzGKwC'
+    'IAMoCVIKcm9vbXRvcGljcw==');
 
 @$core.Deprecated('Use roomUserDescriptor instead')
 const RoomUser$json = {

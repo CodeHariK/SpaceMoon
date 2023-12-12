@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
+import { Messaging, Tweet } from "./Gen/data";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import { logger } from "firebase-functions";
 import { onCall } from "firebase-functions/v2/https";
-import { Tweet } from "./Gen/data";
 
 // export const sendMessage = onCall({
 //     enforceAppCheck: true,
@@ -113,3 +115,41 @@ export async function tweetToTopic(roomId: string, userId: string, tweet: Tweet)
 //     return;
 // })
 
+// export const callFCMtokenUpdate = onCall({
+//     enforceAppCheck: true,
+// }, (request): void => {
+//     let uid = request.auth?.uid;
+
+//     const { fcmToken } = request.data;
+
+//     if (uid != null) {
+//         admin.auth().getUser(uid)
+//             .then(async (userRecord) => {
+//                 const currentCustomClaims = userRecord.customClaims || {};
+//                 currentCustomClaims.fcmToken = fcmToken;
+
+//                 await admin.auth().setCustomUserClaims(uid!, currentCustomClaims).then(() => {
+//                     console.log(`Custom claim set ${fcmToken}`);
+//                 }).catch((err) => {
+//                     console.log(err)
+//                 });
+//             }).catch((error) => {
+//                 throw new HttpsError('aborted', 'Error adding new field to custom claims');
+//             });
+//     } else {
+//         throw new HttpsError('aborted', 'No user error');
+//     }
+// });
+
+
+const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 10; // 10 days
+export const pruneTokens = onSchedule('every 24 hours', async (event) => {
+    const staleTokensResult = await admin.firestore().collection('fcmTokens')
+        .where("timestamp", "<", new Date(Date.now() - EXPIRATION_TIME))
+        .get();
+
+    // Delete devices with stale tokens
+    staleTokensResult.forEach(function (doc) { doc.ref.delete(); });
+
+    logger.log("Token cleanup finished");
+});

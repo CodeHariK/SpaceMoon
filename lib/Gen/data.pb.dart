@@ -190,22 +190,32 @@ class User extends $pb.GeneratedMessage {
   void clearOpen() => clearField(900);
 }
 
-class UserClaims extends $pb.GeneratedMessage {
-  factory UserClaims({
+class Messaging extends $pb.GeneratedMessage {
+  factory Messaging({
     $core.String? fcmToken,
+    $0.Timestamp? created,
+    $core.Iterable<$core.String>? roomtopics,
   }) {
     final $result = create();
     if (fcmToken != null) {
       $result.fcmToken = fcmToken;
     }
+    if (created != null) {
+      $result.created = created;
+    }
+    if (roomtopics != null) {
+      $result.roomtopics.addAll(roomtopics);
+    }
     return $result;
   }
-  UserClaims._() : super();
-  factory UserClaims.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory UserClaims.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  Messaging._() : super();
+  factory Messaging.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Messaging.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'UserClaims', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Messaging', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
     ..aOS(100, _omitFieldNames ? '' : 'fcmToken', protoName: 'fcmToken')
+    ..aOM<$0.Timestamp>(200, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..pPS(300, _omitFieldNames ? '' : 'roomtopics')
     ..hasRequiredFields = false
   ;
 
@@ -213,22 +223,22 @@ class UserClaims extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  UserClaims clone() => UserClaims()..mergeFromMessage(this);
+  Messaging clone() => Messaging()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  UserClaims copyWith(void Function(UserClaims) updates) => super.copyWith((message) => updates(message as UserClaims)) as UserClaims;
+  Messaging copyWith(void Function(Messaging) updates) => super.copyWith((message) => updates(message as Messaging)) as Messaging;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static UserClaims create() => UserClaims._();
-  UserClaims createEmptyInstance() => create();
-  static $pb.PbList<UserClaims> createRepeated() => $pb.PbList<UserClaims>();
+  static Messaging create() => Messaging._();
+  Messaging createEmptyInstance() => create();
+  static $pb.PbList<Messaging> createRepeated() => $pb.PbList<Messaging>();
   @$core.pragma('dart2js:noInline')
-  static UserClaims getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<UserClaims>(create);
-  static UserClaims? _defaultInstance;
+  static Messaging getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Messaging>(create);
+  static Messaging? _defaultInstance;
 
   @$pb.TagNumber(100)
   $core.String get fcmToken => $_getSZ(0);
@@ -238,6 +248,20 @@ class UserClaims extends $pb.GeneratedMessage {
   $core.bool hasFcmToken() => $_has(0);
   @$pb.TagNumber(100)
   void clearFcmToken() => clearField(100);
+
+  @$pb.TagNumber(200)
+  $0.Timestamp get created => $_getN(1);
+  @$pb.TagNumber(200)
+  set created($0.Timestamp v) { setField(200, v); }
+  @$pb.TagNumber(200)
+  $core.bool hasCreated() => $_has(1);
+  @$pb.TagNumber(200)
+  void clearCreated() => clearField(200);
+  @$pb.TagNumber(200)
+  $0.Timestamp ensureCreated() => $_ensure(1);
+
+  @$pb.TagNumber(300)
+  $core.List<$core.String> get roomtopics => $_getList(2);
 }
 
 class RoomUser extends $pb.GeneratedMessage {

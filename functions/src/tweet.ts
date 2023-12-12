@@ -1,10 +1,9 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { Const, Role, Room, Tweet } from "./Gen/data";
+import { Const, Role, Tweet } from "./Gen/data";
 import { constName } from "./Helpers/const";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomUserById } from "./roomuser";
-import { roomToJson } from "./Helpers/convertors";
 import { updateRoomTime } from "./room";
 import { tweetToTopic } from "./messaging";
 

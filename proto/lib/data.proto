@@ -49,8 +49,10 @@ message User {
     Visible open = 900;
 }
 
-message UserClaims {
+message Messaging {
     string fcmToken = 100;
+    google.protobuf.Timestamp created = 200;
+    repeated string roomtopics = 300;
 }
 
 message RoomUser {
