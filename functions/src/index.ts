@@ -36,6 +36,7 @@ export const deleteTweet = tweet.deleteTweet;
 
 export const generateThumbnail = image.generateThumbnail;
 
+export const callFCMtokenUpdate = messaging.callFCMtokenUpdate;
 export const pruneTokens = messaging.pruneTokens;
 
 export const helloWorld = onRequest((request, response) => {

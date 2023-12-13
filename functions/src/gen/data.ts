@@ -223,6 +223,7 @@ export enum Const {
   status = 400,
   created = 600,
   updated = 610,
+  timestamp = 620,
   open = 700,
   members = 800,
   tweet_count = 900,
@@ -275,6 +276,9 @@ export function constFromJSON(object: any): Const {
     case 610:
     case "updated":
       return Const.updated;
+    case 620:
+    case "timestamp":
+      return Const.timestamp;
     case 700:
     case "open":
       return Const.open;
@@ -327,6 +331,8 @@ export function constToJSON(object: Const): string {
       return "created";
     case Const.updated:
       return "updated";
+    case Const.timestamp:
+      return "timestamp";
     case Const.open:
       return "open";
     case Const.members:
@@ -353,13 +359,13 @@ export interface User {
   status: Active;
   friends: string[];
   created: Date | undefined;
+  updated: Date | undefined;
   open: Visible;
 }
 
 export interface Messaging {
   fcmToken: string;
-  created: Date | undefined;
-  roomtopics: string[];
+  timestamp: Date | undefined;
 }
 
 export interface RoomUser {
@@ -369,6 +375,7 @@ export interface RoomUser {
   role: Role;
   created: Date | undefined;
   updated: Date | undefined;
+  subscribed: boolean;
 }
 
 export interface Room {
@@ -415,6 +422,7 @@ function createBaseUser(): User {
     status: 0,
     friends: [],
     created: undefined,
+    updated: undefined,
     open: 0,
   };
 }
@@ -448,8 +456,11 @@ export const User = {
     if (message.created !== undefined) {
       Timestamp.encode(toTimestamp(message.created), writer.uint32(6402).fork()).ldelim();
     }
+    if (message.updated !== undefined) {
+      Timestamp.encode(toTimestamp(message.updated), writer.uint32(7202).fork()).ldelim();
+    }
     if (message.open !== 0) {
-      writer.uint32(7200).int32(message.open);
+      writer.uint32(8000).int32(message.open);
     }
     return writer;
   },
@@ -525,7 +536,14 @@ export const User = {
           message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         case 900:
-          if (tag !== 7200) {
+          if (tag !== 7202) {
+            break;
+          }
+
+          message.updated = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 1000:
+          if (tag !== 8000) {
             break;
           }
 
@@ -551,6 +569,7 @@ export const User = {
       status: isSet(object.status) ? activeFromJSON(object.status) : 0,
       friends: globalThis.Array.isArray(object?.friends) ? object.friends.map((e: any) => globalThis.String(e)) : [],
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+      updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : 0,
     };
   },
@@ -584,6 +603,9 @@ export const User = {
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
     }
+    if (message.updated !== undefined) {
+      obj.updated = message.updated.toISOString();
+    }
     if (message.open !== 0) {
       obj.open = visibleToJSON(message.open);
     }
@@ -604,13 +626,14 @@ export const User = {
     message.status = object.status ?? 0;
     message.friends = object.friends?.map((e) => e) || [];
     message.created = object.created ?? undefined;
+    message.updated = object.updated ?? undefined;
     message.open = object.open ?? 0;
     return message;
   },
 };
 
 function createBaseMessaging(): Messaging {
-  return { fcmToken: "", created: undefined, roomtopics: [] };
+  return { fcmToken: "", timestamp: undefined };
 }
 
 export const Messaging = {
@@ -618,11 +641,8 @@ export const Messaging = {
     if (message.fcmToken !== "") {
       writer.uint32(802).string(message.fcmToken);
     }
-    if (message.created !== undefined) {
-      Timestamp.encode(toTimestamp(message.created), writer.uint32(1602).fork()).ldelim();
-    }
-    for (const v of message.roomtopics) {
-      writer.uint32(2402).string(v!);
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(1602).fork()).ldelim();
     }
     return writer;
   },
@@ -646,14 +666,7 @@ export const Messaging = {
             break;
           }
 
-          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        case 300:
-          if (tag !== 2402) {
-            break;
-          }
-
-          message.roomtopics.push(reader.string());
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -667,10 +680,7 @@ export const Messaging = {
   fromJSON(object: any): Messaging {
     return {
       fcmToken: isSet(object.fcmToken) ? globalThis.String(object.fcmToken) : "",
-      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
-      roomtopics: globalThis.Array.isArray(object?.roomtopics)
-        ? object.roomtopics.map((e: any) => globalThis.String(e))
-        : [],
+      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
     };
   },
 
@@ -679,11 +689,8 @@ export const Messaging = {
     if (message.fcmToken !== "") {
       obj.fcmToken = message.fcmToken;
     }
-    if (message.created !== undefined) {
-      obj.created = message.created.toISOString();
-    }
-    if (message.roomtopics?.length) {
-      obj.roomtopics = message.roomtopics;
+    if (message.timestamp !== undefined) {
+      obj.timestamp = message.timestamp.toISOString();
     }
     return obj;
   },
@@ -694,35 +701,37 @@ export const Messaging = {
   fromPartial<I extends Exact<DeepPartial<Messaging>, I>>(object: I): Messaging {
     const message = createBaseMessaging();
     message.fcmToken = object.fcmToken ?? "";
-    message.created = object.created ?? undefined;
-    message.roomtopics = object.roomtopics?.map((e) => e) || [];
+    message.timestamp = object.timestamp ?? undefined;
     return message;
   },
 };
 
 function createBaseRoomUser(): RoomUser {
-  return { uid: "", user: "", room: "", role: 0, created: undefined, updated: undefined };
+  return { uid: "", user: "", room: "", role: 0, created: undefined, updated: undefined, subscribed: false };
 }
 
 export const RoomUser = {
   encode(message: RoomUser, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.uid !== "") {
-      writer.uint32(10).string(message.uid);
+      writer.uint32(82).string(message.uid);
     }
     if (message.user !== "") {
-      writer.uint32(18).string(message.user);
+      writer.uint32(162).string(message.user);
     }
     if (message.room !== "") {
-      writer.uint32(26).string(message.room);
+      writer.uint32(242).string(message.room);
     }
     if (message.role !== 0) {
-      writer.uint32(80).int32(message.role);
+      writer.uint32(320).int32(message.role);
     }
     if (message.created !== undefined) {
-      Timestamp.encode(toTimestamp(message.created), writer.uint32(162).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(402).fork()).ldelim();
     }
     if (message.updated !== undefined) {
-      Timestamp.encode(toTimestamp(message.updated), writer.uint32(242).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.updated), writer.uint32(482).fork()).ldelim();
+    }
+    if (message.subscribed === true) {
+      writer.uint32(560).bool(message.subscribed);
     }
     return writer;
   },
@@ -734,47 +743,54 @@ export const RoomUser = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
+        case 10:
+          if (tag !== 82) {
             break;
           }
 
           message.uid = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.user = reader.string();
-          continue;
-        case 3:
-          if (tag !== 26) {
-            break;
-          }
-
-          message.room = reader.string();
-          continue;
-        case 10:
-          if (tag !== 80) {
-            break;
-          }
-
-          message.role = reader.int32() as any;
           continue;
         case 20:
           if (tag !== 162) {
             break;
           }
 
-          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.user = reader.string();
           continue;
         case 30:
           if (tag !== 242) {
             break;
           }
 
+          message.room = reader.string();
+          continue;
+        case 40:
+          if (tag !== 320) {
+            break;
+          }
+
+          message.role = reader.int32() as any;
+          continue;
+        case 50:
+          if (tag !== 402) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 60:
+          if (tag !== 482) {
+            break;
+          }
+
           message.updated = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 70:
+          if (tag !== 560) {
+            break;
+          }
+
+          message.subscribed = reader.bool();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -793,6 +809,7 @@ export const RoomUser = {
       role: isSet(object.role) ? roleFromJSON(object.role) : 0,
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
+      subscribed: isSet(object.subscribed) ? globalThis.Boolean(object.subscribed) : false,
     };
   },
 
@@ -816,6 +833,9 @@ export const RoomUser = {
     if (message.updated !== undefined) {
       obj.updated = message.updated.toISOString();
     }
+    if (message.subscribed === true) {
+      obj.subscribed = message.subscribed;
+    }
     return obj;
   },
 
@@ -830,6 +850,7 @@ export const RoomUser = {
     message.role = object.role ?? 0;
     message.created = object.created ?? undefined;
     message.updated = object.updated ?? undefined;
+    message.subscribed = object.subscribed ?? false;
     return message;
   },
 };

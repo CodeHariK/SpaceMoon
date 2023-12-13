@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -128,25 +127,11 @@ void callFCMtokenUpdate(String? fcmToken) async {
   if (fcmToken == null || FirebaseAuth.instance.currentUser == null) {
     return;
   }
-  // await FirebaseFunctions.instance.httpsCallable('callFCMtokenUpdate').call({
-  //   Const.fcmToken.name: fcmToken,
-  // });
-
-  FirebaseFirestore.instance.doc('fcmTokens/${FirebaseAuth.instance.currentUser?.uid}').set(
-    {
-      'token': fcmToken,
-      'timestamp': FieldValue.serverTimestamp(),
-    },
-    SetOptions(merge: true),
-  ).catchError((error) {
-    debugPrint('callFCMtokenUpdate Failed');
-  });
-}
-
-subscribeToTopic(String topic) {
-  FirebaseMessaging.instance.subscribeToTopic(topic);
-}
-
-unsubscribeToTopic(String topic) {
-  FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+  try {
+    await FirebaseFunctions.instance.httpsCallable('callFCMtokenUpdate').call({
+      Const.fcmToken.name: fcmToken,
+    });
+  } catch (e) {
+    debugPrint(e.toString());
+  }
 }

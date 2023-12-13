@@ -51,7 +51,7 @@ class SearchPage extends HookConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: AsyncTextFormField(
                   controller: roomCon,
-                  autofocus: false,
+                  autofocus: true,
                   decoration: (AsyncText value, roomCon) => const InputDecoration(
                     hintText: 'abc...',
                     labelText: 'Find Rooms or Users by nickname',

@@ -46,22 +46,23 @@ message User {
     Active status = 600;
     repeated string friends = 700;
     google.protobuf.Timestamp created = 800;
-    Visible open = 900;
+    google.protobuf.Timestamp updated = 900;
+    Visible open = 1000;
 }
 
 message Messaging {
     string fcmToken = 100;
-    google.protobuf.Timestamp created = 200;
-    repeated string roomtopics = 300;
+    google.protobuf.Timestamp timestamp = 200;
 }
 
 message RoomUser {
-    string uid = 1;
-    string user = 2;
-    string room = 3;
-    Role role = 10;
-    google.protobuf.Timestamp created = 20;
-    google.protobuf.Timestamp updated = 30;
+    string uid = 10;
+    string user = 20;
+    string room = 30;
+    Role role = 40;
+    google.protobuf.Timestamp created = 50;
+    google.protobuf.Timestamp updated = 60;
+    bool subscribed = 70;
 }
 
 message Room {
@@ -105,6 +106,7 @@ enum Const {
     status = 400;
     created = 600;
     updated = 610;
+    timestamp = 620;
     open = 700;
 
     members = 800;

@@ -5,6 +5,7 @@ import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
 import 'package:spacemoon/Helpers/tab_shell.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Routes/Home/all_chat.dart';
 
 final GlobalKey<NavigatorState> tabShellNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -15,7 +16,10 @@ class NotificationShell extends StatefulShellRouteData {
 
   static List<ShellData> data = [
     ShellData(
-        name: 'Notification', location: [AppRouter.notification], icon: const Icon(Icons.notifications_none_rounded)),
+      name: 'Notification',
+      location: [AppRouter.notification],
+      icon: const Icon(Icons.notifications_none_rounded),
+    ),
     ShellData(name: 'Subscription', location: [AppRouter.subscription], icon: const Icon(Icons.subject_sharp)),
   ];
 
@@ -80,27 +84,13 @@ class NotificationsPage extends HookWidget {
   }
 }
 
-class SubscriptionsPage extends HookWidget {
+class SubscriptionsPage extends StatelessWidget {
   const SubscriptionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final state = useState(0);
-
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextButton(
-              onPressed: () {
-                state.value++;
-              },
-              child: Text('Subscription ${state.value}'),
-            ),
-          ],
-        ),
-      ),
+    return const AllChatPage(
+      subscription: true,
     );
   }
 }

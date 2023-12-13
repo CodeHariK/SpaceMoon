@@ -9,6 +9,7 @@ import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
 import { roomToJson, roomToMap } from "./Helpers/convertors";
 import { getRoomUserById } from "./roomuser";
+import { subscribeToTopic } from "./messaging";
 
 export const callCreateRoom = onCall({
     enforceAppCheck: true,
@@ -62,7 +63,9 @@ export const callCreateRoom = onCall({
             e.room = roomDoc.id;
             await admin.firestore().collection(constName(Const.roomusers)).doc(e.user + '_' + e.room).create(
                 RoomUser.toJSON(e) as Map<string, any>
-            );
+            ).then(() => {
+                subscribeToTopic(e.user, e.room);
+            });
         });
 
         // admin.firestore().collection(constName(Const.rooms)).doc(roomDoc.id).set(

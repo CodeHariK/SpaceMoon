@@ -1,8 +1,11 @@
 import * as admin from "firebase-admin";
-import { Messaging, Tweet } from "./Gen/data";
+import { Const, Messaging, RoomUser, Tweet, User } from "./Gen/data";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logger } from "firebase-functions";
-import { onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { checkUserExists } from "./users";
+import { constName } from "./Helpers/const";
+import { roomUserToMap, userToMap } from "./Helpers/convertors";
 
 // export const sendMessage = onCall({
 //     enforceAppCheck: true,
@@ -36,35 +39,109 @@ import { onCall } from "firebase-functions/v2/https";
 //     });
 // });
 
-// export async function unsubscribeFromTopic(userId: string, roomId: string) {
-//     let fcmToken = (await admin.auth().getUser(userId)).customClaims!['fcmToken'];
-//     console.log('');
-//     console.log(userId);
-//     console.log(fcmToken);
-//     console.log('');
-//     if (fcmToken) {
-//         admin.messaging().unsubscribeFromTopic(fcmToken, roomId).then((v) => {
-//             console.log(v)
-//         }).catch((e) => {
-//             console.log(e)
-//         });
-//     }
-// }
+export const callUnsubscribeFromTopic = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<void> => {
+    let uid = request.auth!.uid;
 
-// export async function subscribeToTopic(userId: string, roomId: string) {
-//     let fcmToken = (await admin.auth().getUser(userId)).customClaims!['fcmToken'];
-//     console.log('');
-//     console.log(userId);
-//     console.log(fcmToken);
-//     console.log('');
-//     if (fcmToken) {
-//         admin.messaging().subscribeToTopic(fcmToken, roomId).then((v) => {
-//             console.log(v)
-//         }).catch((e) => {
-//             console.log(e)
-//         });
-//     }
-// }
+    const roomuser = RoomUser.fromJSON(request.data);
+
+    unsubscribeFromTopic(uid, roomuser.room)
+
+    return;
+})
+
+export const callSubscribeFromTopic = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<void> => {
+    let uid = request.auth!.uid;
+
+    const roomuser = RoomUser.fromJSON(request.data);
+
+    subscribeToTopic(uid, roomuser.room)
+
+    return;
+})
+
+export async function unsubscribeFromTopic(userId: string, roomId: string) {
+    let messaging = await admin.firestore().doc(`fcmTokens/${userId}`).get().catch((e) => {
+        throw new HttpsError('aborted', e);
+    });
+
+    let fcmToken = Messaging.fromJSON(messaging.data()).fcmToken;
+    console.log('');
+    console.log(userId);
+    console.log(fcmToken);
+    console.log('');
+    if (fcmToken) {
+        admin.messaging().unsubscribeFromTopic(fcmToken, roomId).then(async (v) => {
+            await admin.firestore().collection(constName(Const.roomusers))
+                .doc(`${userId}_${roomId}`)
+                .update(
+                    Object.fromEntries(roomUserToMap(RoomUser.create({
+                        subscribed: false
+                    }))))
+                .then(
+                    async () => {
+
+                        await admin.firestore().collection(constName(Const.users)).doc(userId)
+                            .update(Object.fromEntries(userToMap(User.create({
+                                updated: new Date()
+                            }))))
+                            .catch((err) => {
+                                throw new HttpsError('aborted', 'updateUserTime error');
+                            });
+                    }
+                )
+                .catch((err) => {
+                    throw new HttpsError('aborted', 'updateRoomUser failed');
+                });
+        }).catch((e) => {
+            console.log(e)
+        });
+    }
+    return;
+}
+
+export async function subscribeToTopic(userId: string, roomId: string) {
+    let messaging = await admin.firestore().doc(`fcmTokens/${userId}`).get().catch((e) => {
+        throw new HttpsError('aborted', e);
+    });
+
+    let fcmToken = Messaging.fromJSON(messaging.data()).fcmToken;
+    console.log('');
+    console.log(userId);
+    console.log(fcmToken);
+    console.log('');
+    if (fcmToken) {
+        admin.messaging().subscribeToTopic(fcmToken, roomId).then(async (v) => {
+            await admin.firestore().collection(constName(Const.roomusers))
+                .doc(`${userId}_${roomId}`)
+                .update(
+                    Object.fromEntries(roomUserToMap(RoomUser.create({
+                        subscribed: true
+                    }))))
+                .then(
+                    async () => {
+
+                        await admin.firestore().collection(constName(Const.users)).doc(userId)
+                            .update(Object.fromEntries(userToMap(User.create({
+                                updated: new Date()
+                            }))))
+                            .catch((err) => {
+                                throw new HttpsError('aborted', 'updateUserTime error');
+                            });
+                    }
+                )
+                .catch((err) => {
+                    throw new HttpsError('aborted', 'updateRoomUser failed');
+                });
+        }).catch((e) => {
+            console.log(e)
+        });
+    }
+    return;
+}
 
 export async function tweetToTopic(roomId: string, userId: string, tweet: Tweet) {
     admin.messaging().send(
@@ -86,6 +163,7 @@ export async function tweetToTopic(roomId: string, userId: string, tweet: Tweet)
     }).catch((e) => {
         console.log(e)
     });
+    return;
 }
 
 // fetch(
@@ -115,31 +193,32 @@ export async function tweetToTopic(roomId: string, userId: string, tweet: Tweet)
 //     return;
 // })
 
-// export const callFCMtokenUpdate = onCall({
-//     enforceAppCheck: true,
-// }, (request): void => {
-//     let uid = request.auth?.uid;
+export const callFCMtokenUpdate = onCall({
+    enforceAppCheck: true,
+}, async (request): Promise<void> => {
+    let uid = request.auth?.uid;
 
-//     const { fcmToken } = request.data;
+    const { fcmToken } = request.data;
 
-//     if (uid != null) {
-//         admin.auth().getUser(uid)
-//             .then(async (userRecord) => {
-//                 const currentCustomClaims = userRecord.customClaims || {};
-//                 currentCustomClaims.fcmToken = fcmToken;
+    let userExists = await checkUserExists(uid!)
 
-//                 await admin.auth().setCustomUserClaims(uid!, currentCustomClaims).then(() => {
-//                     console.log(`Custom claim set ${fcmToken}`);
-//                 }).catch((err) => {
-//                     console.log(err)
-//                 });
-//             }).catch((error) => {
-//                 throw new HttpsError('aborted', 'Error adding new field to custom claims');
-//             });
-//     } else {
-//         throw new HttpsError('aborted', 'No user error');
-//     }
-// });
+    if (userExists) {
+        admin.firestore().doc(`fcmTokens/${uid}`).set(
+            Messaging.toJSON(
+                Messaging.create({
+                    fcmToken: fcmToken,
+                    timestamp: new Date(),
+                })
+            ) as Map<string, any>
+            , { merge: true })
+            .catch((error) => {
+                throw new HttpsError('aborted', 'Error adding new field to custom claims');
+            });
+    } else {
+        throw new HttpsError('aborted', 'No user error');
+    }
+    return;
+});
 
 
 const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 10; // 10 days
@@ -152,4 +231,5 @@ export const pruneTokens = onSchedule('every 24 hours', async (event) => {
     staleTokensResult.forEach(function (doc) { doc.ref.delete(); });
 
     logger.log("Token cleanup finished");
+    return;
 });

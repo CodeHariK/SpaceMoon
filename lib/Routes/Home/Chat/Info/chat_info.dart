@@ -48,7 +48,7 @@ class ChatInfoPage extends HookConsumerWidget {
     final room = ref.watch(roomStreamProvider).value;
     final meUser = ref.watch(currentUserDataProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
-    final allRoomUsersPro = ref.watch(getAllRoomUsersProvider);
+    final allRoomUsersPro = ref.watch(getAllRoomUsersInRoomProvider);
     final allRoomUsers = allRoomUsersPro.value ?? [];
 
     useEffect(() {

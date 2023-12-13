@@ -64,7 +64,7 @@ Future<RoomUser?> getRoomUser(GetRoomUserRef ref, {required String roomId, requi
 }
 
 @Riverpod(keepAlive: true)
-Stream<List<RoomUser?>> getAllMyRooms(GetAllMyRoomsRef ref) {
+Stream<List<RoomUser?>> getAllRoomUserForUser(GetAllRoomUserForUserRef ref) {
   final user = ref.watch(currentUserProvider).value;
 
   if (user == null) return const Stream.empty();
@@ -78,7 +78,7 @@ Stream<List<RoomUser?>> getAllMyRooms(GetAllMyRoomsRef ref) {
 }
 
 @Riverpod(keepAlive: true)
-Stream<List<RoomUser?>> getAllRoomUsers(GetAllRoomUsersRef ref) {
+Stream<List<RoomUser?>> getAllRoomUsersInRoom(GetAllRoomUsersInRoomRef ref) {
   final room = ref.watch(currentRoomProvider).value;
 
   if (room == null) return const Stream.empty();

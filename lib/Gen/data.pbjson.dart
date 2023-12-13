@@ -99,6 +99,7 @@ const Const$json = {
     {'1': 'status', '2': 400},
     {'1': 'created', '2': 600},
     {'1': 'updated', '2': 610},
+    {'1': 'timestamp', '2': 620},
     {'1': 'open', '2': 700},
     {'1': 'members', '2': 800},
     {'1': 'tweet_count', '2': 900},
@@ -112,8 +113,9 @@ final $typed_data.Uint8List constDescriptor = $convert.base64Decode(
     'CgVDb25zdBIJCgV1c2VycxAAEgkKBXJvb21zEAoSCgoGdHdlZXRzEBQSDQoJcm9vbXVzZXJzEB'
     '4SBwoDdWlkEGQSCAoEbmljaxBuEhAKC2Rpc3BsYXlOYW1lEJYBEgoKBWVtYWlsEMgBEhAKC3Bo'
     'b25lTnVtYmVyEPoBEg0KCHBob3RvVVJMEKwCEg0KCGZjbVRva2VuEN4CEgsKBnN0YXR1cxCQAx'
-    'IMCgdjcmVhdGVkENgEEgwKB3VwZGF0ZWQQ4gQSCQoEb3BlbhC8BRIMCgdtZW1iZXJzEKAGEhAK'
-    'C3R3ZWV0X2NvdW50EIQHEhAKC2Rlc2NyaXB0aW9uEOgHEgwKB2dhbGxlcnkQzAg=');
+    'IMCgdjcmVhdGVkENgEEgwKB3VwZGF0ZWQQ4gQSDgoJdGltZXN0YW1wEOwEEgkKBG9wZW4QvAUS'
+    'DAoHbWVtYmVycxCgBhIQCgt0d2VldF9jb3VudBCEBxIQCgtkZXNjcmlwdGlvbhDoBxIMCgdnYW'
+    'xsZXJ5EMwI');
 
 @$core.Deprecated('Use userDescriptor instead')
 const User$json = {
@@ -128,7 +130,8 @@ const User$json = {
     {'1': 'status', '3': 600, '4': 1, '5': 14, '6': '.user.Active', '10': 'status'},
     {'1': 'friends', '3': 700, '4': 3, '5': 9, '10': 'friends'},
     {'1': 'created', '3': 800, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'open', '3': 900, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
+    {'1': 'updated', '3': 900, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updated'},
+    {'1': 'open', '3': 1000, '4': 1, '5': 14, '6': '.user.Visible', '10': 'open'},
   ],
 };
 
@@ -139,43 +142,44 @@ final $typed_data.Uint8List userDescriptor = $convert.base64Decode(
     'ZU51bWJlchiQAyABKAlSC3Bob25lTnVtYmVyEhsKCHBob3RvVVJMGPQDIAEoCVIIcGhvdG9VUk'
     'wSJQoGc3RhdHVzGNgEIAEoDjIMLnVzZXIuQWN0aXZlUgZzdGF0dXMSGQoHZnJpZW5kcxi8BSAD'
     'KAlSB2ZyaWVuZHMSNQoHY3JlYXRlZBigBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW'
-    '1wUgdjcmVhdGVkEiIKBG9wZW4YhAcgASgOMg0udXNlci5WaXNpYmxlUgRvcGVu');
+    '1wUgdjcmVhdGVkEjUKB3VwZGF0ZWQYhAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFt'
+    'cFIHdXBkYXRlZBIiCgRvcGVuGOgHIAEoDjINLnVzZXIuVmlzaWJsZVIEb3Blbg==');
 
 @$core.Deprecated('Use messagingDescriptor instead')
 const Messaging$json = {
   '1': 'Messaging',
   '2': [
     {'1': 'fcmToken', '3': 100, '4': 1, '5': 9, '10': 'fcmToken'},
-    {'1': 'created', '3': 200, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'roomtopics', '3': 300, '4': 3, '5': 9, '10': 'roomtopics'},
+    {'1': 'timestamp', '3': 200, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'timestamp'},
   ],
 };
 
 /// Descriptor for `Messaging`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List messagingDescriptor = $convert.base64Decode(
-    'CglNZXNzYWdpbmcSGgoIZmNtVG9rZW4YZCABKAlSCGZjbVRva2VuEjUKB2NyZWF0ZWQYyAEgAS'
-    'gLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBIfCgpyb29tdG9waWNzGKwC'
-    'IAMoCVIKcm9vbXRvcGljcw==');
+    'CglNZXNzYWdpbmcSGgoIZmNtVG9rZW4YZCABKAlSCGZjbVRva2VuEjkKCXRpbWVzdGFtcBjIAS'
+    'ABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgl0aW1lc3RhbXA=');
 
 @$core.Deprecated('Use roomUserDescriptor instead')
 const RoomUser$json = {
   '1': 'RoomUser',
   '2': [
-    {'1': 'uid', '3': 1, '4': 1, '5': 9, '10': 'uid'},
-    {'1': 'user', '3': 2, '4': 1, '5': 9, '10': 'user'},
-    {'1': 'room', '3': 3, '4': 1, '5': 9, '10': 'room'},
-    {'1': 'role', '3': 10, '4': 1, '5': 14, '6': '.user.Role', '10': 'role'},
-    {'1': 'created', '3': 20, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
-    {'1': 'updated', '3': 30, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updated'},
+    {'1': 'uid', '3': 10, '4': 1, '5': 9, '10': 'uid'},
+    {'1': 'user', '3': 20, '4': 1, '5': 9, '10': 'user'},
+    {'1': 'room', '3': 30, '4': 1, '5': 9, '10': 'room'},
+    {'1': 'role', '3': 40, '4': 1, '5': 14, '6': '.user.Role', '10': 'role'},
+    {'1': 'created', '3': 50, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'created'},
+    {'1': 'updated', '3': 60, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'updated'},
+    {'1': 'subscribed', '3': 70, '4': 1, '5': 8, '10': 'subscribed'},
   ],
 };
 
 /// Descriptor for `RoomUser`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List roomUserDescriptor = $convert.base64Decode(
-    'CghSb29tVXNlchIQCgN1aWQYASABKAlSA3VpZBISCgR1c2VyGAIgASgJUgR1c2VyEhIKBHJvb2'
-    '0YAyABKAlSBHJvb20SHgoEcm9sZRgKIAEoDjIKLnVzZXIuUm9sZVIEcm9sZRI0CgdjcmVhdGVk'
-    'GBQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBI0Cgd1cGRhdGVkGB'
-    '4gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHdXBkYXRlZA==');
+    'CghSb29tVXNlchIQCgN1aWQYCiABKAlSA3VpZBISCgR1c2VyGBQgASgJUgR1c2VyEhIKBHJvb2'
+    '0YHiABKAlSBHJvb20SHgoEcm9sZRgoIAEoDjIKLnVzZXIuUm9sZVIEcm9sZRI0CgdjcmVhdGVk'
+    'GDIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHY3JlYXRlZBI0Cgd1cGRhdGVkGD'
+    'wgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHdXBkYXRlZBIeCgpzdWJzY3JpYmVk'
+    'GEYgASgIUgpzdWJzY3JpYmVk');
 
 @$core.Deprecated('Use roomDescriptor instead')
 const Room$json = {

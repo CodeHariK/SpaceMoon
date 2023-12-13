@@ -5,6 +5,7 @@ import * as admin from "firebase-admin";
 import { roomUserToMap } from "./Helpers/convertors";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomById, updateRoomTime } from "./room";
+import { subscribeToTopic } from "./messaging";
 
 export const getRoomUserById = async (userId: string, roomId: string) => {
     return await admin.firestore().collection(constName(Const.roomusers))
@@ -179,6 +180,9 @@ export const upgradeAccessToRoom = onCall({
                     updated: new Date(),
                 })))
             );
+
+
+        subscribeToTopic(roomUser.user, roomUser.room);
 
         await updateRoomTime(roomUser.room);
 

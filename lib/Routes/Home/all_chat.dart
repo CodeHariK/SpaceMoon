@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,11 +26,13 @@ import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class AllChatPage extends ConsumerWidget {
-  const AllChatPage({super.key});
+  const AllChatPage({super.key, this.subscription = false});
+
+  final bool subscription;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allRoomsUsers = ref.watch(getAllMyRoomsProvider);
+    final allRoomsUsers = ref.watch(getAllRoomUserForUserProvider);
     final user = ref.watch(currentUserDataProvider).value;
 
     return Scaffold(
@@ -39,23 +42,24 @@ class AllChatPage extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Hero(
-                tag: 'Search',
-                child: TextFormField(
-                  autofocus: false,
-                  decoration: const InputDecoration(
-                    hintText: 'abc...',
-                    prefixIcon: Icon(Icons.search),
-                    labelText: 'Find Rooms or Users by nickname',
+            if (!subscription)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Hero(
+                  tag: 'Search',
+                  child: TextFormField(
+                    autofocus: false,
+                    decoration: const InputDecoration(
+                      hintText: 'abc...',
+                      prefixIcon: Icon(Icons.search),
+                      labelText: 'Find Rooms or Users by nickname',
+                    ),
+                    onTap: () {
+                      SearchRoute().go(context);
+                    },
                   ),
-                  onTap: () {
-                    SearchRoute().go(context);
-                  },
                 ),
               ),
-            ),
             Expanded(
               child: Center(
                 child: allRoomsUsers.when(
@@ -98,7 +102,7 @@ class AllChatPage extends ConsumerWidget {
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(room.updated.timeString),
+                                        if (!subscription) Text(room.updated.timeString),
                                         if (count != 0) const SizedBox(width: 10),
                                         if (count != 0)
                                           AnimatedFlipCounter(
@@ -108,6 +112,22 @@ class AllChatPage extends ConsumerWidget {
                                           ),
                                         if (roomuser.isRequest || roomuser.isInvite) const SizedBox(width: 10),
                                         if (roomuser.isRequest || roomuser.isInvite) const Icon(Icons.pets_rounded),
+                                        if (subscription) const SizedBox(width: 10),
+                                        if (subscription)
+                                          Switch(
+                                            value: roomuser.subscribed,
+                                            onChanged: (v) async {
+                                              if (v) {
+                                                await FirebaseFunctions.instance
+                                                    .httpsCallable('callSubscribeFromTopic')
+                                                    .call(roomuser.toMap());
+                                              } else {
+                                                await FirebaseFunctions.instance
+                                                    .httpsCallable('callUnsubscribeFromTopic')
+                                                    .call(roomuser.toMap());
+                                              }
+                                            },
+                                          ),
                                       ],
                                     ),
                                     onTap: () {
@@ -132,36 +152,38 @@ class AllChatPage extends ConsumerWidget {
         ),
       ),
       extendBody: true,
-      floatingActionButton: AsyncLock(
-        builder: (loading, status, lock, open, setStatus) {
-          return FloatingActionButton(
-            heroTag: loading ? 'Loading' : 'Create Room',
-            onPressed: () async {
-              lock();
-              final room = await ref.read(currentRoomProvider.notifier).createRoom(
-                room: Room(),
-                users: [],
-              );
+      floatingActionButton: subscription
+          ? null
+          : AsyncLock(
+              builder: (loading, status, lock, open, setStatus) {
+                return FloatingActionButton(
+                  heroTag: loading ? 'Loading' : 'Create Room',
+                  onPressed: () async {
+                    lock();
+                    final room = await ref.read(currentRoomProvider.notifier).createRoom(
+                      room: Room(),
+                      users: [],
+                    );
 
-              if (context.mounted) {
-                if (room == null) {
-                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                    const SnackBar(
-                      content: Text('Chat creation failed'),
-                    ),
-                  );
-                } else {
-                  ChatInfoRoute(chatId: room.uid).go(context);
-                }
-              }
-              open();
-            },
-            child: loading
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator())
-                : const Icon(Icons.add),
-          );
-        },
-      ),
+                    if (context.mounted) {
+                      if (room == null) {
+                        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                          const SnackBar(
+                            content: Text('Chat creation failed'),
+                          ),
+                        );
+                      } else {
+                        ChatInfoRoute(chatId: room.uid).go(context);
+                      }
+                    }
+                    open();
+                  },
+                  child: loading
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator())
+                      : const Icon(Icons.add),
+                );
+              },
+            ),
     );
   }
 }
