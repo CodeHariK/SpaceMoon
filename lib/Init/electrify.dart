@@ -166,48 +166,52 @@ class SpaceMoonHome extends HookConsumerWidget {
       appColor: appColor,
     );
 
-    return MaterialApp.router(
-      routerConfig: router,
-      title: title,
-      locale: const Locale('en'),
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        ...?localizationsDelegates,
-      ],
-      theme: AppTheme.currentAppTheme.theme,
-      themeAnimationCurve: Curves.ease,
-      debugShowCheckedModeBanner: kDebugMode,
+    return RootRestorationScope(
+      restorationId: AppRouter.spacemoonRestorationScopeId,
+      child: MaterialApp.router(
+        routerConfig: router,
+        title: title,
+        locale: const Locale('en'),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          ...?localizationsDelegates,
+        ],
+        theme: AppTheme.currentAppTheme.theme,
+        themeAnimationCurve: Curves.ease,
+        debugShowCheckedModeBanner: kDebugMode,
+        restorationScopeId: AppRouter.appRestorationScopeId,
 
-      // showSemanticsDebugger: true,
-      // showPerformanceOverlay: true,
+        // showSemanticsDebugger: true,
+        // showPerformanceOverlay: true,
 
-      supportedLocales: supportedLocales ?? const <Locale>[Locale('en', 'US')],
+        supportedLocales: supportedLocales ?? const <Locale>[Locale('en', 'US')],
 
-      builder: (context, child) {
-        initializeDateFormatting();
+        builder: (context, child) {
+          initializeDateFormatting();
 
-        return Scaffold(
-          key: ValueKey(AppTheme.currentAppTheme),
-          body: Overlay(
-            initialEntries: [
-              OverlayEntry(
-                builder: (context) {
-                  return CupertinoTheme(
-                    key: AppRouter.cupertinoKey,
-                    data: CupertinoThemeData(
-                      brightness: brightness,
-                      primaryColor: AppTheme.seedColor,
-                    ),
-                    child: child ?? const SimpleError(),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
+          return Scaffold(
+            key: ValueKey(AppTheme.currentAppTheme),
+            body: Overlay(
+              initialEntries: [
+                OverlayEntry(
+                  builder: (context) {
+                    return CupertinoTheme(
+                      key: AppRouter.cupertinoKey,
+                      data: CupertinoThemeData(
+                        brightness: brightness,
+                        primaryColor: AppTheme.seedColor,
+                      ),
+                      child: child ?? const SimpleError(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -22,9 +22,11 @@ class AppRouter {
   static final GlobalKey<NavigatorState> homeShellNavigatorKey = GlobalKey<NavigatorState>();
 
   //
-  static const String restorationScopeId = 'SpacemoonRouterRestorationScopeId';
+  static const String routerRestorationScopeId = 'SpacemoonRouterRestorationScopeId';
+  static const String spacemoonRestorationScopeId = 'SpacemoonRestorationScopeId';
+  static const String appRestorationScopeId = 'AppRestorationScopeId';
 
-  //Auth
+  /*-------------------Auth-------------------*/
   static const String login = '/auth/login';
   static const String phone = '/auth/phone';
   static const String sms = '/auth/sms';
@@ -32,18 +34,23 @@ class AppRouter {
   static const String verifyEmail = '/auth/verify-email';
   static const String emailLinkSignIn = '/auth/email-link-sign-in';
 
-  //HomeShell
+  /*-------------------Home-------------------*/
   static const String home = '/';
-  static const String allchat = 'allchat';
-  static const String search = 'search';
-  static const String profile = 'profile';
   /*-*/ static const String account = 'account';
   /*-*/ static const String settings = 'settings';
-  /*-*/ static const String chat = 'chat/:chatId';
-  /*-----*/ static const String chatInfo = 'info';
-  /*-----*/ static const String tweet = 'tweet/:tweetId';
+  /*-----------------HomeShell-----------------*/
+  /*---*/ static const String allchat = 'chat';
+  /*------*/ static const String chat = ':chatId';
+  /*---------*/ static const String chatInfo = 'info';
+  /*---------*/ static const String tweet = 'tweet/:tweetId';
+  /*---*/ static const String search = 'search';
+  /*---*/ static const String profile = 'profile';
 
-  //
+  /*-----------------Notification-----------------*/
+  static const String notification = 'notification';
+  static const String subscription = 'subscription';
+
+  /*-----------------Special-----------------*/
   static const String onboard = '/onboard';
   static const String about = '/about';
 }
@@ -59,7 +66,7 @@ final GoRouter router = GoRouter.routingConfig(
   initialLocation: AppRouter.onboard,
   errorPageBuilder: (context, state) => const MaterialPage(child: Error404Page()),
   debugLogDiagnostics: true,
-  restorationScopeId: AppRouter.restorationScopeId,
+  restorationScopeId: AppRouter.routerRestorationScopeId,
 );
 
 RoutingConfig _generateRoutingConfig({required bool authenticated, required bool onboarded}) {

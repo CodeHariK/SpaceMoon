@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
+import 'package:spacemoon/Helpers/tab_shell.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
@@ -21,113 +23,186 @@ class Home {
   static final routes = $appRoutes;
 }
 
-@TypedGoRoute<HomeRoute>(
+@TypedGoRoute<ExitRoute>(
   path: AppRouter.home,
   routes: [
     //
     TypedGoRoute<SettingsRoute>(path: AppRouter.settings),
     TypedGoRoute<AccountRoute>(path: AppRouter.account),
 
-    //
-    TypedGoRoute<ChatRoute>(
-      path: AppRouter.chat,
-      routes: [
-        TypedGoRoute<TweetRoute>(path: AppRouter.tweet),
-        TypedGoRoute<ChatInfoRoute>(path: AppRouter.chatInfo),
+    TypedStatefulShellRoute<NotificationShell>(
+      branches: [
+        TypedStatefulShellBranch<NotificationShellBranchData>(
+          routes: <TypedRoute<RouteData>>[
+            TypedGoRoute<NotificationsRoute>(name: AppRouter.notification, path: AppRouter.notification),
+          ],
+        ),
+        TypedStatefulShellBranch<NotificationShellBranchData>(
+          routes: <TypedRoute<RouteData>>[
+            TypedGoRoute<SubscriptionsRoute>(name: AppRouter.subscription, path: AppRouter.subscription),
+          ],
+        ),
       ],
     ),
 
-    TypedShellRoute<HomeShellRoute>(
-      routes: [
-        TypedGoRoute<AllChatRoute>(name: AppRouter.allchat, path: AppRouter.allchat),
-        TypedGoRoute<SearchRoute>(name: AppRouter.search, path: AppRouter.search),
-        TypedGoRoute<ProfileRoute>(name: AppRouter.profile, path: AppRouter.profile),
-        TypedStatefulShellRoute<NotificationShell>(
-          branches: [
-            TypedStatefulShellBranch<NotificationShellBranchData>(
-              routes: <TypedRoute<RouteData>>[
-                TypedGoRoute<NotificationsRoute>(name: 'notification', path: 'notification'),
+    TypedStatefulShellRoute<HomeShellRoute>(
+      branches: [
+        TypedStatefulShellBranch<HomeShellBranchData>(
+          routes: <TypedRoute<RouteData>>[
+            TypedGoRoute<HomeRoute>(
+              name: AppRouter.allchat,
+              path: AppRouter.allchat,
+              routes: [
+                TypedGoRoute<ChatRoute>(
+                  path: AppRouter.chat,
+                  routes: [
+                    TypedGoRoute<TweetRoute>(path: AppRouter.tweet),
+                    TypedGoRoute<ChatInfoRoute>(path: AppRouter.chatInfo),
+                  ],
+                ),
               ],
             ),
-            TypedStatefulShellBranch<NotificationShellBranchData>(
-              routes: <TypedRoute<RouteData>>[
-                TypedGoRoute<SubscriptionsRoute>(name: 'subscription', path: 'subscription'),
-              ],
-            ),
+          ],
+        ),
+        TypedStatefulShellBranch<HomeShellBranchData>(
+          routes: <TypedRoute<RouteData>>[
+            TypedGoRoute<SearchRoute>(name: AppRouter.search, path: AppRouter.search),
+          ],
+        ),
+        TypedStatefulShellBranch<HomeShellBranchData>(
+          routes: <TypedRoute<RouteData>>[
+            TypedGoRoute<ProfileRoute>(name: AppRouter.profile, path: AppRouter.profile),
           ],
         ),
       ],
     )
   ],
 )
-class HomeRoute extends GoRouteData {
+class ExitRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return fadePage(context, state, const HomeShell(navigator: AllChatPage()));
+    return fadePage(
+      context,
+      state,
+      const ExitPage(navigator: AllChatPage()),
+    );
   }
 
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-    return state.match('/') ? (AppRouter.home + AppRouter.allchat) : null;
+    return state.match(AppRouter.home) ? (AppRouter.home + AppRouter.allchat) : null;
   }
 }
 
-class AllChatRoute extends GoRouteData {
+class HomeRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadePage(context, state, const AllChatPage());
   }
 }
 
-class HomeShellRoute extends ShellRouteData {
+class HomeShellRoute extends StatefulShellRouteData {
   const HomeShellRoute();
 
   static final GlobalKey<NavigatorState> $navigatorKey = AppRouter.homeShellNavigatorKey;
 
+  static List<ShellData> data = [
+    ShellData(name: 'Spacemoon', location: [AppRouter.allchat], icon: const Icon(Icons.chat_bubble_outline)),
+    ShellData(name: 'Search', location: [AppRouter.search], icon: const Icon(Icons.search)),
+    // ShellData(
+    //     name: 'Notification',
+    //     location: ['notification', 'subscription'],
+    //     icon: const Icon(Icons.notifications_none_rounded)),
+    ShellData(name: 'Profile', location: [AppRouter.profile], icon: const Icon(Icons.face_2_outlined)),
+  ];
+
   @override
-  Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
-    return HomeShell(
-      navigator: navigator,
+  Widget builder(BuildContext context, GoRouterState state, StatefulNavigationShell navigationShell) {
+    return navigationShell;
+  }
+
+  static Widget $navigatorContainerBuilder(
+    BuildContext context,
+    StatefulNavigationShell navigationShell,
+    List<Widget> children,
+  ) {
+    return TabShell(
+      navigationShell: navigationShell,
+      shellData: data,
+      actions: [
+        IconButton(
+          onPressed: () {
+            NotificationsRoute().go(context);
+          },
+          icon: const Icon(Icons.notifications_none_outlined),
+        ),
+        IconButton(
+          onPressed: () {
+            SettingsRoute().push(context);
+          },
+          icon: const Icon(Icons.settings),
+        ),
+      ],
+      children: children,
     );
   }
 }
 
-class HomeShell extends StatelessWidget {
-  const HomeShell({
+class HomeShellBranchData extends StatefulShellBranchData {
+  // static const String $restorationScopeId = 'restorationScopeId';
+  const HomeShellBranchData();
+}
+
+class ExitPage extends StatelessWidget {
+  const ExitPage({
     super.key,
     required this.navigator,
   });
 
   final Widget navigator;
 
-  static List<ShellData> data = [
-    ShellData(name: 'Spacemoon', location: [AppRouter.allchat], icon: const Icon(Icons.chat_bubble_outline)),
-    ShellData(name: 'Search', location: [AppRouter.search], icon: const Icon(Icons.search)),
-    ShellData(
-        name: 'Notification',
-        location: ['notification', 'subscription'],
-        icon: const Icon(Icons.notifications_none_rounded)),
-    ShellData(name: 'Profile', location: [AppRouter.profile], icon: const Icon(Icons.face_2_outlined)),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(data.title(context)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              SettingsRoute().push(context);
-            },
-            icon: const Icon(Icons.settings),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(HomeShellRoute.data.title(context)),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  SettingsRoute().push(context);
+                },
+                icon: const Icon(Icons.settings),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: navigator,
-      extendBody: true,
-      bottomNavigationBar: data.navigationBar(context),
+          body: navigator,
+          extendBody: true,
+          bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context),
+        ),
+        Container(
+          color: const Color.fromARGB(62, 150, 150, 150),
+        ),
+        AlertDialog(
+          content: const Text('Do you want to exit?'),
+          actions: [
+            OutlinedButton(
+              onPressed: () {
+                HomeRoute().go(context);
+              },
+              child: const Text('No'),
+            ),
+            FilledButton(
+              onPressed: () {
+                exit(1);
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

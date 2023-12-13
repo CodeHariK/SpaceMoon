@@ -61,6 +61,11 @@ class ChatInfoPage extends HookConsumerWidget {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Info'),
+          leading: BackButton(
+            onPressed: () {
+              context.pop();
+            },
+          ),
         ),
       );
     }
@@ -71,6 +76,11 @@ class ChatInfoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            context.pop();
+          },
+        ),
         title: Text(
           room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim(),
         ),

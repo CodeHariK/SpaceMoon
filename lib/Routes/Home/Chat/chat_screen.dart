@@ -128,14 +128,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     // }
 
     if (room == null) {
-      return PopScope(
-        onPopInvoked: (pop) async {
-          ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Chat'),
+      return Scaffold(
+        appBar: AppBar(
+          leading: BackButton(
+            onPressed: () {
+              ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
+              context.pop();
+            },
           ),
+          title: const Text('Chat'),
         ),
       );
     }
@@ -150,188 +151,194 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     }
 
     if (meInRoom == null || meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/) {
-      return PopScope(
-        onPopInvoked: (pop) async {
-          ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
-        },
-        child: ChatInfoPage(chatId: room.uid),
+      return Scaffold(
+        appBar: AppBar(
+          leading: BackButton(
+            onPressed: () {
+              ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
+              context.pop();
+            },
+          ),
+        ),
+        body: ChatInfoPage(chatId: room.uid),
       );
     }
 
-    return PopScope(
-      onPopInvoked: (pop) async {
-        ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          titleSpacing: 0,
-          title: ListTile(
-            titleAlignment: ListTileTitleAlignment.center,
-            contentPadding: EdgeInsets.zero,
-            onTap: () {
-              ChatInfoRoute(chatId: widget.chatId).go(context);
-            },
-            title: Text(
-              room.displayName.replaceAll(user?.displayName ?? '***', '').trim(),
-              style: context.tm,
-              maxLines: 1,
-            ),
-            subtitle: Text(room.nick, style: context.ts, maxLines: 1),
-            leading: CircleAvatar(
-              child: (!isURL(room.photoURL))
-                  ? null
-                  : CustomCacheImage(
-                      imageUrl: spaceThumbImage(room.photoURL),
-                      radius: 32,
-                    ),
-            ),
-            trailing: (meInRoom.isUserOrAdmin) ? InviteButton(room: room) : null,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            ref.read(currentRoomProvider.notifier).exitRoom(meInRoom);
+            context.pop();
+          },
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: FirestoreQueryBuilder(
-                  query: query,
-                  builder: (context, allTweetSnap, child) {
-                    // if (allTweetSnap.isFetching) {
-                    //   return const SizedBox.shrink();
-                    // }
+        titleSpacing: 0,
+        title: ListTile(
+          titleAlignment: ListTileTitleAlignment.center,
+          contentPadding: EdgeInsets.zero,
+          onTap: () {
+            ChatInfoRoute(chatId: widget.chatId).go(context);
+          },
+          title: Text(
+            room.displayName.replaceAll(user?.displayName ?? '***', '').trim(),
+            style: context.tm,
+            maxLines: 1,
+          ),
+          subtitle: Text(room.nick, style: context.ts, maxLines: 1),
+          leading: CircleAvatar(
+            child: (!isURL(room.photoURL))
+                ? null
+                : CustomCacheImage(
+                    imageUrl: spaceThumbImage(room.photoURL),
+                    radius: 32,
+                  ),
+          ),
+          trailing: (meInRoom.isUserOrAdmin) ? InviteButton(room: room) : null,
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: FirestoreQueryBuilder(
+                query: query,
+                builder: (context, allTweetSnap, child) {
+                  // if (allTweetSnap.isFetching) {
+                  //   return const SizedBox.shrink();
+                  // }
 
-                    if (allTweetSnap.hasError) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'error ${allTweetSnap.error}',
-                            style: context.tm,
-                          ),
+                  if (allTweetSnap.hasError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'error ${allTweetSnap.error}',
+                          style: context.tm,
                         ),
-                      );
-                    }
+                      ),
+                    );
+                  }
 
-                    return Stack(
-                      alignment: Alignment.topCenter,
-                      children: [
-                        ScrollablePositionedList.separated(
-                          // minCacheExtent: 600,
-                          itemScrollController: itemScrollController,
-                          scrollOffsetController: scrollOffsetController,
-                          itemPositionsListener: itemPositionsListener,
-                          scrollOffsetListener: scrollOffsetListener,
-                          reverse: true,
-                          itemCount: allTweetSnap.docs.length,
-                          separatorBuilder: (context, index) {
-                            final doc = allTweetSnap.docs[index];
-                            final tweet = doc.data()!;
+                  return Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      ScrollablePositionedList.separated(
+                        // minCacheExtent: 600,
+                        itemScrollController: itemScrollController,
+                        scrollOffsetController: scrollOffsetController,
+                        itemPositionsListener: itemPositionsListener,
+                        scrollOffsetListener: scrollOffsetListener,
+                        reverse: true,
+                        itemCount: allTweetSnap.docs.length,
+                        separatorBuilder: (context, index) {
+                          final doc = allTweetSnap.docs[index];
+                          final tweet = doc.data()!;
 
-                            if (index > 0 && index < allTweetSnap.docs.length) {
-                              Tweet lastTweet = allTweetSnap.docs[index + 1].data()!;
+                          if (index > 0 && index < allTweetSnap.docs.length) {
+                            Tweet lastTweet = allTweetSnap.docs[index + 1].data()!;
 
-                              final lDate = lastTweet.created.date;
-                              final cDate = tweet.created.date;
+                            final lDate = lastTweet.created.date;
+                            final cDate = tweet.created.date;
 
-                              if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
-                                return Chip(
-                                  padding: EdgeInsets.zero,
-                                  label: Text(tweet.created.dateString),
+                            if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
+                              return Chip(
+                                padding: EdgeInsets.zero,
+                                label: Text(tweet.created.dateString),
+                              );
+                            }
+                          }
+                          return const SizedBox.shrink();
+                        },
+                        itemBuilder: (context, index) {
+                          if (allTweetSnap.hasMore && index + 1 == allTweetSnap.docs.length) {
+                            allTweetSnap.fetchMore();
+                          }
+                          final doc = allTweetSnap.docs[index];
+                          final tweet = doc.data()!;
+                          tweet.room = widget.chatId;
+                          tweet.path = doc.reference.path;
+
+                          return TweetBox(
+                            tweet: tweet,
+                            room: room,
+                          );
+                        },
+                      ),
+                      if (allTweetSnap.docs.isNotEmpty)
+                        StreamBuilder(
+                          stream: dateStream.stream,
+                          builder: (context, dateSnapshot) {
+                            final value = dateSnapshot.data;
+                            final index = value?.$1;
+                            if (index == null || allTweetSnap.docs.length <= index) {
+                              return const SizedBox();
+                            }
+                            final show = value!.$2;
+                            final date = allTweetSnap.docs[index].data()!.created.dateString;
+
+                            return TweenAnimationBuilder(
+                              tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
+                              curve: Curves.linear,
+                              duration: const Duration(seconds: 1),
+                              builder: (context, value, child) {
+                                return Opacity(
+                                  opacity: clampDouble(value * 5, 0, 1),
+                                  child: child,
                                 );
-                              }
-                            }
-                            return const SizedBox.shrink();
-                          },
-                          itemBuilder: (context, index) {
-                            if (allTweetSnap.hasMore && index + 1 == allTweetSnap.docs.length) {
-                              allTweetSnap.fetchMore();
-                            }
-                            final doc = allTweetSnap.docs[index];
-                            final tweet = doc.data()!;
-                            tweet.room = widget.chatId;
-                            tweet.path = doc.reference.path;
-
-                            return TweetBox(
-                              tweet: tweet,
-                              room: room,
+                              },
+                              child: Chip(
+                                padding: EdgeInsets.zero,
+                                label: Text(date),
+                              ),
                             );
                           },
                         ),
-                        if (allTweetSnap.docs.isNotEmpty)
-                          StreamBuilder(
-                            stream: dateStream.stream,
-                            builder: (context, dateSnapshot) {
-                              final value = dateSnapshot.data;
-                              final index = value?.$1;
-                              if (index == null || allTweetSnap.docs.length <= index) {
-                                return const SizedBox();
-                              }
-                              final show = value!.$2;
-                              final date = allTweetSnap.docs[index].data()!.created.dateString;
-
-                              return TweenAnimationBuilder(
-                                tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
-                                curve: Curves.linear,
-                                duration: const Duration(seconds: 1),
-                                builder: (context, value, child) {
-                                  return Opacity(
-                                    opacity: clampDouble(value * 5, 0, 1),
-                                    child: child,
-                                  );
-                                },
-                                child: Chip(
-                                  padding: EdgeInsets.zero,
-                                  label: Text(date),
-                                ),
-                              );
-                            },
-                          ),
-                      ],
-                    );
-                  },
+                    ],
+                  );
+                },
+              ),
+            ),
+            if (meInRoom.isInvite)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: MaterialBanner(
+                  elevation: 2,
+                  content: const Text('Invited to room'),
+                  actions: [
+                    AsyncLock(
+                      builder: (loading, status, lock, open, setStatus) {
+                        return OutlinedButton(
+                          onPressed: () async {
+                            lock();
+                            await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
+                            ref.read(currentRoomProvider.notifier).exitRoom(null);
+                            if (context.mounted) {
+                              HomeRoute().go(context);
+                            }
+                            open();
+                          },
+                          child: const Text('Decline'),
+                        );
+                      },
+                    ),
+                    AsyncLock(
+                      builder: (loading, status, lock, open, setStatus) {
+                        return FilledButton(
+                          onPressed: () async {
+                            lock();
+                            await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(meInRoom);
+                            ref.invalidate(currentRoomUserProvider);
+                            open();
+                          },
+                          child: const Text('Accept'),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
-              if (meInRoom.isInvite)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: MaterialBanner(
-                    elevation: 2,
-                    content: const Text('Invited to room'),
-                    actions: [
-                      AsyncLock(
-                        builder: (loading, status, lock, open, setStatus) {
-                          return OutlinedButton(
-                            onPressed: () async {
-                              lock();
-                              await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
-                              ref.read(currentRoomProvider.notifier).exitRoom(null);
-                              if (context.mounted) {
-                                HomeRoute().go(context);
-                              }
-                              open();
-                            },
-                            child: const Text('Decline'),
-                          );
-                        },
-                      ),
-                      AsyncLock(
-                        builder: (loading, status, lock, open, setStatus) {
-                          return FilledButton(
-                            onPressed: () async {
-                              lock();
-                              await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(meInRoom);
-                              ref.invalidate(currentRoomUserProvider);
-                              open();
-                            },
-                            child: const Text('Accept'),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              if (meInRoom.isUserOrAdmin) SendBox(roomUser: meInRoom),
-            ],
-          ),
+            if (meInRoom.isUserOrAdmin) SendBox(roomUser: meInRoom),
+          ],
         ),
       ),
     );

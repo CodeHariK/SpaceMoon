@@ -10,7 +10,7 @@ import 'package:spacemoon/Static/theme.dart';
 class ShellData {
   final String name;
   final List<String> location;
-  final Icon icon;
+  final Widget icon;
 
   ShellData({
     required this.name,
@@ -25,9 +25,14 @@ extension SuperShellData on List<ShellData> {
   int getCurrentIndex(BuildContext context) {
     try {
       final String location = GoRouterState.of(context).uri.toString();
-      final i = indexWhere((e) {
-        return e.location.indexWhere((element) => location.endsWith(element)) != -1;
-      });
+      final i = indexWhere(
+        (shelldata) {
+          return -1 !=
+              shelldata.location.indexWhere((element) {
+                return location.contains(element);
+              });
+        },
+      );
       return i == -1 ? 0 : i;
     } catch (e) {
       log('Error : $e');
@@ -37,9 +42,9 @@ extension SuperShellData on List<ShellData> {
 
   void goToIndex(BuildContext context, int v) => context.goNamed(this[v].location.first);
 
-  BottomNavigationBar bottomNavigationBar(BuildContext context) => BottomNavigationBar(
+  BottomNavigationBar bottomNavigationBar(BuildContext context, {TabController? controller}) => BottomNavigationBar(
         currentIndex: getCurrentIndex(context),
-        onTap: (v) => goToIndex(context, v),
+        onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         items: map(
           (e) => BottomNavigationBarItem(
             icon: e.icon,
@@ -49,9 +54,9 @@ extension SuperShellData on List<ShellData> {
         type: BottomNavigationBarType.fixed,
       );
 
-  CupertinoTabBar cupertinoTabBar(BuildContext context) => CupertinoTabBar(
+  CupertinoTabBar cupertinoTabBar(BuildContext context, {TabController? controller}) => CupertinoTabBar(
         currentIndex: getCurrentIndex(context),
-        onTap: (v) => goToIndex(context, v),
+        onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         items: map(
           (e) => BottomNavigationBarItem(
             icon: e.icon,
@@ -60,9 +65,9 @@ extension SuperShellData on List<ShellData> {
         ).toList(),
       );
 
-  NavigationBar navigationBar(BuildContext context) => NavigationBar(
+  NavigationBar navigationBar(BuildContext context, {TabController? controller}) => NavigationBar(
         selectedIndex: getCurrentIndex(context),
-        onDestinationSelected: (v) => goToIndex(context, v),
+        onDestinationSelected: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         destinations: map(
           (e) => NavigationDestination(
             icon: e.icon,
@@ -71,7 +76,7 @@ extension SuperShellData on List<ShellData> {
         ).toList(),
       );
 
-  Widget googleBar(BuildContext context) => Container(
+  Widget googleBar(BuildContext context, {TabController? controller}) => Container(
         color: Colors.transparent,
         margin: context.mq.pad.copyWith(top: 0, left: 16, right: 16),
         child: PhysicalShape(
@@ -87,17 +92,15 @@ extension SuperShellData on List<ShellData> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: asMap()
                   .map(
-                    (i, e) => MapEntry(
-                      i,
+                    (v, e) => MapEntry(
+                      v,
                       InkWell(
-                        onTap: () {
-                          goToIndex(context, i);
-                        },
+                        onTap: () => controller != null ? controller.animateTo(v) : goToIndex(context, v),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             CircleAvatar(
-                              backgroundColor: getCurrentIndex(context) != i ? Colors.transparent : null,
+                              backgroundColor: getCurrentIndex(context) != v ? Colors.transparent : null,
                               child: e.icon,
                             ),
                             // Text(e.name, style: context.ls),
@@ -115,7 +118,7 @@ extension SuperShellData on List<ShellData> {
 
   TabBar tabBar(BuildContext context, {TabController? controller}) => TabBar(
         controller: controller,
-        onTap: (v) => goToIndex(context, v),
+        onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         indicatorSize: TabBarIndicatorSize.tab,
         tabs: map(
           (e) => Tab(
