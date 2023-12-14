@@ -73,17 +73,17 @@ class User extends $pb.GeneratedMessage {
   factory User.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'User', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(100, _omitFieldNames ? '' : 'uid')
-    ..aOS(200, _omitFieldNames ? '' : 'displayName', protoName: 'displayName')
-    ..aOS(250, _omitFieldNames ? '' : 'nick')
-    ..aOS(300, _omitFieldNames ? '' : 'email')
-    ..aOS(400, _omitFieldNames ? '' : 'phoneNumber', protoName: 'phoneNumber')
-    ..aOS(500, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
-    ..e<Active>(600, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.INVALIDACTIVE, valueOf: Active.valueOf, enumValues: Active.values)
-    ..pPS(700, _omitFieldNames ? '' : 'friends')
-    ..aOM<$0.Timestamp>(800, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..aOM<$0.Timestamp>(900, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(1000, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.INVALIDVISIBLE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOS(10, _omitFieldNames ? '' : 'uid')
+    ..aOS(20, _omitFieldNames ? '' : 'displayName', protoName: 'displayName')
+    ..aOS(30, _omitFieldNames ? '' : 'nick')
+    ..aOS(40, _omitFieldNames ? '' : 'email')
+    ..aOS(50, _omitFieldNames ? '' : 'phoneNumber', protoName: 'phoneNumber')
+    ..aOS(60, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
+    ..e<Active>(70, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.OFFLINE, valueOf: Active.valueOf, enumValues: Active.values)
+    ..pPS(80, _omitFieldNames ? '' : 'friends')
+    ..aOM<$0.Timestamp>(90, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(100, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
+    ..e<Visible>(110, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
     ..hasRequiredFields = false
   ;
 
@@ -108,102 +108,102 @@ class User extends $pb.GeneratedMessage {
   static User getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<User>(create);
   static User? _defaultInstance;
 
-  @$pb.TagNumber(100)
+  @$pb.TagNumber(10)
   $core.String get uid => $_getSZ(0);
-  @$pb.TagNumber(100)
+  @$pb.TagNumber(10)
   set uid($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(100)
+  @$pb.TagNumber(10)
   $core.bool hasUid() => $_has(0);
-  @$pb.TagNumber(100)
-  void clearUid() => clearField(100);
+  @$pb.TagNumber(10)
+  void clearUid() => clearField(10);
 
-  @$pb.TagNumber(200)
+  @$pb.TagNumber(20)
   $core.String get displayName => $_getSZ(1);
-  @$pb.TagNumber(200)
+  @$pb.TagNumber(20)
   set displayName($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(200)
+  @$pb.TagNumber(20)
   $core.bool hasDisplayName() => $_has(1);
-  @$pb.TagNumber(200)
-  void clearDisplayName() => clearField(200);
+  @$pb.TagNumber(20)
+  void clearDisplayName() => clearField(20);
 
-  @$pb.TagNumber(250)
+  @$pb.TagNumber(30)
   $core.String get nick => $_getSZ(2);
-  @$pb.TagNumber(250)
+  @$pb.TagNumber(30)
   set nick($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(250)
+  @$pb.TagNumber(30)
   $core.bool hasNick() => $_has(2);
-  @$pb.TagNumber(250)
-  void clearNick() => clearField(250);
+  @$pb.TagNumber(30)
+  void clearNick() => clearField(30);
 
-  @$pb.TagNumber(300)
+  @$pb.TagNumber(40)
   $core.String get email => $_getSZ(3);
-  @$pb.TagNumber(300)
+  @$pb.TagNumber(40)
   set email($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(300)
+  @$pb.TagNumber(40)
   $core.bool hasEmail() => $_has(3);
-  @$pb.TagNumber(300)
-  void clearEmail() => clearField(300);
+  @$pb.TagNumber(40)
+  void clearEmail() => clearField(40);
 
-  @$pb.TagNumber(400)
+  @$pb.TagNumber(50)
   $core.String get phoneNumber => $_getSZ(4);
-  @$pb.TagNumber(400)
+  @$pb.TagNumber(50)
   set phoneNumber($core.String v) { $_setString(4, v); }
-  @$pb.TagNumber(400)
+  @$pb.TagNumber(50)
   $core.bool hasPhoneNumber() => $_has(4);
-  @$pb.TagNumber(400)
-  void clearPhoneNumber() => clearField(400);
+  @$pb.TagNumber(50)
+  void clearPhoneNumber() => clearField(50);
 
-  @$pb.TagNumber(500)
+  @$pb.TagNumber(60)
   $core.String get photoURL => $_getSZ(5);
-  @$pb.TagNumber(500)
+  @$pb.TagNumber(60)
   set photoURL($core.String v) { $_setString(5, v); }
-  @$pb.TagNumber(500)
+  @$pb.TagNumber(60)
   $core.bool hasPhotoURL() => $_has(5);
-  @$pb.TagNumber(500)
-  void clearPhotoURL() => clearField(500);
+  @$pb.TagNumber(60)
+  void clearPhotoURL() => clearField(60);
 
-  @$pb.TagNumber(600)
+  @$pb.TagNumber(70)
   Active get status => $_getN(6);
-  @$pb.TagNumber(600)
-  set status(Active v) { setField(600, v); }
-  @$pb.TagNumber(600)
+  @$pb.TagNumber(70)
+  set status(Active v) { setField(70, v); }
+  @$pb.TagNumber(70)
   $core.bool hasStatus() => $_has(6);
-  @$pb.TagNumber(600)
-  void clearStatus() => clearField(600);
+  @$pb.TagNumber(70)
+  void clearStatus() => clearField(70);
 
-  @$pb.TagNumber(700)
+  @$pb.TagNumber(80)
   $core.List<$core.String> get friends => $_getList(7);
 
-  @$pb.TagNumber(800)
+  @$pb.TagNumber(90)
   $0.Timestamp get created => $_getN(8);
-  @$pb.TagNumber(800)
-  set created($0.Timestamp v) { setField(800, v); }
-  @$pb.TagNumber(800)
+  @$pb.TagNumber(90)
+  set created($0.Timestamp v) { setField(90, v); }
+  @$pb.TagNumber(90)
   $core.bool hasCreated() => $_has(8);
-  @$pb.TagNumber(800)
-  void clearCreated() => clearField(800);
-  @$pb.TagNumber(800)
+  @$pb.TagNumber(90)
+  void clearCreated() => clearField(90);
+  @$pb.TagNumber(90)
   $0.Timestamp ensureCreated() => $_ensure(8);
 
-  @$pb.TagNumber(900)
+  @$pb.TagNumber(100)
   $0.Timestamp get updated => $_getN(9);
-  @$pb.TagNumber(900)
-  set updated($0.Timestamp v) { setField(900, v); }
-  @$pb.TagNumber(900)
+  @$pb.TagNumber(100)
+  set updated($0.Timestamp v) { setField(100, v); }
+  @$pb.TagNumber(100)
   $core.bool hasUpdated() => $_has(9);
-  @$pb.TagNumber(900)
-  void clearUpdated() => clearField(900);
-  @$pb.TagNumber(900)
+  @$pb.TagNumber(100)
+  void clearUpdated() => clearField(100);
+  @$pb.TagNumber(100)
   $0.Timestamp ensureUpdated() => $_ensure(9);
 
-  @$pb.TagNumber(1000)
+  @$pb.TagNumber(110)
   Visible get open => $_getN(10);
-  @$pb.TagNumber(1000)
-  set open(Visible v) { setField(1000, v); }
-  @$pb.TagNumber(1000)
+  @$pb.TagNumber(110)
+  set open(Visible v) { setField(110, v); }
+  @$pb.TagNumber(110)
   $core.bool hasOpen() => $_has(10);
-  @$pb.TagNumber(1000)
-  void clearOpen() => clearField(1000);
+  @$pb.TagNumber(110)
+  void clearOpen() => clearField(110);
 }
 
 class Messaging extends $pb.GeneratedMessage {
@@ -225,8 +225,8 @@ class Messaging extends $pb.GeneratedMessage {
   factory Messaging.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Messaging', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(100, _omitFieldNames ? '' : 'fcmToken', protoName: 'fcmToken')
-    ..aOM<$0.Timestamp>(200, _omitFieldNames ? '' : 'timestamp', subBuilder: $0.Timestamp.create)
+    ..aOS(10, _omitFieldNames ? '' : 'fcmToken', protoName: 'fcmToken')
+    ..aOM<$0.Timestamp>(20, _omitFieldNames ? '' : 'timestamp', subBuilder: $0.Timestamp.create)
     ..hasRequiredFields = false
   ;
 
@@ -251,24 +251,24 @@ class Messaging extends $pb.GeneratedMessage {
   static Messaging getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Messaging>(create);
   static Messaging? _defaultInstance;
 
-  @$pb.TagNumber(100)
+  @$pb.TagNumber(10)
   $core.String get fcmToken => $_getSZ(0);
-  @$pb.TagNumber(100)
+  @$pb.TagNumber(10)
   set fcmToken($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(100)
+  @$pb.TagNumber(10)
   $core.bool hasFcmToken() => $_has(0);
-  @$pb.TagNumber(100)
-  void clearFcmToken() => clearField(100);
+  @$pb.TagNumber(10)
+  void clearFcmToken() => clearField(10);
 
-  @$pb.TagNumber(200)
+  @$pb.TagNumber(20)
   $0.Timestamp get timestamp => $_getN(1);
-  @$pb.TagNumber(200)
-  set timestamp($0.Timestamp v) { setField(200, v); }
-  @$pb.TagNumber(200)
+  @$pb.TagNumber(20)
+  set timestamp($0.Timestamp v) { setField(20, v); }
+  @$pb.TagNumber(20)
   $core.bool hasTimestamp() => $_has(1);
-  @$pb.TagNumber(200)
-  void clearTimestamp() => clearField(200);
-  @$pb.TagNumber(200)
+  @$pb.TagNumber(20)
+  void clearTimestamp() => clearField(20);
+  @$pb.TagNumber(20)
   $0.Timestamp ensureTimestamp() => $_ensure(1);
 }
 
@@ -314,7 +314,7 @@ class RoomUser extends $pb.GeneratedMessage {
     ..aOS(10, _omitFieldNames ? '' : 'uid')
     ..aOS(20, _omitFieldNames ? '' : 'user')
     ..aOS(30, _omitFieldNames ? '' : 'room')
-    ..e<Role>(40, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: Role.INVALIDROLE, valueOf: Role.valueOf, enumValues: Role.values)
+    ..e<Role>(40, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: Role.REQUEST, valueOf: Role.valueOf, enumValues: Role.values)
     ..aOM<$0.Timestamp>(50, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..aOM<$0.Timestamp>(60, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
     ..aOB(70, _omitFieldNames ? '' : 'subscribed')
@@ -415,11 +415,11 @@ class Room extends $pb.GeneratedMessage {
     $core.String? uid,
     $core.String? nick,
     $core.String? displayName,
+    Visible? open,
     $core.String? photoURL,
     $core.String? description,
     $0.Timestamp? created,
     $0.Timestamp? updated,
-    Visible? open,
   }) {
     final $result = create();
     if (uid != null) {
@@ -430,6 +430,9 @@ class Room extends $pb.GeneratedMessage {
     }
     if (displayName != null) {
       $result.displayName = displayName;
+    }
+    if (open != null) {
+      $result.open = open;
     }
     if (photoURL != null) {
       $result.photoURL = photoURL;
@@ -443,9 +446,6 @@ class Room extends $pb.GeneratedMessage {
     if (updated != null) {
       $result.updated = updated;
     }
-    if (open != null) {
-      $result.open = open;
-    }
     return $result;
   }
   Room._() : super();
@@ -453,14 +453,14 @@ class Room extends $pb.GeneratedMessage {
   factory Room.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Room', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'uid')
-    ..aOS(2, _omitFieldNames ? '' : 'nick')
-    ..aOS(10, _omitFieldNames ? '' : 'displayName', protoName: 'displayName')
-    ..aOS(20, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
-    ..aOS(30, _omitFieldNames ? '' : 'description')
-    ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..aOM<$0.Timestamp>(50, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(60, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.INVALIDVISIBLE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOS(10, _omitFieldNames ? '' : 'uid')
+    ..aOS(20, _omitFieldNames ? '' : 'nick')
+    ..aOS(30, _omitFieldNames ? '' : 'displayName', protoName: 'displayName')
+    ..e<Visible>(40, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOS(50, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
+    ..aOS(60, _omitFieldNames ? '' : 'description')
+    ..aOM<$0.Timestamp>(70, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(80, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
     ..hasRequiredFields = false
   ;
 
@@ -485,81 +485,81 @@ class Room extends $pb.GeneratedMessage {
   static Room getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Room>(create);
   static Room? _defaultInstance;
 
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   $core.String get uid => $_getSZ(0);
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   set uid($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   $core.bool hasUid() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUid() => clearField(1);
+  @$pb.TagNumber(10)
+  void clearUid() => clearField(10);
 
-  @$pb.TagNumber(2)
+  @$pb.TagNumber(20)
   $core.String get nick => $_getSZ(1);
-  @$pb.TagNumber(2)
+  @$pb.TagNumber(20)
   set nick($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(2)
+  @$pb.TagNumber(20)
   $core.bool hasNick() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearNick() => clearField(2);
+  @$pb.TagNumber(20)
+  void clearNick() => clearField(20);
 
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(30)
   $core.String get displayName => $_getSZ(2);
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(30)
   set displayName($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(30)
   $core.bool hasDisplayName() => $_has(2);
-  @$pb.TagNumber(10)
-  void clearDisplayName() => clearField(10);
-
-  @$pb.TagNumber(20)
-  $core.String get photoURL => $_getSZ(3);
-  @$pb.TagNumber(20)
-  set photoURL($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(20)
-  $core.bool hasPhotoURL() => $_has(3);
-  @$pb.TagNumber(20)
-  void clearPhotoURL() => clearField(20);
-
   @$pb.TagNumber(30)
-  $core.String get description => $_getSZ(4);
-  @$pb.TagNumber(30)
-  set description($core.String v) { $_setString(4, v); }
-  @$pb.TagNumber(30)
-  $core.bool hasDescription() => $_has(4);
-  @$pb.TagNumber(30)
-  void clearDescription() => clearField(30);
+  void clearDisplayName() => clearField(30);
 
   @$pb.TagNumber(40)
-  $0.Timestamp get created => $_getN(5);
+  Visible get open => $_getN(3);
   @$pb.TagNumber(40)
-  set created($0.Timestamp v) { setField(40, v); }
+  set open(Visible v) { setField(40, v); }
   @$pb.TagNumber(40)
-  $core.bool hasCreated() => $_has(5);
+  $core.bool hasOpen() => $_has(3);
   @$pb.TagNumber(40)
-  void clearCreated() => clearField(40);
-  @$pb.TagNumber(40)
-  $0.Timestamp ensureCreated() => $_ensure(5);
+  void clearOpen() => clearField(40);
 
   @$pb.TagNumber(50)
-  $0.Timestamp get updated => $_getN(6);
+  $core.String get photoURL => $_getSZ(4);
   @$pb.TagNumber(50)
-  set updated($0.Timestamp v) { setField(50, v); }
+  set photoURL($core.String v) { $_setString(4, v); }
   @$pb.TagNumber(50)
-  $core.bool hasUpdated() => $_has(6);
+  $core.bool hasPhotoURL() => $_has(4);
   @$pb.TagNumber(50)
-  void clearUpdated() => clearField(50);
-  @$pb.TagNumber(50)
-  $0.Timestamp ensureUpdated() => $_ensure(6);
+  void clearPhotoURL() => clearField(50);
 
   @$pb.TagNumber(60)
-  Visible get open => $_getN(7);
+  $core.String get description => $_getSZ(5);
   @$pb.TagNumber(60)
-  set open(Visible v) { setField(60, v); }
+  set description($core.String v) { $_setString(5, v); }
   @$pb.TagNumber(60)
-  $core.bool hasOpen() => $_has(7);
+  $core.bool hasDescription() => $_has(5);
   @$pb.TagNumber(60)
-  void clearOpen() => clearField(60);
+  void clearDescription() => clearField(60);
+
+  @$pb.TagNumber(70)
+  $0.Timestamp get created => $_getN(6);
+  @$pb.TagNumber(70)
+  set created($0.Timestamp v) { setField(70, v); }
+  @$pb.TagNumber(70)
+  $core.bool hasCreated() => $_has(6);
+  @$pb.TagNumber(70)
+  void clearCreated() => clearField(70);
+  @$pb.TagNumber(70)
+  $0.Timestamp ensureCreated() => $_ensure(6);
+
+  @$pb.TagNumber(80)
+  $0.Timestamp get updated => $_getN(7);
+  @$pb.TagNumber(80)
+  set updated($0.Timestamp v) { setField(80, v); }
+  @$pb.TagNumber(80)
+  $core.bool hasUpdated() => $_has(7);
+  @$pb.TagNumber(80)
+  void clearUpdated() => clearField(80);
+  @$pb.TagNumber(80)
+  $0.Timestamp ensureUpdated() => $_ensure(7);
 }
 
 class Tweet extends $pb.GeneratedMessage {
@@ -609,15 +609,15 @@ class Tweet extends $pb.GeneratedMessage {
   factory Tweet.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Tweet', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'uid')
-    ..aOS(10, _omitFieldNames ? '' : 'user')
-    ..aOS(20, _omitFieldNames ? '' : 'room')
-    ..aOS(30, _omitFieldNames ? '' : 'path')
-    ..aOM<$0.Timestamp>(40, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..e<MediaType>(50, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.INVALIDMEDIATYPE, valueOf: MediaType.valueOf, enumValues: MediaType.values)
-    ..aOS(60, _omitFieldNames ? '' : 'text')
-    ..aOS(70, _omitFieldNames ? '' : 'link')
-    ..pc<ImageMetadata>(80, _omitFieldNames ? '' : 'gallery', $pb.PbFieldType.PM, subBuilder: ImageMetadata.create)
+    ..aOS(10, _omitFieldNames ? '' : 'uid')
+    ..aOS(20, _omitFieldNames ? '' : 'user')
+    ..aOS(30, _omitFieldNames ? '' : 'room')
+    ..aOS(40, _omitFieldNames ? '' : 'path')
+    ..aOM<$0.Timestamp>(50, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..e<MediaType>(60, _omitFieldNames ? '' : 'mediaType', $pb.PbFieldType.OE, defaultOrMaker: MediaType.TEXT, valueOf: MediaType.valueOf, enumValues: MediaType.values)
+    ..aOS(70, _omitFieldNames ? '' : 'text')
+    ..aOS(80, _omitFieldNames ? '' : 'link')
+    ..pc<ImageMetadata>(90, _omitFieldNames ? '' : 'gallery', $pb.PbFieldType.PM, subBuilder: ImageMetadata.create)
     ..hasRequiredFields = false
   ;
 
@@ -642,81 +642,81 @@ class Tweet extends $pb.GeneratedMessage {
   static Tweet getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Tweet>(create);
   static Tweet? _defaultInstance;
 
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   $core.String get uid => $_getSZ(0);
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   set uid($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   $core.bool hasUid() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUid() => clearField(1);
-
   @$pb.TagNumber(10)
+  void clearUid() => clearField(10);
+
+  @$pb.TagNumber(20)
   $core.String get user => $_getSZ(1);
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(20)
   set user($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(20)
   $core.bool hasUser() => $_has(1);
-  @$pb.TagNumber(10)
-  void clearUser() => clearField(10);
-
   @$pb.TagNumber(20)
+  void clearUser() => clearField(20);
+
+  @$pb.TagNumber(30)
   $core.String get room => $_getSZ(2);
-  @$pb.TagNumber(20)
+  @$pb.TagNumber(30)
   set room($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(20)
+  @$pb.TagNumber(30)
   $core.bool hasRoom() => $_has(2);
-  @$pb.TagNumber(20)
-  void clearRoom() => clearField(20);
-
   @$pb.TagNumber(30)
+  void clearRoom() => clearField(30);
+
+  @$pb.TagNumber(40)
   $core.String get path => $_getSZ(3);
-  @$pb.TagNumber(30)
+  @$pb.TagNumber(40)
   set path($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(30)
+  @$pb.TagNumber(40)
   $core.bool hasPath() => $_has(3);
-  @$pb.TagNumber(30)
-  void clearPath() => clearField(30);
+  @$pb.TagNumber(40)
+  void clearPath() => clearField(40);
 
-  @$pb.TagNumber(40)
+  @$pb.TagNumber(50)
   $0.Timestamp get created => $_getN(4);
-  @$pb.TagNumber(40)
-  set created($0.Timestamp v) { setField(40, v); }
-  @$pb.TagNumber(40)
+  @$pb.TagNumber(50)
+  set created($0.Timestamp v) { setField(50, v); }
+  @$pb.TagNumber(50)
   $core.bool hasCreated() => $_has(4);
-  @$pb.TagNumber(40)
-  void clearCreated() => clearField(40);
-  @$pb.TagNumber(40)
+  @$pb.TagNumber(50)
+  void clearCreated() => clearField(50);
+  @$pb.TagNumber(50)
   $0.Timestamp ensureCreated() => $_ensure(4);
 
-  @$pb.TagNumber(50)
+  @$pb.TagNumber(60)
   MediaType get mediaType => $_getN(5);
-  @$pb.TagNumber(50)
-  set mediaType(MediaType v) { setField(50, v); }
-  @$pb.TagNumber(50)
+  @$pb.TagNumber(60)
+  set mediaType(MediaType v) { setField(60, v); }
+  @$pb.TagNumber(60)
   $core.bool hasMediaType() => $_has(5);
-  @$pb.TagNumber(50)
-  void clearMediaType() => clearField(50);
-
   @$pb.TagNumber(60)
+  void clearMediaType() => clearField(60);
+
+  @$pb.TagNumber(70)
   $core.String get text => $_getSZ(6);
-  @$pb.TagNumber(60)
+  @$pb.TagNumber(70)
   set text($core.String v) { $_setString(6, v); }
-  @$pb.TagNumber(60)
+  @$pb.TagNumber(70)
   $core.bool hasText() => $_has(6);
-  @$pb.TagNumber(60)
-  void clearText() => clearField(60);
-
   @$pb.TagNumber(70)
-  $core.String get link => $_getSZ(7);
-  @$pb.TagNumber(70)
-  set link($core.String v) { $_setString(7, v); }
-  @$pb.TagNumber(70)
-  $core.bool hasLink() => $_has(7);
-  @$pb.TagNumber(70)
-  void clearLink() => clearField(70);
+  void clearText() => clearField(70);
 
   @$pb.TagNumber(80)
+  $core.String get link => $_getSZ(7);
+  @$pb.TagNumber(80)
+  set link($core.String v) { $_setString(7, v); }
+  @$pb.TagNumber(80)
+  $core.bool hasLink() => $_has(7);
+  @$pb.TagNumber(80)
+  void clearLink() => clearField(80);
+
+  @$pb.TagNumber(90)
   $core.List<ImageMetadata> get gallery => $_getList(8);
 }
 
@@ -755,12 +755,12 @@ class ImageMetadata extends $pb.GeneratedMessage {
   factory ImageMetadata.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ImageMetadata', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'url')
-    ..aOS(10, _omitFieldNames ? '' : 'path')
-    ..aOS(20, _omitFieldNames ? '' : 'localUrl', protoName: 'localUrl')
-    ..a<$core.int>(30, _omitFieldNames ? '' : 'width', $pb.PbFieldType.O3)
-    ..a<$core.int>(40, _omitFieldNames ? '' : 'height', $pb.PbFieldType.O3)
-    ..aOS(50, _omitFieldNames ? '' : 'caption')
+    ..aOS(10, _omitFieldNames ? '' : 'url')
+    ..aOS(20, _omitFieldNames ? '' : 'path')
+    ..aOS(30, _omitFieldNames ? '' : 'localUrl', protoName: 'localUrl')
+    ..a<$core.int>(40, _omitFieldNames ? '' : 'width', $pb.PbFieldType.O3)
+    ..a<$core.int>(50, _omitFieldNames ? '' : 'height', $pb.PbFieldType.O3)
+    ..aOS(60, _omitFieldNames ? '' : 'caption')
     ..hasRequiredFields = false
   ;
 
@@ -785,59 +785,59 @@ class ImageMetadata extends $pb.GeneratedMessage {
   static ImageMetadata getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ImageMetadata>(create);
   static ImageMetadata? _defaultInstance;
 
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   $core.String get url => $_getSZ(0);
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   set url($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(10)
   $core.bool hasUrl() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUrl() => clearField(1);
-
   @$pb.TagNumber(10)
+  void clearUrl() => clearField(10);
+
+  @$pb.TagNumber(20)
   $core.String get path => $_getSZ(1);
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(20)
   set path($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(20)
   $core.bool hasPath() => $_has(1);
-  @$pb.TagNumber(10)
-  void clearPath() => clearField(10);
-
   @$pb.TagNumber(20)
+  void clearPath() => clearField(20);
+
+  @$pb.TagNumber(30)
   $core.String get localUrl => $_getSZ(2);
-  @$pb.TagNumber(20)
+  @$pb.TagNumber(30)
   set localUrl($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(20)
+  @$pb.TagNumber(30)
   $core.bool hasLocalUrl() => $_has(2);
-  @$pb.TagNumber(20)
-  void clearLocalUrl() => clearField(20);
-
   @$pb.TagNumber(30)
+  void clearLocalUrl() => clearField(30);
+
+  @$pb.TagNumber(40)
   $core.int get width => $_getIZ(3);
-  @$pb.TagNumber(30)
+  @$pb.TagNumber(40)
   set width($core.int v) { $_setSignedInt32(3, v); }
-  @$pb.TagNumber(30)
+  @$pb.TagNumber(40)
   $core.bool hasWidth() => $_has(3);
-  @$pb.TagNumber(30)
-  void clearWidth() => clearField(30);
-
   @$pb.TagNumber(40)
+  void clearWidth() => clearField(40);
+
+  @$pb.TagNumber(50)
   $core.int get height => $_getIZ(4);
-  @$pb.TagNumber(40)
+  @$pb.TagNumber(50)
   set height($core.int v) { $_setSignedInt32(4, v); }
-  @$pb.TagNumber(40)
+  @$pb.TagNumber(50)
   $core.bool hasHeight() => $_has(4);
-  @$pb.TagNumber(40)
-  void clearHeight() => clearField(40);
+  @$pb.TagNumber(50)
+  void clearHeight() => clearField(50);
 
-  @$pb.TagNumber(50)
+  @$pb.TagNumber(60)
   $core.String get caption => $_getSZ(5);
-  @$pb.TagNumber(50)
+  @$pb.TagNumber(60)
   set caption($core.String v) { $_setString(5, v); }
-  @$pb.TagNumber(50)
+  @$pb.TagNumber(60)
   $core.bool hasCaption() => $_has(5);
-  @$pb.TagNumber(50)
-  void clearCaption() => clearField(50);
+  @$pb.TagNumber(60)
+  void clearCaption() => clearField(60);
 }
 
 

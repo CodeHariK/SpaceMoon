@@ -10,6 +10,7 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/notifications.dart';
 
 Future<void> firebaseMessagingSetup() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -82,27 +83,32 @@ Future<void> messageHandler(RemoteMessage message, bool background, HandlerType 
   }
 
   try {
-    final tweet = Tweet()..mergeFromProto3Json(message.data);
-    tweet.uid = message.data['uid'];
+    final tweet = Tweet(
+      uid: message.data['uid'],
+      room: message.data['room'],
+      user: message.data['user'],
+    );
+
+    NotificationsPage.tweetStream.add(tweet);
 
     BuildContext? context = AppRouter.rootNavigatorKey.currentContext;
     if (context != null && context.mounted) {
       if (type == HandlerType.onMessageOpened) {
-        ChatRoute(chatId: tweet.room).go(context);
+        ChatRoute(chatId: tweet.room).push(context);
       }
 
-      const AnimatedSnackbar(
-        content: 'content',
-        title: 'title',
+      AnimatedSnackbar(
+        title: message.notification?.title ?? '',
+        content: message.notification?.body ?? '',
       ).show(
-        AppRouter.cupertinoKey.currentContext!,
+        AppRouter.cupertinoNavigatorKey.currentContext!,
         alignment: const Alignment(0.0, -.8),
       );
     }
 
     dino("$tweet");
   } catch (e) {
-    lava('Error t1 $e');
+    lava('Error $e');
   }
 
   dino(type);
@@ -132,6 +138,6 @@ void callFCMtokenUpdate(String? fcmToken) async {
       Const.fcmToken.name: fcmToken,
     });
   } catch (e) {
-    debugPrint(e.toString());
+    debugPrint('callFCMtokenUpdate Error');
   }
 }

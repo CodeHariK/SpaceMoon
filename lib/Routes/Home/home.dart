@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/shell_data.dart';
 import 'package:spacemoon/Helpers/tab_shell.dart';
@@ -121,15 +121,7 @@ class HomeShellRoute extends StatefulShellRouteData {
     return navigationShell;
   }
 
-  static Widget $navigatorContainerBuilder(
-    BuildContext context,
-    StatefulNavigationShell navigationShell,
-    List<Widget> children,
-  ) {
-    return TabShell(
-      navigationShell: navigationShell,
-      shellData: data,
-      actions: [
+  static actions(context) => [
         IconButton(
           onPressed: () {
             NotificationsRoute().go(context);
@@ -142,7 +134,17 @@ class HomeShellRoute extends StatefulShellRouteData {
           },
           icon: const Icon(Icons.settings),
         ),
-      ],
+      ];
+
+  static Widget $navigatorContainerBuilder(
+    BuildContext context,
+    StatefulNavigationShell navigationShell,
+    List<Widget> children,
+  ) {
+    return TabShell(
+      navigationShell: navigationShell,
+      shellData: data,
+      actions: actions(context),
       children: children,
     );
   }
@@ -163,46 +165,15 @@ class ExitPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Text(HomeShellRoute.data.title(context)),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  SettingsRoute().push(context);
-                },
-                icon: const Icon(Icons.settings),
-              ),
-            ],
-          ),
-          body: navigator,
-          extendBody: true,
-          bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context),
-        ),
-        Container(
-          color: const Color.fromARGB(62, 150, 150, 150),
-        ),
-        AlertDialog(
-          content: const Text('Do you want to exit?'),
-          actions: [
-            OutlinedButton(
-              onPressed: () {
-                HomeRoute().go(context);
-              },
-              child: const Text('No'),
-            ),
-            FilledButton(
-              onPressed: () {
-                exit(1);
-              },
-              child: const Text('Yes'),
-            ),
-          ],
-        ),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(HomeShellRoute.data.title(context)),
+        actions: HomeShellRoute.actions(context),
+      ),
+      body: navigator,
+      extendBody: true,
+      bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context),
     );
   }
 }

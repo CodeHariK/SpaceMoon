@@ -1,11 +1,11 @@
 import * as admin from "firebase-admin";
-import { Const, Messaging, RoomUser, Tweet, User } from "./Gen/data";
+import { Const, Messaging, RoomUser, Tweet, User, constToJSON } from "./Gen/data";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { checkUserExists } from "./users";
-import { constName } from "./Helpers/const";
-import { roomUserToMap, userToMap } from "./Helpers/convertors";
+import { checkUserExists, getUserById } from "./users";
+import { getRoomById } from "./room";
+const mime = require('mime-types')
 
 // export const sendMessage = onCall({
 //     enforceAppCheck: true,
@@ -46,7 +46,7 @@ export const callUnsubscribeFromTopic = onCall({
 
     const roomuser = RoomUser.fromJSON(request.data);
 
-    unsubscribeFromTopic(uid, roomuser.room)
+    toggleTopicSubsription(false, uid, roomuser.room!, null)
 
     return;
 })
@@ -58,104 +58,83 @@ export const callSubscribeFromTopic = onCall({
 
     const roomuser = RoomUser.fromJSON(request.data);
 
-    subscribeToTopic(uid, roomuser.room)
+    toggleTopicSubsription(true, uid, roomuser.room!, null)
 
     return;
 })
 
-export async function unsubscribeFromTopic(userId: string, roomId: string) {
-    let messaging = await admin.firestore().doc(`fcmTokens/${userId}`).get().catch((e) => {
-        throw new HttpsError('aborted', e);
-    });
+export async function toggleTopicSubsription(subscribe: boolean, userId: string, roomId: string, token: string | null) {
+    let fcmToken = token ?? Messaging.fromJSON((await admin.firestore()
+        .doc(`fcmTokens/${userId}`).get().catch((e) => {
+            throw new HttpsError('aborted', e);
+        })).data()).fcmToken;
 
-    let fcmToken = Messaging.fromJSON(messaging.data()).fcmToken;
-    console.log('');
-    console.log(userId);
-    console.log(fcmToken);
-    console.log('');
     if (fcmToken) {
-        admin.messaging().unsubscribeFromTopic(fcmToken, roomId).then(async (v) => {
-            await admin.firestore().collection(constName(Const.roomusers))
-                .doc(`${userId}_${roomId}`)
-                .update(
-                    Object.fromEntries(roomUserToMap(RoomUser.create({
-                        subscribed: false
-                    }))))
-                .then(
-                    async () => {
-
-                        await admin.firestore().collection(constName(Const.users)).doc(userId)
-                            .update(Object.fromEntries(userToMap(User.create({
-                                updated: new Date()
-                            }))))
-                            .catch((err) => {
-                                throw new HttpsError('aborted', 'updateUserTime error');
-                            });
-                    }
-                )
-                .catch((err) => {
-                    throw new HttpsError('aborted', 'updateRoomUser failed');
-                });
-        }).catch((e) => {
-            console.log(e)
-        });
+        (subscribe ?
+            admin.messaging().subscribeToTopic(fcmToken, roomId)
+            : admin.messaging().unsubscribeFromTopic(fcmToken, roomId))
+            .then(async (v) => {
+                await admin.firestore().collection(constToJSON(Const.roomusers))
+                    .doc(`${userId}_${roomId}`)
+                    .update(
+                        RoomUser.toJSON(RoomUser.create({
+                            subscribed: subscribe,
+                            updated: new Date(),
+                        }))!)
+                    .then(
+                        async () => {
+                            await admin.firestore().collection(constToJSON(Const.users))
+                                .doc(userId)
+                                .update(
+                                    User.toJSON(User.create({
+                                        updated: new Date()
+                                    }))!
+                                )
+                                .catch((err) => {
+                                    throw new HttpsError('aborted', 'updateUserTime error');
+                                });
+                        }
+                    )
+                    .catch((err) => {
+                        throw new HttpsError('aborted', 'updateRoomUser failed');
+                    });
+            }).catch((e) => {
+                console.log(e)
+            });
     }
     return;
 }
 
-export async function subscribeToTopic(userId: string, roomId: string) {
-    let messaging = await admin.firestore().doc(`fcmTokens/${userId}`).get().catch((e) => {
-        throw new HttpsError('aborted', e);
-    });
+export async function tweetToTopic(tweet: Tweet) {
 
-    let fcmToken = Messaging.fromJSON(messaging.data()).fcmToken;
-    console.log('');
-    console.log(userId);
-    console.log(fcmToken);
-    console.log('');
-    if (fcmToken) {
-        admin.messaging().subscribeToTopic(fcmToken, roomId).then(async (v) => {
-            await admin.firestore().collection(constName(Const.roomusers))
-                .doc(`${userId}_${roomId}`)
-                .update(
-                    Object.fromEntries(roomUserToMap(RoomUser.create({
-                        subscribed: true
-                    }))))
-                .then(
-                    async () => {
+    console.log(Tweet.toJSON(tweet))
+    let imgMeta = tweet.gallery?.find((imageMeta) => {
+        if (imageMeta.url == null) {
+            return false;
+        }
+        console.log(mime.lookup(imageMeta.url))
+        return imageMeta.url.includes('unsplash') || mime.lookup(imageMeta.url)?.includes('image');
+    })
 
-                        await admin.firestore().collection(constName(Const.users)).doc(userId)
-                            .update(Object.fromEntries(userToMap(User.create({
-                                updated: new Date()
-                            }))))
-                            .catch((err) => {
-                                throw new HttpsError('aborted', 'updateUserTime error');
-                            });
-                    }
-                )
-                .catch((err) => {
-                    throw new HttpsError('aborted', 'updateRoomUser failed');
-                });
-        }).catch((e) => {
-            console.log(e)
-        });
-    }
-    return;
-}
+    let user = await getUserById(tweet.user!)
+    let room = await getRoomById(tweet.room!)
 
-export async function tweetToTopic(roomId: string, userId: string, tweet: Tweet) {
     admin.messaging().send(
         {
-            topic: roomId,
+            topic: tweet.room!,
             // token: '',
             android: {
                 priority: "high",
             },
-            data: Tweet.toJSON(tweet) as {},
+            data: {
+                'uid': tweet.uid!,
+                'room': tweet.room!,
+                'user': tweet.user!,
+            },
             notification: {
-                "title": userId,
-                "body": tweet.text,
-                imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTE5fPhctwNLodS9VmAniEw_UiLWHgKs0fs1w&usqp=CAU',
+                "title": `${room?.displayName}  (${user?.displayName})`,
+                "body": tweet.text?.substring(0, 120),
+                imageUrl: imgMeta ? imgMeta.url : undefined,
             }
         }
     ).then((v) => {
@@ -193,6 +172,12 @@ export async function tweetToTopic(roomId: string, userId: string, tweet: Tweet)
 //     return;
 // })
 
+export async function deleteFCMToken(userId: string) {
+    await admin.firestore().doc(`fcmTokens/${userId}`).delete().catch((e) => {
+        console.log('Failed deleteFCMToken')
+    })
+}
+
 export const callFCMtokenUpdate = onCall({
     enforceAppCheck: true,
 }, async (request): Promise<void> => {
@@ -209,8 +194,7 @@ export const callFCMtokenUpdate = onCall({
                     fcmToken: fcmToken,
                     timestamp: new Date(),
                 })
-            ) as Map<string, any>
-            , { merge: true })
+            )!, { merge: true })
             .catch((error) => {
                 throw new HttpsError('aborted', 'Error adding new field to custom claims');
             });

@@ -4,15 +4,10 @@ import logger = require("firebase-functions/logger");
 import path = require("path");
 import * as admin from "firebase-admin";
 
-// library for image resizing
 import sharp = require("sharp");
 import { FieldValue } from "firebase-admin/firestore";
 import { ImageMetadata, Tweet } from "./Gen/data";
 
-/**
- * When an image is uploaded in the Storage bucket,
- * generate a thumbnail automatically using sharp.
- */
 export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => {
 
     const fileBucket = event.data.bucket; // Storage bucket containing the file.

@@ -1,15 +1,13 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { Const, Role, Room, RoomUser, Visible } from "./Gen/data";
-import { constName } from "./Helpers/const";
+import { Const, Role, Room, RoomUser, Visible, constToJSON } from "./Gen/data";
 import { checkUserExists } from "./users";
 import { deleteCollection } from "./Helpers/subcollection";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
-import { roomToJson, roomToMap } from "./Helpers/convertors";
 import { getRoomUserById } from "./roomuser";
-import { subscribeToTopic } from "./messaging";
+import { toggleTopicSubsription } from "./messaging";
 
 export const callCreateRoom = onCall({
     enforceAppCheck: true,
@@ -56,16 +54,17 @@ export const callCreateRoom = onCall({
     _room.updated = new Date()
 
     if (currentUID != null) {
-        let roomDoc = await admin.firestore().collection(constName(Const.rooms))
-            .add(roomToJson(_room),);
+        let roomDoc = await admin.firestore().collection(constToJSON(Const.rooms))
+            .add(Room.toJSON(_room)!,);
 
         members.forEach(async (e) => {
             e.room = roomDoc.id;
-            await admin.firestore().collection(constName(Const.roomusers)).doc(e.user + '_' + e.room).create(
-                RoomUser.toJSON(e) as Map<string, any>
-            ).then(() => {
-                subscribeToTopic(e.user, e.room);
-            });
+            await admin.firestore().collection(constToJSON(Const.roomusers))
+                .doc(e.user + '_' + e.room).create(
+                    RoomUser.toJSON(e) as Map<string, any>
+                ).then(() => {
+                    toggleTopicSubsription(true, e.user!, e.room!, null);
+                });
         });
 
         // admin.firestore().collection(constName(Const.rooms)).doc(roomDoc.id).set(
@@ -93,7 +92,7 @@ export const deleteRoom = onCall({
 
     if ((adminId === roomUser.user) || (adminUser && (adminUser.role == Role.ADMIN))) {
 
-        await admin.firestore().collection(constName(Const.rooms))
+        await admin.firestore().collection(constToJSON(Const.rooms))
             .doc(roomUser.room).delete();
 
         return { message: 'Room Deleted.' };
@@ -106,12 +105,14 @@ export const onRoomDeleted = onDocumentDeleted("rooms/{room}", async (event) => 
 
     let room = event.params.room
 
-    const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
+    const roomUserQuery = await admin.firestore().collection(constToJSON(Const.roomusers))
         .where('room', '==', room).get()
 
     const db = admin.firestore();
     const batch = db.batch();
     roomUserQuery.forEach((doc) => {
+        let roomuser = RoomUser.fromJSON(doc.data());
+        toggleTopicSubsription(false, roomuser.user!, roomuser.room!, null);
         batch.delete(doc.ref);
     });
     await batch.commit();
@@ -123,7 +124,7 @@ export const onRoomDeleted = onDocumentDeleted("rooms/{room}", async (event) => 
         prefix: `profile/rooms/${room}`
     });
 
-    deleteCollection(`${constName(Const.rooms)}/${room}/tweets`, 100);
+    deleteCollection(`${constToJSON(Const.rooms)}/${room}/tweets`, 100);
 });
 
 export const updateRoomInfo = onCall({
@@ -132,25 +133,23 @@ export const updateRoomInfo = onCall({
     let userId: string = request.auth!.uid;
 
     let room = Room.fromJSON(request.data)
+    let roomId = room.uid!
 
-    if (room.nick != null && room.nick != '') {
+    if (room.nick && room.nick !== '') {
         if (!isAlphanumeric(room.nick) || room.nick?.length < 7 || (await roomNickExist(room.nick))) {
             throw new HttpsError('aborted', 'Nick name error');
         }
     }
 
-    let r = roomToMap(room);
-
-    if (room.open == Visible.INVALIDVISIBLE)
-        r.delete(constName(Const.open))
-    r.delete(constName(Const.uid))
+    room.uid = undefined
 
     try {
-        let roomUser = await getRoomUserById(userId, room.uid)
+        let roomUser = await getRoomUserById(userId, roomId)
         if (roomUser && roomUser.role == Role.ADMIN) {
-            await admin.firestore().collection(constName(Const.rooms)).doc(room.uid).update(
-                Object.fromEntries(r),
-            );
+            await admin.firestore().collection(constToJSON(Const.rooms))
+                .doc(roomId).update(
+                    Room.toJSON(room)!,
+                );
         }
         return 'Done';
     }
@@ -161,8 +160,8 @@ export const updateRoomInfo = onCall({
 
 async function roomNickExist(nick: string) {
     if (nick != null) {
-        let nickCount = await admin.firestore().collection(constName(Const.rooms))
-            .where(constName(Const.nick), '==', nick)
+        let nickCount = await admin.firestore().collection(constToJSON(Const.rooms))
+            .where(constToJSON(Const.nick), '==', nick)
             .count().get()
             .then((v) => v.data().count);
         if (nickCount != 0) {
@@ -173,7 +172,7 @@ async function roomNickExist(nick: string) {
 }
 
 export const getRoomById = async (roomId: string) => {
-    return await admin.firestore().collection(constName(Const.rooms)).doc(roomId).get().then((room) => {
+    return await admin.firestore().collection(constToJSON(Const.rooms)).doc(roomId).get().then((room) => {
         let data = room.data()
         return !data ? null : Room.fromJSON(data);
     }).catch((error) => {
@@ -183,12 +182,10 @@ export const getRoomById = async (roomId: string) => {
 }
 
 export async function updateRoomTime(roomId: string) {
-    await admin.firestore().collection(constName(Const.rooms)).doc(roomId).set(
-        roomToJson(Room.create({
+    await admin.firestore().collection(constToJSON(Const.rooms)).doc(roomId).update(
+        RoomUser.toJSON(Room.create({
             updated: new Date()
-        })
-        ),
-        { merge: true }
+        }))!
     );
 }
 

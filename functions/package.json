@@ -18,14 +18,15 @@
   "dependencies": {
     "firebase-admin": "^11.11.0",
     "firebase-functions": "^4.5.0",
+    "mime-types": "^2.1.35",
     "sharp": "^0.32.6"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.1",
     "@types/mocha": "^10.0.6",
+    "firebase-functions-test": "^3.1.0",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
-    "firebase-functions-test": "^3.1.0",
     "typescript": "^5.3.2"
   },
   "private": true

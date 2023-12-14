@@ -36,6 +36,8 @@ export const deleteTweet = tweet.deleteTweet;
 
 export const generateThumbnail = image.generateThumbnail;
 
+export const callSubscribeFromTopic = messaging.callSubscribeFromTopic;
+export const callUnsubscribeFromTopic = messaging.callUnsubscribeFromTopic;
 export const callFCMtokenUpdate = messaging.callFCMtokenUpdate;
 export const pruneTokens = messaging.pruneTokens;
 

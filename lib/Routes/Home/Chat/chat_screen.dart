@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -36,7 +35,7 @@ class ChatRoute extends GoRouteData {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return CupertinoPage(
+    return MaterialPage(
       child: ChatPage(
         chatId: chatId,
       ),
@@ -260,7 +259,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
                           return TweetBox(
                             tweet: tweet,
-                            room: room,
                           );
                         },
                       ),

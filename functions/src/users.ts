@@ -2,16 +2,14 @@ import * as functions from "firebase-functions/v1";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { Const, RoomUser, User } from "./Gen/data";
-import { constName } from "./Helpers/const";
+import { Active, Const, RoomUser, User, constToJSON } from "./Gen/data";
 import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
-import { userObj } from "./Helpers/convertors";
 
 export const onUserCreate = functions.auth.user().onCreate((user) => {
     const { uid, email, displayName, phoneNumber, photoURL } = user;
 
-    admin.firestore().collection(constName(Const.users)).doc(uid)
+    admin.firestore().collection(constToJSON(Const.users)).doc(uid)
         .set(
             User.toJSON(User.create({
                 email: email,
@@ -20,6 +18,9 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
                 phoneNumber: phoneNumber,
                 photoURL: photoURL,
                 created: new Date(),
+                updated: new Date(),
+                status: Active.ONLINE,
+                friends: [],
             })) as Map<string, any>
             , { merge: true });
 
@@ -47,7 +48,7 @@ export const callUserUpdate = onCall({
         if (!isAlphanumeric(user.nick) || user.nick.length < 7) {
             throw new HttpsError('aborted', 'Nick name error');
         }
-        let nickCount = await admin.firestore().collection(constName(Const.users)).where(constName(Const.nick), '==', user.nick).count().get().then((v) => v.data().count);
+        let nickCount = await admin.firestore().collection(constToJSON(Const.users)).where(constToJSON(Const.nick), '==', user.nick).count().get().then((v) => v.data().count);
         if (nickCount != 0) {
             throw new HttpsError('aborted', 'Nick name already present');
         }
@@ -55,15 +56,15 @@ export const callUserUpdate = onCall({
 
     if (uid != null) {
         admin.auth().updateUser(uid, User.toJSON(user)!)
-        admin.firestore().collection(constName(Const.users)).doc(uid)
-            .update(userObj(user)).catch((error) => {
+        admin.firestore().collection(constToJSON(Const.users)).doc(uid)
+            .update(User.toJSON(user)!).catch((error) => {
                 console.error('Error callUserUpdate'/*, error*/);
             });
     }
 });
 
 export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
-    const roomUserQuery = await admin.firestore().collection(constName(Const.roomusers))
+    const roomUserQuery = await admin.firestore().collection(constToJSON(Const.roomusers))
         .where('user', '==', user.uid).get()
 
     const db = admin.firestore();
@@ -81,7 +82,7 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
         prefix: `profile/users/${user.uid}`
     });
 
-    admin.firestore().collection(constName(Const.users))
+    admin.firestore().collection(constToJSON(Const.users))
         .doc(user.uid).delete()
         .catch((error) => {
             console.error('Error deleteAuthUser'/*, error*/);
@@ -97,5 +98,13 @@ export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
 });
 
 export const checkUserExists = async (userId: string) => {
-    return (await admin.firestore().collection(constName(Const.users)).doc(userId).get()).exists;
+    return (await admin.firestore().collection(constToJSON(Const.users)).doc(userId).get()).exists;
+}
+
+export const getUserById = async (userId: string) => {
+    let user = (await admin.firestore().collection(constToJSON(Const.users)).doc(userId).get().catch((e) => {
+        console.error('No User');
+        throw new HttpsError('aborted', 'No user found');
+    })).data();
+    return user != null ? User.fromJSON(user) : null;
 }

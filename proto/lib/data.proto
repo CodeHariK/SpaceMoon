@@ -5,88 +5,31 @@ import 'google/protobuf/timestamp.proto';
 package user;
 
 enum Role {
-    INVALIDROLE = 0;
-    REQUEST = 10;
-    USER = 20;
-    INVITE = 25;
+    REQUEST = 0;
+    USER = 10;
+    INVITE = 20;
     MODERATOR = 30;
     ADMIN = 40;
 }
 
 enum MediaType {
-    INVALIDMEDIATYPE = 0;
-    TEXT = 10;
-    FILE = 20;
-    QR = 30;
-    POST = 40;
-    GALLERY = 50;
+    TEXT = 0;
+    FILE = 10;
+    QR = 20;
+    POST = 30;
+    GALLERY = 40;
 }
 
 enum Active {
-    INVALIDACTIVE = 0;
-    OFFLINE = 1;
+    OFFLINE = 0;
     ONLINE = 10;
     TYPING = 20;
 }
 
 enum Visible {
-    INVALIDVISIBLE = 0;
-    CLOSE = 1;
+    CLOSE = 0;
     MODERATED = 10;
     OPEN = 20;
-}
-
-message User {
-    string uid = 100;
-    string displayName = 200;
-    string nick = 250;
-    string email = 300;
-    string phoneNumber = 400;
-    string photoURL = 500;
-    Active status = 600;
-    repeated string friends = 700;
-    google.protobuf.Timestamp created = 800;
-    google.protobuf.Timestamp updated = 900;
-    Visible open = 1000;
-}
-
-message Messaging {
-    string fcmToken = 100;
-    google.protobuf.Timestamp timestamp = 200;
-}
-
-message RoomUser {
-    string uid = 10;
-    string user = 20;
-    string room = 30;
-    Role role = 40;
-    google.protobuf.Timestamp created = 50;
-    google.protobuf.Timestamp updated = 60;
-    bool subscribed = 70;
-}
-
-message Room {
-    string uid = 1;
-    string nick = 2;
-    string displayName = 10;
-    string photoURL = 20;
-    string description = 30;
-    google.protobuf.Timestamp created = 40;
-    google.protobuf.Timestamp updated = 50;
-    
-    Visible open = 60;
-}
-
-message Tweet {
-    string uid = 1;
-    string user = 10;
-    string room = 20;
-    string path = 30;
-    google.protobuf.Timestamp created = 40;
-    MediaType media_type = 50;
-    string text = 60;
-    string link = 70;
-    repeated ImageMetadata gallery = 80;
 }
 
 enum Const {
@@ -95,33 +38,85 @@ enum Const {
     tweets = 20;
     roomusers = 30;
 
-    uid = 100;
-    nick = 110;
-    displayName = 150;
-    email = 200;
-    phoneNumber = 250;
-    photoURL = 300;
-    fcmToken = 350;
+    uid = 40;
+    nick = 50;
+    displayName = 60;
+    email = 70;
+    phoneNumber = 80;
+    photoURL = 90;
+    fcmToken = 100;
     
-    status = 400;
-    created = 600;
-    updated = 610;
-    timestamp = 620;
-    open = 700;
+    status = 110;
+    created = 120;
+    updated = 130;
+    timestamp = 140;
+    open = 150;
 
-    members = 800;
-    tweet_count = 900;
-    description = 1000;
+    members = 160;
+    tweet_count = 170;
+    description = 180;
 
-    gallery = 1100;
+    gallery = 190;
+}
+
+message User {
+    optional string uid = 10;
+    optional string displayName = 20;
+    optional string nick = 30;
+    optional string email = 40;
+    optional string phoneNumber = 50;
+    optional string photoURL = 60;
+    optional Active status = 70;
+    repeated string friends = 80;
+    optional google.protobuf.Timestamp created = 90;
+    optional google.protobuf.Timestamp updated = 100;
+    optional Visible open = 110;
+}
+
+message Messaging {
+    optional string fcmToken = 10;
+    optional google.protobuf.Timestamp timestamp = 20;
+}
+
+message RoomUser {
+    optional string uid = 10;
+    optional string user = 20;
+    optional string room = 30;
+    optional Role role = 40;
+    optional google.protobuf.Timestamp created = 50;
+    optional google.protobuf.Timestamp updated = 60;
+    optional bool subscribed = 70;
+}
+
+message Room {
+    optional string uid = 10;
+    optional string nick = 20;
+    optional string displayName = 30;
+    optional Visible open = 40;
+    optional string photoURL = 50;
+    optional string description = 60;
+    optional google.protobuf.Timestamp created = 70;
+    optional google.protobuf.Timestamp updated = 80;
+}
+
+message Tweet {
+    optional string uid = 10;
+    optional string user = 20;
+    optional string room = 30;
+    optional string path = 40;
+    optional google.protobuf.Timestamp created = 50;
+    optional MediaType media_type = 60;
+    optional string text = 70;
+    optional string link = 80;
+    repeated ImageMetadata gallery = 90;
 }
 
 message ImageMetadata {
-    string url = 1;
-    string path = 10;
-    string localUrl = 20;
-    int32 width = 30;
-    int32 height = 40;
-    string caption = 50;
-    // string blurhash = 60;
+    optional string url = 10;
+    optional string path = 20;
+    optional string localUrl = 30;
+    optional int32 width = 40;
+    optional int32 height = 50;
+    optional string caption = 60;
+    // optional string blurhash = 60;
 }

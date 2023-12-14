@@ -173,6 +173,13 @@ class ProfilePage extends ConsumerWidget {
                       style: context.tm,
                     ),
                   ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      'Last seen : ${user?.updated.dateString}',
+                      style: context.tm,
+                    ),
+                  ),
                   const RefreshTokenDisplay(),
                 ],
               ),

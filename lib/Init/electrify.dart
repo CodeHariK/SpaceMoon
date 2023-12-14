@@ -172,6 +172,7 @@ class SpaceMoonHome extends HookConsumerWidget {
         routerConfig: router,
         title: title,
         locale: const Locale('en'),
+        scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -191,23 +192,26 @@ class SpaceMoonHome extends HookConsumerWidget {
         builder: (context, child) {
           initializeDateFormatting();
 
-          return Scaffold(
-            key: ValueKey(AppTheme.currentAppTheme),
-            body: Overlay(
-              initialEntries: [
-                OverlayEntry(
-                  builder: (context) {
-                    return CupertinoTheme(
-                      key: AppRouter.cupertinoKey,
-                      data: CupertinoThemeData(
-                        brightness: brightness,
-                        primaryColor: AppTheme.seedColor,
-                      ),
-                      child: child ?? const SimpleError(),
-                    );
-                  },
-                ),
-              ],
+          return Directionality(
+            textDirection: TextDirection.ltr,
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: Overlay(
+                initialEntries: [
+                  OverlayEntry(
+                    builder: (context) {
+                      return CupertinoTheme(
+                        key: AppRouter.cupertinoNavigatorKey,
+                        data: CupertinoThemeData(
+                          brightness: brightness,
+                          primaryColor: AppTheme.seedColor,
+                        ),
+                        child: child ?? const SimpleError(),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         },

@@ -1,6 +1,5 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { Const, Role, Tweet } from "./Gen/data";
-import { constName } from "./Helpers/const";
+import { Const, Role, Tweet, constToJSON } from "./Gen/data";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomUserById } from "./roomuser";
@@ -23,21 +22,23 @@ export const sendTweet = onCall({
     tweet.created = new Date()
     tweet.user = userId
 
-    if (user && user.role >= Role.USER && user.role != Role.INVITE) {
-        const sent = await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`).add(
-            Tweet.toJSON(Tweet.create({
-                user: userId,
-                created: new Date(),
-                text: tweet.text,
-                mediaType: tweet.mediaType,
-                link: tweet.link,
-                gallery: tweet.gallery,
-            })) as Map<string, any>
-        );
+    if (user && user.role! >= Role.USER && user.role != Role.INVITE) {
+        const sent = await admin.firestore()
+            .collection(`${constToJSON(Const.rooms)}/${tweet.room}/${constToJSON(Const.tweets)}`)
+            .add(
+                Tweet.toJSON(Tweet.create({
+                    user: userId,
+                    created: new Date(),
+                    text: tweet.text,
+                    mediaType: tweet.mediaType,
+                    link: tweet.link,
+                    gallery: tweet.gallery,
+                })) as Map<string, any>
+            );
 
         tweet.uid = sent.id;
 
-        tweetToTopic(tweet.room, tweet.user, tweet);
+        tweetToTopic(tweet);
 
         await updateRoomTime(tweet.room);
 
@@ -62,18 +63,20 @@ export const updateTweet = onCall({
         throw new HttpsError('invalid-argument', 'Invalid Tweet ID')
     }
 
-    let fetchTweet = await getTweetById(tweet.uid, tweet.room);
+    let fetchTweet = await getTweetById(tweet.uid!, tweet.room);
 
     if (fetchTweet && userId === fetchTweet.user && fetchTweet?.gallery.length != tweet?.gallery.length && tweet?.gallery.length == 0) {
-        await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`)
-            .doc(tweet.uid).delete();
+        await admin.firestore()
+            .collection(`${constToJSON(Const.rooms)}/${tweet.room}/${constToJSON(Const.tweets)}`)
+            .doc(tweet.uid!).delete();
 
         return;
     }
 
     if (fetchTweet && userId === fetchTweet.user) {
-        await admin.firestore().collection(`${constName(Const.rooms)}/${tweet.room}/${constName(Const.tweets)}`)
-            .doc(tweet.uid).set(
+        await admin.firestore()
+            .collection(`${constToJSON(Const.rooms)}/${tweet.room}/${constToJSON(Const.tweets)}`)
+            .doc(tweet.uid!).set(
                 Tweet.toJSON(Tweet.create({
                     user: userId,
                     created: fetchTweet.created,
@@ -110,21 +113,21 @@ export const deleteTweet = onCall({
         throw new HttpsError('invalid-argument', 'Invalid Tweet')
     }
 
-    let tweetUser = await getRoomUserById(fetchTweet.user, tweet.room)
+    let tweetUser = await getRoomUserById(fetchTweet.user!, tweet.room)
 
     if (!u) {
         throw new HttpsError('invalid-argument', 'Not part of room')
     }
 
-    if (tweet.user == userId || !tweetUser || u.role > tweetUser?.role) {
-        await admin.firestore().doc(tweet.path).delete();
+    if (tweet.user == userId || !tweetUser || u.role! > tweetUser!.role!) {
+        await admin.firestore().doc(tweet.path!).delete();
     } else {
         throw new HttpsError('invalid-argument', 'Not enough privilege')
     }
 });
 
 export const onTweetDeleted = onDocumentDeleted("rooms/{roomId}/tweets/{tweetId}", async (event) => {
-    let path = `${Tweet.fromJSON(event.data?.data()).user}/${constName(Const.rooms)}/${event.params.roomId}/${constName(Const.tweets)}/${event.params.tweetId}`;
+    let path = `${Tweet.fromJSON(event.data?.data()).user}/${constToJSON(Const.rooms)}/${event.params.roomId}/${constToJSON(Const.tweets)}/${event.params.tweetId}`;
 
     await admin.storage().bucket().deleteFiles({
         prefix: path
@@ -133,7 +136,7 @@ export const onTweetDeleted = onDocumentDeleted("rooms/{roomId}/tweets/{tweetId}
 
 export const getTweetById = async (tweetId: string, roomId: string) => {
     const tweetQuery = admin.firestore()
-        .collection(`${constName(Const.rooms)}/${roomId}/${constName(Const.tweets)}`).doc(tweetId)
+        .collection(`${constToJSON(Const.rooms)}/${roomId}/${constToJSON(Const.tweets)}`).doc(tweetId)
 
     const tweetMap = (await tweetQuery.get()).data();
 

@@ -233,7 +233,6 @@ class ChatInfoPage extends HookConsumerWidget {
                             key: ValueKey(room.open),
                             value: room.open,
                             items: Visible.values
-                                .where((element) => element != Visible.INVALIDVISIBLE)
                                 .map(
                                   (e) => DropdownMenuItem(
                                     value: e,

@@ -158,7 +158,7 @@ class UserTile extends ConsumerWidget {
         children: [
           const Text('User'),
           const SizedBox(width: 10),
-          if (searchUser?.uid != me?.uid && searchRoomUser == null)
+          if (searchUser?.uid != me?.uid && searchRoomUser != null)
             AsyncLock(
               builder: (loading, status, lock, open, setStatus) {
                 return IconButton.filledTonal(

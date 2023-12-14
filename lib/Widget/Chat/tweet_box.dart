@@ -25,11 +25,9 @@ class TweetBox extends ConsumerWidget {
     super.key,
     required this.tweet,
     this.isHero = false,
-    required this.room,
   });
 
   final Tweet tweet;
-  final Room room;
   final bool isHero;
 
   @override
@@ -192,10 +190,7 @@ class TweetBox extends ConsumerWidget {
               TweetRoute(
                 chatId: tweet.room,
                 tweetId: tweet.uid,
-                $extra: TweetRouteObj(
-                  tweet: tweet,
-                  room: room,
-                ),
+                $extra: tweet,
               ).navPush(context);
             },
             child: child,
@@ -217,19 +212,10 @@ class DialogPage extends Page<String> {
   }
 }
 
-class TweetRouteObj {
-  final Tweet tweet;
-  final Room room;
-  TweetRouteObj({
-    required this.tweet,
-    required this.room,
-  });
-}
-
 class TweetRoute extends GoRouteData {
   final String chatId;
   final String tweetId;
-  final TweetRouteObj $extra;
+  final Tweet $extra;
 
   const TweetRoute({
     required this.chatId,
@@ -246,8 +232,7 @@ class TweetRoute extends GoRouteData {
       child: TweetDialog(
         chatId: chatId,
         tweetId: tweetId,
-        tweet: $extra.tweet,
-        room: $extra.room,
+        tweet: $extra,
       ),
     );
   }
@@ -268,8 +253,7 @@ class TweetRoute extends GoRouteData {
           return TweetDialog(
             chatId: chatId,
             tweetId: tweetId,
-            tweet: $extra.tweet,
-            room: $extra.room,
+            tweet: $extra,
           );
         },
       ),
@@ -283,13 +267,11 @@ class TweetDialog extends ConsumerWidget {
     required this.chatId,
     required this.tweetId,
     required this.tweet,
-    required this.room,
   });
 
   final String chatId;
   final String tweetId;
   final Tweet tweet;
-  final Room room;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -301,7 +283,6 @@ class TweetDialog extends ConsumerWidget {
         content: TweetBox(
           tweet: tweet,
           isHero: true,
-          room: room,
         ),
         actions: [
           AsyncLock(

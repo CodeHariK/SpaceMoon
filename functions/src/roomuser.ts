@@ -1,14 +1,12 @@
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import { Const, Role, RoomUser, Visible } from "./Gen/data";
-import { constName } from "./Helpers/const";
+import { Const, Role, RoomUser, Visible, constToJSON } from "./Gen/data";
 import * as admin from "firebase-admin";
-import { roomUserToMap } from "./Helpers/convertors";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomById, updateRoomTime } from "./room";
-import { subscribeToTopic } from "./messaging";
+import { toggleTopicSubsription } from "./messaging";
 
 export const getRoomUserById = async (userId: string, roomId: string) => {
-    return await admin.firestore().collection(constName(Const.roomusers))
+    return await admin.firestore().collection(constToJSON(Const.roomusers))
         .doc(`${userId}_${roomId}`).get().then((roomUser) => {
             let data = roomUser.data()
             return data == undefined ? undefined : RoomUser.fromJSON(data);
@@ -26,14 +24,15 @@ export const updateRoomUserTime = onCall({
 
     let _roomuser = RoomUser.fromJSON(request.data)
 
-    let roomUser = await getRoomUserById(userId, _roomuser.room)
+    let roomUser = await getRoomUserById(userId, _roomuser.room!)
 
-    if (roomUser?.user != userId) return 'Not enough permission';
+    if (roomUser?.user !== userId) return 'Not enough permission';
 
-    await admin.firestore().collection(constName(Const.roomusers)).doc(`${userId}_${_roomuser.room}`)
-        .update(Object.fromEntries(roomUserToMap(RoomUser.create({
-            updated: new Date()
-        }))))
+    await admin.firestore().collection(constToJSON(Const.roomusers)).doc(`${userId}_${_roomuser.room}`)
+        .update(
+            RoomUser.toJSON(RoomUser.create({
+                updated: new Date()
+            }))!)
         .catch((err) => {
             throw new HttpsError('aborted', 'updateRoomUserTime error');
         });
@@ -74,16 +73,16 @@ export const deleteRoomUser = onCall({
         throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
     }
 
-    const curUser = await getRoomUserById(roomUser.user, roomUser.room);
+    const curUser = await getRoomUserById(roomUser.user!, roomUser.room);
     const adminUser = await getRoomUserById(adminId, roomUser.room);
 
     if (
         (adminId === roomUser.user) ||
         (adminUser
             && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)
-            && adminUser.role > curUser!.role)
+            && adminUser.role > curUser!.role!)
     ) {
-        await admin.firestore().collection(constName(Const.roomusers)).doc(roomUser.uid).delete();
+        await admin.firestore().collection(constToJSON(Const.roomusers)).doc(roomUser.uid!).delete();
 
         return { message: 'The target user has been removed from the room.' };
     } else {
@@ -102,7 +101,7 @@ export const upgradeAccessToRoom = onCall({
     }
 
     const curUser = await getRoomUserById(roomUser.user, roomUser.room);
-    if (curUser && adminId == curUser.user && (curUser.role != Role.INVITE)) {
+    if (curUser && adminId == curUser.user && (curUser.role !== Role.INVITE)) {
         //Self Upgrade
         //ADMIN == USER
         //DENY
@@ -119,12 +118,12 @@ export const upgradeAccessToRoom = onCall({
     // console.log(curUser)
 
     if (room) {
-        const currole = curUser?.role
-        const adminrole = adminUser?.role
+        const currole = curUser?.role ?? Role.UNRECOGNIZED
+        const adminrole = adminUser?.role ?? Role.UNRECOGNIZED
         const defaultRole = (room.open == Visible.OPEN ? Role.USER : Role.REQUEST)
-        const upgradedRole = !currole ? null : (currole == Role.REQUEST ? Role.USER : (currole == Role.USER ? Role.MODERATOR : Role.ADMIN))
+        const upgradedRole = ((currole ?? -1) < 0) ? Role.UNRECOGNIZED : (currole == Role.REQUEST ? Role.USER : (currole == Role.USER ? Role.MODERATOR : Role.ADMIN))
 
-        let role = null
+        let role = Role.UNRECOGNIZED
 
         if (!curUser && !adminUser) {
             //Req : No User
@@ -151,38 +150,43 @@ export const upgradeAccessToRoom = onCall({
             //ADMIN != USER
             //UPGRADE
             console.log('Upgrade')
-            role = upgradedRole
+            role = upgradedRole!
         }
 
-        // console.log(adminrole)
-        // console.log(currole)
-        // console.log(role)
-        // console.log(defaultRole)
+        // console.log(`role : ${role}  currole : ${currole}  adminrole : ${adminrole}  defaultRole : ${defaultRole}  upgradedRole : ${upgradedRole}`)
+        // console.log(role == Role.UNRECOGNIZED);
+        // console.log((role == currole));
+        // console.log((adminrole == Role.INVITE));
+        // console.log((currole == Role.INVITE && adminId !== curUser?.user));
+        // console.log((role > defaultRole && adminrole == Role.UNRECOGNIZED && currole !== Role.INVITE));
+        // console.log((room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED));
+        // console.log((adminrole != Role.UNRECOGNIZED && role > adminrole));
 
-        if (!role
+        if ((role == Role.UNRECOGNIZED)
             || (role == currole)
             || (adminrole == Role.INVITE)
-            || (currole == Role.INVITE && adminId != curUser?.user)
-            || (role > defaultRole && !adminrole && currole != Role.INVITE)
-            || (room.open == Visible.CLOSE && !adminUser)
-            || (adminrole && role > adminrole)) {
+            || (currole == Role.INVITE && adminId !== curUser?.user)
+            || (role > defaultRole && adminrole == Role.UNRECOGNIZED && currole !== Role.INVITE)
+            || (room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED)
+            || (adminrole != Role.UNRECOGNIZED && role > adminrole)) {
             console.log('Error upgradeAccessToRoom')
             throw new HttpsError('permission-denied', 'Error upgradeAccessToRoom');
         }
 
-        await admin.firestore().collection(constName(Const.roomusers)).doc(`${roomUser.user}_${roomUser.room}`)
+        await admin.firestore().collection(constToJSON(Const.roomusers))
+            .doc(`${roomUser.user}_${roomUser.room}`)
             .set(
-                Object.fromEntries(roomUserToMap(RoomUser.create({
+                RoomUser.toJSON(RoomUser.create({
                     user: roomUser.user,
                     room: roomUser.room,
                     role: role,
                     created: new Date(),
                     updated: new Date(),
-                })))
+                }))!
             );
 
 
-        subscribeToTopic(roomUser.user, roomUser.room);
+        toggleTopicSubsription(true, roomUser.user, roomUser.room, null);
 
         await updateRoomTime(roomUser.room);
 

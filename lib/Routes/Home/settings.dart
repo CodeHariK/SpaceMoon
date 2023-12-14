@@ -108,6 +108,7 @@ class SettingsPage extends ConsumerWidget {
               onTap: () {
                 AccountRoute().push(context);
               },
+              leading: const Icon(Icons.chevron_right_rounded),
               title: Text('Account Management', style: context.tm),
             ),
             const Divider(),
@@ -115,25 +116,30 @@ class SettingsPage extends ConsumerWidget {
               onTap: () {
                 showLicensePage(context: context);
               },
+              leading: const Icon(Icons.chevron_right_rounded),
               title: Text('License', style: context.tm),
-            ),
-            CupertinoListTile.notched(
-              onTap: () {
-                safeLaunchUrl('https://spacemoon.shark.run/privacy_policy.html');
-              },
-              title: Text('Privacy Policy', style: context.tm),
-            ),
-            CupertinoListTile.notched(
-              onTap: () {
-                context.cPush(const AttibutionPage());
-              },
-              title: Text('Attribution', style: context.tm),
             ),
             CupertinoListTile.notched(
               onTap: () {
                 AboutRoute().push(context);
               },
+              leading: const Icon(Icons.chevron_right_rounded),
               title: Text('Developer Info', style: context.tm),
+            ),
+            const Spacer(),
+            CupertinoListTile.notched(
+              onTap: () {
+                safeLaunchUrl('https://spacemoon.shark.run/privacy_policy.html');
+              },
+              title: Text('Privacy Policy', style: context.tm),
+              leading: const Icon(Icons.chevron_right_rounded),
+            ),
+            CupertinoListTile.notched(
+              onTap: () {
+                context.cPush(const AttibutionPage());
+              },
+              leading: const Icon(Icons.chevron_right_rounded),
+              title: Text('Attribution', style: context.tm),
             ),
             if (kDebugMode)
               CupertinoListTile.notched(
