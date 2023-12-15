@@ -39,9 +39,10 @@ class ChatInfoRoute extends GoRouteData {
 }
 
 class ChatInfoPage extends HookConsumerWidget {
-  const ChatInfoPage({super.key, required this.chatId});
+  const ChatInfoPage({super.key, required this.chatId, this.showAppbar = true});
 
   final String chatId;
+  final bool showAppbar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,19 +76,21 @@ class ChatInfoPage extends HookConsumerWidget {
     // }
 
     return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            context.pop();
-          },
-        ),
-        title: Text(
-          room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim(),
-        ),
-        actions: [
-          if (meInRoom?.isUserOrAdmin == true) InviteButton(room: room),
-        ],
-      ),
+      appBar: !showAppbar
+          ? null
+          : AppBar(
+              leading: BackButton(
+                onPressed: () {
+                  context.pop();
+                },
+              ),
+              title: Text(
+                room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim(),
+              ),
+              actions: [
+                if (meInRoom?.isUserOrAdmin == true) InviteButton(room: room),
+              ],
+            ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

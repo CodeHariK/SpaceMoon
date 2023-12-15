@@ -78,7 +78,8 @@ Stream<Room?> getRoomById(GetRoomByIdRef ref, String roomId) {
       .collection(Const.rooms.name)
       .doc(roomId)
       .snapshots()
-      .map((event) => fromDocSnap(Room(), event));
+      .map((event) => fromDocSnap(Room(), event))
+      .handleError((error) => null);
   return room;
 }
 

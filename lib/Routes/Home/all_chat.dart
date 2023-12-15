@@ -114,26 +114,37 @@ class AllChatPage extends ConsumerWidget {
                                         if (roomuser.isRequest || roomuser.isInvite) const Icon(Icons.pets_rounded),
                                         if (subscription) const SizedBox(width: 10),
                                         if (subscription)
-                                          Switch(
-                                            value: roomuser.subscribed,
-                                            onChanged: (v) async {
-                                              if (v) {
-                                                await FirebaseFunctions.instance
-                                                    .httpsCallable('callSubscribeFromTopic')
-                                                    .call(roomuser.toMap());
-                                              } else {
-                                                await FirebaseFunctions.instance
-                                                    .httpsCallable('callUnsubscribeFromTopic')
-                                                    .call(roomuser.toMap());
-                                              }
+                                          AsyncLock(
+                                            builder: (loading, status, lock, open, setStatus) {
+                                              return Switch(
+                                                value: roomuser.subscribed,
+                                                thumbIcon:
+                                                    const MaterialStatePropertyAll(Icon(Icons.nights_stay_sharp)),
+                                                onChanged: (v) async {
+                                                  lock();
+                                                  if (v) {
+                                                    await FirebaseFunctions.instance
+                                                        .httpsCallable('callSubscribeFromTopic')
+                                                        .call(roomuser.toMap());
+                                                  } else {
+                                                    await FirebaseFunctions.instance
+                                                        .httpsCallable('callUnsubscribeFromTopic')
+                                                        .call(roomuser.toMap());
+                                                  }
+                                                  await 1.sec.delay();
+                                                  open();
+                                                },
+                                              );
                                             },
                                           ),
                                       ],
                                     ),
-                                    onTap: () {
-                                      dino(room.uid);
-                                      ChatRoute(chatId: room.uid).go(context);
-                                    },
+                                    onTap: subscription
+                                        ? null
+                                        : () {
+                                            dino(room.uid);
+                                            ChatRoute(chatId: room.uid).go(context);
+                                          },
                                   );
                                 });
                               },

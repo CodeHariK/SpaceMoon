@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+import 'package:spacemoon/Static/assets.dart';
 
 class Error404Page extends StatelessWidget {
   const Error404Page({
@@ -16,6 +18,15 @@ class Error404Page extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // Text('${state.uri} does not exist'),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.all(32.0),
+              child: Lottie.asset(
+                Asset.lNotFound,
+                reverse: false,
+                repeat: true,
+              ),
+            ),
             ElevatedButton(onPressed: () => context.go('/'), child: const Text('Go to home')),
           ],
         ),

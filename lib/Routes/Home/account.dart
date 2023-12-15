@@ -55,7 +55,7 @@ class AccountPage extends StatelessWidget {
           ),
         ],
         actionCodeSettings: ActionCodeSettings(
-          url: 'https://spacemoonfire.firebaseapp.com',
+          url: 'https://spacemoon.shark.run',
           handleCodeInApp: true,
           androidMinimumVersion: '27',
           androidPackageName: 'run.shark.spacemoon',

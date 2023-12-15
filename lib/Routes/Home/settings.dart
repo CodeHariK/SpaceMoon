@@ -129,7 +129,7 @@ class SettingsPage extends ConsumerWidget {
             const Spacer(),
             CupertinoListTile.notched(
               onTap: () {
-                safeLaunchUrl('https://spacemoon.shark.run/privacy_policy.html');
+                safeLaunchUrl('https://spacemoon.shark.run/privacy/policy.html');
               },
               title: Text('Privacy Policy', style: context.tm),
               leading: const Icon(Icons.chevron_right_rounded),

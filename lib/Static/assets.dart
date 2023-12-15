@@ -8,4 +8,5 @@ class Asset {
 
   static const String lDot = 'assets/lottie/dotlottie.zip';
   static const String lEmpty = 'assets/lottie/empty.json';
+  static const String lNotFound = 'assets/lottie/notfound.json';
 }

@@ -5,6 +5,7 @@ import * as admin from "firebase-admin";
 import { Active, Const, RoomUser, User, constToJSON } from "./Gen/data";
 import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
+import { deleteFCMToken } from "./messaging";
 
 export const onUserCreate = functions.auth.user().onCreate((user) => {
     const { uid, email, displayName, phoneNumber, photoURL } = user;
@@ -87,6 +88,9 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
         .catch((error) => {
             console.error('Error deleteAuthUser'/*, error*/);
         });
+
+    deleteFCMToken(user.uid);
+
     return { message: `Deleted all ${user.uid} documents.` };
 });
 

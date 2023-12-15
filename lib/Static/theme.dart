@@ -209,7 +209,8 @@ class AppTheme {
         titleLarge: GoogleFonts.merriweather(letterSpacing: 2.c, fontSize: (18, 20).c),
         titleMedium: GoogleFonts.merriweather(
             letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
-        titleSmall: poppins.copyWith(fontSize: (15, 18).c),
+        titleSmall: GoogleFonts.merriweather(
+            letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (13, 16).c),
         bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
         bodyMedium: poppins,
         bodySmall: poppins,

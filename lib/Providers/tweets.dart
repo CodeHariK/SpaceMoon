@@ -77,10 +77,15 @@ class Tweets extends _$Tweets {
 
 @riverpod
 FutureOr<Tweet?> getTweetById(GetTweetByIdRef ref, Tweet tweet) async {
-  var tweetDoc =
-      await FirebaseFirestore.instance.doc('${Const.rooms.name}/${tweet.room}/${Const.tweets.name}/${tweet.uid}').get();
+  try {
+    final tweetDoc = await FirebaseFirestore.instance
+        .doc('${Const.rooms.name}/${tweet.room}/${Const.tweets.name}/${tweet.uid}')
+        .get();
 
-  return fromDocSnap(Tweet(), tweetDoc);
+    return fromDocSnap(Tweet(), tweetDoc);
+  } catch (e) {
+    return null;
+  }
 }
 
 @riverpod

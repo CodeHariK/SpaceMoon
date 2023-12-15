@@ -97,13 +97,15 @@ Future<void> messageHandler(RemoteMessage message, bool background, HandlerType 
         ChatRoute(chatId: tweet.room).push(context);
       }
 
-      AnimatedSnackbar(
-        title: message.notification?.title ?? '',
-        content: message.notification?.body ?? '',
-      ).show(
-        AppRouter.cupertinoNavigatorKey.currentContext!,
-        alignment: const Alignment(0.0, -.8),
-      );
+      if (type == HandlerType.onMessage) {
+        AnimatedSnackbar(
+          title: message.notification?.title ?? '',
+          content: message.notification?.body ?? '',
+        ).show(
+          AppRouter.cupertinoNavigatorKey.currentContext!,
+          alignment: const Alignment(0.0, -.8),
+        );
+      }
     }
 
     dino("$tweet");

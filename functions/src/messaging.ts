@@ -83,16 +83,16 @@ export async function toggleTopicSubsription(subscribe: boolean, userId: string,
                         }))!)
                     .then(
                         async () => {
-                            await admin.firestore().collection(constToJSON(Const.users))
-                                .doc(userId)
-                                .update(
-                                    User.toJSON(User.create({
-                                        updated: new Date()
-                                    }))!
-                                )
-                                .catch((err) => {
-                                    throw new HttpsError('aborted', 'updateUserTime error');
-                                });
+                            // await admin.firestore().collection(constToJSON(Const.users))
+                            //     .doc(userId)
+                            //     .update(
+                            //         User.toJSON(User.create({
+                            //             updated: new Date()
+                            //         }))!
+                            //     )
+                            //     .catch((err) => {
+                            //         throw new HttpsError('aborted', 'updateUserTime error');
+                            //     });
                         }
                     )
                     .catch((err) => {
@@ -118,6 +118,8 @@ export async function tweetToTopic(tweet: Tweet) {
 
     let user = await getUserById(tweet.user!)
     let room = await getRoomById(tweet.room!)
+    let text = tweet.text?.substring(0, 120);
+    text = text?.includes('AppFlowy') ? 'Post' : text
 
     admin.messaging().send(
         {
@@ -133,7 +135,7 @@ export async function tweetToTopic(tweet: Tweet) {
             },
             notification: {
                 "title": `${room?.displayName}  (${user?.displayName})`,
-                "body": tweet.text?.substring(0, 120),
+                "body": text,
                 imageUrl: imgMeta ? imgMeta.url : undefined,
             }
         }
@@ -205,7 +207,7 @@ export const callFCMtokenUpdate = onCall({
 });
 
 
-const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 10; // 10 days
+const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 60;
 export const pruneTokens = onSchedule('every 24 hours', async (event) => {
     const staleTokensResult = await admin.firestore().collection('fcmTokens')
         .where("timestamp", "<", new Date(Date.now() - EXPIRATION_TIME))

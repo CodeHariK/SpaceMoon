@@ -58,6 +58,8 @@ export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (even
         return `Room ${roomId} deleted because it has no more room users.`;
     }
 
+    toggleTopicSubsription(true, userId, roomId, null);
+
     await updateRoomTime(roomId);
 
     return null;

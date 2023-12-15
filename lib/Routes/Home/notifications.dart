@@ -107,21 +107,25 @@ class NotificationsPage extends StatelessWidget {
               itemCount: _tweets.length,
               itemBuilder: (context, index) {
                 final t = _tweets[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: DashedBorderContainer(
-                    child: Consumer(
-                      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                        final tweet = ref.watch(getTweetByIdProvider(t)).value;
-                        final room = ref.watch(getRoomByIdProvider(t.room)).value;
-                        if (tweet == null) return const SizedBox.shrink();
-                        return InkWell(
+
+                return Consumer(
+                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    final tweet = ref.watch(getTweetByIdProvider(t)).value;
+                    final room = ref.watch(getRoomByIdProvider(t.room)).value;
+                    if (tweet == null) return const SizedBox.shrink();
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
+                      child: DashedBorderContainer(
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
                           onTap: () {
                             ChatRoute(chatId: t.room).push(context);
                           },
                           child: IgnorePointer(
                             child: Container(
                               padding: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 border: Border(
                                   left: BorderSide(
@@ -144,7 +148,7 @@ class NotificationsPage extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      style: context.tm,
+                                      style: context.ts,
                                     ),
                                   ),
                                   if (tweet.mediaType == MediaType.TEXT)
@@ -167,10 +171,10 @@ class NotificationsPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),

@@ -159,7 +159,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             },
           ),
         ),
-        body: ChatInfoPage(chatId: room.uid),
+        body: ChatInfoPage(
+          chatId: room.uid,
+          showAppbar: false,
+        ),
       );
     }
 

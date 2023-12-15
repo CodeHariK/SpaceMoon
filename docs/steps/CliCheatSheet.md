@@ -104,6 +104,43 @@ firebase deploy --only functions:groupA.function1,groupB.function4
 firebase functions:delete FUNCTION-1_NAME
 ```
 
+## [Android CMD Tools](https://developer.android.com/tools/adb)
+
+```code
+
+adb kill-server
+
+adb start-server
+
+adb devices
+
+# Connect wirelessly with a device after an initial USB connection
+adb tcpip 5555 && adb connect device_ip_address:5555
+
+adb shell pm uninstall com.example.MyApp
+
+adb shell pm verify-app-links --re-verify PACKAGE_NAME
+
+adb shell pm get-app-links PACKAGE_NAME
+
+adb shell am start -W -a android.intent.action.VIEW -d "spacemoon:///chat/jFFarHOjNQzwaDXyS2OS" run.shark.spacemoon
+
+adb shell am start -a android.intent.action.VIEW \
+    -c android.intent.category.BROWSABLE \
+    -d "http://domain.name:optional_port"
+
+```
+
+## Ios CMD
+
+```code
+
+xcrun simctl list devices
+
+xcrun simctl openurl booted spacemoon:///chat
+
+```
+
 ## FlutterFire
 
 ```code
