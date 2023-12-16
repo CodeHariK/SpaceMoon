@@ -12,6 +12,9 @@ flutterfire configure
 dart run build_runner watch --delete-conflicting-outputs
 flutter pub upgrade
 
+Generate Flutter l10n
+  flutter gen-l10n
+
 For local emulator cloud function, configure appcheck debug token in Firebase console.
 For android local emulator, change computerIp in firebase.dart to your computer ip address.
 
@@ -25,7 +28,6 @@ Building Cloud Functions
 Generating Proto files
   cd proto
   npx buf generate lib
-
 ```
 
 ## Getting Started

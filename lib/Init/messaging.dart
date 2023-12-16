@@ -112,14 +112,6 @@ Future<void> messageHandler(RemoteMessage message, bool background, HandlerType 
   } catch (e) {
     lava('Error $e');
   }
-
-  dino(type);
-  dino("Handling a background message: ${message.messageId}");
-  dino("Handling a background message: ${message.notification?.title}");
-  dino("Handling a background message: ${message.notification?.body}");
-  dino("Handling a background message: ${message.data}");
-  dino("Handling a background message: ${message.senderId}");
-  dino("Handling a background message: ${message.messageType}");
 }
 
 void firebaseTokenUpdate() async {

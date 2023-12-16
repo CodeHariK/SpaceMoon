@@ -62,7 +62,7 @@ android:label="Spacemoon"
 ### Upgrade MinSdkVersion : `android/app/build.gradle`
 
 ```code
-minSdkVersion 27
+minSdkVersion 28
 ```
 
 ### Upgrade Kotlin Version and Gradle Plugin Version : `android/build.gradle`

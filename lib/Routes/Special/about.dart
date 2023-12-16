@@ -103,8 +103,8 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                     const SizedBox(height: 50),
                     Text('Built by ', style: context.tm),
                     const SizedBox(height: 5),
-                    RichText(
-                      text: TextSpan(
+                    Text.rich(
+                      TextSpan(
                         text: 'Hari Krishnan',
                         style: context.tl,
                         recognizer: TapGestureRecognizer()
@@ -114,8 +114,8 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                       ),
                     ),
                     const SizedBox(height: 5),
-                    RichText(
-                      text: TextSpan(
+                    Text.rich(
+                      TextSpan(
                         text: '@ shark.run',
                         style: context.tl,
                         recognizer: TapGestureRecognizer()

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/painter/dashed_border.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -16,6 +17,7 @@ import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 
@@ -96,8 +98,12 @@ class NotificationsPage extends StatelessWidget {
         stream: tweetStream.stream,
         builder: (context, snapshot) {
           if (_tweets.isEmpty) {
-            return const Center(
-              child: Text('Empty'),
+            return Center(
+              child: Lottie.asset(
+                Asset.lEmpty,
+                reverse: false,
+                repeat: true,
+              ),
             );
           }
           return Padding(

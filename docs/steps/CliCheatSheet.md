@@ -137,6 +137,8 @@ adb shell am start -a android.intent.action.VIEW \
 
 xcrun simctl list devices
 
+xcrun simctl delete unavailable
+
 xcrun simctl openurl booted spacemoon:///chat
 
 ```
