@@ -1,0 +1,624 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="788px" height="361px" viewBox="-0.5 -0.5 788 361" content="&lt;mxfile&gt;&lt;diagram id=&quot;IadEvaZoH8IqPH1M0KeY&quot; name=&quot;Page-1&quot;&gt;7VxdU+I6GP41zOy5cKffwqVCdZ0RdQHP0aud2MaS2bbpSYPA/vpNTEopFnAV2DZ0xtHmTfJ+27xPmrZldqPZJQHJuI99GLYMzZ+1zF7LMOyOzX5zwlwQLLstCAFBviDpOWGIfkFJ1CR1gnyYFgZSjEOKkiLRw3EMPVqgAULwtDjsGYdFqQkI4BvC0APhW+p/yKdjQW0bpzn9G0TBOJOsOx3RE4FssLQkHQMfT5dIptsyuwRjKq6iWReG3HeZX8S8izW9C8UIjOl7JtiWmPECwok0rmU4IZt77qMXriCdS6ud/ydcq3MPh5i0zDPWSYKnL7bTMrrsmoeQ/3Wcf9igV6/G9OQZRCici9HfgPdTjGHMQJSwYZLlBSKAkbssT1a7xIQIxzhNgAdFsw/jEMtLHAMPl7Pt4glBkLCeGzjdxjjXeSpDx3WOMYlAuNSZviYj79KtZCY6QhTDk/HSLEOXXc5CmBPIv7lviySmRbzN3y3D9PS2pemlzAc4hBk3FnHBsCiEkUtEf1wbs20Cy1hjqrb0s1GrdwqDlu1YnXLT3e/37nC0GzlbjOITd2RRp+201wRzRxI22VJIi2PKlvuhO1AoVfQmV/aXK1c3/16NXIWyZVcimmwpEda/7bmDs9GtSrcXs0mY/SXMWa9/daNQsljVTZZVqlFQw6BwxunTMaJwKBBBb8rQK6ONacQgQI9bzDGAxKO6xdoheILhOQM2AcGT2O8KI3oxjuFCyAskjPlagKYvYB+DyxBHkJI5GyInME+LKRIqG5ZsT3PgqWe08TLoNCURSLAbLHjneJBdSEhYDg8d542foM+gsGxKM5f8w6wi8wfWONG+aqaVUR4ZRftqGU5G6HHztEVrvty6gwQxTSGRxFWf83bmaJYqbv7fxVXl+m32NTOHAUNPjrLlXgQFJIBymLMmJgSGgKKXIv9P+bfzUf9qBdducet7PQhniC6Ys+vHTCq7zlnzRsZ5hz43DuTzTHiz5ZHrXNctj/uU23rQymHDYj5hKabOUq4krNwQPR+lSQjmNyDatotWpygqCfc2RDFG/I6rTPiUBF8bwgcjgEKF4ndseGhdZbl3nGQVYVIZSnLKUJK+C5TU/sMqfs+I5vSTlbSceocRk7LwsOkUXZw9xM04iGJeTlpx3kKL91Xop02FrkqFPsA4qs7y0lTodS4OFKvtjq00VxNgHVuFjhMYKxS+pkA/VIH+Nyv07HxhU1HWv6LsQx+B0Tw51rNuI/ehOehW7eWzKqlycXWt0tElJfFOVXLlu0pnlpSEVlXJlLtbpU5aKwngqpIrl2fX1+7gUaF0aQDjgQDj6sm3MsBo2CWAMRv4qUc6WgMYVQGMoymE9MD33+YZxN+/He4nettPnNUpfEoWyhvCR7Y/jqxT+JSsXTeEL+HvT6sTvgrXknsJn0cgoFCl5c8+sghGfPP9B92++16nIDrVDaJakG71lJ6RvaO0jOnssoeAp7vAdPZRvmzjZF9IWX7ZRjvQyzaZ8AZH5zrXFUfzo3zNCzf7W4YaKF3r8DVQutbhOzYoTbZ/LapO4aswlK5QDS96MfEh2X91X/bARi8r7nfypQKjKTRVKTT7ME1BgOLgAPcn6cv4KU0qdXt+9qIR/qnUUetjq28pimBKeX6pE8MKF7kVWmZ3cVz+gztl7T9fS1kz/+Dsa99l/tVe0/0N&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs/>
+    <g>
+        <rect x="647" y="200" width="140" height="130" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 138px; height: 1px; padding-top: 207px; margin-left: 649px;">
+                        <div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            Role
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            REQUEST
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            0
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            USER
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            INVITE
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            MODERATOR
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            30
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            ADMIN
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            40
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="649" y="221" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="14px">
+                    Role...
+                </text>
+            </switch>
+        </g>
+        <path d="M 167 55.26 L 196.89 55.36" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 202.14 55.38 L 195.13 58.85 L 196.89 55.36 L 195.15 51.85 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 7 110 L 7 183.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 7 188.88 L 3.5 181.88 L 7 183.63 L 10.5 181.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="7" y="0" width="160" height="110" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 158px; height: 1px; padding-top: 7px; margin-left: 9px;">
+                        <div data-drawio-colors="color: #E45649; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(228, 86, 73); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            User
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            uid
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            displayName
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            nick
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            30
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            email
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            40
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="9" y="21" fill="#E45649" font-family="Helvetica" font-size="14px">
+                    User...
+                </text>
+            </switch>
+        </g>
+        <path d="M 407 55 L 333.37 55" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 328.12 55 L 335.12 51.5 L 333.37 55 L 335.12 58.5 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="407" y="0" width="160" height="110" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 158px; height: 1px; padding-top: 7px; margin-left: 409px;">
+                        <div data-drawio-colors="color: #E45649; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(228, 86, 73); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            Room
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            uid
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            nick
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            displayName
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            30
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            open
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            40
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="409" y="21" fill="#E45649" font-family="Helvetica" font-size="14px">
+                    Room...
+                </text>
+            </switch>
+        </g>
+        <rect x="647" y="0" width="125" height="140" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 123px; height: 1px; padding-top: 7px; margin-left: 649px;">
+                        <div data-drawio-colors="color: #E45649; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(228, 86, 73); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            MediaType
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            TEXT
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            0
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            FILE
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            QR
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            POST
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            30
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                        <span style="color: #e45649;">
+                                            GALLERY
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            40
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="649" y="21" fill="#E45649" font-family="Helvetica" font-size="14px">
+                    MediaType...
+                </text>
+            </switch>
+        </g>
+        <rect x="207" y="190" width="150" height="170" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 148px; height: 1px; padding-top: 197px; margin-left: 209px;">
+                        <div data-drawio-colors="color: #E45649; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(228, 86, 73); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            Tweet
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            uid
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            user
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            room
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            30
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            path
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            40
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            created
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            50
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            media_type
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            60
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="209" y="211" fill="#E45649" font-family="Helvetica" font-size="14px">
+                    Tweet...
+                </text>
+            </switch>
+        </g>
+        <path d="M 207 130 L 207 183.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/>
+        <path d="M 207 188.88 L 203.5 181.88 L 207 183.63 L 210.5 181.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/>
+        <rect x="207" y="0" width="110" height="130" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 108px; height: 1px; padding-top: 7px; margin-left: 209px;">
+                        <div data-drawio-colors="color: #E45649; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(228, 86, 73); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            RoomUser
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            uid
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            user
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            room
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            30
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            role
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            40
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="209" y="21" fill="#E45649" font-family="Helvetica" font-size="14px">
+                    RoomUser...
+                </text>
+            </switch>
+        </g>
+        <rect x="7" y="190" width="150" height="80" fill="none" stroke="none" pointer-events="all"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 148px; height: 1px; padding-top: 197px; margin-left: 9px;">
+                        <div data-drawio-colors="color: #E45649; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
+                            <div style="display: inline-block; font-size: 14px; font-family: Helvetica; color: rgb(228, 86, 73); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
+                                <div style="color: rgb(56, 58, 66); font-family: Hack, &quot;Fira Code&quot;, monospace, Menlo, Monaco, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; line-height: 21px;">
+                                    <div>
+                                        <span style="color: #c18401;">
+                                            Messaging
+                                        </span>
+                                        <span style="color: #383a42;">
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            fcmToken
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            10
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #e45649;">
+                                            timestamp
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            =
+                                        </span>
+                                        <span style="color: #986801;">
+                                            20
+                                        </span>
+                                        <span style="color: #383a42;">
+                                            ;
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="9" y="211" fill="#E45649" font-family="Helvetica" font-size="14px">
+                    Messaging...
+                </text>
+            </switch>
+        </g>
+    </g>
+    <switch>
+        <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/>
+        <a transform="translate(0,-5)" xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems" target="_blank">
+            <text text-anchor="middle" font-size="10px" x="50%" y="100%">
+                Text is not SVG - cannot display
+            </text>
+        </a>
+    </switch>
+</svg>

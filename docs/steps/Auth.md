@@ -4,6 +4,7 @@
 flutter pub add firebase_ui_auth
 flutter pub add firebase_ui_oauth_apple
 flutter pub add firebase_ui_oauth_google
+flutter pub add firebase_ui_auth
 ```
 
 ## [google_sign_in](https://pub.dev/packages/google_sign_in)
@@ -23,3 +24,5 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 ```
+
+## [Firebase Ui Auth](https://pub.dev/packages/firebase_ui_auth)

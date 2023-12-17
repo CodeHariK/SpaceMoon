@@ -71,8 +71,8 @@ class TweetBox extends ConsumerWidget {
             children: [
               if (tweet.mediaType == MediaType.QR)
                 SizedBox(
-                  height: 300,
-                  width: 300,
+                  height: (250, 500).c,
+                  width: (250, 500).c,
                   child: QrBox(
                     codeQrtext: tweet.text,
                   ),
@@ -84,7 +84,7 @@ class TweetBox extends ConsumerWidget {
 
               if (isWebsite(tweet.text))
                 SizedBox(
-                  width: 300,
+                  width: (250, 500).c,
                   child: AnyLinkPreview(
                     link: tweet.text,
                     displayDirection: UIDirection.uiDirectionVertical,
@@ -96,7 +96,7 @@ class TweetBox extends ConsumerWidget {
 
               if (isURL(tweet.text))
                 SizedBox(
-                  width: 300,
+                  width: (250, 500).c,
                   child: Text.rich(
                     TextSpan(
                       text: tweet.text,

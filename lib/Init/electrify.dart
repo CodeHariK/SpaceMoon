@@ -11,6 +11,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Routes/Special/error_page.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -63,7 +64,9 @@ void electrify({
           debugPrint(exception.toString());
           debugPrintStack(stackTrace: stackTrace);
         } else {
-          FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+          if (Device.isMobile) {
+            FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+          }
 
           Zone.current.handleUncaughtError(exception, stackTrace!);
         }
@@ -75,7 +78,9 @@ void electrify({
           debugPrint(error.toString());
           debugPrintStack(stackTrace: stack);
         } else {
-          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          if (Device.isMobile) {
+            FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          }
         }
         return true;
       };
@@ -113,7 +118,9 @@ void electrify({
         debugPrint(error.toString());
         debugPrintStack(stackTrace: stack);
       } else {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        if (Device.isMobile) {
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        }
       }
     },
   );
@@ -159,7 +166,7 @@ class SpaceMoonHome extends HookConsumerWidget {
 
     AppTheme.currentAppTheme = AppTheme(
       dark: brightness == Brightness.dark,
-      designSize: const Size(360, 780),
+      designSize: const Size(430, 932),
       maxSize: const Size(1366, 1024),
       size: MediaQuery.of(context).size,
       appColor: appColor,
@@ -191,6 +198,7 @@ class SpaceMoonHome extends HookConsumerWidget {
           return Directionality(
             textDirection: TextDirection.ltr,
             child: Scaffold(
+              key: ValueKey(globalAppTheme.theme),
               resizeToAvoidBottomInset: false,
               body: Overlay(
                 initialEntries: [

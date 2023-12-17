@@ -27,7 +27,9 @@ Future<void> initFirebase({required bool useEmulator}) async {
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
   );
 
-  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
+  if (Device.isMobile) {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
+  }
 
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),

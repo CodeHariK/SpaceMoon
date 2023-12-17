@@ -41,7 +41,9 @@ class ShimmmerCurve extends Curve {
 }
 
 class AboutPage extends ConsumerStatefulWidget {
-  const AboutPage({super.key});
+  const AboutPage({super.key, this.onboard});
+
+  final Function? onboard;
 
   @override
   ConsumerState<AboutPage> createState() => _AboutPageState();
@@ -58,7 +60,13 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
       ..addStatusListener(
         (status) {
           if (animCon.value == 1) {
-            safeLaunchUrl('https://github.com/codeharik/SpaceMoon');
+            if (widget.onboard != null) {
+              widget.onboard?.call();
+            } else {
+              safeLaunchUrl('https://github.com/codeharik/SpaceMoon');
+            }
+            context.pop();
+            animCon.reset();
           }
         },
       );
@@ -75,6 +83,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: widget.onboard == null
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                widget.onboard?.call();
+              },
+              child: const Icon(Icons.chevron_right_rounded),
+            ),
       body: GestureDetector(
         onLongPressEnd: (details) {
           if (DateTime.now().millisecondsSinceEpoch - pressStart!.millisecondsSinceEpoch < duration.inMilliseconds) {
@@ -97,27 +113,29 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    const RainbowLogo(assetPath: Asset.sharkrun),
+                    RainbowLogo(assetPath: widget.onboard != null ? Asset.spaceMoon : Asset.sharkrun),
 
                     //
-                    const SizedBox(height: 50),
-                    Text('Built by ', style: context.tm),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 20),
+                    Text('Spacemoon', style: context.tl),
+                    SizedBox(height: (5, 10).c),
+                    Text(' Built by', style: context.ts),
+                    SizedBox(height: (5, 10).c),
                     Text.rich(
                       TextSpan(
                         text: 'Hari Krishnan',
-                        style: context.tl,
+                        style: context.tm,
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             safeLaunchUrl('https://github.com/codeharik');
                           },
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: (5, 10).c),
                     Text.rich(
                       TextSpan(
                         text: '@ shark.run',
-                        style: context.tl,
+                        style: context.tm,
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             safeLaunchUrl('https://shark.run');
@@ -125,26 +143,23 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: (5, 10).c),
                     Text(
                       'Flutter Firebase App Developer',
-                      style: context.tm,
+                      style: context.ts,
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: (5, 10).c),
 
                     const SocialButtons(),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: (10, 20).c),
 
-                    SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: CustomPaint(
-                        painter: CustomPathPainter(),
-                        child: Sunflower(
-                          animCon: animCon,
-                        ),
+                    CustomPaint(
+                      painter: SolarPathPainter(Size((180, 220).c, (180, 220).c)),
+                      child: Sunflower(
+                        animCon: animCon,
+                        onboard: widget.onboard != null,
                       ),
                     ),
                   ],
@@ -273,7 +288,7 @@ class RainbowLogo extends StatelessWidget {
         onComplete: (controller) {
           controller.repeat(reverse: true);
         },
-        child: SizedBox(height: 300, child: Image.asset(assetPath)),
+        child: SizedBox(height: (270, 400).c, child: Image.asset(assetPath)),
       ),
     );
   }
@@ -312,7 +327,7 @@ class DottedBackgroundPainter extends CustomPainter {
   }
 }
 
-const Color primaryColor = Colors.orange;
+Color primaryColor = AppTheme.op;
 const TargetPlatform platform = TargetPlatform.android;
 
 class SunflowerPainter extends CustomPainter {
@@ -366,9 +381,11 @@ class SunflowerPainter extends CustomPainter {
 class Sunflower extends StatefulWidget {
   const Sunflower({
     super.key,
+    required this.onboard,
     required this.animCon,
   });
 
+  final bool onboard;
   final AnimationController animCon;
 
   @override
@@ -394,18 +411,21 @@ class _SunflowerState extends State<Sunflower> {
             color: AppTheme.seedColor.withAlpha(20),
             shape: BoxShape.circle,
           ),
-          width: 200,
-          height: 200,
+          width: (180, 220).c,
+          height: (180, 220).c,
           child: CustomPaint(
             painter: SunflowerPainter(
               seeds: (seedCount * animCon.value).toInt(),
               turns: turns,
-              scaleFactor: 3 + 1.6 * animCon.value,
+              scaleFactor: 2.8 + 1.4 * animCon.value,
             ),
             child: () {
               switch (animCon.value) {
                 case 0:
-                  return Image.asset(Asset.spaceMoon);
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(widget.onboard ? Asset.sharkrun : Asset.spaceMoon),
+                  );
                 case 1:
                   return IconButton(
                     onPressed: () {
@@ -435,7 +455,7 @@ class _SunflowerState extends State<Sunflower> {
   }
 }
 
-class CustomPathPainter extends CustomPainter {
+class SolarPathPainter extends CustomPainter {
   List<Offset> points = [];
 
   Offset movingPoint = const Offset(0, 0);
@@ -443,7 +463,9 @@ class CustomPathPainter extends CustomPainter {
 
   late Path path;
 
-  CustomPathPainter() {
+  final Size size;
+
+  SolarPathPainter(this.size) {
     createPath();
   }
 
@@ -452,7 +474,7 @@ class CustomPathPainter extends CustomPainter {
       ..addArc(
         Rect.fromPoints(
           const Offset(0, 0),
-          const Offset(200, 200),
+          Offset(size.width, size.height),
         ),
         0,
         2 * math.pi,

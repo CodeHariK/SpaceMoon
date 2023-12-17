@@ -8,8 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Routes/Home/account.dart';
-import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 
@@ -32,20 +30,18 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     GlobalAppTheme globalAppTheme = ref.watch(globalThemeProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        leading: BackButton(
-          onPressed: () {
-            context.pop();
-          },
-        ),
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Settings', style: context.tl),
+        // leading: BackButton(
+        //     style: const ButtonStyle(iconSize: MaterialStatePropertyAll(24)), onPressed: () => context.pop()),
       ),
-      body: SafeArea(
-        child: Column(
+      child: SafeArea(
+        child: ListView(
           children: [
+            const SizedBox(height: 20),
             CupertinoFormSection.insetGrouped(
-              header: const Text('Theme'),
+              // header: Text('', style: context.tl),
               children: [
                 PopupMenuButton<ThemeType>(
                   itemBuilder: (context) {
@@ -101,60 +97,62 @@ class SettingsPage extends ConsumerWidget {
                           .toList(),
                     ),
                   ),
-                )
+                ),
               ],
             ),
-            CupertinoListTile.notched(
-              onTap: () {
-                AccountRoute().push(context);
-              },
-              leading: const Icon(Icons.chevron_right_rounded),
-              title: Text('Account Management', style: context.tm),
-            ),
-            const Divider(),
-            CupertinoListTile.notched(
-              onTap: () {
-                showLicensePage(context: context);
-              },
-              leading: const Icon(Icons.chevron_right_rounded),
-              title: Text('License', style: context.tm),
-            ),
-            CupertinoListTile.notched(
-              onTap: () {
-                AboutRoute().push(context);
-              },
-              leading: const Icon(Icons.chevron_right_rounded),
-              title: Text('Developer Info', style: context.tm),
+            CupertinoFormSection.insetGrouped(
+              header: Text('About', style: context.bl),
+              children: [
+                CupertinoListTile.notched(
+                  onTap: () {
+                    AboutRoute().push(context);
+                  },
+                  leading: const Icon(Icons.chevron_right_rounded),
+                  title: Text('Developer Info', style: context.tm),
+                ),
+              ],
             ),
             const Spacer(),
-            CupertinoListTile.notched(
-              onTap: () {
-                safeLaunchUrl('https://spacemoon.shark.run/privacy/policy.html');
-              },
-              title: Text('Privacy Policy', style: context.tm),
-              leading: const Icon(Icons.chevron_right_rounded),
+            CupertinoFormSection.insetGrouped(
+              header: Text('Legals', style: context.bl),
+              children: [
+                CupertinoListTile.notched(
+                  onTap: () {
+                    showLicensePage(context: context);
+                  },
+                  leading: const Icon(Icons.chevron_right_rounded),
+                  title: Text('License', style: context.tm),
+                ),
+                CupertinoListTile.notched(
+                  onTap: () {
+                    safeLaunchUrl('https://spacemoon.shark.run/privacy/policy.html');
+                  },
+                  title: Text('Privacy Policy', style: context.tm),
+                  leading: const Icon(Icons.chevron_right_rounded),
+                ),
+                CupertinoListTile.notched(
+                  onTap: () {
+                    context.cPush(const AttibutionPage());
+                  },
+                  leading: const Icon(Icons.chevron_right_rounded),
+                  title: Text('Attribution', style: context.tm),
+                ),
+                if (kDebugMode)
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      ref.read(onboardedProvider.notifier).set(false);
+                    },
+                    title: Text('Onboard false', style: context.tm),
+                  ),
+                if (kDebugMode)
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      FirebaseMessaging.instance.deleteToken();
+                    },
+                    title: Text('Firebase Messaging Token delete', style: context.tm),
+                  ),
+              ],
             ),
-            CupertinoListTile.notched(
-              onTap: () {
-                context.cPush(const AttibutionPage());
-              },
-              leading: const Icon(Icons.chevron_right_rounded),
-              title: Text('Attribution', style: context.tm),
-            ),
-            if (kDebugMode)
-              CupertinoListTile.notched(
-                onTap: () {
-                  ref.read(onboardedProvider.notifier).set(false);
-                },
-                title: Text('Onboard false', style: context.tm),
-              ),
-            if (kDebugMode)
-              CupertinoListTile.notched(
-                onTap: () {
-                  FirebaseMessaging.instance.deleteToken();
-                },
-                title: Text('Firebase Messaging Token delete', style: context.tm),
-              ),
           ],
         ),
       ),

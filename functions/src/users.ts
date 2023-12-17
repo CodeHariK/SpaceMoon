@@ -49,7 +49,9 @@ export const callUserUpdate = onCall({
         if (!isAlphanumeric(user.nick) || user.nick.length < 7) {
             throw new HttpsError('aborted', 'Nick name error');
         }
-        let nickCount = await admin.firestore().collection(constToJSON(Const.users)).where(constToJSON(Const.nick), '==', user.nick).count().get().then((v) => v.data().count);
+        let nickCount = await admin.firestore().collection(constToJSON(Const.users))
+            .where(constToJSON(Const.nick), '==', user.nick)
+            .count().get().then((v) => v.data().count);
         if (nickCount != 0) {
             throw new HttpsError('aborted', 'Nick name already present');
         }
@@ -72,23 +74,30 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
     const batch = db.batch();
     roomUserQuery.forEach((doc) => {
         let ru = RoomUser.fromJSON(doc.data());
+
+        //
         admin.storage().bucket().deleteFiles({
             prefix: `tweet/${ru.room}/${ru.user}`
         });
+
+        //
         batch.delete(doc.ref);
     });
     await batch.commit();
 
+    //
     admin.storage().bucket().deleteFiles({
         prefix: `profile/users/${user.uid}`
     });
 
+    //
     admin.firestore().collection(constToJSON(Const.users))
         .doc(user.uid).delete()
         .catch((error) => {
             console.error('Error deleteAuthUser'/*, error*/);
         });
 
+    //
     deleteFCMToken(user.uid);
 
     return { message: `Deleted all ${user.uid} documents.` };

@@ -39,7 +39,8 @@
     ],
     "frameworksBackend": {
       "region": "asia-east1"
-    }
+    },
+    "cleanUrls": true
   },
   "storage": {
     "rules": "storage.rules"

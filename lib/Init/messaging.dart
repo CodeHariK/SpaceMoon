@@ -52,12 +52,12 @@ Future<void> firebaseMessagingSetup() async {
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) => messageHandler(
           message,
-          true,
+          false,
           HandlerType.onMessageOpened,
         ));
     FirebaseMessaging.onMessage.listen((message) => messageHandler(
           message,
-          true,
+          false,
           HandlerType.onMessage,
         ));
     FirebaseMessaging.onBackgroundMessage((message) => messageHandler(

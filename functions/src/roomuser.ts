@@ -161,7 +161,7 @@ export const upgradeAccessToRoom = onCall({
         // console.log((adminrole == Role.INVITE));
         // console.log((currole == Role.INVITE && adminId !== curUser?.user));
         // console.log((role > defaultRole && adminrole == Role.UNRECOGNIZED && currole !== Role.INVITE));
-        // console.log((room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED));
+        // console.log((room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED && currole != Role.INVITE));
         // console.log((adminrole != Role.UNRECOGNIZED && role > adminrole));
 
         if ((role == Role.UNRECOGNIZED)
@@ -169,7 +169,7 @@ export const upgradeAccessToRoom = onCall({
             || (adminrole == Role.INVITE)
             || (currole == Role.INVITE && adminId !== curUser?.user)
             || (role > defaultRole && adminrole == Role.UNRECOGNIZED && currole !== Role.INVITE)
-            || (room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED)
+            || (room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED && currole != Role.INVITE)
             || (adminrole != Role.UNRECOGNIZED && role > adminrole)) {
             console.log('Error upgradeAccessToRoom')
             throw new HttpsError('permission-denied', 'Error upgradeAccessToRoom');

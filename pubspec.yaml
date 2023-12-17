@@ -121,7 +121,6 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/onboard/
     - assets/lottie/
 
 flutter_launcher_icons:

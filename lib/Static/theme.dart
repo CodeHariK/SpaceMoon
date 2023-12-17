@@ -5,6 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 
+extension AppThemeTextstyle on TextStyle {
+  // TextStyle get mw => copyWith(fontFamily: GoogleFonts.merriweather().fontFamily);
+  // TextStyle get lato => copyWith(fontFamily: GoogleFonts.lato().fontFamily);
+}
+
 extension AppThemeNumber on num {
   double get a => (this * AppTheme.a).toDouble();
   double get s => (this * AppTheme.s).toDouble();
@@ -39,10 +44,10 @@ class AppTheme {
   );
 
   static bool get darkness => currentAppTheme.dark;
-  static Color get background => AppTheme.darkness ? const Color.fromARGB(255, 60, 60, 60) : Colors.white;
+  static Color get background => AppTheme.darkness ? const Color.fromARGB(255, 20, 20, 20) : Colors.white;
   static Color get op => AppTheme.darkness ? Colors.white : const Color.fromARGB(255, 55, 55, 55);
   static Color get card =>
-      AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 248, 248, 248);
+      AppTheme.darkness ? const Color.fromARGB(255, 35, 35, 35) : const Color.fromARGB(255, 248, 248, 248);
   static Color get seedCard => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
 
   static double get w => currentAppTheme.size.width;
@@ -71,9 +76,6 @@ class AppTheme {
     required this.appColor,
   });
 
-  // static TextStyle get poppins => GoogleFonts.poppins();
-  static TextStyle get poppins => const TextStyle();
-
   static Color get seedColor => currentAppTheme.appColor;
 
   FilledButtonThemeData get filledButtonTheme => FilledButtonThemeData(
@@ -96,7 +98,7 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           padding: EdgeInsets.all(12.c),
-          textStyle: poppins.copyWith(fontSize: (14, 18).c),
+          textStyle: TextStyle(fontSize: (14, 18).c),
           // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
       );
@@ -106,6 +108,13 @@ class AppTheme {
           textStyle: AppTheme.tx.bodySmall.under,
           padding: EdgeInsets.zero,
         ),
+      );
+
+  BottomNavigationBarThemeData get bottomNavigationBarTheme => BottomNavigationBarThemeData(
+        selectedLabelStyle: AppTheme.tx.labelMedium,
+        unselectedLabelStyle: AppTheme.tx.labelMedium,
+        selectedIconTheme: IconThemeData(size: (24, 28).c),
+        unselectedIconTheme: IconThemeData(size: (24, 28).c),
       );
 
   static InputDecorationTheme get inputDecoration => InputDecorationTheme(
@@ -151,9 +160,11 @@ class AppTheme {
         elevation: 0,
       );
 
-  ListTileThemeData get listTileTheme => const ListTileThemeData(
-      // tileColor: AppTheme.card,
-      // shape: 1.bs.c(AppTheme.seedCard).border,
+  ListTileThemeData get listTileTheme => ListTileThemeData(
+        // tileColor: AppTheme.card,
+        // shape: 1.bs.c(AppTheme.seedCard).border,
+        titleTextStyle: AppTheme.tx.bodyLarge,
+        subtitleTextStyle: AppTheme.tx.bodySmall,
       );
 
   ColorScheme get colorScheme => ColorScheme.fromSeed(
@@ -200,23 +211,39 @@ class AppTheme {
       );
 
   TextTheme get textTheme => TextTheme(
-        displayLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 42.c),
-        displayMedium: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 36.c),
-        displaySmall: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: 32.c),
-        headlineLarge: GoogleFonts.merriweather(letterSpacing: 4.c, fontSize: (28, 36).c),
-        headlineMedium: GoogleFonts.merriweather(letterSpacing: 3.c, fontSize: 24.c),
-        headlineSmall: GoogleFonts.merriweather(fontSize: 20.c),
-        titleLarge: GoogleFonts.merriweather(letterSpacing: 2.c, fontSize: (18, 20).c),
-        titleMedium: GoogleFonts.merriweather(
-            letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield label
-        titleSmall: GoogleFonts.merriweather(
-            letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (13, 16).c),
-        bodyLarge: poppins.copyWith(color: dark ? Colors.white : Colors.black, fontSize: (15, 18).c), //Textfield font
-        bodyMedium: poppins,
-        bodySmall: poppins,
-        labelLarge: TextStyle(letterSpacing: .5.c, fontWeight: FontWeight.w400),
-        labelMedium: const TextStyle(),
-        labelSmall: const TextStyle(),
+        displayLarge: TextStyle(letterSpacing: 4.c, fontSize: (40, 44).c),
+        displayMedium: TextStyle(letterSpacing: 4.c, fontSize: (36, 40).c),
+        displaySmall: TextStyle(letterSpacing: 4.c, fontSize: (32, 36).c),
+        headlineLarge: TextStyle(letterSpacing: 4.c, fontSize: (28, 32).c),
+        headlineMedium: TextStyle(letterSpacing: 3.c, fontSize: (24, 28).c),
+        headlineSmall: TextStyle(fontSize: (20, 26).c),
+
+        //Appbar
+        titleLarge: TextStyle(letterSpacing: 2.c, fontSize: (18, 22).c),
+
+        //CupertinoListTile, ListTile Title, Textfield label
+        titleMedium: TextStyle(letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (16, 20).c),
+
+        titleSmall: TextStyle(
+            letterSpacing: 1.c,
+            color: Colors.red,
+            // color: dark ? Colors.white : Colors.black,
+            fontSize: (17, 20).c),
+
+        //CupertinoFormSection header, ListTile Title,
+        bodyLarge: TextStyle(color: dark ? Colors.white : Colors.black, fontSize: (15, 20).c), //Textfield font
+
+        bodyMedium: TextStyle(fontSize: (14, 19).c),
+
+        //ListTile subtitle
+        bodySmall: TextStyle(fontSize: (12, 16).c),
+
+        labelLarge: TextStyle(letterSpacing: .5.c, fontSize: (14, 20).c, fontWeight: FontWeight.w400),
+
+        //BottomNavBar
+        labelMedium: TextStyle(fontSize: (13, 18).c),
+
+        labelSmall: TextStyle(fontSize: (10, 14).c),
       );
 
   ThemeData get theme => ThemeData(
@@ -240,10 +267,17 @@ class AppTheme {
         listTileTheme: listTileTheme,
 
         //
+        // iconTheme: IconThemeData(size: 35),
+        // iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(iconSize: 35)),
+        // floatingActionButtonTheme: FloatingActionButtonThemeData(),
+
+        //
         outlinedButtonTheme: outlinedButtonTheme,
         filledButtonTheme: filledButtonTheme,
         elevatedButtonTheme: elevatedButtonTheme,
         textButtonTheme: textButton,
+
+        bottomNavigationBarTheme: bottomNavigationBarTheme,
 
         //
         dialogTheme: dialogTheme,

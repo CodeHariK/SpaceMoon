@@ -99,8 +99,8 @@ class ChatInfoPage extends HookConsumerWidget {
               SliverToBoxAdapter(
                 child: Align(
                   child: Container(
-                    height: 240,
-                    width: 240,
+                    height: (240, 300).c,
+                    width: (240, 300).c,
                     padding: const EdgeInsets.all(8),
                     child: InkWell(
                       splashFactory: InkSplash.splashFactory,
@@ -120,9 +120,9 @@ class ChatInfoPage extends HookConsumerWidget {
                               );
                             },
                       child: room.photoURL.isEmpty == true
-                          ? const Icon(
+                          ? Icon(
                               CupertinoIcons.person_crop_circle_badge_plus,
-                              size: 120,
+                              size: (120, 160).c,
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
@@ -163,6 +163,8 @@ class ChatInfoPage extends HookConsumerWidget {
                     key: ValueKey(room.nick),
                     initialValue: room.nick,
                     maxLines: 1,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     enabled: meInRoom?.isAdmin == true,
                     style: context.hs,
                     asyncValidator: (value) async {
@@ -349,7 +351,7 @@ class ChatInfoPage extends HookConsumerWidget {
                   const SizedBox(height: 10),
                 ],
               ),
-              if (meInRoom != null && meInRoom.isAdminOrMod)
+              if (meInRoom != null)
                 SliverList.list(
                   children: [
                     const Divider(),

@@ -4,6 +4,7 @@ import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
 
 class AppFlowyBox extends ConsumerWidget {
@@ -33,8 +34,8 @@ class AppFlowyBox extends ConsumerWidget {
       },
       child: IgnorePointer(
         child: SizedBox(
-          width: 300,
-          height: 300,
+          width: (250, 500).c,
+          height: (250, 500).c,
           child: Hero(
             tag: '${tweet.hashCode} Appflowy',
             child: AppFlowy(

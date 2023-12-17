@@ -12,6 +12,7 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Init/firebase.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
@@ -91,7 +92,7 @@ class GalleryImage extends StatelessWidget {
               );
             },
       child: Container(
-        height: 320,
+        height: (280, 500).c,
         margin: const EdgeInsets.all(4),
         decoration: imageMetadata.localUrl.isEmpty
             ? null
@@ -228,8 +229,8 @@ class GalleryBox extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         SizedBox(
-          height: 300,
-          width: 300,
+          height: (250, 500).c,
+          width: (250, 500).c,
           child: Column(
             children: [
               Expanded(
@@ -316,6 +317,7 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
 
         return Scaffold(
           appBar: AppBar(
+            title: Text(tweet.path),
             surfaceTintColor: Colors.white,
             actions: [
               if (startSelection)

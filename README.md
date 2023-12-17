@@ -30,6 +30,59 @@ Generating Proto files
   npx buf generate lib
 ```
 
+## Features
+
+- [x] [Firebase Auth : Email, Google, Apple](./docs/steps/Auth.md)
+- [x] [Protocol Buffers](https://protobuf.dev/)
+- [x] [Deep linking](./docs/steps/DeepLinking.md)
+- [x] [Firebase Messaging](./docs/steps/FirebaseMessaging.md)
+- [x] [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)
+
+### Packages
+
+- [x] [Riverpod](https://pub.dev/packages/flutter_riverpod)
+- [x] [Gorouter](https://pub.dev/packages/go_router)
+
+### Firebase
+
+- [x] [Firebase Cloud Functions](https://pub.dev/packages/cloud_functions)
+- [x] [Firebase App Check](https://pub.dev/packages/firebase_app_check)
+- [x] [Firebase Cloud Firestore](https://pub.dev/packages/cloud_firestore)
+- [x] [Firebase Auth](https://pub.dev/packages/firebase_auth)
+- [x] [Firebase Messaging](https://pub.dev/packages/firebase_messaging)
+- [x] [Firebase Storage](https://pub.dev/packages/firebase_storage)
+- [x] [Firebase Crashlytics](https://pub.dev/packages/firebase_crashlytics)
+
+### Helper
+
+- [x] [App Flowy](https://pub.dev/packages/appflowy_editor)
+- [x] [Flutter Animate](https://pub.dev/packages/flutter_animate)
+- [x] [Video Player](https://pub.dev/packages/video_player)
+- [x] [Mobile Scanner](https://pub.dev/packages/mobile_scanner)
+
+## [Schema](proto/lib/data.proto)
+
+![Spacemoon](./spacemoon.drawio.svg)
+
+## Cloud Functions
+
+### Auth User
+
+- [x] Create User : [onUserCreate](functions/src/users.ts#10)
+- [x] Update User : [callUserUpdate](functions/src/users.ts#L35)
+- [x] Delete User : [deleteAuthUser](functions/src/users.ts#L67)
+
+### Messaging
+
+- [x] Tweet to Topic : [tweetToTopic](functions/src/messaging.ts#L108)
+- [x] Save FCM Token : [callFCMtokenUpdate](functions/src/messaging.ts#L183)
+- [x] Subscribe to Topic : [callSubscribeFromTopic](functions/src/messaging.ts#L54)
+- [x] Unsubscribe to Topic : [callUnsubscribeFromTopic](functions/src/messaging.ts#L42)
+- [x] Toggle Topic Subsription : [toggleTopicSubsription](functions/src/messaging.ts#L66)
+- [x] Update FCM Token : [callFCMtokenUpdate](functions/src/messaging.ts#L183)
+- [x] Delete FCM Token : [deleteFCMToken](functions/src/messaging.ts#L177 )
+- [x] Schedule Prune Tokens : [pruneTokens](functions/src/messaging.ts#L211)
+
 ## Getting Started
 
 ### Step 1 : [Creating Project and Configuring Firebase](./docs/steps/Create.md)

@@ -183,10 +183,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           },
           title: Text(
             room.displayName.replaceAll(user?.displayName ?? '***', '').trim(),
-            style: context.tm,
             maxLines: 1,
           ),
-          subtitle: Text(room.nick, style: context.ts, maxLines: 1),
+          subtitle: Text(room.nick, maxLines: 1),
           leading: CircleAvatar(
             child: (!isURL(room.photoURL))
                 ? null
