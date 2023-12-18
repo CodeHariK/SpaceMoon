@@ -1,10 +1,11 @@
-import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import { Const, Role, Tweet, constToJSON } from "./Gen/data";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomUserById } from "./roomuser";
 import { updateRoomTime } from "./room";
 import { tweetToTopic } from "./messaging";
+import { generateRandomString } from "./name_gen";
 
 export const sendTweet = onCall({
     enforceAppCheck: true,
@@ -65,7 +66,7 @@ export const updateTweet = onCall({
 
     let fetchTweet = await getTweetById(tweet.uid!, tweet.room);
 
-    if (fetchTweet && userId === fetchTweet.user && fetchTweet?.gallery.length != tweet?.gallery.length && tweet?.gallery.length == 0) {
+    if (fetchTweet && userId === fetchTweet.user && fetchTweet?.gallery.length != tweet?.gallery.length && tweet?.gallery.length === 0) {
         await admin.firestore()
             .collection(`${constToJSON(Const.rooms)}/${tweet.room}/${constToJSON(Const.tweets)}`)
             .doc(tweet.uid!).delete();
@@ -119,7 +120,7 @@ export const deleteTweet = onCall({
         throw new HttpsError('invalid-argument', 'Not part of room')
     }
 
-    if (tweet.user == userId || !tweetUser || u.role! > tweetUser!.role!) {
+    if (tweet.user === userId || !tweetUser || u.role! > tweetUser!.role!) {
         await admin.firestore().doc(tweet.path!).delete();
     } else {
         throw new HttpsError('invalid-argument', 'Not enough privilege')

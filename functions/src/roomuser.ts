@@ -9,7 +9,7 @@ export const getRoomUserById = async (userId: string, roomId: string) => {
     return await admin.firestore().collection(constToJSON(Const.roomusers))
         .doc(`${userId}_${roomId}`).get().then((roomUser) => {
             let data = roomUser.data()
-            return data == undefined ? undefined : RoomUser.fromJSON(data);
+            return data === undefined ? undefined : RoomUser.fromJSON(data);
         }).catch((error) => {
             console.log(error)
             return undefined;
@@ -53,7 +53,7 @@ export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (even
     const roomUsersQuery = (await admin.firestore().collection('roomusers')
         .where('room', '==', roomId).count().get()).data().count;
 
-    if (roomUsersQuery == 0) {
+    if (roomUsersQuery === 0) {
         await admin.firestore().doc(`rooms/${roomId}`).delete();
         return `Room ${roomId} deleted because it has no more room users.`;
     }
@@ -81,7 +81,7 @@ export const deleteRoomUser = onCall({
     if (
         (adminId === roomUser.user) ||
         (adminUser
-            && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)
+            && (adminUser.role === Role.ADMIN || adminUser.role === Role.MODERATOR)
             && adminUser.role > curUser!.role!)
     ) {
         await admin.firestore().collection(constToJSON(Const.roomusers)).doc(roomUser.uid!).delete();
@@ -103,7 +103,7 @@ export const upgradeAccessToRoom = onCall({
     }
 
     const curUser = await getRoomUserById(roomUser.user, roomUser.room);
-    if (curUser && adminId == curUser.user && (curUser.role !== Role.INVITE)) {
+    if (curUser && adminId === curUser.user && (curUser.role !== Role.INVITE)) {
         //Self Upgrade
         //ADMIN == USER
         //DENY
@@ -111,7 +111,7 @@ export const upgradeAccessToRoom = onCall({
         throw new HttpsError('permission-denied', 'Self upgrade denied');
     }
 
-    const adminUser = adminId == curUser?.user ? null : await getRoomUserById(adminId, roomUser.room);
+    const adminUser = adminId === curUser?.user ? null : await getRoomUserById(adminId, roomUser.room);
 
     const room = await getRoomById(roomUser.room);
 
@@ -122,8 +122,9 @@ export const upgradeAccessToRoom = onCall({
     if (room) {
         const currole = curUser?.role ?? Role.UNRECOGNIZED
         const adminrole = adminUser?.role ?? Role.UNRECOGNIZED
-        const defaultRole = (room.open == Visible.OPEN ? Role.USER : Role.REQUEST)
-        const upgradedRole = ((currole ?? -1) < 0) ? Role.UNRECOGNIZED : (currole == Role.REQUEST ? Role.USER : (currole == Role.USER ? Role.MODERATOR : Role.ADMIN))
+        const defaultRole = (room.open === Visible.OPEN ? Role.USER : Role.REQUEST)
+        const upgradedRole = ((currole ?? -1) < 0) ? Role.UNRECOGNIZED
+            : (currole === Role.REQUEST ? Role.USER : (currole === Role.USER ? Role.MODERATOR : Role.ADMIN))
 
         let role = Role.UNRECOGNIZED
 
@@ -134,7 +135,7 @@ export const upgradeAccessToRoom = onCall({
             role = defaultRole
         }
 
-        if (currole == Role.INVITE && adminId == curUser?.user) {
+        if (currole === Role.INVITE && adminId === curUser?.user) {
             console.log('Accept Invite')
             role = Role.USER
         }
@@ -147,7 +148,7 @@ export const upgradeAccessToRoom = onCall({
             role = Role.INVITE
         }
 
-        if (adminUser && curUser && (adminUser.role == Role.ADMIN || adminUser.role == Role.MODERATOR)) {
+        if (adminUser && curUser && (adminUser.role === Role.ADMIN || adminUser.role === Role.MODERATOR)) {
             //Upgrade
             //ADMIN != USER
             //UPGRADE
@@ -156,21 +157,21 @@ export const upgradeAccessToRoom = onCall({
         }
 
         // console.log(`role : ${role}  currole : ${currole}  adminrole : ${adminrole}  defaultRole : ${defaultRole}  upgradedRole : ${upgradedRole}`)
-        // console.log(role == Role.UNRECOGNIZED);
-        // console.log((role == currole));
-        // console.log((adminrole == Role.INVITE));
-        // console.log((currole == Role.INVITE && adminId !== curUser?.user));
-        // console.log((role > defaultRole && adminrole == Role.UNRECOGNIZED && currole !== Role.INVITE));
-        // console.log((room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED && currole != Role.INVITE));
-        // console.log((adminrole != Role.UNRECOGNIZED && role > adminrole));
+        // console.log(role === Role.UNRECOGNIZED);
+        // console.log((role === currole));
+        // console.log((adminrole === Role.INVITE));
+        // console.log((currole === Role.INVITE && adminId !== curUser?.user));
+        // console.log((role > defaultRole && adminrole === Role.UNRECOGNIZED && currole !== Role.INVITE));
+        // console.log((room.open === Visible.CLOSE && adminrole === Role.UNRECOGNIZED && currole !== Role.INVITE));
+        // console.log((adminrole !== Role.UNRECOGNIZED && role > adminrole));
 
-        if ((role == Role.UNRECOGNIZED)
-            || (role == currole)
-            || (adminrole == Role.INVITE)
-            || (currole == Role.INVITE && adminId !== curUser?.user)
-            || (role > defaultRole && adminrole == Role.UNRECOGNIZED && currole !== Role.INVITE)
-            || (room.open == Visible.CLOSE && adminrole == Role.UNRECOGNIZED && currole != Role.INVITE)
-            || (adminrole != Role.UNRECOGNIZED && role > adminrole)) {
+        if ((role === Role.UNRECOGNIZED)
+            || (role === currole)
+            || (adminrole === Role.INVITE)
+            || (currole === Role.INVITE && adminId !== curUser?.user)
+            || (role > defaultRole && adminrole === Role.UNRECOGNIZED && currole !== Role.INVITE)
+            || (room.open === Visible.CLOSE && adminrole === Role.UNRECOGNIZED && currole !== Role.INVITE)
+            || (adminrole !== Role.UNRECOGNIZED && role > adminrole)) {
             console.log('Error upgradeAccessToRoom')
             throw new HttpsError('permission-denied', 'Error upgradeAccessToRoom');
         }

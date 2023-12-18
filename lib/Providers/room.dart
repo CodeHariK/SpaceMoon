@@ -52,6 +52,10 @@ Future<List<Room?>> searchRoomByNick(SearchRoomByNickRef ref) async {
 
   if (nick == null || nick == '') return [];
 
+  return getRoomByNick(nick);
+}
+
+Future<List<Room?>> getRoomByNick(String nick) async {
   final rooms = await FirebaseFirestore.instance
       .collection(Const.rooms.name)
       .where(Const.nick.name, isEqualTo: nick)
@@ -121,7 +125,15 @@ class CurrentRoom extends _$CurrentRoom {
           .get()
           .then((value) {
         state = AsyncValue.data(fromDocSnap(Room(), value));
-      }).onError((error, stackTrace) => lava(error));
+      }).onError((error, stackTrace) async {
+        final nickRooms = await getRoomByNick(id);
+
+        if (nickRooms.firstOrNull != null) {
+          state = AsyncValue.data(nickRooms.first);
+        } else {
+          lava(error);
+        }
+      });
     }
   }
 

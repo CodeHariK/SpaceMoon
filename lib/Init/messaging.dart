@@ -83,11 +83,19 @@ Future<void> messageHandler(RemoteMessage message, bool background, HandlerType 
   }
 
   try {
-    final tweet = Tweet(
-      uid: message.data['uid'],
-      room: message.data['room'],
-      user: message.data['user'],
-    );
+    final tweet =
+
+        // Tweet(
+        //   uid: message.data['uid'],
+        //   room: message.data['room'],
+        //   user: message.data['user'],
+        // );
+
+        Tweet()..mergeFromProto3Json(message.data);
+
+    if (FirebaseAuth.instance.currentUser?.uid == tweet.user) {
+      return;
+    }
 
     NotificationsPage.tweetStream.add(tweet);
 
@@ -100,7 +108,7 @@ Future<void> messageHandler(RemoteMessage message, bool background, HandlerType 
       if (type == HandlerType.onMessage) {
         AnimatedSnackbar(
           title: message.notification?.title ?? '',
-          content: message.notification?.body ?? '',
+          content: tweet.mediaType == MediaType.TEXT ? (message.notification?.body ?? '') : '...',
         ).show(
           AppRouter.cupertinoNavigatorKey.currentContext!,
           alignment: const Alignment(0.0, -.8),

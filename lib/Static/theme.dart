@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 
@@ -222,21 +221,17 @@ class AppTheme {
         titleLarge: TextStyle(letterSpacing: 2.c, fontSize: (18, 22).c),
 
         //CupertinoListTile, ListTile Title, Textfield label
-        titleMedium: TextStyle(letterSpacing: 1.c, color: dark ? Colors.white : Colors.black, fontSize: (16, 20).c),
+        titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: (16, 20).c),
 
-        titleSmall: TextStyle(
-            letterSpacing: 1.c,
-            color: Colors.red,
-            // color: dark ? Colors.white : Colors.black,
-            fontSize: (17, 20).c),
+        titleSmall: TextStyle(letterSpacing: 1.c, color: op, fontSize: (17, 20).c),
 
         //CupertinoFormSection header, ListTile Title,
-        bodyLarge: TextStyle(color: dark ? Colors.white : Colors.black, fontSize: (15, 20).c), //Textfield font
+        bodyLarge: TextStyle(color: op, fontSize: (15, 21).c), //Textfield font
 
         bodyMedium: TextStyle(fontSize: (14, 19).c),
 
         //ListTile subtitle
-        bodySmall: TextStyle(fontSize: (12, 16).c),
+        bodySmall: TextStyle(color: op, fontSize: (13, 18).c),
 
         labelLarge: TextStyle(letterSpacing: .5.c, fontSize: (14, 20).c, fontWeight: FontWeight.w400),
 

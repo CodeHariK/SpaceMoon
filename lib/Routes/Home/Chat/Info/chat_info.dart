@@ -209,7 +209,7 @@ class ChatInfoPage extends HookConsumerWidget {
                     key: ValueKey(room.description),
                     initialValue: room.description,
                     enabled: meInRoom?.isAdmin == true,
-                    style: context.ts,
+                    style: context.bl,
                     maxLines: null,
                     asyncValidator: (value) async {
                       return value.checkMin(8);
@@ -228,6 +228,7 @@ class ChatInfoPage extends HookConsumerWidget {
                       hintText: 'Description',
                     ),
                   ),
+                  const Divider(),
                   IgnorePointer(
                     ignoring: (meInRoom?.isAdmin != true),
                     child: Align(

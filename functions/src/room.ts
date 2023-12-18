@@ -44,7 +44,7 @@ export const callCreateRoom = onCall({
     let members = m.map((e) => {
         return RoomUser.create({
             user: e,
-            role: (e == currentUID) ? Role.ADMIN : Role.INVITE,
+            role: (e === currentUID) ? Role.ADMIN : Role.INVITE,
             created: new Date(),
             updated: new Date(),
         });
@@ -90,7 +90,7 @@ export const deleteRoom = onCall({
 
     const adminUser = await getRoomUserById(adminId, roomUser.room);
 
-    if ((adminId === roomUser.user) || (adminUser && (adminUser.role == Role.ADMIN))) {
+    if ((adminId === roomUser.user) || (adminUser && (adminUser.role === Role.ADMIN))) {
 
         await admin.firestore().collection(constToJSON(Const.rooms))
             .doc(roomUser.room).delete();
@@ -145,7 +145,7 @@ export const updateRoomInfo = onCall({
 
     try {
         let roomUser = await getRoomUserById(userId, roomId)
-        if (roomUser && roomUser.role == Role.ADMIN) {
+        if (roomUser && roomUser.role === Role.ADMIN) {
             await admin.firestore().collection(constToJSON(Const.rooms))
                 .doc(roomId).update(
                     Room.toJSON(room)!,

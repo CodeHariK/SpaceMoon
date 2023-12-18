@@ -59,9 +59,10 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
         }
         if (event.data.metadata?.multi) {
 
-            let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
-                return imgData.localUrl == event.data.metadata?.localUrl;
-            })
+            let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get())
+                .data()).gallery.find((imgData, __, ___) => {
+                    return imgData.localUrl === event.data.metadata?.localUrl;
+                })
 
             if (!oldImageData) return;
 
@@ -94,9 +95,10 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
 
         if (event.data.metadata?.multi) {
 
-            let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get()).data()).gallery.find((imgData, __, ___) => {
-                return imgData.localUrl == event.data.metadata?.localUrl;
-            })
+            let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get())
+                .data()).gallery.find((imgData, __, ___) => {
+                    return imgData.localUrl === event.data.metadata?.localUrl;
+                })
 
             if (!oldImageData) return;
 

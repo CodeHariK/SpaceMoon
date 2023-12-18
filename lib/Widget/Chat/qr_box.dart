@@ -139,6 +139,8 @@ class QrDialog extends HookWidget {
                       codeQrtext: '${barcodeType.value.name}||${qrtext.value}',
                     ),
 
+                    Text((qrtext.value.isEmpty).toString()),
+
                     //
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

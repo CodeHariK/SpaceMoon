@@ -52,7 +52,7 @@ class CustomCacheImage extends StatelessWidget {
               ? Container(
                   color: Colors.white,
                   child: Center(
-                    child: kDebugMode ? Text(error.toString()) : const Placeholder(),
+                    child: kDebugMode ? Text(error.toString()) : const SizedBox(),
                   ),
                 )
               : BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),

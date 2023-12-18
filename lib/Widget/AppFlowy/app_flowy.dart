@@ -82,24 +82,24 @@ class _AppFlowyState extends State<AppFlowy> {
             : AppBar(
                 title: const Text('Editor'),
                 actions: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.upload_file_outlined),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showImageMenu(
-                        Overlay.of(context),
-                        editorState,
-                        SelectionMenu(
-                          context: context,
-                          editorState: editorState,
-                          selectionMenuItems: [],
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.image),
-                  ),
+                  // IconButton(
+                  //   onPressed: () {},
+                  //   icon: const Icon(Icons.upload_file_outlined),
+                  // ),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     showImageMenu(
+                  //       Overlay.of(context),
+                  //       editorState,
+                  //       SelectionMenu(
+                  //         context: context,
+                  //         editorState: editorState,
+                  //         selectionMenuItems: [],
+                  //       ),
+                  //     );
+                  //   },
+                  //   icon: const Icon(Icons.image),
+                  // ),
                   IconButton(
                     onPressed: () {
                       undoCommand.execute(editorState);
@@ -266,7 +266,7 @@ EditorStyle customizeEditorStyle() {
 
     textStyleConfiguration: TextStyleConfiguration(
       text: TextStyle(
-        fontSize: 16,
+        fontSize: (16, 22).c,
         color: AppTheme.darkness ? Colors.white : Colors.black,
       ),
       // text: GoogleFonts.poppins(

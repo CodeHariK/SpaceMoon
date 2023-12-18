@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
@@ -17,6 +18,8 @@ class AppFlowyBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final curuser = ref.watch(currentUserProvider).value;
+
     return InkWell(
       onTap: () async {
         await context.cPush(
@@ -24,9 +27,12 @@ class AppFlowyBox extends ConsumerWidget {
             tag: '${tweet.hashCode} Appflowy',
             child: AppFlowy(
               jsonData: tweet.text,
+              editable: curuser?.uid == tweet.user,
               onPopInvoked: (pop, data) async {
-                tweet.text = data;
-                ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                if (curuser?.uid == tweet.user) {
+                  tweet.text = data;
+                  ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                }
               },
             ),
           ),
@@ -34,8 +40,8 @@ class AppFlowyBox extends ConsumerWidget {
       },
       child: IgnorePointer(
         child: SizedBox(
-          width: (250, 500).c,
-          height: (250, 500).c,
+          width: (250, 600).c,
+          height: (250, 600).c,
           child: Hero(
             tag: '${tweet.hashCode} Appflowy',
             child: AppFlowy(

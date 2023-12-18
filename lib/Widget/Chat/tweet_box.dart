@@ -1,11 +1,11 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:flutter/gestures.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:moonspace/helper/validator/validator.dart';
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -19,6 +19,10 @@ import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 
 class TweetBox extends ConsumerWidget {
   const TweetBox({
@@ -41,17 +45,9 @@ class TweetBox extends ConsumerWidget {
         decoration: isHero
             ? null
             : BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    offset: const Offset(0, 1),
-                    blurRadius: 2,
-                    spreadRadius: 1,
-                    color: AppTheme.darkness
-                        ? const Color.fromARGB(255, 67, 67, 67)
-                        : const Color.fromARGB(77, 162, 162, 162),
-                  ),
-                ],
-                color: AppTheme.darkness ? const Color.fromARGB(221, 50, 50, 50) : Colors.white,
+                color: AppTheme.darkness
+                    ? const Color.fromARGB(221, 50, 50, 50)
+                    : const Color.fromARGB(223, 246, 246, 246),
                 // border: Border.all(
                 //   color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(200) : AppTheme.seedColor.withAlpha(100),
                 // ),
@@ -85,28 +81,7 @@ class TweetBox extends ConsumerWidget {
               if (isWebsite(tweet.text))
                 SizedBox(
                   width: (250, 500).c,
-                  child: AnyLinkPreview(
-                    link: tweet.text,
-                    displayDirection: UIDirection.uiDirectionVertical,
-                    showMultimedia: true,
-                    bodyMaxLines: 5,
-                    bodyTextOverflow: TextOverflow.ellipsis,
-                  ),
-                ),
-
-              if (isURL(tweet.text))
-                SizedBox(
-                  width: (250, 500).c,
-                  child: Text.rich(
-                    TextSpan(
-                      text: tweet.text,
-                      style: const TextStyle(color: Colors.blue),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          safeLaunchUrl(tweet.text);
-                        },
-                    ),
-                  ),
+                  child: LinkPreviewer(url: tweet.text),
                 ),
 
               // if (isHero)
@@ -121,13 +96,17 @@ class TweetBox extends ConsumerWidget {
               //       focusedBorder: InputBorder.none,
               //     ),
               //   ),
+
               if (tweet.mediaType == MediaType.TEXT && !isURL(tweet.text) /*&& !isHero*/)
-                Text(
-                  tweet.text,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                  // minLines: 1,
-                  maxLines: 5,
+                SelectableLinkify(
+                  onOpen: (link) async {
+                    if (!await safeLaunchUrl(link.url)) {
+                      throw Exception('Could not launch ${link.url}');
+                    }
+                  },
+                  text: tweet.text,
+                  style: context.bm,
+                  linkStyle: context.bm.c(Colors.blue),
                 ),
             ],
           ),
@@ -178,7 +157,7 @@ class TweetBox extends ConsumerWidget {
     );
 
     return isHero
-        ? (tweet.mediaType == MediaType.POST)
+        ? (tweet.mediaType == MediaType.POST || isWebsite(tweet.text))
             ? box
             : Hero(
                 tag: tweet.path,
@@ -195,6 +174,61 @@ class TweetBox extends ConsumerWidget {
             },
             child: child,
           );
+  }
+}
+
+class LinkPreviewer extends StatefulWidget {
+  const LinkPreviewer({super.key, required this.url});
+
+  final String url;
+
+  @override
+  State<LinkPreviewer> createState() => _LinkPreviewerState();
+}
+
+class _LinkPreviewerState extends State<LinkPreviewer> {
+  PreviewData? data;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        safeLaunchUrl(widget.url);
+      },
+      child: LinkPreview(
+        enableAnimation: true,
+        onPreviewDataFetched: (d) {
+          data = d;
+          setState(() {});
+        },
+        textStyle: context.bl,
+        metadataTextStyle: context.bl,
+        previewData: data,
+        text: widget.url,
+        width: MediaQuery.of(context).size.width,
+        previewBuilder: (p0, data) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                data.title ?? '',
+                style: context.tm.bold,
+              ),
+              Text(data.description ?? ''),
+              Align(
+                alignment: Alignment.center,
+                child: CachedNetworkImage(
+                  imageUrl: data.image?.url ?? '',
+                  errorWidget: (context, url, error) => const SizedBox(),
+                ),
+              ),
+              Text(data.link ?? ''),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
 

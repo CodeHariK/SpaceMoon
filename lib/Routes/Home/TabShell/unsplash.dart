@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/color.dart';
@@ -12,6 +13,7 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:http/http.dart' as http;
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class UnsplashButton extends StatelessWidget {
@@ -92,6 +94,7 @@ class _UnsplashPageState extends State<UnsplashPage> {
       // body: res == null ? null : UnslashRow(res),
       extendBody: true,
       bottomNavigationBar: SizedBox(height: context.mq.pad.bottom),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           page += 1;
@@ -172,7 +175,7 @@ class UnslashRow extends StatelessWidget {
   }
 }
 
-class UnsplashGrid extends ConsumerWidget {
+class UnsplashGrid extends HookConsumerWidget {
   const UnsplashGrid({
     super.key,
     this.res,
@@ -184,109 +187,175 @@ class UnsplashGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GridView.count(
-      physics: const BouncingScrollPhysics(),
-      crossAxisCount: 2,
-      children: res?.results?.map(
-            (e) {
-              final url = e.urls?.small ?? e.urls?.regular ?? e.urls?.full;
-              if (url != null) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        fullscreenDialog: true,
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return Scaffold(
-                            floatingActionButton: FloatingActionButton(
-                              onPressed: () async {
-                                await ref.read(tweetsProvider.notifier).sendTweet(
-                                      tweet: Tweet(
-                                        room: roomUser.room,
-                                        user: roomUser.user,
-                                        mediaType: MediaType.GALLERY,
-                                        gallery: [
-                                          ImageMetadata(
-                                            url: url,
-                                            caption: e.description,
+    final selected = useState(<Result>{});
+
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        GridView.count(
+          physics: const BouncingScrollPhysics(),
+          crossAxisCount: (2, 4).c.toInt(),
+          children: res?.results?.map(
+                (res) {
+                  final url = res.urls?.small ?? res.urls?.regular ?? res.urls?.full;
+                  if (url != null) {
+                    return InkWell(
+                      onLongPress: () {
+                        if (selected.value.contains(res)) {
+                          final s = selected.value.toList()..remove(res);
+                          selected.value = s.toSet();
+                        } else {
+                          selected.value = {...selected.value, res};
+                        }
+                      },
+                      onTap: selected.value.isNotEmpty
+                          ? () {
+                              if (selected.value.contains(res)) {
+                                final s = selected.value.toList()..remove(res);
+                                selected.value = s.toSet();
+                              } else {
+                                selected.value = {...selected.value, res};
+                              }
+                            }
+                          : () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  fullscreenDialog: true,
+                                  pageBuilder: (context, animation, secondaryAnimation) {
+                                    return Scaffold(
+                                      floatingActionButton: FloatingActionButton(
+                                        onPressed: () async {
+                                          await ref.read(tweetsProvider.notifier).sendTweet(
+                                                tweet: Tweet(
+                                                  room: roomUser.room,
+                                                  user: roomUser.user,
+                                                  mediaType: MediaType.GALLERY,
+                                                  gallery: [
+                                                    ImageMetadata(
+                                                      url: url,
+                                                      caption: res.description,
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                          if (context.mounted) {
+                                            context.pop();
+                                          }
+                                        },
+                                        child: const Icon(Icons.send),
+                                      ),
+                                      appBar: AppBar(),
+                                      body: Stack(
+                                        children: [
+                                          Hero(
+                                            tag: res.id!,
+                                            child: InteractiveViewer(
+                                              child: CustomCacheImage(
+                                                imageUrl: url,
+                                                // blurHash: e.blurHash,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                stops: const [0, 1],
+                                                colors: [
+                                                  (HexColor(res.color ?? '#ffffff')),
+                                                  (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                                ],
+                                              ),
+                                            ),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                if (res.description != null || (res.description?.isNotEmpty ?? false))
+                                                  Text(
+                                                    res.description.toString().toUpperCase(),
+                                                    style: context.hs.c(HexColor(res.color ?? '#ffffff').mop),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                if (res.altDescription != null ||
+                                                    (res.altDescription?.isNotEmpty ?? false))
+                                                  Text(
+                                                    res.altDescription.toString().toUpperCase(),
+                                                    style: context.tm.c(HexColor(res.color ?? '#ffffff').mop),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     );
-                                if (context.mounted) {
-                                  context.pop();
-                                }
-                              },
-                              child: const Icon(Icons.send),
-                            ),
-                            appBar: AppBar(),
-                            body: Stack(
-                              children: [
-                                Hero(
-                                  tag: e.id!,
-                                  child: InteractiveViewer(
-                                    child: CustomCacheImage(
-                                      imageUrl: url,
-                                      // blurHash: e.blurHash,
-                                    ),
-                                  ),
+                                  },
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      stops: const [0, 1],
-                                      colors: [
-                                        (HexColor(e.color ?? '#ffffff')),
-                                        (HexColor(e.color ?? '#ffffff')).withAlpha(0),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (e.description != null || (e.description?.isNotEmpty ?? false))
-                                        Text(
-                                          e.description.toString().toUpperCase(),
-                                          style: context.hs.c(HexColor(e.color ?? '#ffffff').mop),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      if (e.altDescription != null || (e.altDescription?.isNotEmpty ?? false))
-                                        Text(
-                                          e.altDescription.toString().toUpperCase(),
-                                          style: context.tm.c(HexColor(e.color ?? '#ffffff').mop),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                              );
+                            },
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            foregroundDecoration: BoxDecoration(
+                              color: selected.value.contains(res) ? const Color.fromARGB(120, 218, 218, 218) : null,
                             ),
-                          );
-                        },
+                            child: Hero(
+                              tag: res.id!,
+                              child: CustomCacheImage(
+                                imageUrl: url,
+                                blurHash: res.blurHash,
+                              ),
+                            ),
+                          ),
+                          if (selected.value.contains(res))
+                            const Icon(
+                              Icons.done,
+                              color: Colors.black,
+                              size: 40,
+                            )
+                        ],
                       ),
                     );
-                  },
-                  child: Hero(
-                    tag: e.id!,
-                    child: CustomCacheImage(
-                      imageUrl: url,
-                      blurHash: e.blurHash,
-                    ),
-                  ),
-                );
-              } else {
-                return const Placeholder();
-              }
-            },
-          ).toList() ??
-          [],
+                  } else {
+                    return const Placeholder();
+                  }
+                },
+              ).toList() ??
+              [],
+        ),
+        if (selected.value.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: FloatingActionButton(
+              onPressed: () async {
+                await ref.read(tweetsProvider.notifier).sendTweet(
+                      tweet: Tweet(
+                        room: roomUser.room,
+                        user: roomUser.user,
+                        mediaType: MediaType.GALLERY,
+                        gallery: selected.value.map(
+                          (res) => ImageMetadata(
+                            url: res.urls?.small ?? res.urls?.regular ?? res.urls?.full,
+                            caption: res.description,
+                          ),
+                        ),
+                      ),
+                    );
+                if (context.mounted) {
+                  context.pop();
+                }
+              },
+              child: const Icon(Icons.send),
+            ),
+          ),
+      ],
     );
   }
 }

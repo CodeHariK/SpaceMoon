@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { Const, Messaging, RoomUser, Tweet, User, constToJSON } from "./Gen/data";
+import { Const, Messaging, RoomUser, Tweet, User, constToJSON, mediaTypeToJSON } from "./Gen/data";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
@@ -107,7 +107,6 @@ export async function toggleTopicSubsription(subscribe: boolean, userId: string,
 
 export async function tweetToTopic(tweet: Tweet) {
 
-    console.log(Tweet.toJSON(tweet))
     let imgMeta = tweet.gallery?.find((imageMeta) => {
         if (imageMeta.url == null) {
             return false;
@@ -132,6 +131,7 @@ export async function tweetToTopic(tweet: Tweet) {
                 'uid': tweet.uid!,
                 'room': tweet.room!,
                 'user': tweet.user!,
+                'mediaType': mediaTypeToJSON(tweet.mediaType!),
             },
             notification: {
                 "title": `${room?.displayName}  (${user?.displayName})`,
