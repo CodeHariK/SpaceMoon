@@ -1,11 +1,10 @@
-import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { Const, Role, Tweet, constToJSON } from "./Gen/data";
 import * as admin from "firebase-admin";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getRoomUserById } from "./roomuser";
 import { updateRoomTime } from "./room";
 import { tweetToTopic } from "./messaging";
-import { generateRandomString } from "./name_gen";
 
 export const sendTweet = onCall({
     enforceAppCheck: true,

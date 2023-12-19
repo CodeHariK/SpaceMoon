@@ -134,6 +134,7 @@ class SendButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AsyncLock(
       builder: (loading, status, lock, open, setStatus) => FloatingActionButton(
+        heroTag: 'sendButtonChat',
         elevation: 0,
         onPressed: () async {
           lock();

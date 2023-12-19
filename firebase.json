@@ -38,7 +38,7 @@
       "**/node_modules/**"
     ],
     "frameworksBackend": {
-      "region": "asia-east1"
+      "region": "asia-south1"
     },
     "cleanUrls": true
   },

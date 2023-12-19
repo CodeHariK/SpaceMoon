@@ -13,10 +13,11 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Init/messaging.dart';
 import 'package:spacemoon/firebase_options.dart';
+import 'package:spacemoon/main.dart';
 
 const spacemoonStorageBucket = 'spacemoonfire.appspot.com';
 
-Future<void> initFirebase({required bool useEmulator}) async {
+Future<void> initFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -38,7 +39,7 @@ Future<void> initFirebase({required bool useEmulator}) async {
     auth.AppleProvider(),
   ]);
 
-  if (useEmulator) {
+  if (SpaceMoon.useEmulator) {
     await emulator();
   }
 

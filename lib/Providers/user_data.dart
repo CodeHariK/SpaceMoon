@@ -73,6 +73,6 @@ Future<void> callUserUpdate(User user) async {
   try {
     await FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
   } catch (e) {
-    debugPrint('deleteTweet Failed');
+    debugPrint('callUserUpdate Failed');
   }
 }

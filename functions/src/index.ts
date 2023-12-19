@@ -1,11 +1,18 @@
 import * as admin from "firebase-admin";
-import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as users from "./users";
 import * as room from "./room";
 import * as roomuser from "./roomuser";
 import * as tweet from "./tweet";
 import * as image from "./image";
 import * as messaging from "./messaging";
+import { setGlobalOptions } from "firebase-functions/v2";
+
+setGlobalOptions({
+    maxInstances: 10,
+    region: "asia-south1",
+    timeoutSeconds: 60,
+    memory: "2GiB",
+});
 
 let serviceAccount = require("../serviceAccountKey.json");
 admin.initializeApp({
@@ -41,32 +48,19 @@ export const callUnsubscribeFromTopic = messaging.callUnsubscribeFromTopic;
 export const callFCMtokenUpdate = messaging.callFCMtokenUpdate;
 export const pruneTokens = messaging.pruneTokens;
 
-export const helloWorld = onRequest((request, response) => {
-    console.log(request.query);
-    response.set("Access-Control-Allow-Origin", "*");
-    console.log('Hello');
-    response.send("Hello from Firebase!");
-});
+// export const helloWorld = onRequest((request, response) => {
+//     console.log(request.query);
+//     response.set("Access-Control-Allow-Origin", "*");
+//     console.log('Hello');
+//     response.send("Hello from Firebase!");
+// });
 
-export const sayHello = onCall((request) => {
-    console.log(request.data);
+// export const sayHello = onCall((request) => {
+//     console.log(request.data);
 
-    return {
-        message: "Hello from the emulator",
-        data: request.data,
-        auth: request.auth,
-    };
-});
-
-// export const docWrite = onDocumentWritten('counter/{spider}/{giraffe}/{deer}', (change) => {
-//     console.log(change)
-//     console.log(change.data?.before.data())
-//     console.log(change.data?.after.data())
-//     if (change.data?.before.data() === change.data?.after.data()) {
-//         console.log('Same data');
-//         return null;
-//     }
-//     change.data?.after.ref.update({ "Count": FieldValue.increment(2) });
-//     return change;
-// })
-
+//     return {
+//         message: "Hello from the emulator",
+//         data: request.data,
+//         auth: request.auth,
+//     };
+// });

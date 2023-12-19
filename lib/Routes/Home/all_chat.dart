@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:moonspace/form/highlight_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/helper/validator/validator.dart';
@@ -49,26 +48,6 @@ class AllChatPage extends ConsumerWidget {
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-                height: 300,
-                child: ExampleWidget(),
-              ),
-              TextField(
-                style: TextStyle(fontSize: 32),
-                controller: FruitColorizer({
-                  'apple': TextStyle(color: Colors.green, decoration: TextDecoration.underline),
-                  'orange': TextStyle(color: Colors.orange, shadows: kElevationToShadow[2]),
-                }),
-              ),
-              TextField(
-                style: TextStyle(fontSize: 32),
-                controller: FruitColorizer.fromColors({
-                  'apple': Colors.green,
-                  r'@\w+': Colors.blue,
-                  'orange': Colors.orange,
-                })
-                  ..text = 'orange hari apple @all',
-              ),
               if (!subscription)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -224,39 +203,6 @@ class AllChatPage extends ConsumerWidget {
                 );
               },
             ),
-    );
-  }
-}
-
-class ExampleWidget extends StatefulWidget {
-  const ExampleWidget({super.key});
-
-  @override
-  State<ExampleWidget> createState() => _ExampleWidgetState();
-}
-
-class _ExampleWidgetState extends State<ExampleWidget> {
-  late final TextWithNamesEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextWithNamesEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFieldWithNames(
-      controller: _controller,
-      onNamesRequested: (BuildContext context) {
-        return ['Simon', 'Randal', 'Scott'];
-      },
     );
   }
 }

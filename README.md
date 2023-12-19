@@ -72,6 +72,24 @@ Generating Proto files
 - [x] Update User : [callUserUpdate](functions/src/users.ts#L35)
 - [x] Delete User : [deleteAuthUser](functions/src/users.ts#L67)
 
+### Chat Room
+
+- [x] Create Chat Room : [callCreateRoom](functions/src/room.ts#L12)
+- [x] Update Room Info : [updateRoomInfo](functions/src/room.ts#L130)
+- [x] Delete Room : [deleteRoom](functions/src/room.ts#L81)
+
+### Chat Room User
+
+- [x] Upgrade Access To Room : [upgradeAccessToRoom](functions/src/roomuser.ts#L95)
+- [x] Update RoomUser Time : [updateRoomUserTime](functions/src/roomuser.ts#L43)
+- [x] Delete RoomUser : [deleteRoomUser](functions/src/roomuser.ts#L85)
+
+### Tweet
+
+- [x] Send Tweet : [sendTweet](functions/src/tweet.ts#L10)
+- [x] Update Tweet : [updateTweet](functions/src/tweet.ts#L53)
+- [x] Delete Tweet : [sendTweet](functions/src/tweet.ts#L96)
+
 ### Messaging
 
 - [x] Tweet to Topic : [tweetToTopic](functions/src/messaging.ts#L108)
