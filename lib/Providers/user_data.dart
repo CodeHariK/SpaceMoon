@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-// import 'package:firebase_auth/firebase_auth.dart' as f;
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
+import 'package:spacemoon/main.dart';
 
 part 'user_data.g.dart';
 
@@ -71,7 +70,7 @@ Future<User?> getUserById(GetUserByIdRef ref, String userId) async {
 
 Future<void> callUserUpdate(User user) async {
   try {
-    await FirebaseFunctions.instance.httpsCallable('callUserUpdate').call(user.toMap());
+    await SpaceMoon.fn('user-callUserUpdate').call(user.toMap());
   } catch (e) {
     debugPrint('callUserUpdate Failed');
   }

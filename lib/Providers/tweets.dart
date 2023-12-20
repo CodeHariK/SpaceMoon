@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
+import 'package:spacemoon/main.dart';
 
 part 'tweets.g.dart';
 
@@ -48,9 +48,15 @@ class Tweets extends _$Tweets {
     tweet.room = roomuser!.room;
 
     try {
-      final res = await FirebaseFunctions.instance.httpsCallable('sendTweet').call(tweet.toMap());
+      // Stopwatch stopwatch = Stopwatch()..start();
+      final res = await SpaceMoon.fn('tweet-sendTweet').call(tweet.toMap());
+      // stopwatch.stop();
+      // print(stopwatch.elapsedMilliseconds);
+
       return res.data;
-    } catch (e) {
+    } catch (e, s) {
+      debugPrint(e.toString());
+      debugPrint(s.toString());
       debugPrint('sendTweet Failed');
     }
     return null;
@@ -58,7 +64,7 @@ class Tweets extends _$Tweets {
 
   Future<void> updateTweet({required Tweet tweet}) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('updateTweet').call(tweet.toMap());
+      await SpaceMoon.fn('tweet-updateTweet').call(tweet.toMap());
     } catch (e) {
       debugPrint('updateTweet Failed');
     }
@@ -68,7 +74,7 @@ class Tweets extends _$Tweets {
     required Tweet tweet,
   }) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('deleteTweet').call(tweet.toMap());
+      await SpaceMoon.fn('tweet-deleteTweet').call(tweet.toMap());
     } catch (e) {
       debugPrint('deleteTweet Failed');
     }

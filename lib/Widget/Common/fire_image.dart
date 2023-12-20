@@ -69,7 +69,7 @@ Future<List<ImageMetadata?>> selectMultiMedia() async {
 //   uploaderFireList = data;
 // });
 
-Future<String?> uploadFire({
+Future<void> uploadFire({
   required ImageMetadata meta,
   required String imageName,
   required String docPath,
@@ -78,23 +78,34 @@ Future<String?> uploadFire({
   String? singlepath,
 }) async {
   final name = '$imageName${path.extension(meta.localUrl)}';
-  final uploadTask = FirebaseStorage.instance.ref().child(storagePath).child(name).putFile(
-        File(meta.localUrl),
-        SettableMetadata(
-          contentType: lookupMimeType(meta.localUrl),
-          customMetadata: ({
-            // 'name': name,
-            // 'user': user,
-            'path': docPath,
-            'localUrl': meta.localUrl,
-            // 'width': meta.width.toString(),
-            // 'height': meta.height.toString(),
-            if (multipath != null) 'multi': multipath,
-            if (singlepath != null) 'single': singlepath,
-            // 'path': image.path,
-          }),
-        ),
-      );
+
+  final metadata = SettableMetadata(
+      contentType: lookupMimeType(meta.localUrl),
+      customMetadata: ({
+        // 'name': name,
+        // 'user': user,
+        'path': docPath,
+        'localUrl': meta.localUrl,
+        // 'width': meta.width.toString(),
+        // 'height': meta.height.toString(),
+        if (multipath != null) 'multi': multipath,
+        if (singlepath != null) 'single': singlepath,
+        // 'path': image.path,
+      }));
+
+  final ref = FirebaseStorage.instance.ref().child(storagePath).child(name);
+
+  final file = File(meta.localUrl);
+
+  // late final UploadTask uploadTask;
+
+  // if (kIsWeb) {
+  // uploadTask =
+  ref.putData(await file.readAsBytes(), metadata);
+  // } else {
+  //   uploadTask = ref.putFile(file, metadata);
+  // }
+
   // uploadTask.stream(meta.localUrl).listen((status) async {
   //   final index = uploaderFireList.indexWhere((element) => element?.url == meta.localUrl);
   //   if (index >= 0) {
@@ -106,10 +117,15 @@ Future<String?> uploadFire({
   //   uploaderFireStream.sink.add(uploaderFireList);
   // });
 
-  late final String? downloadurl;
-  await uploadTask.then((p0) async => downloadurl = await p0.ref.getDownloadURL());
+  // late final String? downloadurl;
+  // await uploadTask.then((p0) async {
+  //   return downloadurl = await p0.ref.getDownloadURL();
+  // }).onError((error, stackTrace) {
+  //   debugPrint(error.toString());
+  //   return error.toString();
+  // });
 
-  return downloadurl;
+  // return downloadurl;
 }
 
 class UploadStatus {

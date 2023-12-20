@@ -96,6 +96,7 @@ class _UnsplashPageState extends State<UnsplashPage> {
       bottomNavigationBar: SizedBox(height: context.mq.pad.bottom),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
+        heroTag: 'UnsplashPageReload',
         onPressed: () {
           page += 1;
           fetch();
@@ -224,6 +225,7 @@ class UnsplashGrid extends HookConsumerWidget {
                                   pageBuilder: (context, animation, secondaryAnimation) {
                                     return Scaffold(
                                       floatingActionButton: FloatingActionButton(
+                                        heroTag: 'UnsplashGridSend',
                                         onPressed: () async {
                                           await ref.read(tweetsProvider.notifier).sendTweet(
                                                 tweet: Tweet(
@@ -232,7 +234,7 @@ class UnsplashGrid extends HookConsumerWidget {
                                                   mediaType: MediaType.GALLERY,
                                                   gallery: [
                                                     ImageMetadata(
-                                                      url: url,
+                                                      unsplashurl: url,
                                                       caption: res.description,
                                                     ),
                                                   ],
@@ -334,6 +336,7 @@ class UnsplashGrid extends HookConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: FloatingActionButton(
+              heroTag: 'UnsplashGridFloatingActionButton',
               onPressed: () async {
                 await ref.read(tweetsProvider.notifier).sendTweet(
                       tweet: Tweet(
@@ -342,7 +345,7 @@ class UnsplashGrid extends HookConsumerWidget {
                         mediaType: MediaType.GALLERY,
                         gallery: selected.value.map(
                           (res) => ImageMetadata(
-                            url: res.urls?.small ?? res.urls?.regular ?? res.urls?.full,
+                            unsplashurl: res.urls?.small ?? res.urls?.regular ?? res.urls?.full,
                             caption: res.description,
                           ),
                         ),

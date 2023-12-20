@@ -8,7 +8,7 @@ import sharp = require("sharp");
 import { FieldValue } from "firebase-admin/firestore";
 import { ImageMetadata, Tweet } from "./Gen/data";
 
-export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => {
+export const generateThumbnail = onObjectFinalized({ cpu: 2, region: "asia-south1", }, async (event) => {
 
     const fileBucket = event.data.bucket; // Storage bucket containing the file.
     const filePath = event.data.name; // File path in the bucket.
@@ -48,13 +48,24 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
             metadata: metadata,
         });
 
+        // const thumbDownloadURL = (await bucket.file(thumbFilePath).getSignedUrl({
+        //     action: 'read',
+        //     expires: '01-01-2100', // Set an expiration date if needed
+        // }))[0]
+        // const imgDownloadURL = (await bucket.file(filePath).getSignedUrl({
+        //     action: 'read',
+        //     expires: '01-01-2100', // Set an expiration date if needed
+        // }))[0]
+        // console.log(thumbDownloadURL)
+        // console.log(imgDownloadURL)
+
         //------------------
 
         let docpath = event.data.metadata!.path;
 
         if (event.data.metadata?.single) {
             admin.firestore().doc(docpath).update({
-                [event.data.metadata?.single]: event.data.mediaLink
+                [event.data.metadata?.single]: filePath
             });
         }
         if (event.data.metadata?.multi) {
@@ -67,7 +78,6 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
             if (!oldImageData) return;
 
             let newImageData = ImageMetadata.fromPartial(oldImageData)
-            newImageData.url = event.data.mediaLink!
             newImageData.localUrl = '';
             newImageData.path = filePath;
             newImageData.width = sharpImageMetaData.width!;
@@ -89,7 +99,7 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
 
         if (event.data.metadata?.single) {
             admin.firestore().doc(docpath).update({
-                [event.data.metadata?.single]: event.data.mediaLink
+                [event.data.metadata?.single]: filePath
             });
         }
 
@@ -103,7 +113,7 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2 }, async (event) => 
             if (!oldImageData) return;
 
             let newImageData = ImageMetadata.fromPartial(oldImageData)
-            newImageData.url = event.data.mediaLink!
+            newImageData.video = true
             newImageData.localUrl = '';
             newImageData.path = filePath;
 

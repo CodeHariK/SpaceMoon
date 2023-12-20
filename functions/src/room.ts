@@ -11,6 +11,7 @@ import { toggleTopicSubsription } from "./messaging";
 
 export const callCreateRoom = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<string | undefined> => {
     let currentUID: string = request.auth!.uid;
 
@@ -80,6 +81,7 @@ export const callCreateRoom = onCall({
 
 export const deleteRoom = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request) => {
     let adminId = request.auth!.uid;
     let roomUser = RoomUser.fromJSON(request.data)
@@ -101,7 +103,7 @@ export const deleteRoom = onCall({
     }
 });
 
-export const onRoomDeleted = onDocumentDeleted("rooms/{room}", async (event) => {
+export const onRoomDeleted = onDocumentDeleted({ document: "rooms/{room}", region: "asia-south1", }, async (event) => {
 
     let room = event.params.room
 
@@ -129,6 +131,7 @@ export const onRoomDeleted = onDocumentDeleted("rooms/{room}", async (event) => 
 
 export const updateRoomInfo = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<string> => {
     let userId: string = request.auth!.uid;
 

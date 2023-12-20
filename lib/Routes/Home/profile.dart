@@ -17,7 +17,6 @@ import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
-import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class ProfileObj {
   final User? user;
@@ -91,9 +90,7 @@ class ProfilePage extends ConsumerWidget {
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
-                              child: CustomCacheImage(
-                                imageUrl: spaceThumbImage(user!.photoURL),
-                              ),
+                              child: FutureSpaceBuilder(path: user?.photoURL),
                             ),
                     ),
                   ),
@@ -155,10 +152,16 @@ class ProfilePage extends ConsumerWidget {
                       prefix: const Text('Nick name : @'),
                     ),
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text('Email : ${user?.email}', style: context.tm),
-                  ),
+                  if (user?.email.isNotEmpty ?? false)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text('Email : ${user?.email}', style: context.ts),
+                    ),
+                  if (user?.phoneNumber.isNotEmpty ?? false)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text('Phone : ${user?.phoneNumber}', style: context.ts),
+                    ),
                   // ListTile(
                   //   title: Text('Visibility : ${user?.open.name}', style: context.tm),
                   // ),
@@ -172,14 +175,14 @@ class ProfilePage extends ConsumerWidget {
                     contentPadding: EdgeInsets.zero,
                     title: Text(
                       'Joined on : ${user?.created.dateString}',
-                      style: context.tm,
+                      style: context.ts,
                     ),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
                       'Last seen : ${user?.updated.dateString}',
-                      style: context.tm,
+                      style: context.ts,
                     ),
                   ),
                   const RefreshTokenDisplay(),

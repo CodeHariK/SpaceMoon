@@ -166,9 +166,9 @@ class SpaceMoonHome extends HookConsumerWidget {
 
     AppTheme.currentAppTheme = AppTheme(
       dark: brightness == Brightness.dark,
-      designSize: const Size(430, 932),
-      maxSize: const Size(1366, 1024),
       size: MediaQuery.of(context).size,
+      maxSize: const Size(1366, 1024),
+      designSize: const Size(430, 932),
       appColor: appColor,
     );
 

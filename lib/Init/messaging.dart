@@ -1,4 +1,3 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,6 +10,7 @@ import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/notifications.dart';
+import 'package:spacemoon/main.dart';
 
 Future<void> firebaseMessagingSetup() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -136,7 +136,7 @@ void callFCMtokenUpdate(String? fcmToken) async {
     return;
   }
   try {
-    await FirebaseFunctions.instance.httpsCallable('callFCMtokenUpdate').call({
+    await SpaceMoon.fn('messaging-callFCMtokenUpdate').call({
       Const.fcmToken.name: fcmToken,
     });
   } catch (e) {

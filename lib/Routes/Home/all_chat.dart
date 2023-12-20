@@ -1,13 +1,11 @@
 import 'dart:math';
 
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
-import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/animated/animated_counter.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -24,7 +22,7 @@ import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
-import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
+import 'package:spacemoon/main.dart';
 
 class AllChatPage extends ConsumerWidget {
   const AllChatPage({super.key, this.subscription = false});
@@ -98,13 +96,10 @@ class AllChatPage extends ConsumerWidget {
                                       subtitle: Text(room.nick),
                                       leading: CircleAvatar(
                                         radius: 28,
-                                        child: (!isURL(room.photoURL))
-                                            ? null
-                                            : CustomCacheImage(
-                                                imageUrl: spaceThumbImage(room.photoURL),
-                                                showError: false,
-                                                radius: 32,
-                                              ),
+                                        child: FutureSpaceBuilder(
+                                          path: room.photoURL,
+                                          radius: 100,
+                                        ),
                                       ),
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -130,12 +125,10 @@ class AllChatPage extends ConsumerWidget {
                                                   onChanged: (v) async {
                                                     lock();
                                                     if (v) {
-                                                      await FirebaseFunctions.instance
-                                                          .httpsCallable('callSubscribeFromTopic')
+                                                      await SpaceMoon.fn('messaging-callSubscribeFromTopic')
                                                           .call(roomuser.toMap());
                                                     } else {
-                                                      await FirebaseFunctions.instance
-                                                          .httpsCallable('callUnsubscribeFromTopic')
+                                                      await SpaceMoon.fn('messaging-callUnsubscribeFromTopic')
                                                           .call(roomuser.toMap());
                                                     }
                                                     await 1.sec.delay();

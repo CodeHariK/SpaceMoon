@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
-import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -19,7 +18,6 @@ import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
-import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class ChatInfoRoute extends GoRouteData {
   final String chatId;
@@ -126,9 +124,7 @@ class ChatInfoPage extends HookConsumerWidget {
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
-                              child: CustomCacheImage(
-                                imageUrl: spaceThumbImage(room.photoURL),
-                              ),
+                              child: FutureSpaceBuilder(path: room.photoURL),
                             ),
                     ),
                   ),
@@ -166,7 +162,7 @@ class ChatInfoPage extends HookConsumerWidget {
                     autocorrect: false,
                     enableSuggestions: false,
                     enabled: meInRoom?.isAdmin == true,
-                    style: context.hs,
+                    style: context.tm,
                     asyncValidator: (value) async {
                       if (value.checkMin(8) != null) {
                         return value.checkMin(8);
@@ -209,7 +205,7 @@ class ChatInfoPage extends HookConsumerWidget {
                     key: ValueKey(room.description),
                     initialValue: room.description,
                     enabled: meInRoom?.isAdmin == true,
-                    style: context.bl,
+                    style: context.tl,
                     maxLines: null,
                     asyncValidator: (value) async {
                       return value.checkMin(8);
@@ -225,7 +221,7 @@ class ChatInfoPage extends HookConsumerWidget {
                           );
                     },
                     decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
-                      hintText: 'Description',
+                      label: const Text('Description'),
                     ),
                   ),
                   const Divider(),
@@ -374,12 +370,10 @@ class ChatInfoPage extends HookConsumerWidget {
                           leading: (user == null)
                               ? Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle)
                               : CircleAvatar(
-                                  child: (!isURL(user.photoURL))
-                                      ? null
-                                      : CustomCacheImage(
-                                          imageUrl: spaceThumbImage(user.photoURL),
-                                          radius: 32,
-                                        ),
+                                  child: FutureSpaceBuilder(
+                                    path: user.photoURL,
+                                    radius: 100,
+                                  ),
                                 ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,

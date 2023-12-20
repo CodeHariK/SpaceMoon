@@ -8,7 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -24,7 +23,6 @@ import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class ChatRoute extends GoRouteData {
   final String chatId;
@@ -187,12 +185,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           subtitle: Text(room.nick, maxLines: 1),
           leading: CircleAvatar(
-            child: (!isURL(room.photoURL))
-                ? null
-                : CustomCacheImage(
-                    imageUrl: spaceThumbImage(room.photoURL),
-                    radius: 32,
-                  ),
+            radius: 24,
+            child: FutureSpaceBuilder(
+              path: room.photoURL,
+              radius: 100,
+            ),
           ),
           trailing: (meInRoom.isUserOrAdmin) ? InviteButton(room: room) : null,
         ),

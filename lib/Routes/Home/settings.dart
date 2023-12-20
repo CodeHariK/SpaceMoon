@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Routes/Home/account.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 
@@ -37,9 +39,8 @@ class SettingsPage extends ConsumerWidget {
         //     style: const ButtonStyle(iconSize: MaterialStatePropertyAll(24)), onPressed: () => context.pop()),
       ),
       child: SafeArea(
-        child: ListView(
+        child: CupertinoFormSection(
           children: [
-            const SizedBox(height: 20),
             CupertinoFormSection.insetGrouped(
               // header: Text('', style: context.tl),
               children: [
@@ -105,6 +106,13 @@ class SettingsPage extends ConsumerWidget {
               children: [
                 CupertinoListTile.notched(
                   onTap: () {
+                    AccountRoute().push(context);
+                  },
+                  leading: const Icon(Icons.chevron_right_rounded),
+                  title: const Text('Account Management'),
+                ),
+                CupertinoListTile.notched(
+                  onTap: () {
                     AboutRoute().push(context);
                   },
                   leading: const Icon(Icons.chevron_right_rounded),
@@ -112,7 +120,6 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const Spacer(),
             CupertinoFormSection.insetGrouped(
               header: Text('Legals', style: context.bl),
               children: [

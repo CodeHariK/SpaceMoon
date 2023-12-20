@@ -97,7 +97,7 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
           padding: EdgeInsets.all(12.c),
-          textStyle: TextStyle(fontSize: (14, 18).c),
+          textStyle: TextStyle(fontSize: (14, 16).c),
           // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
       );
@@ -112,8 +112,8 @@ class AppTheme {
   BottomNavigationBarThemeData get bottomNavigationBarTheme => BottomNavigationBarThemeData(
         selectedLabelStyle: AppTheme.tx.labelMedium,
         unselectedLabelStyle: AppTheme.tx.labelMedium,
-        selectedIconTheme: IconThemeData(size: (24, 28).c),
-        unselectedIconTheme: IconThemeData(size: (24, 28).c),
+        // selectedIconTheme: IconThemeData(size: (24, 28).c),
+        // unselectedIconTheme: IconThemeData(size: (24, 28).c),
       );
 
   static InputDecorationTheme get inputDecoration => InputDecorationTheme(
@@ -210,35 +210,35 @@ class AppTheme {
       );
 
   TextTheme get textTheme => TextTheme(
-        displayLarge: TextStyle(letterSpacing: 4.c, fontSize: (40, 44).c),
-        displayMedium: TextStyle(letterSpacing: 4.c, fontSize: (36, 40).c),
-        displaySmall: TextStyle(letterSpacing: 4.c, fontSize: (32, 36).c),
-        headlineLarge: TextStyle(letterSpacing: 4.c, fontSize: (28, 32).c),
-        headlineMedium: TextStyle(letterSpacing: 3.c, fontSize: (24, 28).c),
-        headlineSmall: TextStyle(fontSize: (20, 26).c),
+        displayLarge: TextStyle(letterSpacing: 4.c, fontSize: 30),
+        displayMedium: TextStyle(letterSpacing: 4.c, fontSize: 28),
+        displaySmall: TextStyle(letterSpacing: 4.c, fontSize: 26),
+        headlineLarge: TextStyle(letterSpacing: 4.c, fontSize: 24),
+        headlineMedium: TextStyle(letterSpacing: 3.c, fontSize: 22),
+        headlineSmall: const TextStyle(fontSize: 20),
 
         //Appbar
-        titleLarge: TextStyle(letterSpacing: 2.c, fontSize: (18, 22).c),
+        titleLarge: TextStyle(letterSpacing: 2.c, fontSize: 18),
 
         //CupertinoListTile, ListTile Title, Textfield label
-        titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: (16, 20).c),
+        titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: 17, fontWeight: FontWeight.w400),
 
-        titleSmall: TextStyle(letterSpacing: 1.c, color: op, fontSize: (17, 20).c),
+        titleSmall: TextStyle(letterSpacing: 1.c, color: op, fontSize: 16),
 
         //CupertinoFormSection header, ListTile Title,
-        bodyLarge: TextStyle(color: op, fontSize: (15, 21).c), //Textfield font
+        bodyLarge: TextStyle(color: op, fontSize: 15), //Textfield font
 
-        bodyMedium: TextStyle(fontSize: (14, 19).c),
+        bodyMedium: const TextStyle(fontSize: 14),
 
         //ListTile subtitle
-        bodySmall: TextStyle(color: op, fontSize: (13, 18).c),
+        bodySmall: TextStyle(color: op, fontSize: 13),
 
-        labelLarge: TextStyle(letterSpacing: .5.c, fontSize: (14, 20).c, fontWeight: FontWeight.w400),
+        labelLarge: TextStyle(letterSpacing: .5.c, fontSize: 12, fontWeight: FontWeight.w400),
 
         //BottomNavBar
-        labelMedium: TextStyle(fontSize: (13, 18).c),
+        labelMedium: const TextStyle(fontSize: 11),
 
-        labelSmall: TextStyle(fontSize: (10, 14).c),
+        labelSmall: const TextStyle(fontSize: 10),
       );
 
   ThemeData get theme => ThemeData(

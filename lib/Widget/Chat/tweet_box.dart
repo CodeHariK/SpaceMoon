@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -18,7 +19,6 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
-import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
@@ -129,12 +129,10 @@ class TweetBox extends ConsumerWidget {
               children: [
                 if (tweetuser != null)
                   CircleAvatar(
-                    child: (!isURL(tweetuser.photoURL))
-                        ? null
-                        : CustomCacheImage(
-                            imageUrl: spaceThumbImage(tweetuser.photoURL),
-                            radius: 32,
-                          ),
+                    child: FutureSpaceBuilder(
+                      path: tweetuser.photoURL,
+                      radius: 100,
+                    ),
                   ),
                 const SizedBox(height: 5),
                 Text(tweet.created.timeString, style: context.ls),
@@ -164,7 +162,27 @@ class TweetBox extends ConsumerWidget {
                 child: box,
               )
         : GestureDetector(
-            onLongPress: () {},
+            onLongPress: () {
+              marioAlertDialog(
+                context: context,
+                title: 'Delete Tweet',
+                actions: [
+                  MAction(
+                    text: 'cancel',
+                    fn: () => context.pop(),
+                  ),
+                  MAction(
+                    text: 'Yes',
+                    fn: () async {
+                      await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+                      if (context.mounted) {
+                        context.pop();
+                      }
+                    },
+                  ),
+                ],
+              );
+            },
             onTap: () {
               TweetRoute(
                 chatId: tweet.room,

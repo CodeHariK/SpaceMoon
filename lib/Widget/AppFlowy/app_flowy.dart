@@ -265,7 +265,8 @@ EditorStyle customizeEditorStyle() {
 
     textStyleConfiguration: TextStyleConfiguration(
       text: TextStyle(
-        fontSize: (16, 22).c,
+        fontSize: (16, 18).c,
+        fontWeight: FontWeight.w300,
         color: AppTheme.darkness ? Colors.white : Colors.black,
       ),
       // text: GoogleFonts.poppins(

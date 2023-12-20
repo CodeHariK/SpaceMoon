@@ -378,15 +378,16 @@ export interface Tweet {
 }
 
 export interface ImageMetadata {
-  url?: string | undefined;
+  unsplashurl?: string | undefined;
   path?: string | undefined;
   localUrl?: string | undefined;
   width?: number | undefined;
-  height?:
-    | number
+  height?: number | undefined;
+  caption?:
+    | string
     | undefined;
   /** optional string blurhash = 60; */
-  caption?: string | undefined;
+  video?: boolean | undefined;
 }
 
 function createBaseUser(): User {
@@ -1207,19 +1208,20 @@ export const Tweet = {
 
 function createBaseImageMetadata(): ImageMetadata {
   return {
-    url: undefined,
+    unsplashurl: undefined,
     path: undefined,
     localUrl: undefined,
     width: undefined,
     height: undefined,
     caption: undefined,
+    video: undefined,
   };
 }
 
 export const ImageMetadata = {
   encode(message: ImageMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.url !== undefined) {
-      writer.uint32(82).string(message.url);
+    if (message.unsplashurl !== undefined) {
+      writer.uint32(82).string(message.unsplashurl);
     }
     if (message.path !== undefined) {
       writer.uint32(162).string(message.path);
@@ -1236,6 +1238,9 @@ export const ImageMetadata = {
     if (message.caption !== undefined) {
       writer.uint32(482).string(message.caption);
     }
+    if (message.video !== undefined) {
+      writer.uint32(560).bool(message.video);
+    }
     return writer;
   },
 
@@ -1251,7 +1256,7 @@ export const ImageMetadata = {
             break;
           }
 
-          message.url = reader.string();
+          message.unsplashurl = reader.string();
           continue;
         case 20:
           if (tag !== 162) {
@@ -1288,6 +1293,13 @@ export const ImageMetadata = {
 
           message.caption = reader.string();
           continue;
+        case 70:
+          if (tag !== 560) {
+            break;
+          }
+
+          message.video = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1299,19 +1311,20 @@ export const ImageMetadata = {
 
   fromJSON(object: any): ImageMetadata {
     return {
-      url: isSet(object.url) ? globalThis.String(object.url) : undefined,
+      unsplashurl: isSet(object.unsplashurl) ? globalThis.String(object.unsplashurl) : undefined,
       path: isSet(object.path) ? globalThis.String(object.path) : undefined,
       localUrl: isSet(object.localUrl) ? globalThis.String(object.localUrl) : undefined,
       width: isSet(object.width) ? globalThis.Number(object.width) : undefined,
       height: isSet(object.height) ? globalThis.Number(object.height) : undefined,
       caption: isSet(object.caption) ? globalThis.String(object.caption) : undefined,
+      video: isSet(object.video) ? globalThis.Boolean(object.video) : undefined,
     };
   },
 
   toJSON(message: ImageMetadata): unknown {
     const obj: any = {};
-    if (message.url !== undefined) {
-      obj.url = message.url;
+    if (message.unsplashurl !== undefined) {
+      obj.unsplashurl = message.unsplashurl;
     }
     if (message.path !== undefined) {
       obj.path = message.path;
@@ -1328,6 +1341,9 @@ export const ImageMetadata = {
     if (message.caption !== undefined) {
       obj.caption = message.caption;
     }
+    if (message.video !== undefined) {
+      obj.video = message.video;
+    }
     return obj;
   },
 
@@ -1336,12 +1352,13 @@ export const ImageMetadata = {
   },
   fromPartial<I extends Exact<DeepPartial<ImageMetadata>, I>>(object: I): ImageMetadata {
     const message = createBaseImageMetadata();
-    message.url = object.url ?? undefined;
+    message.unsplashurl = object.unsplashurl ?? undefined;
     message.path = object.path ?? undefined;
     message.localUrl = object.localUrl ?? undefined;
     message.width = object.width ?? undefined;
     message.height = object.height ?? undefined;
     message.caption = object.caption ?? undefined;
+    message.video = object.video ?? undefined;
     return message;
   },
 };

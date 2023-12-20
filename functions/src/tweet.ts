@@ -8,6 +8,7 @@ import { tweetToTopic } from "./messaging";
 
 export const sendTweet = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request) => {
     let userId = request.auth!.uid;
 
@@ -51,6 +52,7 @@ export const sendTweet = onCall({
 
 export const updateTweet = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request) => {
     let userId = request.auth!.uid;
 
@@ -94,6 +96,7 @@ export const updateTweet = onCall({
 
 export const deleteTweet = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request) => {
     let userId = request.auth!.uid;
 
@@ -126,13 +129,17 @@ export const deleteTweet = onCall({
     }
 });
 
-export const onTweetDeleted = onDocumentDeleted("rooms/{roomId}/tweets/{tweetId}", async (event) => {
-    let path = `${Tweet.fromJSON(event.data?.data()).user}/${constToJSON(Const.rooms)}/${event.params.roomId}/${constToJSON(Const.tweets)}/${event.params.tweetId}`;
+export const onTweetDeleted = onDocumentDeleted({
+    document: "rooms/{roomId}/tweets/{tweetId}",
+    region: "asia-south1",
+},
+    async (event) => {
+        let path = `tweet/${event.params.roomId}/${Tweet.fromJSON(event.data?.data()).user}/${event.params.tweetId}`;
 
-    await admin.storage().bucket().deleteFiles({
-        prefix: path
+        await admin.storage().bucket().deleteFiles({
+            prefix: path
+        });
     });
-});
 
 export const getTweetById = async (tweetId: string, roomId: string) => {
     const tweetQuery = admin.firestore()

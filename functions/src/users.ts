@@ -7,7 +7,7 @@ import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
 import { deleteFCMToken } from "./messaging";
 
-export const onUserCreate = functions.auth.user().onCreate((user) => {
+export const onUserCreate = functions.region('asia-south1').auth.user().onCreate((user) => {
     const { uid, email, displayName, phoneNumber, photoURL } = user;
 
     admin.firestore().collection(constToJSON(Const.users)).doc(uid)
@@ -34,6 +34,7 @@ export const onUserCreate = functions.auth.user().onCreate((user) => {
 
 export const callUserUpdate = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<void> => {
     let uid = request.auth?.uid;
 
@@ -66,7 +67,7 @@ export const callUserUpdate = onCall({
     }
 });
 
-export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
+export const deleteAuthUser = functions.region('asia-south1').auth.user().onDelete(async (user) => {
     const roomUserQuery = await admin.firestore().collection(constToJSON(Const.roomusers))
         .where('user', '==', user.uid).get()
 
@@ -103,7 +104,10 @@ export const deleteAuthUser = functions.auth.user().onDelete(async (user) => {
     return { message: `Deleted all ${user.uid} documents.` };
 });
 
-export const deleteUser = onDocumentDeleted("users/{userId}", async (event) => {
+export const deleteUser = onDocumentDeleted({
+    document: "users/{userId}",
+    region: "asia-south1",
+}, async (event) => {
     admin.auth().deleteUser(event.params.userId)
         .catch((error) => {
             console.error('Error deleteUser'/*, error*/);

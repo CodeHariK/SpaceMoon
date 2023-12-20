@@ -722,16 +722,17 @@ class Tweet extends $pb.GeneratedMessage {
 
 class ImageMetadata extends $pb.GeneratedMessage {
   factory ImageMetadata({
-    $core.String? url,
+    $core.String? unsplashurl,
     $core.String? path,
     $core.String? localUrl,
     $core.int? width,
     $core.int? height,
     $core.String? caption,
+    $core.bool? video,
   }) {
     final $result = create();
-    if (url != null) {
-      $result.url = url;
+    if (unsplashurl != null) {
+      $result.unsplashurl = unsplashurl;
     }
     if (path != null) {
       $result.path = path;
@@ -748,6 +749,9 @@ class ImageMetadata extends $pb.GeneratedMessage {
     if (caption != null) {
       $result.caption = caption;
     }
+    if (video != null) {
+      $result.video = video;
+    }
     return $result;
   }
   ImageMetadata._() : super();
@@ -755,12 +759,13 @@ class ImageMetadata extends $pb.GeneratedMessage {
   factory ImageMetadata.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ImageMetadata', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
-    ..aOS(10, _omitFieldNames ? '' : 'url')
+    ..aOS(10, _omitFieldNames ? '' : 'unsplashurl')
     ..aOS(20, _omitFieldNames ? '' : 'path')
     ..aOS(30, _omitFieldNames ? '' : 'localUrl', protoName: 'localUrl')
     ..a<$core.int>(40, _omitFieldNames ? '' : 'width', $pb.PbFieldType.O3)
     ..a<$core.int>(50, _omitFieldNames ? '' : 'height', $pb.PbFieldType.O3)
     ..aOS(60, _omitFieldNames ? '' : 'caption')
+    ..aOB(70, _omitFieldNames ? '' : 'video')
     ..hasRequiredFields = false
   ;
 
@@ -786,13 +791,13 @@ class ImageMetadata extends $pb.GeneratedMessage {
   static ImageMetadata? _defaultInstance;
 
   @$pb.TagNumber(10)
-  $core.String get url => $_getSZ(0);
+  $core.String get unsplashurl => $_getSZ(0);
   @$pb.TagNumber(10)
-  set url($core.String v) { $_setString(0, v); }
+  set unsplashurl($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(10)
-  $core.bool hasUrl() => $_has(0);
+  $core.bool hasUnsplashurl() => $_has(0);
   @$pb.TagNumber(10)
-  void clearUrl() => clearField(10);
+  void clearUnsplashurl() => clearField(10);
 
   @$pb.TagNumber(20)
   $core.String get path => $_getSZ(1);
@@ -838,6 +843,15 @@ class ImageMetadata extends $pb.GeneratedMessage {
   $core.bool hasCaption() => $_has(5);
   @$pb.TagNumber(60)
   void clearCaption() => clearField(60);
+
+  @$pb.TagNumber(70)
+  $core.bool get video => $_getBF(6);
+  @$pb.TagNumber(70)
+  set video($core.bool v) { $_setBool(6, v); }
+  @$pb.TagNumber(70)
+  $core.bool hasVideo() => $_has(6);
+  @$pb.TagNumber(70)
+  void clearVideo() => clearField(70);
 }
 
 

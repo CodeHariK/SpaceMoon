@@ -1,15 +1,14 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mime/mime.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Init/firebase.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -34,8 +33,7 @@ class GalleryImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageMetadata = tweet.gallery[index];
 
-    final isVideo = lookupMimeType(spaceFileName(imageMetadata.url))?.startsWith('video/') == true ||
-        lookupMimeType(imageMetadata.localUrl)?.startsWith('video/') == true;
+    final isVideo = imageMetadata.video;
 
     if (isVideo) {
       return IgnorePointer(
@@ -50,10 +48,15 @@ class GalleryImage extends StatelessWidget {
             children: [
               Transform.scale(
                 scale: 1.4,
-                child: VideoPlayerBox(
-                  title: imageMetadata.caption,
-                  url: imageMetadata.url,
-                  localUrl: imageMetadata.localUrl,
+                child: FutureSpaceBuilder(
+                  imageMetadata: imageMetadata,
+                  builder: (url) {
+                    return VideoPlayerBox(
+                      title: imageMetadata.caption,
+                      url: url,
+                      localUrl: imageMetadata.localUrl,
+                    );
+                  },
                 ),
               ),
               const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
@@ -78,12 +81,17 @@ class GalleryImage extends StatelessWidget {
                         constraints: BoxConstraints.expand(
                           height: MediaQuery.of(context).size.height,
                         ),
-                        child: PhotoView(
-                          imageProvider: NetworkImage(imageMetadata.url),
-                          // tightMode: true,
-                          // maxScale: PhotoViewComputedScale.covered * 2.0,
-                          // minScale: PhotoViewComputedScale.contained * 0.8,
-                          initialScale: PhotoViewComputedScale.contained,
+                        child: FutureSpaceBuilder(
+                          imageMetadata: imageMetadata,
+                          builder: (url) {
+                            return PhotoView(
+                              imageProvider: NetworkImage(url),
+                              // tightMode: true,
+                              // maxScale: PhotoViewComputedScale.covered * 2.0,
+                              // minScale: PhotoViewComputedScale.contained * 0.8,
+                              initialScale: PhotoViewComputedScale.contained,
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -104,11 +112,15 @@ class GalleryImage extends StatelessWidget {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
-              if (imageMetadata.url.isNotEmpty)
-                CustomCacheImage(
-                  imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
-                  // blurHash: imageMetadata.blurhash,
-                ),
+              FutureSpaceBuilder(
+                imageMetadata: imageMetadata,
+                thumbnail: !inScaffold,
+              ),
+              // if (imageMetadata.url.isNotEmpty)
+              //   CustomCacheImage(
+              //     imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
+              //     // blurHash: imageMetadata.blurhash,
+              //   ),
               if (imageMetadata.localUrl.isNotEmpty)
                 FutureBuilder(
                   future: File(imageMetadata.localUrl).readAsBytes(),
@@ -171,7 +183,7 @@ class GalleryImage extends StatelessWidget {
                     }
                   },
                 ),
-              if (inScaffold && imageMetadata.url.isNotEmpty)
+              if (inScaffold && imageMetadata.localUrl.isEmpty)
                 Consumer(
                   builder: (_, ref, ___) => AsyncTextFormField(
                     initialValue: imageMetadata.caption,
@@ -206,7 +218,7 @@ class GalleryImage extends StatelessWidget {
 }
 
 extension SuperImageMetadata on Tweet {
-  List<ImageMetadata> get avaiable => gallery.where((element) => element.url.isNotEmpty).toList();
+  List<ImageMetadata> get avaiable => gallery.where((element) => element.localUrl.isEmpty).toList();
   List<ImageMetadata> get notAvaiable => gallery.where((element) => element.localUrl.isNotEmpty).toList();
   int get uploaded => avaiable.length;
   int get total => gallery.length;
@@ -222,7 +234,7 @@ class GalleryBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uploaded = tweet.gallery.where((element) => element.url.isNotEmpty).length;
+    final uploaded = tweet.avaiable.length;
     final total = tweet.gallery.length;
 
     final child = Stack(
@@ -502,16 +514,57 @@ class GalleryUploaderButton extends StatelessWidget {
   }
 }
 
-String spaceThumbImage(String u) {
-  if (!u.contains(spacemoonStorageBucket)) return u;
-  final uri = Uri.parse(u);
-  final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
-  return u.replaceFirst(base, 'thumb_$base');
+class FutureSpaceBuilder extends StatelessWidget {
+  const FutureSpaceBuilder({
+    super.key,
+    this.imageMetadata,
+    this.path,
+    this.thumbnail = false,
+    this.builder,
+    this.radius,
+  });
+
+  final bool thumbnail;
+  final Widget Function(String url)? builder;
+  final ImageMetadata? imageMetadata;
+  final String? path;
+  final double? radius;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageMetadata?.unsplashurl.isNotEmpty ?? false) {
+      return CustomCacheImage(
+        radius: radius ?? 0,
+        imageUrl: imageMetadata?.unsplashurl ?? '',
+      );
+    }
+
+    final p = path ?? imageMetadata?.path ?? '';
+
+    return FutureBuilder(
+      future: FirebaseStorage.instance.ref(thumbnail ? spaceThumbPath(p) : p).getDownloadURL(),
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return CustomCacheImage(
+            imageUrl: '',
+            radius: radius ?? 0,
+          );
+        }
+
+        if (builder == null) {
+          return CustomCacheImage(
+            radius: radius ?? 0,
+            imageUrl: snapshot.data!,
+          );
+        } else {
+          return builder!(snapshot.data!);
+        }
+      },
+    );
+  }
 }
 
-String spaceFileName(String u) {
-  if (!u.contains(spacemoonStorageBucket)) return u;
-  final uri = Uri.parse(u);
-  final base = '${uri.path.split('/').lastOrNull?.split('%2F').lastOrNull}';
-  return base;
+String spaceThumbPath(String u) {
+  final base = '${u.split('/').lastOrNull}';
+  return u.replaceFirst(base, 'thumb_$base');
 }

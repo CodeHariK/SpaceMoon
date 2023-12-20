@@ -283,28 +283,31 @@ final $typed_data.Uint8List tweetDescriptor = $convert.base64Decode(
 const ImageMetadata$json = {
   '1': 'ImageMetadata',
   '2': [
-    {'1': 'url', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'url', '17': true},
+    {'1': 'unsplashurl', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'unsplashurl', '17': true},
     {'1': 'path', '3': 20, '4': 1, '5': 9, '9': 1, '10': 'path', '17': true},
     {'1': 'localUrl', '3': 30, '4': 1, '5': 9, '9': 2, '10': 'localUrl', '17': true},
     {'1': 'width', '3': 40, '4': 1, '5': 5, '9': 3, '10': 'width', '17': true},
     {'1': 'height', '3': 50, '4': 1, '5': 5, '9': 4, '10': 'height', '17': true},
     {'1': 'caption', '3': 60, '4': 1, '5': 9, '9': 5, '10': 'caption', '17': true},
+    {'1': 'video', '3': 70, '4': 1, '5': 8, '9': 6, '10': 'video', '17': true},
   ],
   '8': [
-    {'1': '_url'},
+    {'1': '_unsplashurl'},
     {'1': '_path'},
     {'1': '_localUrl'},
     {'1': '_width'},
     {'1': '_height'},
     {'1': '_caption'},
+    {'1': '_video'},
   ],
 };
 
 /// Descriptor for `ImageMetadata`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List imageMetadataDescriptor = $convert.base64Decode(
-    'Cg1JbWFnZU1ldGFkYXRhEhUKA3VybBgKIAEoCUgAUgN1cmyIAQESFwoEcGF0aBgUIAEoCUgBUg'
-    'RwYXRoiAEBEh8KCGxvY2FsVXJsGB4gASgJSAJSCGxvY2FsVXJsiAEBEhkKBXdpZHRoGCggASgF'
-    'SANSBXdpZHRoiAEBEhsKBmhlaWdodBgyIAEoBUgEUgZoZWlnaHSIAQESHQoHY2FwdGlvbhg8IA'
-    'EoCUgFUgdjYXB0aW9uiAEBQgYKBF91cmxCBwoFX3BhdGhCCwoJX2xvY2FsVXJsQggKBl93aWR0'
-    'aEIJCgdfaGVpZ2h0QgoKCF9jYXB0aW9u');
+    'Cg1JbWFnZU1ldGFkYXRhEiUKC3Vuc3BsYXNodXJsGAogASgJSABSC3Vuc3BsYXNodXJsiAEBEh'
+    'cKBHBhdGgYFCABKAlIAVIEcGF0aIgBARIfCghsb2NhbFVybBgeIAEoCUgCUghsb2NhbFVybIgB'
+    'ARIZCgV3aWR0aBgoIAEoBUgDUgV3aWR0aIgBARIbCgZoZWlnaHQYMiABKAVIBFIGaGVpZ2h0iA'
+    'EBEh0KB2NhcHRpb24YPCABKAlIBVIHY2FwdGlvbogBARIZCgV2aWRlbxhGIAEoCEgGUgV2aWRl'
+    'b4gBAUIOCgxfdW5zcGxhc2h1cmxCBwoFX3BhdGhCCwoJX2xvY2FsVXJsQggKBl93aWR0aEIJCg'
+    'dfaGVpZ2h0QgoKCF9jYXB0aW9uQggKBl92aWRlbw==');
 

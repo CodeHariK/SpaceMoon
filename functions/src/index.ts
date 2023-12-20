@@ -21,32 +21,42 @@ admin.initializeApp({
     storageBucket: 'spacemoonfire.appspot.com',
 });
 
-export const onUserCreate = users.onUserCreate;
-export const callUserUpdate = users.callUserUpdate;
-export const deleteAuthUser = users.deleteAuthUser;
-export const deleteUser = users.deleteUser;
+exports.user = {
+    onUserCreate: users.onUserCreate,
+    callUserUpdate: users.callUserUpdate,
+    deleteAuthUser: users.deleteAuthUser,
+    deleteUser: users.deleteUser,
+}
 
-export const callCreateRoom = room.callCreateRoom;
-export const updateRoomInfo = room.updateRoomInfo;
-export const deleteRoom = room.deleteRoom;
-export const onRoomDeleted = room.onRoomDeleted;
+exports.room = {
+    callCreateRoom: room.callCreateRoom,
+    updateRoomInfo: room.updateRoomInfo,
+    deleteRoom: room.deleteRoom,
+    onRoomDeleted: room.onRoomDeleted,
+}
 
-export const deleteRoomUser = roomuser.deleteRoomUser;
-export const onRoomUserDeleted = roomuser.onRoomUserDeleted;
-export const updateRoomUserTime = roomuser.updateRoomUserTime;
-export const upgradeAccessToRoom = roomuser.upgradeAccessToRoom;
+exports.roomuser = {
+    deleteRoomUser: roomuser.deleteRoomUser,
+    onRoomUserDeleted: roomuser.onRoomUserDeleted,
+    updateRoomUserTime: roomuser.updateRoomUserTime,
+    upgradeAccessToRoom: roomuser.upgradeAccessToRoom,
+}
 
-export const sendTweet = tweet.sendTweet;
-export const updateTweet = tweet.updateTweet;
-export const onTweetDeleted = tweet.onTweetDeleted;
-export const deleteTweet = tweet.deleteTweet;
+exports.tweet = {
+    sendTweet: tweet.sendTweet,
+    updateTweet: tweet.updateTweet,
+    onTweetDeleted: tweet.onTweetDeleted,
+    deleteTweet: tweet.deleteTweet,
+}
 
 export const generateThumbnail = image.generateThumbnail;
 
-export const callSubscribeFromTopic = messaging.callSubscribeFromTopic;
-export const callUnsubscribeFromTopic = messaging.callUnsubscribeFromTopic;
-export const callFCMtokenUpdate = messaging.callFCMtokenUpdate;
-export const pruneTokens = messaging.pruneTokens;
+exports.messaging = {
+    callSubscribeFromTopic: messaging.callSubscribeFromTopic,
+    callUnsubscribeFromTopic: messaging.callUnsubscribeFromTopic,
+    callFCMtokenUpdate: messaging.callFCMtokenUpdate,
+    pruneTokens: messaging.pruneTokens,
+}
 
 // export const helloWorld = onRequest((request, response) => {
 //     console.log(request.query);

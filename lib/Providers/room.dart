@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
+import 'package:spacemoon/main.dart';
 
 part 'room.g.dart';
 
@@ -142,7 +142,7 @@ class CurrentRoom extends _$CurrentRoom {
 
     if (roomUser != null) {
       try {
-        FirebaseFunctions.instance.httpsCallable('updateRoomUserTime').call(roomUser.toMap());
+        SpaceMoon.fn('roomuser-updateRoomUserTime').call(roomUser.toMap());
       } catch (e) {
         debugPrint('updateRoomUserTime Failed');
       }
@@ -153,7 +153,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> updateRoomInfo(Room room) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('updateRoomInfo').call(room.toMap());
+      await SpaceMoon.fn('room-updateRoomInfo').call(room.toMap());
     } catch (e) {
       debugPrint('updateRoomInfo Failed');
     }
@@ -165,7 +165,7 @@ class CurrentRoom extends _$CurrentRoom {
     required List<String> users,
   }) async {
     try {
-      final roomId = (await FirebaseFunctions.instance.httpsCallable('callCreateRoom').call(
+      final roomId = (await SpaceMoon.fn('room-callCreateRoom').call(
         {
           'room': room.toMap(),
           'users': users,
@@ -183,7 +183,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> upgradeAccessToRoom(RoomUser user) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('upgradeAccessToRoom').call(user.toMap());
+      await SpaceMoon.fn('roomuser-upgradeAccessToRoom').call(user.toMap());
     } catch (e) {
       debugPrint('upgradeAccessToRoom Failed');
     }
@@ -191,7 +191,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> deleteRoom(RoomUser user) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('deleteRoom').call(user.toMap());
+      await SpaceMoon.fn('room-deleteRoom').call(user.toMap());
     } catch (e) {
       debugPrint('deleteRoom Failed');
     }
@@ -200,7 +200,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> deleteRoomUser(RoomUser user) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('deleteRoomUser').call(user.toMap());
+      await SpaceMoon.fn('roomuser-deleteRoomUser').call(user.toMap());
     } catch (e) {
       debugPrint('deleteRoomUser Failed');
     }

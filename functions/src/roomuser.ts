@@ -18,6 +18,7 @@ export const getRoomUserById = async (userId: string, roomId: string) => {
 
 export const updateRoomUserTime = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<string> => {
 
     let userId: string = request.auth!.uid;
@@ -39,7 +40,10 @@ export const updateRoomUserTime = onCall({
     return 'Updated';
 });
 
-export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (event) => {
+export const onRoomUserDeleted = onDocumentDeleted({
+    document: "roomusers/{id}",
+    region: "asia-south1",
+}, async (event) => {
 
     const roomId = event.data?.data()['room'];
     const userId = event.data?.data()['user'];
@@ -67,6 +71,7 @@ export const onRoomUserDeleted = onDocumentDeleted("roomusers/{id}", async (even
 
 export const deleteRoomUser = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request) => {
     let adminId = request.auth!.uid;
     let roomUser = RoomUser.fromJSON(request.data)
@@ -94,6 +99,7 @@ export const deleteRoomUser = onCall({
 
 export const upgradeAccessToRoom = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request) => {
     const adminId = request.auth!.uid;
     const roomUser = RoomUser.fromJSON(request.data)

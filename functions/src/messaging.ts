@@ -5,7 +5,6 @@ import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { checkUserExists, getUserById } from "./users";
 import { getRoomById } from "./room";
-const mime = require('mime-types')
 
 // export const sendMessage = onCall({
 //     enforceAppCheck: true,
@@ -41,6 +40,7 @@ const mime = require('mime-types')
 
 export const callUnsubscribeFromTopic = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<void> => {
     let uid = request.auth!.uid;
 
@@ -53,6 +53,7 @@ export const callUnsubscribeFromTopic = onCall({
 
 export const callSubscribeFromTopic = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<void> => {
     let uid = request.auth!.uid;
 
@@ -108,11 +109,10 @@ export async function toggleTopicSubsription(subscribe: boolean, userId: string,
 export async function tweetToTopic(tweet: Tweet) {
 
     let imgMeta = tweet.gallery?.find((imageMeta) => {
-        if (imageMeta.url == null) {
+        if (imageMeta.path == null) {
             return false;
         }
-        console.log(mime.lookup(imageMeta.url))
-        return imageMeta.url.includes('unsplash') || mime.lookup(imageMeta.url)?.includes('image');
+        return imageMeta.unsplashurl !== null || imageMeta.video === null;
     })
 
     let user = await getUserById(tweet.user!)
@@ -136,7 +136,7 @@ export async function tweetToTopic(tweet: Tweet) {
             notification: {
                 "title": `${room?.displayName}  (${user?.displayName})`,
                 "body": text,
-                imageUrl: imgMeta ? imgMeta.url : undefined,
+                imageUrl: imgMeta?.unsplashurl,
             }
         }
     ).then((v) => {
@@ -182,6 +182,7 @@ export async function deleteFCMToken(userId: string) {
 
 export const callFCMtokenUpdate = onCall({
     enforceAppCheck: true,
+    region: "asia-south1",
 }, async (request): Promise<void> => {
     let uid = request.auth?.uid;
 
@@ -208,7 +209,10 @@ export const callFCMtokenUpdate = onCall({
 
 
 const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 60;
-export const pruneTokens = onSchedule('every 24 hours', async (event) => {
+export const pruneTokens = onSchedule({
+    schedule: 'every 24 hours',
+    region: "asia-south1",
+}, async (event) => {
     const staleTokensResult = await admin.firestore().collection('fcmTokens')
         .where("timestamp", "<", new Date(Date.now() - EXPIRATION_TIME))
         .get();

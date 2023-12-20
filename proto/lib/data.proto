@@ -112,11 +112,12 @@ message Tweet {
 }
 
 message ImageMetadata {
-    optional string url = 10;
+    optional string unsplashurl = 10;
     optional string path = 20;
     optional string localUrl = 30;
     optional int32 width = 40;
     optional int32 height = 50;
     optional string caption = 60;
+    optional bool video = 70;
     // optional string blurhash = 60;
 }

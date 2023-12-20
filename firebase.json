@@ -5,6 +5,7 @@
   },
   "functions": [
     {
+      "region": "asia-south1",
       "source": "functions",
       "rewrites": [
         {
