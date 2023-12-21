@@ -171,7 +171,7 @@ class DesktopEditor extends StatelessWidget {
           editable: editable,
           editorScrollController: editorScrollController,
           blockComponentBuilders: buildBlockComponentBuilders(editorState),
-          editorStyle: customizeEditorStyle(),
+          editorStyle: customizeEditorStyle(editable),
           commandShortcutEvents: buildCommandShortcuts(context),
           header: header,
           footer: footer,
@@ -229,7 +229,7 @@ class MobileEditor extends StatelessWidget {
               editable: editable,
               editorScrollController: editorScrollController,
               blockComponentBuilders: buildBlockComponentBuilders(editorState),
-              editorStyle: customizeEditorStyle(),
+              editorStyle: customizeEditorStyle(editable),
               header: header,
               footer: footer,
             ),
@@ -255,13 +255,11 @@ class MobileEditor extends StatelessWidget {
   }
 }
 
-EditorStyle customizeEditorStyle() {
+EditorStyle customizeEditorStyle(bool editable) {
   return EditorStyle(
-    padding: PlatformExtension.isDesktopOrWeb
-        ? const EdgeInsets.only(left: 200, right: 200)
-        : const EdgeInsets.symmetric(horizontal: 20),
-    cursorColor: Colors.green,
-    selectionColor: Colors.green.withOpacity(0.5),
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    cursorColor: AppTheme.seedCard,
+    selectionColor: AppTheme.seedCard.withOpacity(0.5),
 
     textStyleConfiguration: TextStyleConfiguration(
       text: TextStyle(

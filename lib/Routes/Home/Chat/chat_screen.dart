@@ -133,7 +133,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               context.pop();
             },
           ),
-          title: const Text('Chat'),
+          title: Text(widget.chatId),
         ),
       );
     }

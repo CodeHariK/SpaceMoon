@@ -1,11 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:moonspace/helper/extensions/list.dart';
-
-import 'package:flutter_blurhash/flutter_blurhash.dart';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -48,18 +42,19 @@ class CustomCacheImage extends StatelessWidget {
           ),
           imageUrl: imageUrl,
           fit: BoxFit.cover,
-          errorWidget: (context, url, error) => showError
-              ? Container(
-                  color: Colors.white,
-                  child: Center(
-                    child: kDebugMode ? Text(error.toString()) : const SizedBox(),
-                  ),
-                )
-              : BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
+          errorWidget: (context, url, error) => const SizedBox(),
+          // errorWidget: (context, url, error) => showError
+          //     ? Container(
+          //         color: Colors.white,
+          //         child: Center(
+          //           child: kDebugMode ? Text(error.toString()) : const SizedBox(),
+          //         ),
+          //       )
+          //     : BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
           progressIndicatorBuilder: (context, url, DownloadProgress progress) {
-            return Stack(
+            return const Stack(
               children: [
-                BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
+                // BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
                 // Center(
                 //   child: CircularProgressIndicator(
                 //     value: progress.progress ?? 1,

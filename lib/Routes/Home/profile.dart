@@ -13,7 +13,10 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
+import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/user_data.dart';
+import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
@@ -25,7 +28,7 @@ class ProfileObj {
 }
 
 class ProfileRoute extends GoRouteData {
-  final ProfileObj? $extra;
+  final User? $extra;
 
   const ProfileRoute({this.$extra});
 
@@ -41,17 +44,24 @@ class ProfileRoute extends GoRouteData {
   }
 }
 
-class ProfilePage extends ConsumerWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({
     super.key,
     this.searchuser,
   });
 
-  final ProfileObj? searchuser;
+  final User? searchuser;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = searchuser?.user ?? ref.watch(currentUserDataProvider).value;
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  User? get searchuser => widget.searchuser;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = searchuser ?? ref.watch(currentUserDataProvider).value;
 
     return Scaffold(
       appBar: searchuser != null ? AppBar() : null,
@@ -68,7 +78,7 @@ class ProfilePage extends ConsumerWidget {
                     padding: const EdgeInsets.all(8),
                     child: InkWell(
                       splashFactory: InkSplash.splashFactory,
-                      onTap: searchuser?.user != null
+                      onTap: searchuser != null
                           ? null
                           : () async {
                               final imageMetadata = await selectImageMedia();
@@ -76,12 +86,15 @@ class ProfilePage extends ConsumerWidget {
                               if (imageMetadata == null) return;
 
                               await uploadFire(
-                                meta: imageMetadata,
+                                meta: imageMetadata.$1,
+                                file: imageMetadata.$2,
                                 imageName: 'profile',
                                 storagePath: 'profile/users/${user!.uid}',
                                 docPath: 'users/${user.uid}',
                                 singlepath: Const.photoURL.name,
                               );
+
+                              setState(() {});
                             },
                       child: user?.photoURL == null || user?.photoURL.isEmpty == true
                           ? Icon(
@@ -97,7 +110,7 @@ class ProfilePage extends ConsumerWidget {
                   AsyncTextFormField(
                     key: ValueKey('Name ${user?.displayName}'),
                     initialValue: user?.displayName,
-                    enabled: searchuser?.user == null,
+                    enabled: searchuser == null,
                     style: context.hm,
                     asyncValidator: (value) async {
                       return value.checkMin(8);
@@ -120,7 +133,7 @@ class ProfilePage extends ConsumerWidget {
                     initialValue: user?.nick,
                     autocorrect: false,
                     enableSuggestions: false,
-                    enabled: searchuser?.user == null,
+                    enabled: searchuser == null,
                     style: context.tl,
                     maxLines: 1,
                     asyncValidator: (value) async {
@@ -185,6 +198,28 @@ class ProfilePage extends ConsumerWidget {
                       style: context.ts,
                     ),
                   ),
+                  if (searchuser != null)
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final me = ref.watch(currentUserDataProvider).value;
+
+                        return OutlinedButton(
+                          onPressed: () async {
+                            final room = await ref.read(currentRoomProvider.notifier).createRoom(
+                              room: Room(displayName: '${me!.displayName} ${user!.displayName}'),
+                              users: [
+                                me.uid,
+                                user.uid,
+                              ],
+                            );
+                            if (room != null && context.mounted) {
+                              ChatRoute(chatId: room.uid).go(context);
+                            }
+                          },
+                          child: const Text('Create new chat'),
+                        );
+                      },
+                    ),
                   const RefreshTokenDisplay(),
                 ],
               ),

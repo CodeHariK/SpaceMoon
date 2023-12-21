@@ -16,6 +16,7 @@ import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
+import 'package:spacemoon/Widget/Common/video_player2.dart';
 
 class GalleryImage extends StatelessWidget {
   const GalleryImage({
@@ -41,7 +42,7 @@ class GalleryImage extends StatelessWidget {
         child: Container(
           height: 320,
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+          decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(16)),
           alignment: Alignment.center,
           child: Stack(
             alignment: Alignment.center,
@@ -54,7 +55,6 @@ class GalleryImage extends StatelessWidget {
                     return VideoPlayerBox(
                       title: imageMetadata.caption,
                       url: url,
-                      localUrl: imageMetadata.localUrl,
                     );
                   },
                 ),
@@ -169,6 +169,7 @@ class GalleryImage extends StatelessWidget {
                                 storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
                                 docPath: 'rooms/$roomId/tweets/$tweetId',
                                 meta: imageMetadata,
+                                file: null,
                                 multipath: Const.gallery.name,
                               );
                             } catch (e) {
@@ -381,6 +382,7 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
                           storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
                           docPath: 'rooms/$roomId/tweets/$tweetId',
                           meta: img,
+                          file: null,
                           multipath: Const.gallery.name,
                         );
                       } catch (e) {
@@ -463,13 +465,13 @@ class GalleryUploaderButton extends StatelessWidget {
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     void func() async {
       AnimatedOverlay.hide();
-      final imgs = (await selectMultiMedia()).where((element) => element != null);
+      final imgs = await selectMultiMedia();
       if (imgs.isEmpty) return;
       final path = tweet?.path ??
           await ref.read(tweetsProvider.notifier).sendTweet(
                 tweet: Tweet(
                   mediaType: MediaType.GALLERY,
-                  gallery: List<ImageMetadata>.from(imgs),
+                  gallery: imgs.map((e) => e.$1),
                 ),
               );
 
@@ -488,7 +490,8 @@ class GalleryUploaderButton extends StatelessWidget {
 
             await uploadFire(
               imageName: randomString(12),
-              meta: img!,
+              meta: img.$1,
+              file: img.$2,
               storagePath: 'tweet/$roomId/${meInRoom!.user}/$tweetId',
               docPath: 'rooms/$roomId/tweets/$tweetId',
               multipath: Const.gallery.name,

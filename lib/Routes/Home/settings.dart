@@ -39,128 +39,130 @@ class SettingsPage extends ConsumerWidget {
         //     style: const ButtonStyle(iconSize: MaterialStatePropertyAll(24)), onPressed: () => context.pop()),
       ),
       child: SafeArea(
-        child: CupertinoFormSection(
-          children: [
-            CupertinoFormSection.insetGrouped(
-              // header: Text('', style: context.tl),
-              children: [
-                PopupMenuButton<ThemeType>(
-                  itemBuilder: (context) {
-                    return ThemeType.values
-                        .map<PopupMenuEntry<ThemeType>>(
-                          (e) => PopupMenuItem(
-                            value: e,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [Text(e.name.toUpperCase()), e.icon],
-                            ),
-                          ),
-                        )
-                        .toList();
-                  },
-                  onSelected: (v) {
-                    ref.read(globalThemeProvider.notifier).setThemeType(v);
-                  },
-                  position: PopupMenuPosition.under,
-                  offset: const Offset(1, -120),
-                  child: ListTile(
-                    visualDensity: VisualDensity.compact,
-                    title: Text('Theme', style: context.tm),
-                    subtitle: Text(globalAppTheme.theme.name),
-                    trailing: globalAppTheme.theme.icon,
-                  ),
-                ),
-
-                //
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: Colors.primaries
-                          .map(
-                            (c) => InkWell(
-                              onTap: () {
-                                ref.read(globalThemeProvider.notifier).setColor(c);
-                              },
-                              child: Container(
-                                width: 25,
-                                height: 25,
-                                margin: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: c,
-                                ),
+        child: SingleChildScrollView(
+          child: CupertinoFormSection(
+            children: [
+              CupertinoFormSection.insetGrouped(
+                // header: Text('', style: context.tl),
+                children: [
+                  PopupMenuButton<ThemeType>(
+                    itemBuilder: (context) {
+                      return ThemeType.values
+                          .map<PopupMenuEntry<ThemeType>>(
+                            (e) => PopupMenuItem(
+                              value: e,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [Text(e.name.toUpperCase()), e.icon],
                               ),
                             ),
                           )
-                          .toList(),
+                          .toList();
+                    },
+                    onSelected: (v) {
+                      ref.read(globalThemeProvider.notifier).setThemeType(v);
+                    },
+                    position: PopupMenuPosition.under,
+                    offset: const Offset(1, -120),
+                    child: ListTile(
+                      visualDensity: VisualDensity.compact,
+                      title: Text('Theme', style: context.tm),
+                      subtitle: Text(globalAppTheme.theme.name),
+                      trailing: globalAppTheme.theme.icon,
                     ),
                   ),
-                ),
-              ],
-            ),
-            CupertinoFormSection.insetGrouped(
-              header: Text('About', style: context.bl),
-              children: [
-                CupertinoListTile.notched(
-                  onTap: () {
-                    AccountRoute().push(context);
-                  },
-                  leading: const Icon(Icons.chevron_right_rounded),
-                  title: const Text('Account Management'),
-                ),
-                CupertinoListTile.notched(
-                  onTap: () {
-                    AboutRoute().push(context);
-                  },
-                  leading: const Icon(Icons.chevron_right_rounded),
-                  title: Text('Developer Info', style: context.tm),
-                ),
-              ],
-            ),
-            CupertinoFormSection.insetGrouped(
-              header: Text('Legals', style: context.bl),
-              children: [
-                CupertinoListTile.notched(
-                  onTap: () {
-                    showLicensePage(context: context);
-                  },
-                  leading: const Icon(Icons.chevron_right_rounded),
-                  title: Text('License', style: context.tm),
-                ),
-                CupertinoListTile.notched(
-                  onTap: () {
-                    safeLaunchUrl('https://spacemoon.shark.run/privacy/policy.html');
-                  },
-                  title: Text('Privacy Policy', style: context.tm),
-                  leading: const Icon(Icons.chevron_right_rounded),
-                ),
-                CupertinoListTile.notched(
-                  onTap: () {
-                    context.cPush(const AttibutionPage());
-                  },
-                  leading: const Icon(Icons.chevron_right_rounded),
-                  title: Text('Attribution', style: context.tm),
-                ),
-                if (kDebugMode)
+
+                  //
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: Colors.primaries
+                            .map(
+                              (c) => InkWell(
+                                onTap: () {
+                                  ref.read(globalThemeProvider.notifier).setColor(c);
+                                },
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  margin: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: c,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              CupertinoFormSection.insetGrouped(
+                header: Text('About', style: context.bl),
+                children: [
                   CupertinoListTile.notched(
                     onTap: () {
-                      ref.read(onboardedProvider.notifier).set(false);
+                      AccountRoute().push(context);
                     },
-                    title: Text('Onboard false', style: context.tm),
+                    leading: const Icon(Icons.chevron_right_rounded),
+                    title: const Text('Account Management'),
                   ),
-                if (kDebugMode)
                   CupertinoListTile.notched(
                     onTap: () {
-                      FirebaseMessaging.instance.deleteToken();
+                      AboutRoute().push(context);
                     },
-                    title: Text('Firebase Messaging Token delete', style: context.tm),
+                    leading: const Icon(Icons.chevron_right_rounded),
+                    title: Text('Developer Info', style: context.tm),
                   ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              CupertinoFormSection.insetGrouped(
+                header: Text('Legals', style: context.bl),
+                children: [
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      showLicensePage(context: context);
+                    },
+                    leading: const Icon(Icons.chevron_right_rounded),
+                    title: Text('License', style: context.tm),
+                  ),
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      safeLaunchUrl('https://spacemoon.shark.run/privacy/policy.html');
+                    },
+                    title: Text('Privacy Policy', style: context.tm),
+                    leading: const Icon(Icons.chevron_right_rounded),
+                  ),
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      context.cPush(const AttibutionPage());
+                    },
+                    leading: const Icon(Icons.chevron_right_rounded),
+                    title: Text('Attribution', style: context.tm),
+                  ),
+                  if (kDebugMode)
+                    CupertinoListTile.notched(
+                      onTap: () {
+                        ref.read(onboardedProvider.notifier).set(false);
+                      },
+                      title: Text('Onboard false', style: context.tm),
+                    ),
+                  if (kDebugMode)
+                    CupertinoListTile.notched(
+                      onTap: () {
+                        FirebaseMessaging.instance.deleteToken();
+                      },
+                      title: Text('Firebase Messaging Token delete', style: context.tm),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

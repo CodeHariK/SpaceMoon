@@ -8,28 +8,39 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:spacemoon/Gen/data.pb.dart';
 
-Future<ImageMetadata?> selectImageMedia() async {
+Future<(ImageMetadata, XFile)?> selectImageMedia() async {
   try {
     final mediaFiles = await ImagePicker().pickImage(source: ImageSource.gallery);
 
+    if ((await mediaFiles?.length() ?? 100000000000) > 10000000) return null;
     if (mediaFiles == null) return null;
 
-    return ImageMetadata(
-      localUrl: mediaFiles.path,
-      // blurhash: blurHash.hash,
-      // width: upImg.width,
-      // height: upImg.height,
+    return (
+      ImageMetadata(
+        localUrl: mediaFiles.path,
+        // blurhash: blurHash.hash,
+        // width: upImg.width,
+        // height: upImg.height,
+      ),
+      mediaFiles
     );
   } catch (e) {
     return null;
   }
 }
 
-Future<List<ImageMetadata?>> selectMultiMedia() async {
+Future<List<(ImageMetadata, XFile)>> selectMultiMedia() async {
   try {
     final mediaFiles = await ImagePicker().pickMultipleMedia();
-    final mediasRead = mediaFiles.map((e) async {
+    final mediasRead = mediaFiles.where((element) {
+      final mime = element.mimeType ?? lookupMimeType(element.path);
+      return isImageVideo(mime ?? '');
+    }).map((e) async {
       final savepath = e.path;
+
+      if ((await e.length()) > 10000000) {
+        return null;
+      }
 
       // final imageBytes = await e.readAsBytes();
       // final upImg = img.decodeImage(imageBytes);
@@ -48,15 +59,18 @@ Future<List<ImageMetadata?>> selectMultiMedia() async {
 
       // final blurHash = BlurHash.encode(newImg, numCompX: 3, numCompY: 2);
 
-      return ImageMetadata(
-        localUrl: savepath,
-        // blurhash: blurHash.hash,
-        // width: upImg.width,
-        // height: upImg.height,
+      return (
+        ImageMetadata(
+          localUrl: savepath,
+          // blurhash: blurHash.hash,
+          // width: upImg.width,
+          // height: upImg.height,
+        ),
+        e
       );
     });
     final medias = await Future.wait(mediasRead);
-    return medias;
+    return List.from(medias.where((element) => element != null));
   } catch (e) {
     debugPrint(e.toString());
   }
@@ -69,18 +83,23 @@ Future<List<ImageMetadata?>> selectMultiMedia() async {
 //   uploaderFireList = data;
 // });
 
+bool isImageVideo(String mime) => mime.contains('image') == true || mime.contains('video') == true;
+
 Future<void> uploadFire({
   required ImageMetadata meta,
+  required XFile? file,
   required String imageName,
   required String docPath,
   required String storagePath,
   String? multipath,
   String? singlepath,
 }) async {
-  final name = '$imageName${path.extension(meta.localUrl)}';
+  final mime = file?.mimeType ?? lookupMimeType(meta.localUrl);
+  final name =
+      '$imageName${path.extension(meta.localUrl).isNotEmpty ? path.extension(meta.localUrl) : ((mime?.split('/').length ?? 0) > 1) ? mime?.split('/')[1] : ''}';
 
   final metadata = SettableMetadata(
-      contentType: lookupMimeType(meta.localUrl),
+      contentType: mime,
       customMetadata: ({
         // 'name': name,
         // 'user': user,
@@ -93,15 +112,24 @@ Future<void> uploadFire({
         // 'path': image.path,
       }));
 
-  final ref = FirebaseStorage.instance.ref().child(storagePath).child(name);
+  print('-----${metadata.contentType}');
 
-  final file = File(meta.localUrl);
+  if (isImageVideo(metadata.contentType ?? '')) {
+    final ref = FirebaseStorage.instance.ref().child(storagePath).child(name);
+
+    if (file != null) {
+      await ref.putData(await file.readAsBytes(), metadata);
+    } else {
+      if (!kIsWeb) {
+        await ref.putFile(File(meta.localUrl), metadata);
+      }
+    }
+  }
 
   // late final UploadTask uploadTask;
 
   // if (kIsWeb) {
   // uploadTask =
-  ref.putData(await file.readAsBytes(), metadata);
   // } else {
   //   uploadTask = ref.putFile(file, metadata);
   // }

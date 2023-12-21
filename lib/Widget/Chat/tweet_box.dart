@@ -11,6 +11,7 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
+import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Providers/user_data.dart';
@@ -38,6 +39,9 @@ class TweetBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserDataProvider).value;
     final tweetuser = ref.watch(getUserByIdProvider(tweet.user)).value;
+
+    final roomuser = ref.watch(currentRoomUserProvider).value;
+    final tweetroomuser = ref.watch(GetRoomUserProvider(roomId: tweet.room, userId: tweet.user)).value;
 
     final box = Material(
       color: Colors.transparent,
@@ -122,7 +126,7 @@ class TweetBox extends ConsumerWidget {
         children: [
           InkWell(
             onTap: () {
-              context.cPush(ProfilePage(searchuser: ProfileObj(user: tweetuser)));
+              context.cPush(ProfilePage(searchuser: tweetuser));
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -162,34 +166,39 @@ class TweetBox extends ConsumerWidget {
                 child: box,
               )
         : GestureDetector(
-            onLongPress: () {
-              marioAlertDialog(
-                context: context,
-                title: 'Delete Tweet',
-                actions: [
-                  MAction(
-                    text: 'cancel',
-                    fn: () => context.pop(),
-                  ),
-                  MAction(
-                    text: 'Yes',
-                    fn: () async {
-                      await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
-                      if (context.mounted) {
-                        context.pop();
-                      }
-                    },
-                  ),
-                ],
-              );
-            },
-            onTap: () {
-              TweetRoute(
-                chatId: tweet.room,
-                tweetId: tweet.uid,
-                $extra: tweet,
-              ).navPush(context);
-            },
+            onLongPress:
+                !((tweetroomuser != null && roomuser != null && roomuser.role.value > tweetroomuser.role.value) ||
+                        user?.uid == tweet.user)
+                    ? null
+                    : () {
+                        tweetuser;
+                        marioAlertDialog(
+                          context: context,
+                          title: 'Delete Tweet',
+                          actions: [
+                            MAction(
+                              text: 'cancel',
+                              fn: () => context.pop(),
+                            ),
+                            MAction(
+                              text: 'Yes',
+                              fn: () async {
+                                await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+                                if (context.mounted) {
+                                  context.pop();
+                                }
+                              },
+                            ),
+                          ],
+                        );
+                      },
+            // onTap: () {
+            //   TweetRoute(
+            //     chatId: tweet.room,
+            //     tweetId: tweet.uid,
+            //     $extra: tweet,
+            //   ).navPush(context);
+            // },
             child: child,
           );
   }

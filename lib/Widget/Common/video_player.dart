@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,25 +7,23 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayerBox extends StatefulWidget {
-  const VideoPlayerBox({
+class VideoPlayerBoxold extends StatefulWidget {
+  const VideoPlayerBoxold({
     super.key,
     this.videoOnlyOri = true,
-    required this.localUrl,
     required this.url,
     required this.title,
   });
 
   final bool videoOnlyOri;
   final String title;
-  final String localUrl;
   final String url;
 
   @override
-  State<VideoPlayerBox> createState() => _VideoPlayerBoxState();
+  State<VideoPlayerBoxold> createState() => _VideoPlayerBoxoldState();
 }
 
-class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProviderStateMixin {
+class _VideoPlayerBoxoldState extends State<VideoPlayerBoxold> with SingleTickerProviderStateMixin {
   late VideoPlayerController _videoPlayerController;
   late AnimationController _animationController;
 
@@ -65,14 +62,12 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
     super.initState();
     videoOnly = widget.videoOnlyOri;
 
-    _videoPlayerController = (widget.url.isNotEmpty)
-        ? VideoPlayerController.networkUrl(
-            Uri.parse(widget.url),
-            videoPlayerOptions: VideoPlayerOptions(
-              allowBackgroundPlayback: false,
-            ),
-          )
-        : VideoPlayerController.file(File(widget.localUrl));
+    _videoPlayerController = VideoPlayerController.networkUrl(
+      Uri.parse(widget.url),
+      videoPlayerOptions: VideoPlayerOptions(
+        allowBackgroundPlayback: false,
+      ),
+    );
 
     _videoPlayerController
       ..addListener(() {
@@ -168,6 +163,7 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    print('------------$videoOnly');
     final videoBox = GestureDetector(
       onTap: videoOnly ? null : _startHideControlsTimer,
       onDoubleTapDown: videoOnly
@@ -244,6 +240,7 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
           //   videoOnly: false,
           // ),
           // );
+          print('start video');
           Navigator.of(context).push(
             PageRouteBuilder(
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -251,9 +248,8 @@ class _VideoPlayerBoxState extends State<VideoPlayerBox> with SingleTickerProvid
                   opacity: animation,
                   // child: Hero(
                   //   tag: widget.link,
-                  child: VideoPlayerBox(
+                  child: VideoPlayerBoxold(
                     url: widget.url,
-                    localUrl: widget.localUrl,
                     title: widget.title,
                     videoOnlyOri: false,
                   ),

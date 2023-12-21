@@ -36,14 +36,19 @@ class ChatInfoRoute extends GoRouteData {
   }
 }
 
-class ChatInfoPage extends HookConsumerWidget {
+class ChatInfoPage extends StatefulHookConsumerWidget {
   const ChatInfoPage({super.key, required this.chatId, this.showAppbar = true});
 
   final String chatId;
   final bool showAppbar;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatInfoPage> createState() => _ChatInfoPageState();
+}
+
+class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
+  @override
+  Widget build(BuildContext context) {
     final room = ref.watch(roomStreamProvider).value;
     final meUser = ref.watch(currentUserDataProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
@@ -51,7 +56,7 @@ class ChatInfoPage extends HookConsumerWidget {
     final allRoomUsers = allRoomUsersPro.value ?? [];
 
     useEffect(() {
-      ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
+      ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
 
       return null;
     }, [room]);
@@ -74,7 +79,7 @@ class ChatInfoPage extends HookConsumerWidget {
     // }
 
     return Scaffold(
-      appBar: !showAppbar
+      appBar: !widget.showAppbar
           ? null
           : AppBar(
               leading: BackButton(
@@ -110,12 +115,15 @@ class ChatInfoPage extends HookConsumerWidget {
                               if (imageMetadata == null) return;
 
                               await uploadFire(
-                                meta: imageMetadata,
+                                meta: imageMetadata.$1,
+                                file: imageMetadata.$2,
                                 imageName: 'profile',
                                 docPath: 'rooms/${room.uid}',
                                 storagePath: 'profile/rooms/${room.uid}',
                                 singlepath: Const.photoURL.name,
                               );
+
+                              setState(() {});
                             },
                       child: room.photoURL.isEmpty == true
                           ? Icon(

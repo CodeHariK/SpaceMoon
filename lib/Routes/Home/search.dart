@@ -149,7 +149,7 @@ class UserTile extends ConsumerWidget {
       contentPadding: EdgeInsets.zero,
       onTap: () {
         if (context.mounted && searchUser?.uid != null) {
-          ProfileRoute($extra: ProfileObj(user: searchUser)).go(context);
+          ProfileRoute($extra: searchUser).go(context);
         }
       },
       title: Text(searchUser?.displayName ?? 'Name'),
@@ -158,7 +158,7 @@ class UserTile extends ConsumerWidget {
         children: [
           const Text('User'),
           const SizedBox(width: 10),
-          if (searchUser?.uid != me?.uid && searchRoomUser != null)
+          if (searchUser?.uid != me?.uid && (searchRoomUser != null || room == null))
             AsyncLock(
               builder: (loading, status, lock, open, setStatus) {
                 return IconButton.filledTonal(
