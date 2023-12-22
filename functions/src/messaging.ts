@@ -40,7 +40,7 @@ import { getRoomById } from "./room";
 
 export const callUnsubscribeFromTopic = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request): Promise<void> => {
     let uid = request.auth!.uid;
 
@@ -53,7 +53,7 @@ export const callUnsubscribeFromTopic = onCall({
 
 export const callSubscribeFromTopic = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request): Promise<void> => {
     let uid = request.auth!.uid;
 
@@ -109,10 +109,10 @@ export async function toggleTopicSubsription(subscribe: boolean, userId: string,
 export async function tweetToTopic(tweet: Tweet) {
 
     let imgMeta = tweet.gallery?.find((imageMeta) => {
-        if (imageMeta.path == null) {
-            return false;
-        }
-        return imageMeta.unsplashurl !== null || imageMeta.video === null;
+        // if (imageMeta.path == null) {
+        //     return false;
+        // }
+        return imageMeta.unsplashurl !== null;// || imageMeta.type === null;
     })
 
     let user = await getUserById(tweet.user!)
@@ -182,7 +182,7 @@ export async function deleteFCMToken(userId: string) {
 
 export const callFCMtokenUpdate = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request): Promise<void> => {
     let uid = request.auth?.uid;
 
@@ -211,7 +211,8 @@ export const callFCMtokenUpdate = onCall({
 const EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 60;
 export const pruneTokens = onSchedule({
     schedule: 'every 24 hours',
-    region: "asia-south1",
+    enforceAppCheck: true,
+    region: 'asia-south1',
 }, async (event) => {
     const staleTokensResult = await admin.firestore().collection('fcmTokens')
         .where("timestamp", "<", new Date(Date.now() - EXPIRATION_TIME))

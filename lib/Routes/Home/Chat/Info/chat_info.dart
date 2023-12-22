@@ -9,6 +9,7 @@ import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
+import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -274,6 +275,33 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                       ),
                     ),
                   ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final refreshToken = ref.watch(currentUserTokenProvider).value;
+                      if (!(meInRoom?.isAdmin == true && refreshToken?['manager'] == true)) {
+                        return const SizedBox();
+                      }
+                      return AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return SwitchListTile(
+                            key: ValueKey(room.famous),
+                            value: room.famous,
+                            title: Text('Famous Admin : ${meInRoom?.isAdmin} Manager : ${refreshToken?['manager']}'),
+                            onChanged: (v) async {
+                              lock();
+                              await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                                    Room(
+                                      uid: room.uid,
+                                      famous: !room.famous,
+                                    ),
+                                  );
+                              open();
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
@@ -346,7 +374,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                 open();
                               },
                               icon: const Icon(Icons.mail),
-                              label: const Text('Send Request'),
+                              label: Text(room.open == Visible.OPEN ? 'Join' : 'Send Request'),
                             );
                           },
                         ),

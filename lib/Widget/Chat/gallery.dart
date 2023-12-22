@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -16,7 +19,8 @@ import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
-import 'package:spacemoon/Widget/Common/video_player2.dart';
+
+part 'gallery.g.dart';
 
 class GalleryImage extends StatelessWidget {
   const GalleryImage({
@@ -34,34 +38,31 @@ class GalleryImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageMetadata = tweet.gallery[index];
 
-    final isVideo = imageMetadata.video;
+    final isVideo = imageMetadata.type.contains('video');
 
     if (isVideo) {
-      return IgnorePointer(
-        ignoring: !inScaffold,
-        child: Container(
-          height: 320,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(16)),
+      return Container(
+        height: 320,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+        alignment: Alignment.center,
+        child: Stack(
           alignment: Alignment.center,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Transform.scale(
-                scale: 1.4,
-                child: FutureSpaceBuilder(
-                  imageMetadata: imageMetadata,
-                  builder: (url) {
-                    return VideoPlayerBox(
-                      title: imageMetadata.caption,
-                      url: url,
-                    );
-                  },
-                ),
+          children: [
+            Transform.scale(
+              scale: 2,
+              child: FutureSpaceBuilder(
+                imageMetadata: imageMetadata,
+                builder: (url) {
+                  return VideoPlayerBox(
+                    title: imageMetadata.caption,
+                    url: url,
+                  );
+                },
               ),
-              const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
-            ],
-          ),
+            ),
+            const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
+          ],
         ),
       );
     }
@@ -75,26 +76,22 @@ class GalleryImage extends StatelessWidget {
                   appBar: AppBar(
                     title: Text(imageMetadata.caption),
                   ),
-                  body: Stack(
-                    children: [
-                      Container(
-                        constraints: BoxConstraints.expand(
-                          height: MediaQuery.of(context).size.height,
-                        ),
-                        child: FutureSpaceBuilder(
-                          imageMetadata: imageMetadata,
-                          builder: (url) {
-                            return PhotoView(
-                              imageProvider: NetworkImage(url),
-                              // tightMode: true,
-                              // maxScale: PhotoViewComputedScale.covered * 2.0,
-                              // minScale: PhotoViewComputedScale.contained * 0.8,
-                              initialScale: PhotoViewComputedScale.contained,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                  body: Container(
+                    constraints: BoxConstraints.expand(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                    child: FutureSpaceBuilder(
+                      imageMetadata: imageMetadata,
+                      builder: (url) {
+                        return PhotoView(
+                          imageProvider: NetworkImage(url),
+                          // tightMode: true,
+                          // maxScale: PhotoViewComputedScale.covered * 2.0,
+                          // minScale: PhotoViewComputedScale.contained * 0.8,
+                          initialScale: PhotoViewComputedScale.contained,
+                        );
+                      },
+                    ),
                   ),
                 ),
               );
@@ -121,7 +118,7 @@ class GalleryImage extends StatelessWidget {
               //     imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
               //     // blurHash: imageMetadata.blurhash,
               //   ),
-              if (imageMetadata.localUrl.isNotEmpty)
+              if (imageMetadata.localUrl.isNotEmpty && !kIsWeb)
                 FutureBuilder(
                   future: File(imageMetadata.localUrl).readAsBytes(),
                   builder: (context, snapshot) {
@@ -140,7 +137,7 @@ class GalleryImage extends StatelessWidget {
                     }
                   },
                 ),
-              if (inScaffold && imageMetadata.localUrl.isNotEmpty)
+              if (inScaffold && imageMetadata.localUrl.isNotEmpty && !kIsWeb)
                 FutureBuilder(
                   future: File(imageMetadata.localUrl).exists(),
                   builder: (context, snapshot) {
@@ -183,32 +180,6 @@ class GalleryImage extends StatelessWidget {
                       return const SizedBox.shrink();
                     }
                   },
-                ),
-              if (inScaffold && imageMetadata.localUrl.isEmpty)
-                Consumer(
-                  builder: (_, ref, ___) => AsyncTextFormField(
-                    initialValue: imageMetadata.caption,
-                    asyncValidator: (value) async {
-                      final uIndex = tweet.gallery.indexWhere((element) => element == imageMetadata);
-                      tweet.gallery[uIndex].caption = value;
-
-                      ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
-
-                      return null;
-                    },
-                    style: context.hs.c(Colors.white),
-                    showPrefix: false,
-                    milliseconds: 1000,
-                    maxLines: 3,
-                    decoration: (AsyncText value, galleryCon) => const InputDecoration(
-                      fillColor: Colors.black38,
-                      hintStyle: TextStyle(color: Colors.white70),
-                      filled: true,
-                      focusedBorder: InputBorder.none,
-                      border: InputBorder.none,
-                      hintText: 'Add Caption...',
-                    ),
-                  ),
                 ),
             ],
           ),
@@ -299,16 +270,16 @@ class GalleryBox extends StatelessWidget {
   }
 }
 
-class GalleryScaffold extends StatefulWidget {
+class GalleryScaffold extends ConsumerStatefulWidget {
   const GalleryScaffold({super.key, required this.tweet});
 
   final Tweet tweet;
 
   @override
-  State<GalleryScaffold> createState() => _GalleryScaffoldState();
+  ConsumerState<GalleryScaffold> createState() => _GalleryScaffoldState();
 }
 
-class _GalleryScaffoldState extends State<GalleryScaffold> {
+class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
   List<ImageMetadata> selected = [];
   bool startSelection = false;
 
@@ -316,6 +287,8 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final me = ref.watch(currentUserProvider).value;
+
     return StreamBuilder(
       stream: tweet.stream,
       builder: (context, snapshot) {
@@ -353,52 +326,55 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
                 )
             ],
           ),
-          floatingActionButton: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FloatingActionButton(
-                onPressed: null,
-                child: Consumer(
-                  builder: (context, ref, child) => GalleryUploaderButton(
-                    tonal: false,
-                    ref: ref,
-                    tweet: tweet,
-                  ),
-                ),
-              ),
-              if (tweet.uploaded != tweet.total) ...[
-                const SizedBox(width: 10),
-                FloatingActionButton(
-                  child: const Icon(CupertinoIcons.refresh_circled_solid, size: 40),
-                  onPressed: () async {
-                    for (var img in tweet.notAvaiable) {
-                      try {
-                        final p = tweet.path.split('/');
-                        final roomId = p[1];
-                        final tweetId = p[3];
+          floatingActionButton: me?.uid != tweet.user
+              ? null
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FloatingActionButton(
+                      onPressed: null,
+                      child: Consumer(
+                        builder: (context, ref, child) => GalleryUploaderButton(
+                          tonal: false,
+                          ref: ref,
+                          tweet: tweet,
+                        ),
+                      ),
+                    ),
+                    if (tweet.uploaded != tweet.total) ...[
+                      const SizedBox(width: 10),
+                      FloatingActionButton(
+                        child: const Icon(CupertinoIcons.refresh_circled_solid, size: 40),
+                        onPressed: () async {
+                          for (var img in tweet.notAvaiable) {
+                            try {
+                              final p = tweet.path.split('/');
+                              final roomId = p[1];
+                              final tweetId = p[3];
 
-                        await uploadFire(
-                          imageName: randomString(12),
-                          storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
-                          docPath: 'rooms/$roomId/tweets/$tweetId',
-                          meta: img,
-                          file: null,
-                          multipath: Const.gallery.name,
-                        );
-                      } catch (e) {
-                        debugPrint(e.toString());
-                      }
-                    }
-                  },
+                              await uploadFire(
+                                imageName: randomString(12),
+                                storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                                docPath: 'rooms/$roomId/tweets/$tweetId',
+                                meta: img,
+                                file: null,
+                                multipath: Const.gallery.name,
+                              );
+                            } catch (e) {
+                              debugPrint(e.toString());
+                            }
+                          }
+                        },
+                      ),
+                    ]
+                  ],
                 ),
-              ]
-            ],
-          ),
           body: Container(
             alignment: Alignment.center,
-            child: ListView.builder(
+            child: GridView.builder(
               cacheExtent: 2000,
               itemCount: tweet.gallery.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (1, 4).c.toInt()),
               itemBuilder: (context, index) {
                 void selector() {
                   if (selected.contains(tweet.gallery[index])) {
@@ -409,34 +385,68 @@ class _GalleryScaffoldState extends State<GalleryScaffold> {
                   setState(() {});
                 }
 
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onLongPress: () {
-                    setState(() => startSelection = true);
+                return Container(
+                  foregroundDecoration: BoxDecoration(
+                    color: selected.contains(tweet.gallery[index]) ? Colors.black12 : null,
+                  ),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onLongPress: () {
+                      setState(() => startSelection = true);
 
-                    selector();
-                  },
-                  onTap: !startSelection ? null : selector,
-                  child: Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      IgnorePointer(
-                        ignoring: startSelection,
-                        child: GalleryImage(
-                          key: ObjectKey(tweet.gallery[index].hashCode + index),
-                          tweet: tweet,
-                          index: index,
-                          inScaffold: true,
+                      selector();
+                    },
+                    onTap: !startSelection ? null : selector,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        IgnorePointer(
+                          ignoring: startSelection,
+                          child: GalleryImage(
+                            key: ObjectKey(tweet.gallery[index].hashCode + index),
+                            tweet: tweet,
+                            index: index,
+                            inScaffold: true,
+                          ),
                         ),
-                      ),
-                      if (startSelection)
-                        Checkbox(
-                          value: selected.contains(tweet.gallery[index]),
-                          onChanged: (v) {
-                            selector();
-                          },
-                        ),
-                    ],
+                        if (me?.uid == tweet.user)
+                          Consumer(
+                            builder: (_, ref, ___) => AsyncTextFormField(
+                              initialValue: tweet.gallery[index].caption,
+                              asyncValidator: (value) async {
+                                final uIndex = tweet.gallery.indexWhere((element) => element == tweet.gallery[index]);
+                                tweet.gallery[uIndex].caption = value;
+
+                                ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+
+                                return null;
+                              },
+                              style: context.hs.c(Colors.white),
+                              showPrefix: false,
+                              milliseconds: 1000,
+                              maxLines: 3,
+                              decoration: (AsyncText value, galleryCon) => const InputDecoration(
+                                fillColor: Colors.black38,
+                                hintStyle: TextStyle(color: Colors.white70),
+                                filled: true,
+                                focusedBorder: InputBorder.none,
+                                border: InputBorder.none,
+                                hintText: 'Add Caption...',
+                              ),
+                            ),
+                          ),
+                        if (startSelection)
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Checkbox(
+                              value: selected.contains(tweet.gallery[index]),
+                              onChanged: (v) {
+                                selector();
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -476,7 +486,7 @@ class GalleryUploaderButton extends StatelessWidget {
               );
 
       if (tweet != null) {
-        tweet?.gallery.addAll(List.from(imgs));
+        tweet?.gallery.addAll(imgs.map((e) => e.$1));
 
         ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet!);
       }
@@ -517,7 +527,13 @@ class GalleryUploaderButton extends StatelessWidget {
   }
 }
 
-class FutureSpaceBuilder extends StatelessWidget {
+@Riverpod(keepAlive: true)
+FutureOr<String> spaceStoreRef(SpaceStoreRefRef ref, String url) async {
+  final r = await FirebaseStorage.instance.ref(url).getDownloadURL();
+  return r;
+}
+
+class FutureSpaceBuilder extends ConsumerWidget {
   const FutureSpaceBuilder({
     super.key,
     this.imageMetadata,
@@ -534,7 +550,7 @@ class FutureSpaceBuilder extends StatelessWidget {
   final double? radius;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (imageMetadata?.unsplashurl.isNotEmpty ?? false) {
       return CustomCacheImage(
         radius: radius ?? 0,
@@ -544,25 +560,21 @@ class FutureSpaceBuilder extends StatelessWidget {
 
     final p = path ?? imageMetadata?.path ?? '';
 
-    return FutureBuilder(
-      future: FirebaseStorage.instance.ref(thumbnail ? spaceThumbPath(p) : p).getDownloadURL(),
-      builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return CustomCacheImage(
-            imageUrl: '',
-            radius: radius ?? 0,
-          );
-        }
+    final spaceurl = ref.watch(spaceStoreRefProvider(thumbnail ? spaceThumbPath(p) : p));
 
+    return spaceurl.when(
+      data: (url) {
         if (builder == null) {
           return CustomCacheImage(
             radius: radius ?? 0,
-            imageUrl: snapshot.data!,
+            imageUrl: url,
           );
         } else {
-          return builder!(snapshot.data!);
+          return builder!(url);
         }
       },
+      error: (error, stackTrace) => const SizedBox(),
+      loading: () => const SizedBox(),
     );
   }
 }

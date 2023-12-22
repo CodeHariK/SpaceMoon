@@ -8,7 +8,7 @@ import { tweetToTopic } from "./messaging";
 
 export const sendTweet = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request) => {
     let userId = request.auth!.uid;
 
@@ -52,7 +52,7 @@ export const sendTweet = onCall({
 
 export const updateTweet = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request) => {
     let userId = request.auth!.uid;
 
@@ -96,7 +96,7 @@ export const updateTweet = onCall({
 
 export const deleteTweet = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request) => {
     let userId = request.auth!.uid;
 
@@ -131,7 +131,7 @@ export const deleteTweet = onCall({
 
 export const onTweetDeleted = onDocumentDeleted({
     document: "rooms/{roomId}/tweets/{tweetId}",
-    region: "asia-south1",
+    region: 'asia-south1',
 },
     async (event) => {
         let path = `tweet/${event.params.roomId}/${Tweet.fromJSON(event.data?.data()).user}/${event.params.tweetId}`;

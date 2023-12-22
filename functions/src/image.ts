@@ -8,7 +8,10 @@ import sharp = require("sharp");
 import { FieldValue } from "firebase-admin/firestore";
 import { ImageMetadata, Tweet } from "./Gen/data";
 
-export const generateThumbnail = onObjectFinalized({ cpu: 2, region: "asia-south1", }, async (event) => {
+export const generateThumbnail = onObjectFinalized({
+    cpu: 2,
+    region: 'asia-south1',
+}, async (event) => {
 
     const fileBucket = event.data.bucket; // Storage bucket containing the file.
     const filePath = event.data.name; // File path in the bucket.
@@ -78,7 +81,7 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2, region: "asia-south
             if (!oldImageData) return;
 
             let newImageData = ImageMetadata.fromPartial(oldImageData)
-            newImageData.localUrl = '';
+            newImageData.localUrl = undefined;
             newImageData.path = filePath;
             newImageData.width = sharpImageMetaData.width!;
             newImageData.height = sharpImageMetaData.height!;
@@ -113,8 +116,7 @@ export const generateThumbnail = onObjectFinalized({ cpu: 2, region: "asia-south
             if (!oldImageData) return;
 
             let newImageData = ImageMetadata.fromPartial(oldImageData)
-            newImageData.video = true
-            newImageData.localUrl = '';
+            newImageData.localUrl = undefined;
             newImageData.path = filePath;
 
             await admin.firestore().doc(docpath).update({

@@ -15,13 +15,14 @@ Future<(ImageMetadata, XFile)?> selectImageMedia() async {
     if ((await mediaFiles?.length() ?? 100000000000) > 10000000) return null;
     if (mediaFiles == null) return null;
 
+    final mime = mediaFiles.mimeType ?? lookupMimeType(mediaFiles.path);
+
     return (
-      ImageMetadata(
-        localUrl: mediaFiles.path,
-        // blurhash: blurHash.hash,
-        // width: upImg.width,
-        // height: upImg.height,
-      ),
+      ImageMetadata(localUrl: mediaFiles.path, type: mime
+          // blurhash: blurHash.hash,
+          // width: upImg.width,
+          // height: upImg.height,
+          ),
       mediaFiles
     );
   } catch (e) {
@@ -38,7 +39,9 @@ Future<List<(ImageMetadata, XFile)>> selectMultiMedia() async {
     }).map((e) async {
       final savepath = e.path;
 
-      if ((await e.length()) > 10000000) {
+      final mime = e.mimeType ?? lookupMimeType(e.path);
+
+      if ((await e.length()) > 30000000) {
         return null;
       }
 
@@ -62,6 +65,7 @@ Future<List<(ImageMetadata, XFile)>> selectMultiMedia() async {
       return (
         ImageMetadata(
           localUrl: savepath,
+          type: mime,
           // blurhash: blurHash.hash,
           // width: upImg.width,
           // height: upImg.height,
@@ -111,8 +115,6 @@ Future<void> uploadFire({
         if (singlepath != null) 'single': singlepath,
         // 'path': image.path,
       }));
-
-  print('-----${metadata.contentType}');
 
   if (isImageVideo(metadata.contentType ?? '')) {
     final ref = FirebaseStorage.instance.ref().child(storagePath).child(name);

@@ -257,6 +257,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           tweet.path = doc.reference.path;
 
                           return TweetBox(
+                            key: ValueKey(tweet.hashCode),
+                            roomuser: meInRoom,
                             tweet: tweet,
                           );
                         },

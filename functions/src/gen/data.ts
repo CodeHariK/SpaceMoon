@@ -201,6 +201,7 @@ export enum Const {
   updated = 130,
   timestamp = 140,
   open = 150,
+  famous = 155,
   members = 160,
   tweet_count = 170,
   description = 180,
@@ -258,6 +259,9 @@ export function constFromJSON(object: any): Const {
     case 150:
     case "open":
       return Const.open;
+    case 155:
+    case "famous":
+      return Const.famous;
     case 160:
     case "members":
       return Const.members;
@@ -311,6 +315,8 @@ export function constToJSON(object: Const): string {
       return "timestamp";
     case Const.open:
       return "open";
+    case Const.famous:
+      return "famous";
     case Const.members:
       return "members";
     case Const.tweet_count:
@@ -363,6 +369,7 @@ export interface Room {
   description?: string | undefined;
   created?: Date | undefined;
   updated?: Date | undefined;
+  famous?: boolean | undefined;
 }
 
 export interface Tweet {
@@ -387,7 +394,7 @@ export interface ImageMetadata {
     | string
     | undefined;
   /** optional string blurhash = 60; */
-  video?: boolean | undefined;
+  type?: string | undefined;
 }
 
 function createBaseUser(): User {
@@ -852,6 +859,7 @@ function createBaseRoom(): Room {
     description: undefined,
     created: undefined,
     updated: undefined,
+    famous: undefined,
   };
 }
 
@@ -880,6 +888,9 @@ export const Room = {
     }
     if (message.updated !== undefined) {
       Timestamp.encode(toTimestamp(message.updated), writer.uint32(642).fork()).ldelim();
+    }
+    if (message.famous !== undefined) {
+      writer.uint32(720).bool(message.famous);
     }
     return writer;
   },
@@ -947,6 +958,13 @@ export const Room = {
 
           message.updated = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
+        case 90:
+          if (tag !== 720) {
+            break;
+          }
+
+          message.famous = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -966,6 +984,7 @@ export const Room = {
       description: isSet(object.description) ? globalThis.String(object.description) : undefined,
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
+      famous: isSet(object.famous) ? globalThis.Boolean(object.famous) : undefined,
     };
   },
 
@@ -995,6 +1014,9 @@ export const Room = {
     if (message.updated !== undefined) {
       obj.updated = message.updated.toISOString();
     }
+    if (message.famous !== undefined) {
+      obj.famous = message.famous;
+    }
     return obj;
   },
 
@@ -1011,6 +1033,7 @@ export const Room = {
     message.description = object.description ?? undefined;
     message.created = object.created ?? undefined;
     message.updated = object.updated ?? undefined;
+    message.famous = object.famous ?? undefined;
     return message;
   },
 };
@@ -1214,7 +1237,7 @@ function createBaseImageMetadata(): ImageMetadata {
     width: undefined,
     height: undefined,
     caption: undefined,
-    video: undefined,
+    type: undefined,
   };
 }
 
@@ -1238,8 +1261,8 @@ export const ImageMetadata = {
     if (message.caption !== undefined) {
       writer.uint32(482).string(message.caption);
     }
-    if (message.video !== undefined) {
-      writer.uint32(560).bool(message.video);
+    if (message.type !== undefined) {
+      writer.uint32(562).string(message.type);
     }
     return writer;
   },
@@ -1294,11 +1317,11 @@ export const ImageMetadata = {
           message.caption = reader.string();
           continue;
         case 70:
-          if (tag !== 560) {
+          if (tag !== 562) {
             break;
           }
 
-          message.video = reader.bool();
+          message.type = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1317,7 +1340,7 @@ export const ImageMetadata = {
       width: isSet(object.width) ? globalThis.Number(object.width) : undefined,
       height: isSet(object.height) ? globalThis.Number(object.height) : undefined,
       caption: isSet(object.caption) ? globalThis.String(object.caption) : undefined,
-      video: isSet(object.video) ? globalThis.Boolean(object.video) : undefined,
+      type: isSet(object.type) ? globalThis.String(object.type) : undefined,
     };
   },
 
@@ -1341,8 +1364,8 @@ export const ImageMetadata = {
     if (message.caption !== undefined) {
       obj.caption = message.caption;
     }
-    if (message.video !== undefined) {
-      obj.video = message.video;
+    if (message.type !== undefined) {
+      obj.type = message.type;
     }
     return obj;
   },
@@ -1358,7 +1381,7 @@ export const ImageMetadata = {
     message.width = object.width ?? undefined;
     message.height = object.height ?? undefined;
     message.caption = object.caption ?? undefined;
-    message.video = object.video ?? undefined;
+    message.type = object.type ?? undefined;
     return message;
   },
 };

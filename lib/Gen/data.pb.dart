@@ -420,6 +420,7 @@ class Room extends $pb.GeneratedMessage {
     $core.String? description,
     $0.Timestamp? created,
     $0.Timestamp? updated,
+    $core.bool? famous,
   }) {
     final $result = create();
     if (uid != null) {
@@ -446,6 +447,9 @@ class Room extends $pb.GeneratedMessage {
     if (updated != null) {
       $result.updated = updated;
     }
+    if (famous != null) {
+      $result.famous = famous;
+    }
     return $result;
   }
   Room._() : super();
@@ -461,6 +465,7 @@ class Room extends $pb.GeneratedMessage {
     ..aOS(60, _omitFieldNames ? '' : 'description')
     ..aOM<$0.Timestamp>(70, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..aOM<$0.Timestamp>(80, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
+    ..aOB(90, _omitFieldNames ? '' : 'famous')
     ..hasRequiredFields = false
   ;
 
@@ -560,6 +565,15 @@ class Room extends $pb.GeneratedMessage {
   void clearUpdated() => clearField(80);
   @$pb.TagNumber(80)
   $0.Timestamp ensureUpdated() => $_ensure(7);
+
+  @$pb.TagNumber(90)
+  $core.bool get famous => $_getBF(8);
+  @$pb.TagNumber(90)
+  set famous($core.bool v) { $_setBool(8, v); }
+  @$pb.TagNumber(90)
+  $core.bool hasFamous() => $_has(8);
+  @$pb.TagNumber(90)
+  void clearFamous() => clearField(90);
 }
 
 class Tweet extends $pb.GeneratedMessage {
@@ -728,7 +742,7 @@ class ImageMetadata extends $pb.GeneratedMessage {
     $core.int? width,
     $core.int? height,
     $core.String? caption,
-    $core.bool? video,
+    $core.String? type,
   }) {
     final $result = create();
     if (unsplashurl != null) {
@@ -749,8 +763,8 @@ class ImageMetadata extends $pb.GeneratedMessage {
     if (caption != null) {
       $result.caption = caption;
     }
-    if (video != null) {
-      $result.video = video;
+    if (type != null) {
+      $result.type = type;
     }
     return $result;
   }
@@ -765,7 +779,7 @@ class ImageMetadata extends $pb.GeneratedMessage {
     ..a<$core.int>(40, _omitFieldNames ? '' : 'width', $pb.PbFieldType.O3)
     ..a<$core.int>(50, _omitFieldNames ? '' : 'height', $pb.PbFieldType.O3)
     ..aOS(60, _omitFieldNames ? '' : 'caption')
-    ..aOB(70, _omitFieldNames ? '' : 'video')
+    ..aOS(70, _omitFieldNames ? '' : 'type')
     ..hasRequiredFields = false
   ;
 
@@ -845,13 +859,13 @@ class ImageMetadata extends $pb.GeneratedMessage {
   void clearCaption() => clearField(60);
 
   @$pb.TagNumber(70)
-  $core.bool get video => $_getBF(6);
+  $core.String get type => $_getSZ(6);
   @$pb.TagNumber(70)
-  set video($core.bool v) { $_setBool(6, v); }
+  set type($core.String v) { $_setString(6, v); }
   @$pb.TagNumber(70)
-  $core.bool hasVideo() => $_has(6);
+  $core.bool hasType() => $_has(6);
   @$pb.TagNumber(70)
-  void clearVideo() => clearField(70);
+  void clearType() => clearField(70);
 }
 
 

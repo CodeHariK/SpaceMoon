@@ -33,6 +33,7 @@ class AllChatPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allRoomsUsers = ref.watch(getAllRoomUserForUserProvider);
     final user = ref.watch(currentUserDataProvider).value;
+    final openRooms = ref.watch(searchFamousRoomsProvider).value ?? [];
 
     return Scaffold(
       bottomNavigationBar: SizedBox(
@@ -41,14 +42,16 @@ class AllChatPage extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () {
           ref.invalidate(currentUserProvider);
+          ref.invalidate(searchFamousRoomsProvider);
           return 1.sec.delay();
         },
         child: SafeArea(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!subscription)
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4, top: 8),
                   child: Hero(
                     tag: 'Search',
                     child: TextFormField(
@@ -64,6 +67,44 @@ class AllChatPage extends ConsumerWidget {
                     ),
                   ),
                 ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: openRooms
+                        .map(
+                          (room) => InkWell(
+                            onTap: () {
+                              if (room != null) {
+                                ChatRoute(chatId: room.uid).go(context);
+                              }
+                            },
+                            child: Container(
+                              width: 120,
+                              height: 150,
+                              margin: const EdgeInsets.all(4),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: (room?.photoURL == null || room?.photoURL.isEmpty == true)
+                                        ? const Icon(Icons.local_activity_rounded, size: 64)
+                                        : FutureSpaceBuilder(
+                                            path: room?.photoURL,
+                                            radius: 16,
+                                          ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(room?.displayName.replaceAll(user?.displayName ?? '***', '').trim() ?? ''),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              ),
               Expanded(
                 child: Center(
                   child: allRoomsUsers.when(

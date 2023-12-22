@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -234,31 +232,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 class RefreshTokenDisplay extends ConsumerWidget {
   const RefreshTokenDisplay({super.key});
 
-  Map<String, dynamic>? jwtParse(String? refreshToken) {
-    final jwt = refreshToken?.split('.');
-    if (jwt != null && jwt.length > 1) {
-      String token = jwt[1];
-      int l = (token.length % 4);
-      token += List.generate((4 - l) % 4, (index) => '=').join();
-      final decoded = base64.decode(token);
-      token = utf8.decode(decoded);
-      return json.decode(token) as Map<String, dynamic>;
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value;
+    final refreshToken = ref.watch(currentUserTokenProvider).value;
     if (kDebugMode) {
-      return FutureBuilder(
-        future: user?.getIdToken(),
-        builder: (context, snapshot) {
-          final refreshToken = snapshot.data;
-          // return Text(refreshToken ?? '-');
-          return Text((beautifyMap(jwtParse(refreshToken))).toString());
-        },
-      );
+      return Text((beautifyMap(refreshToken)).toString());
     }
     return Container();
   }

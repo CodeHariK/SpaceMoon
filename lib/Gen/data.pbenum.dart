@@ -106,6 +106,7 @@ class Const extends $pb.ProtobufEnum {
   static const Const updated = Const._(130, _omitEnumNames ? '' : 'updated');
   static const Const timestamp = Const._(140, _omitEnumNames ? '' : 'timestamp');
   static const Const open = Const._(150, _omitEnumNames ? '' : 'open');
+  static const Const famous = Const._(155, _omitEnumNames ? '' : 'famous');
   static const Const members = Const._(160, _omitEnumNames ? '' : 'members');
   static const Const tweet_count = Const._(170, _omitEnumNames ? '' : 'tweet_count');
   static const Const description = Const._(180, _omitEnumNames ? '' : 'description');
@@ -128,6 +129,7 @@ class Const extends $pb.ProtobufEnum {
     updated,
     timestamp,
     open,
+    famous,
     members,
     tweet_count,
     description,

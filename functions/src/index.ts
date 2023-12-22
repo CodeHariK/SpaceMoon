@@ -9,7 +9,7 @@ import { setGlobalOptions } from "firebase-functions/v2";
 
 setGlobalOptions({
     maxInstances: 10,
-    region: "asia-south1",
+    region: 'asia-south1',
     timeoutSeconds: 60,
     memory: "2GiB",
 });

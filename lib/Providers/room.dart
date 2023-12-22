@@ -55,6 +55,19 @@ Future<List<Room?>> searchRoomByNick(SearchRoomByNickRef ref) async {
   return getRoomByNick(nick);
 }
 
+@riverpod
+FutureOr<List<Room?>> searchFamousRooms(SearchFamousRoomsRef ref) async {
+  final rooms = await FirebaseFirestore.instance
+      .collection(Const.rooms.name)
+      .where(Const.famous.name, isEqualTo: true)
+      .orderBy(Const.updated.name, descending: true)
+      .limit(10)
+      .get()
+      .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
+
+  return rooms;
+}
+
 Future<List<Room?>> getRoomByNick(String nick) async {
   final rooms = await FirebaseFirestore.instance
       .collection(Const.rooms.name)

@@ -95,6 +95,7 @@ const Const$json = {
     {'1': 'updated', '2': 130},
     {'1': 'timestamp', '2': 140},
     {'1': 'open', '2': 150},
+    {'1': 'famous', '2': 155},
     {'1': 'members', '2': 160},
     {'1': 'tweet_count', '2': 170},
     {'1': 'description', '2': 180},
@@ -107,9 +108,9 @@ final $typed_data.Uint8List constDescriptor = $convert.base64Decode(
     'CgVDb25zdBIJCgV1c2VycxAAEgkKBXJvb21zEAoSCgoGdHdlZXRzEBQSDQoJcm9vbXVzZXJzEB'
     '4SBwoDdWlkECgSCAoEbmljaxAyEg8KC2Rpc3BsYXlOYW1lEDwSCQoFZW1haWwQRhIPCgtwaG9u'
     'ZU51bWJlchBQEgwKCHBob3RvVVJMEFoSDAoIZmNtVG9rZW4QZBIKCgZzdGF0dXMQbhILCgdjcm'
-    'VhdGVkEHgSDAoHdXBkYXRlZBCCARIOCgl0aW1lc3RhbXAQjAESCQoEb3BlbhCWARIMCgdtZW1i'
-    'ZXJzEKABEhAKC3R3ZWV0X2NvdW50EKoBEhAKC2Rlc2NyaXB0aW9uELQBEgwKB2dhbGxlcnkQvg'
-    'E=');
+    'VhdGVkEHgSDAoHdXBkYXRlZBCCARIOCgl0aW1lc3RhbXAQjAESCQoEb3BlbhCWARILCgZmYW1v'
+    'dXMQmwESDAoHbWVtYmVycxCgARIQCgt0d2VldF9jb3VudBCqARIQCgtkZXNjcmlwdGlvbhC0AR'
+    'IMCgdnYWxsZXJ5EL4B');
 
 @$core.Deprecated('Use userDescriptor instead')
 const User$json = {
@@ -218,6 +219,7 @@ const Room$json = {
     {'1': 'description', '3': 60, '4': 1, '5': 9, '9': 5, '10': 'description', '17': true},
     {'1': 'created', '3': 70, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 6, '10': 'created', '17': true},
     {'1': 'updated', '3': 80, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 7, '10': 'updated', '17': true},
+    {'1': 'famous', '3': 90, '4': 1, '5': 8, '9': 8, '10': 'famous', '17': true},
   ],
   '8': [
     {'1': '_uid'},
@@ -228,6 +230,7 @@ const Room$json = {
     {'1': '_description'},
     {'1': '_created'},
     {'1': '_updated'},
+    {'1': '_famous'},
   ],
 };
 
@@ -238,9 +241,10 @@ final $typed_data.Uint8List roomDescriptor = $convert.base64Decode(
     'c2VyLlZpc2libGVIA1IEb3BlbogBARIfCghwaG90b1VSTBgyIAEoCUgEUghwaG90b1VSTIgBAR'
     'IlCgtkZXNjcmlwdGlvbhg8IAEoCUgFUgtkZXNjcmlwdGlvbogBARI5CgdjcmVhdGVkGEYgASgL'
     'MhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgGUgdjcmVhdGVkiAEBEjkKB3VwZGF0ZWQYUC'
-    'ABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAdSB3VwZGF0ZWSIAQFCBgoEX3VpZEIH'
-    'CgVfbmlja0IOCgxfZGlzcGxheU5hbWVCBwoFX29wZW5CCwoJX3Bob3RvVVJMQg4KDF9kZXNjcm'
-    'lwdGlvbkIKCghfY3JlYXRlZEIKCghfdXBkYXRlZA==');
+    'ABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAdSB3VwZGF0ZWSIAQESGwoGZmFtb3Vz'
+    'GFogASgISAhSBmZhbW91c4gBAUIGCgRfdWlkQgcKBV9uaWNrQg4KDF9kaXNwbGF5TmFtZUIHCg'
+    'Vfb3BlbkILCglfcGhvdG9VUkxCDgoMX2Rlc2NyaXB0aW9uQgoKCF9jcmVhdGVkQgoKCF91cGRh'
+    'dGVkQgkKB19mYW1vdXM=');
 
 @$core.Deprecated('Use tweetDescriptor instead')
 const Tweet$json = {
@@ -289,7 +293,7 @@ const ImageMetadata$json = {
     {'1': 'width', '3': 40, '4': 1, '5': 5, '9': 3, '10': 'width', '17': true},
     {'1': 'height', '3': 50, '4': 1, '5': 5, '9': 4, '10': 'height', '17': true},
     {'1': 'caption', '3': 60, '4': 1, '5': 9, '9': 5, '10': 'caption', '17': true},
-    {'1': 'video', '3': 70, '4': 1, '5': 8, '9': 6, '10': 'video', '17': true},
+    {'1': 'type', '3': 70, '4': 1, '5': 9, '9': 6, '10': 'type', '17': true},
   ],
   '8': [
     {'1': '_unsplashurl'},
@@ -298,7 +302,7 @@ const ImageMetadata$json = {
     {'1': '_width'},
     {'1': '_height'},
     {'1': '_caption'},
-    {'1': '_video'},
+    {'1': '_type'},
   ],
 };
 
@@ -307,7 +311,7 @@ final $typed_data.Uint8List imageMetadataDescriptor = $convert.base64Decode(
     'Cg1JbWFnZU1ldGFkYXRhEiUKC3Vuc3BsYXNodXJsGAogASgJSABSC3Vuc3BsYXNodXJsiAEBEh'
     'cKBHBhdGgYFCABKAlIAVIEcGF0aIgBARIfCghsb2NhbFVybBgeIAEoCUgCUghsb2NhbFVybIgB'
     'ARIZCgV3aWR0aBgoIAEoBUgDUgV3aWR0aIgBARIbCgZoZWlnaHQYMiABKAVIBFIGaGVpZ2h0iA'
-    'EBEh0KB2NhcHRpb24YPCABKAlIBVIHY2FwdGlvbogBARIZCgV2aWRlbxhGIAEoCEgGUgV2aWRl'
-    'b4gBAUIOCgxfdW5zcGxhc2h1cmxCBwoFX3BhdGhCCwoJX2xvY2FsVXJsQggKBl93aWR0aEIJCg'
-    'dfaGVpZ2h0QgoKCF9jYXB0aW9uQggKBl92aWRlbw==');
+    'EBEh0KB2NhcHRpb24YPCABKAlIBVIHY2FwdGlvbogBARIXCgR0eXBlGEYgASgJSAZSBHR5cGWI'
+    'AQFCDgoMX3Vuc3BsYXNodXJsQgcKBV9wYXRoQgsKCV9sb2NhbFVybEIICgZfd2lkdGhCCQoHX2'
+    'hlaWdodEIKCghfY2FwdGlvbkIHCgVfdHlwZQ==');
 

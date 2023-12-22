@@ -15,7 +15,6 @@ import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Home/settings.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 
 part 'home.g.dart';
 
@@ -56,7 +55,7 @@ class Home {
                 TypedGoRoute<ChatRoute>(
                   path: AppRouter.chat,
                   routes: [
-                    TypedGoRoute<TweetRoute>(path: AppRouter.tweet),
+                    // TypedGoRoute<TweetRoute>(path: AppRouter.tweet),
                     TypedGoRoute<ChatInfoRoute>(path: AppRouter.chatInfo),
                   ],
                 ),

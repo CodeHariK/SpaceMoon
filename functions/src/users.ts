@@ -7,34 +7,36 @@ import { generateRandomAnimal, generateRandomString } from "./name_gen";
 import { isAlphanumeric } from "./Helpers/regex";
 import { deleteFCMToken } from "./messaging";
 
-export const onUserCreate = functions.region('asia-south1').auth.user().onCreate((user) => {
-    const { uid, email, displayName, phoneNumber, photoURL } = user;
+export const onUserCreate = functions
+    .region('asia-south1')
+    .auth.user().onCreate((user) => {
+        const { uid, email, displayName, phoneNumber, photoURL } = user;
 
-    admin.firestore().collection(constToJSON(Const.users)).doc(uid)
-        .set(
-            User.toJSON(User.create({
-                email: email,
-                nick: generateRandomString(8),
-                displayName: displayName ?? generateRandomAnimal(),
-                phoneNumber: phoneNumber,
-                photoURL: photoURL,
-                created: new Date(),
-                updated: new Date(),
-                status: Active.ONLINE,
-                friends: [],
-            })) as Map<string, any>
-            , { merge: true });
+        admin.firestore().collection(constToJSON(Const.users)).doc(uid)
+            .set(
+                User.toJSON(User.create({
+                    email: email,
+                    nick: generateRandomString(8),
+                    displayName: displayName ?? generateRandomAnimal(),
+                    phoneNumber: phoneNumber,
+                    photoURL: photoURL,
+                    created: new Date(),
+                    updated: new Date(),
+                    status: Active.ONLINE,
+                    friends: [],
+                })) as Map<string, any>
+                , { merge: true });
 
-    admin.auth().setCustomUserClaims(uid, {
-        manager: false,
+        admin.auth().setCustomUserClaims(uid, {
+            manager: false,
+        });
+
+        return 'Created';
     });
-
-    return 'Created';
-});
 
 export const callUserUpdate = onCall({
     enforceAppCheck: true,
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (request): Promise<void> => {
     let uid = request.auth?.uid;
 
@@ -67,46 +69,48 @@ export const callUserUpdate = onCall({
     }
 });
 
-export const deleteAuthUser = functions.region('asia-south1').auth.user().onDelete(async (user) => {
-    const roomUserQuery = await admin.firestore().collection(constToJSON(Const.roomusers))
-        .where('user', '==', user.uid).get()
+export const deleteAuthUser = functions
+    .region('asia-south1')
+    .auth.user().onDelete(async (user) => {
+        const roomUserQuery = await admin.firestore().collection(constToJSON(Const.roomusers))
+            .where('user', '==', user.uid).get()
 
-    const db = admin.firestore();
-    const batch = db.batch();
-    roomUserQuery.forEach((doc) => {
-        let ru = RoomUser.fromJSON(doc.data());
+        const db = admin.firestore();
+        const batch = db.batch();
+        roomUserQuery.forEach((doc) => {
+            let ru = RoomUser.fromJSON(doc.data());
+
+            //
+            admin.storage().bucket().deleteFiles({
+                prefix: `tweet/${ru.room}/${ru.user}`
+            });
+
+            //
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
 
         //
         admin.storage().bucket().deleteFiles({
-            prefix: `tweet/${ru.room}/${ru.user}`
+            prefix: `profile/users/${user.uid}`
         });
 
         //
-        batch.delete(doc.ref);
+        admin.firestore().collection(constToJSON(Const.users))
+            .doc(user.uid).delete()
+            .catch((error) => {
+                console.error('Error deleteAuthUser'/*, error*/);
+            });
+
+        //
+        deleteFCMToken(user.uid);
+
+        return { message: `Deleted all ${user.uid} documents.` };
     });
-    await batch.commit();
-
-    //
-    admin.storage().bucket().deleteFiles({
-        prefix: `profile/users/${user.uid}`
-    });
-
-    //
-    admin.firestore().collection(constToJSON(Const.users))
-        .doc(user.uid).delete()
-        .catch((error) => {
-            console.error('Error deleteAuthUser'/*, error*/);
-        });
-
-    //
-    deleteFCMToken(user.uid);
-
-    return { message: `Deleted all ${user.uid} documents.` };
-});
 
 export const deleteUser = onDocumentDeleted({
     document: "users/{userId}",
-    region: "asia-south1",
+    region: 'asia-south1',
 }, async (event) => {
     admin.auth().deleteUser(event.params.userId)
         .catch((error) => {

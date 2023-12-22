@@ -51,6 +51,7 @@ enum Const {
     updated = 130;
     timestamp = 140;
     open = 150;
+    famous = 155;
 
     members = 160;
     tweet_count = 170;
@@ -97,6 +98,7 @@ message Room {
     optional string description = 60;
     optional google.protobuf.Timestamp created = 70;
     optional google.protobuf.Timestamp updated = 80;
+    optional bool famous = 90;
 }
 
 message Tweet {
@@ -118,6 +120,6 @@ message ImageMetadata {
     optional int32 width = 40;
     optional int32 height = 50;
     optional string caption = 60;
-    optional bool video = 70;
+    optional string type = 70;
     // optional string blurhash = 60;
 }

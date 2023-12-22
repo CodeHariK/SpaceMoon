@@ -31,13 +31,14 @@ class CustomCacheImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // if (imageUrl.length < 8) return const SizedBox();
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: CachedNetworkImage(
           cacheManager: CacheManager(
             Config(
               "cache",
-              stalePeriod: const Duration(days: 3600),
+              stalePeriod: const Duration(days: 360),
             ),
           ),
           imageUrl: imageUrl,
@@ -51,27 +52,27 @@ class CustomCacheImage extends StatelessWidget {
           //         ),
           //       )
           //     : BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
-          progressIndicatorBuilder: (context, url, DownloadProgress progress) {
-            return const Stack(
-              children: [
-                // BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
-                // Center(
-                //   child: CircularProgressIndicator(
-                //     value: progress.progress ?? 1,
-                //   ),
-                // ),
-              ],
-            ).animate(
-              onPlay: (controller) {
-                controller.repeat();
-              },
-            ).shimmer(
-              delay: 1500.ms,
-              duration: 1500.ms,
-              curve: Curves.decelerate,
-              angle: 1,
-            );
-          },
+          // progressIndicatorBuilder: (context, url, DownloadProgress progress) {
+          //   return const Stack(
+          //     children: [
+          //       // BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
+          //       // Center(
+          //       //   child: CircularProgressIndicator(
+          //       //     value: progress.progress ?? 1,
+          //       //   ),
+          //       // ),
+          //     ],
+          //   ).animate(
+          //     onPlay: (controller) {
+          //       controller.repeat();
+          //     },
+          //   ).shimmer(
+          //     delay: 1500.ms,
+          //     duration: 1500.ms,
+          //     curve: Curves.decelerate,
+          //     angle: 1,
+          //   );
+          // },
           imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -84,8 +85,7 @@ class CustomCacheImage extends StatelessWidget {
                   ),
                 ),
               )
-          // .animate()
-          // .scale(
+          // .animate().scale(
           //       duration: 300.ms,
           //       begin: const Offset(1.25, 1.25),
           //       end: const Offset(1, 1),

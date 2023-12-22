@@ -54,9 +54,7 @@ class Tweets extends _$Tweets {
       // print(stopwatch.elapsedMilliseconds);
 
       return res.data;
-    } catch (e, s) {
-      debugPrint(e.toString());
-      debugPrint(s.toString());
+    } catch (e) {
       debugPrint('sendTweet Failed');
     }
     return null;

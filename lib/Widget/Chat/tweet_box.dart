@@ -1,18 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moonspace/form/mario.dart';
-import 'package:moonspace/helper/extensions/regex.dart';
-import 'package:moonspace/helper/validator/validator.dart';
-import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
-import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
@@ -20,6 +15,11 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
+
+import 'package:moonspace/form/mario.dart';
+import 'package:moonspace/helper/extensions/regex.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/helper/validator/validator.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
@@ -29,18 +29,17 @@ class TweetBox extends ConsumerWidget {
   const TweetBox({
     super.key,
     required this.tweet,
+    required this.roomuser,
     this.isHero = false,
   });
 
   final Tweet tweet;
+  final RoomUser roomuser;
   final bool isHero;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserDataProvider).value;
     final tweetuser = ref.watch(getUserByIdProvider(tweet.user)).value;
-
-    final roomuser = ref.watch(currentRoomUserProvider).value;
     final tweetroomuser = ref.watch(GetRoomUserProvider(roomId: tweet.room, userId: tweet.user)).value;
 
     final box = Material(
@@ -58,8 +57,8 @@ class TweetBox extends ConsumerWidget {
                 // color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(80) : Color.fromARGB(66, 238, 238, 238),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
-                  bottomLeft: Radius.circular(((user?.uid == tweet.user) ? 20 : 0)),
-                  bottomRight: Radius.circular((user?.uid == tweet.user) ? 0 : 20),
+                  bottomLeft: Radius.circular(((roomuser.user == tweet.user) ? 20 : 0)),
+                  bottomRight: Radius.circular((roomuser.user == tweet.user) ? 0 : 20),
                   topRight: const Radius.circular(20),
                 ),
               ),
@@ -153,7 +152,7 @@ class TweetBox extends ConsumerWidget {
                   ),
                 ),
         ]..sort(
-            (_, __) => user?.uid == tweet.user ? -1 : 1,
+            (_, __) => roomuser.user == tweet.user ? -1 : 1,
           ),
       ),
     );
@@ -166,32 +165,31 @@ class TweetBox extends ConsumerWidget {
                 child: box,
               )
         : GestureDetector(
-            onLongPress:
-                !((tweetroomuser != null && roomuser != null && roomuser.role.value > tweetroomuser.role.value) ||
-                        user?.uid == tweet.user)
-                    ? null
-                    : () {
-                        tweetuser;
-                        marioAlertDialog(
-                          context: context,
-                          title: 'Delete Tweet',
-                          actions: [
-                            MAction(
-                              text: 'cancel',
-                              fn: () => context.pop(),
-                            ),
-                            MAction(
-                              text: 'Yes',
-                              fn: () async {
-                                await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
-                                if (context.mounted) {
-                                  context.pop();
-                                }
-                              },
-                            ),
-                          ],
-                        );
-                      },
+            onLongPress: !((tweetroomuser != null && roomuser.role.value > tweetroomuser.role.value) ||
+                    roomuser.user == tweet.user)
+                ? null
+                : () {
+                    tweetuser;
+                    marioAlertDialog(
+                      context: context,
+                      title: 'Delete Tweet',
+                      actions: [
+                        MAction(
+                          text: 'cancel',
+                          fn: () => context.pop(),
+                        ),
+                        MAction(
+                          text: 'Yes',
+                          fn: () async {
+                            await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+                            if (context.mounted) {
+                              context.pop();
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
             // onTap: () {
             //   TweetRoute(
             //     chatId: tweet.room,
@@ -226,7 +224,9 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
         enableAnimation: true,
         onPreviewDataFetched: (d) {
           data = d;
-          setState(() {});
+          if (context.mounted) {
+            setState(() {});
+          }
         },
         textStyle: context.bl,
         metadataTextStyle: context.bl,
@@ -259,110 +259,110 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
   }
 }
 
-class DialogPage extends Page<String> {
-  const DialogPage({required this.child, super.key});
-  final Widget child;
-  @override
-  Route<String> createRoute(BuildContext context) {
-    return DialogRoute<String>(
-      context: context,
-      settings: this,
-      useSafeArea: false,
-      builder: (BuildContext context) => child,
-    );
-  }
-}
+// class DialogPage extends Page<String> {
+//   const DialogPage({required this.child, super.key});
+//   final Widget child;
+//   @override
+//   Route<String> createRoute(BuildContext context) {
+//     return DialogRoute<String>(
+//       context: context,
+//       settings: this,
+//       useSafeArea: false,
+//       builder: (BuildContext context) => child,
+//     );
+//   }
+// }
 
-class TweetRoute extends GoRouteData {
-  final String chatId;
-  final String tweetId;
-  final Tweet $extra;
+// class TweetRoute extends GoRouteData {
+//   final String chatId;
+//   final String tweetId;
+//   final Tweet $extra;
 
-  const TweetRoute({
-    required this.chatId,
-    required this.tweetId,
-    required this.$extra,
-  });
+//   const TweetRoute({
+//     required this.chatId,
+//     required this.tweetId,
+//     required this.$extra,
+//   });
 
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+//   static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
 
-  @override
-  Page<String> buildPage(BuildContext context, GoRouterState state) {
-    return DialogPage(
-      key: state.pageKey,
-      child: TweetDialog(
-        chatId: chatId,
-        tweetId: tweetId,
-        tweet: $extra,
-      ),
-    );
-  }
+//   @override
+//   Page<String> buildPage(BuildContext context, GoRouterState state) {
+//     return DialogPage(
+//       key: state.pageKey,
+//       child: TweetDialog(
+//         chatId: chatId,
+//         tweetId: tweetId,
+//         tweet: $extra,
+//       ),
+//     );
+//   }
 
-  void navPush(BuildContext context) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false,
-        barrierDismissible: true,
-        barrierColor: AppTheme.darkness ? const Color.fromARGB(50, 255, 255, 255) : const Color.fromARGB(50, 0, 0, 0),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
-        pageBuilder: (BuildContext context, _, __) {
-          return TweetDialog(
-            chatId: chatId,
-            tweetId: tweetId,
-            tweet: $extra,
-          );
-        },
-      ),
-    );
-  }
-}
+//   void navPush(BuildContext context) {
+//     Navigator.of(context).push(
+//       PageRouteBuilder(
+//         opaque: false,
+//         barrierDismissible: true,
+//         barrierColor: AppTheme.darkness ? const Color.fromARGB(50, 255, 255, 255) : const Color.fromARGB(50, 0, 0, 0),
+//         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//           return FadeTransition(
+//             opacity: animation,
+//             child: child,
+//           );
+//         },
+//         pageBuilder: (BuildContext context, _, __) {
+//           return TweetDialog(
+//             chatId: chatId,
+//             tweetId: tweetId,
+//             tweet: $extra,
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
 
-class TweetDialog extends ConsumerWidget {
-  const TweetDialog({
-    super.key,
-    required this.chatId,
-    required this.tweetId,
-    required this.tweet,
-  });
+// class TweetDialog extends ConsumerWidget {
+//   const TweetDialog({
+//     super.key,
+//     required this.chatId,
+//     required this.tweetId,
+//     required this.tweet,
+//   });
 
-  final String chatId;
-  final String tweetId;
-  final Tweet tweet;
+//   final String chatId;
+//   final String tweetId;
+//   final Tweet tweet;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () => GoRouter.maybeOf(context)?.pop('Hello'),
-      child: AlertDialog(
-        // title: Text('$chatId : $tweetId'),
-        contentPadding: const EdgeInsets.all(4),
-        content: TweetBox(
-          tweet: tweet,
-          isHero: true,
-        ),
-        actions: [
-          AsyncLock(
-            builder: (loading, status, lock, open, setStatus) {
-              return OutlinedButton(
-                onPressed: () async {
-                  lock();
-                  await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
-                  open();
-                  if (context.mounted) {
-                    context.pop();
-                  }
-                },
-                child: const Text('Delete'),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     return GestureDetector(
+//       onTap: () => GoRouter.maybeOf(context)?.pop('Hello'),
+//       child: AlertDialog(
+//         // title: Text('$chatId : $tweetId'),
+//         contentPadding: const EdgeInsets.all(4),
+//         content: TweetBox(
+//           tweet: tweet,
+//           isHero: true,
+//         ),
+//         actions: [
+//           AsyncLock(
+//             builder: (loading, status, lock, open, setStatus) {
+//               return OutlinedButton(
+//                 onPressed: () async {
+//                   lock();
+//                   await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+//                   open();
+//                   if (context.mounted) {
+//                     context.pop();
+//                   }
+//                 },
+//                 child: const Text('Delete'),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
