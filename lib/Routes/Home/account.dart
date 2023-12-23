@@ -68,6 +68,12 @@ class AccountPage extends StatelessWidget {
         children: [
           Text('Email  ${FirebaseAuth.instance.currentUser?.email}'),
           Text('Phone  ${FirebaseAuth.instance.currentUser?.phoneNumber}'),
+          OutlinedButton(
+            onPressed: () {
+              FirebaseAuth.instance.currentUser?.sendEmailVerification();
+            },
+            child: const Text('Send Verification Mail'),
+          ),
         ],
       ),
     );

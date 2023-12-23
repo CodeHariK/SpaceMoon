@@ -15,6 +15,7 @@ import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Static/theme.dart';
 
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:spacemoon/main.dart';
 
 part 'about.g.dart';
 
@@ -63,7 +64,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
             if (widget.onboard != null) {
               widget.onboard?.call();
             } else {
-              safeLaunchUrl('https://github.com/codeharik/SpaceMoon');
+              safeLaunchUrl(SpaceMoon.spacemoonGithub);
             }
             context.pop();
             animCon.reset();
@@ -117,17 +118,26 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
 
                     //
                     const SizedBox(height: 20),
-                    Text('Spacemoon', style: context.tl),
+                    Text.rich(
+                      TextSpan(
+                        text: SpaceMoon.title,
+                        style: context.tm,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            safeLaunchUrl(SpaceMoon.web);
+                          },
+                      ),
+                    ),
                     SizedBox(height: (5, 10).c),
                     Text(' Built by', style: context.ts),
                     SizedBox(height: (5, 10).c),
                     Text.rich(
                       TextSpan(
-                        text: 'Hari Krishnan',
+                        text: SpaceMoon.harikrishnan,
                         style: context.tm,
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            safeLaunchUrl('https://github.com/codeharik');
+                            safeLaunchUrl(SpaceMoon.github);
                           },
                       ),
                     ),
@@ -138,7 +148,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                         style: context.tm,
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            safeLaunchUrl('https://shark.run');
+                            safeLaunchUrl(SpaceMoon.sharkrun);
                           },
                       ),
                     ),
@@ -152,6 +162,33 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                     SizedBox(height: (5, 10).c),
 
                     const SocialButtons(),
+
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                safeLaunchUrl(SpaceMoon.googleplay);
+                              },
+                              child: Image.asset(Asset.googleplay),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  safeLaunchUrl(SpaceMoon.appstore);
+                                },
+                                child: Image.asset(Asset.appstore),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
                     SizedBox(height: (10, 20).c),
 
@@ -185,7 +222,7 @@ class SocialButtons extends StatelessWidget {
       children: [
         IconButton(
           onPressed: () {
-            safeLaunchUrl('https://github.com/codeharik');
+            safeLaunchUrl(SpaceMoon.github);
           },
           icon: Container(
             decoration: BoxDecoration(
@@ -203,7 +240,7 @@ class SocialButtons extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            safeLaunchUrl('https://www.linkedin.com/in/codeharik');
+            safeLaunchUrl(SpaceMoon.linkedIn);
           },
           icon: Container(
             padding: const EdgeInsets.all(4.0),
@@ -221,7 +258,7 @@ class SocialButtons extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            safeLaunchUrl('https://www.twitter.com/codeharik');
+            safeLaunchUrl(SpaceMoon.twitter);
           },
           icon: Container(
             padding: const EdgeInsets.all(4.0),

@@ -24,12 +24,9 @@ export const onUserCreate = functions
                     updated: new Date(),
                     status: Active.ONLINE,
                     friends: [],
+                    admin: false,
                 })) as Map<string, any>
                 , { merge: true });
-
-        admin.auth().setCustomUserClaims(uid, {
-            manager: false,
-        });
 
         return 'Created';
     });

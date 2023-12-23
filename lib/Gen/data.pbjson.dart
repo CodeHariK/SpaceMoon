@@ -127,6 +127,7 @@ const User$json = {
     {'1': 'created', '3': 90, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 7, '10': 'created', '17': true},
     {'1': 'updated', '3': 100, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 8, '10': 'updated', '17': true},
     {'1': 'open', '3': 110, '4': 1, '5': 14, '6': '.user.Visible', '9': 9, '10': 'open', '17': true},
+    {'1': 'admin', '3': 120, '4': 1, '5': 8, '9': 10, '10': 'admin', '17': true},
   ],
   '8': [
     {'1': '_uid'},
@@ -139,6 +140,7 @@ const User$json = {
     {'1': '_created'},
     {'1': '_updated'},
     {'1': '_open'},
+    {'1': '_admin'},
   ],
 };
 
@@ -151,9 +153,10 @@ final $typed_data.Uint8List userDescriptor = $convert.base64Decode(
     'SAZSBnN0YXR1c4gBARIYCgdmcmllbmRzGFAgAygJUgdmcmllbmRzEjkKB2NyZWF0ZWQYWiABKA'
     'syGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAdSB2NyZWF0ZWSIAQESOQoHdXBkYXRlZBhk'
     'IAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBICFIHdXBkYXRlZIgBARImCgRvcGVuGG'
-    '4gASgOMg0udXNlci5WaXNpYmxlSAlSBG9wZW6IAQFCBgoEX3VpZEIOCgxfZGlzcGxheU5hbWVC'
-    'BwoFX25pY2tCCAoGX2VtYWlsQg4KDF9waG9uZU51bWJlckILCglfcGhvdG9VUkxCCQoHX3N0YX'
-    'R1c0IKCghfY3JlYXRlZEIKCghfdXBkYXRlZEIHCgVfb3Blbg==');
+    '4gASgOMg0udXNlci5WaXNpYmxlSAlSBG9wZW6IAQESGQoFYWRtaW4YeCABKAhIClIFYWRtaW6I'
+    'AQFCBgoEX3VpZEIOCgxfZGlzcGxheU5hbWVCBwoFX25pY2tCCAoGX2VtYWlsQg4KDF9waG9uZU'
+    '51bWJlckILCglfcGhvdG9VUkxCCQoHX3N0YXR1c0IKCghfY3JlYXRlZEIKCghfdXBkYXRlZEIH'
+    'CgVfb3BlbkIICgZfYWRtaW4=');
 
 @$core.Deprecated('Use messagingDescriptor instead')
 const Messaging$json = {

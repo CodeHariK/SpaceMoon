@@ -74,6 +74,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     height: (240, 300).c,
                     width: (240, 300).c,
                     padding: const EdgeInsets.all(8),
+                    foregroundDecoration: user?.admin == false
+                        ? null
+                        : BoxDecoration(
+                            border: Border.all(width: 10, color: AppTheme.seedCard),
+                            borderRadius: BorderRadius.circular(300),
+                          ),
                     child: InkWell(
                       splashFactory: InkSplash.splashFactory,
                       onTap: searchuser != null
@@ -196,7 +202,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       style: context.ts,
                     ),
                   ),
-                  if (searchuser != null)
+                  if (searchuser != null && searchuser != user)
                     Consumer(
                       builder: (context, ref, child) {
                         final me = ref.watch(currentUserDataProvider).value;

@@ -215,7 +215,11 @@ class QrDialog extends HookWidget {
             ),
 
             //
-            const QrScanner()
+            Device.isMobile
+                ? const QrScanner()
+                : const Center(
+                    child: Text('Scanner Not available'),
+                  )
           ],
         ),
       ),

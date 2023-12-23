@@ -9,13 +9,12 @@ import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
-import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/user_data.dart';
-import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
@@ -92,7 +91,17 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                 room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim(),
               ),
               actions: [
-                if (meInRoom?.isUserOrAdmin == true) InviteButton(room: room),
+                if (meInRoom?.isUserOrAdmin == true)
+                  IconButton(
+                    onPressed: () {
+                      context.bSlidePush(
+                        SearchPage(
+                          room: room,
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add_circle_outline),
+                  ),
               ],
             ),
       body: SafeArea(
@@ -275,33 +284,26 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                       ),
                     ),
                   ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final refreshToken = ref.watch(currentUserTokenProvider).value;
-                      if (!(meInRoom?.isAdmin == true && refreshToken?['manager'] == true)) {
-                        return const SizedBox();
-                      }
-                      return AsyncLock(
-                        builder: (loading, status, lock, open, setStatus) {
-                          return SwitchListTile(
-                            key: ValueKey(room.famous),
-                            value: room.famous,
-                            title: Text('Famous Admin : ${meInRoom?.isAdmin} Manager : ${refreshToken?['manager']}'),
-                            onChanged: (v) async {
-                              lock();
-                              await ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                                    Room(
-                                      uid: room.uid,
-                                      famous: !room.famous,
-                                    ),
-                                  );
-                              open();
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
+                  if (room.open == Visible.OPEN && meInRoom?.isAdmin == true && meUser?.admin == true)
+                    AsyncLock(
+                      builder: (loading, status, lock, open, setStatus) {
+                        return SwitchListTile(
+                          key: ValueKey(room.famous),
+                          value: room.famous,
+                          title: Text('Famous Admin : ${meInRoom?.isAdmin} Manager : ${meUser?.admin}'),
+                          onChanged: (v) async {
+                            lock();
+                            await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                                  Room(
+                                    uid: room.uid,
+                                    famous: !room.famous,
+                                  ),
+                                );
+                            open();
+                          },
+                        );
+                      },
+                    ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(

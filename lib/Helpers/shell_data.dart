@@ -65,6 +65,13 @@ extension SuperShellData on List<ShellData> {
         ).toList(),
       );
 
+  List<NavigationDestination> get navDestinations => map(
+        (e) => NavigationDestination(
+          icon: e.icon,
+          label: e.name,
+        ),
+      ).toList();
+
   NavigationBar navigationBar(BuildContext context, {TabController? controller}) => NavigationBar(
         selectedIndex: getCurrentIndex(context),
         onDestinationSelected: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),

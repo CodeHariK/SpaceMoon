@@ -30,13 +30,17 @@
 </intent-filter>
 
 ---
-adb shell am start -W -a android.intent.action.VIEW -d "spacemoon:///chat/jFFarHOjNQzwaDXyS2OS" run.shark.spacemoon
+adb shell am start -W -a android.intent.action.VIEW -d "spacemoon:///chat/id" run.shark.spacemoon
 
 adb shell am start -a android.intent.action.VIEW \
     -c android.intent.category.BROWSABLE \
     -d "http://domain.name:optional_port"
 
-spacemoon:///chat/jFFarHOjNQzwaDXyS2OS/
+adb shell 'am start -a android.intent.action.VIEW \
+    -c android.intent.category.BROWSABLE \
+    -d "http://spacemoon.shark.run/chat/id"'     run.shark.spacemoon
+
+spacemoon:///chat/id/
 ```
 
 ```ios
@@ -66,7 +70,9 @@ spacemoon:///chat/jFFarHOjNQzwaDXyS2OS/
 ---
 xcrun simctl openurl booted spacemoon:///chat
 
-spacemoon:///chat/jFFarHOjNQzwaDXyS2OS/
+spacemoon:///chat/id/
+
+xcrun simctl openurl booted https:spacemoon.shark.run/chat/id
 ```
 
 * [Defining a custom URL scheme for your app](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)

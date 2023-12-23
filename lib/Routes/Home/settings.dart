@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
+import 'package:spacemoon/main.dart';
 
 @immutable
 class SettingsRoute extends GoRouteData {
@@ -19,8 +21,10 @@ class SettingsRoute extends GoRouteData {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return const MaterialPage(
-      child: SettingsPage(),
+    return fadePage(
+      context,
+      state,
+      const SettingsPage(),
     );
   }
 }
@@ -176,11 +180,21 @@ class AttibutionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Attribution')),
-      body: const Column(
+      body: Column(
         children: [
           ListTile(
-            title: Text('Unsplash'),
-            subtitle: Text('For their wonderful api'),
+            title: const Text('Unsplash'),
+            subtitle: const Text('For their wonderful api'),
+            onTap: () {
+              safeLaunchUrl('https://unsplash.com/');
+            },
+          ),
+          ListTile(
+            title: const Text('Google Play'),
+            subtitle: const Text('Google Play and the Google Play logo are trademarks of Google LLC.'),
+            onTap: () {
+              safeLaunchUrl(SpaceMoon.googleplay);
+            },
           ),
         ],
       ),

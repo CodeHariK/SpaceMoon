@@ -123,7 +123,7 @@ class HomeShellRoute extends StatefulShellRouteData {
   static actions(context) => [
         IconButton(
           onPressed: () {
-            NotificationsRoute().go(context);
+            NotificationsRoute().push(context);
           },
           icon: const Icon(Icons.notifications_none_outlined),
         ),
@@ -143,6 +143,7 @@ class HomeShellRoute extends StatefulShellRouteData {
     return TabShell(
       navigationShell: navigationShell,
       shellData: data,
+      showTabbar: true,
       actions: actions(context),
       children: children,
     );

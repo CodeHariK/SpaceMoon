@@ -123,11 +123,12 @@ adb shell pm verify-app-links --re-verify PACKAGE_NAME
 
 adb shell pm get-app-links PACKAGE_NAME
 
-adb shell am start -W -a android.intent.action.VIEW -d "spacemoon:///chat/jFFarHOjNQzwaDXyS2OS" run.shark.spacemoon
+adb shell am start -W -a android.intent.action.VIEW -d "spacemoon:///chat/id" run.shark.spacemoon
 
-adb shell am start -a android.intent.action.VIEW \
+adb shell 'am start -a android.intent.action.VIEW \
     -c android.intent.category.BROWSABLE \
-    -d "http://domain.name:optional_port"
+    -d "https://spacemoon.shark.run/chat/id/info"' \
+    run.shark.spacemoon
 
 ```
 

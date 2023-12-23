@@ -83,18 +83,47 @@ class _TabShellState extends State<TabShell> with SingleTickerProviderStateMixin
                       },
                     ),
               title: Text(widget.shellData[widget.navigationShell.currentIndex].name),
-              actions: widget.actions,
+              actions: [
+                ...widget.actions,
+                Builder(builder: (context) {
+                  return IconButton(
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                    icon: Icon(
+                      Icons.show_chart,
+                    ),
+                  );
+                }),
+              ],
             ),
+      endDrawer: NavigationDrawer(
+        children: [
+          ListTile(
+            title: Text('sh'),
+          ),
+        ],
+      ),
       bottomNavigationBar:
           !widget.showNavigationBar ? null : widget.shellData.bottomNavigationBar(context, controller: tabcon),
       body: SafeArea(
-        child: Column(
+        child: Row(
           children: [
-            if (widget.showTabbar) widget.shellData.tabBar(context, controller: tabcon),
+            Container(
+              width: 200,
+              color: Colors.red,
+            ),
             Expanded(
-              child: TabBarView(
-                controller: tabcon,
-                children: widget.children,
+              child: Column(
+                children: [
+                  if (widget.showTabbar) widget.shellData.tabBar(context, controller: tabcon),
+                  Expanded(
+                    child: TabBarView(
+                      controller: tabcon,
+                      children: widget.children,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

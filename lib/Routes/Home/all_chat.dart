@@ -46,159 +46,164 @@ class AllChatPage extends ConsumerWidget {
           return 1.sec.delay();
         },
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          child: CustomScrollView(
+            slivers: [
               if (!subscription)
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4, top: 8),
-                  child: Hero(
-                    tag: 'Search',
-                    child: TextFormField(
-                      autofocus: false,
-                      decoration: const InputDecoration(
-                        hintText: 'abc...',
-                        prefixIcon: Icon(Icons.search),
-                        labelText: 'Find Rooms or Users by nickname',
+                SliverAppBar(
+                  pinned: true,
+                  collapsedHeight: 82,
+                  flexibleSpace: Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 16),
+                    child: Hero(
+                      tag: 'Search',
+                      child: TextFormField(
+                        autofocus: false,
+                        decoration: const InputDecoration(
+                          hintText: 'abc...',
+                          prefixIcon: Icon(Icons.search),
+                          labelText: 'Find Rooms or Users by nickname',
+                        ),
+                        onTap: () {
+                          SearchRoute().go(context);
+                        },
                       ),
-                      onTap: () {
-                        SearchRoute().go(context);
-                      },
                     ),
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 4),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: openRooms
-                        .map(
-                          (room) => InkWell(
-                            onTap: () {
-                              if (room != null) {
-                                ChatRoute(chatId: room.uid).go(context);
-                              }
-                            },
-                            child: Container(
-                              width: 120,
-                              height: 150,
-                              margin: const EdgeInsets.all(4),
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: (room?.photoURL == null || room?.photoURL.isEmpty == true)
-                                        ? const Icon(Icons.local_activity_rounded, size: 64)
-                                        : FutureSpaceBuilder(
-                                            path: room?.photoURL,
-                                            radius: 16,
-                                          ),
+              if (!subscription)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: openRooms
+                            .map(
+                              (room) => InkWell(
+                                onTap: () {
+                                  if (room != null) {
+                                    ChatRoute(chatId: room.uid).go(context);
+                                  }
+                                },
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.seedCard,
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(room?.displayName.replaceAll(user?.displayName ?? '***', '').trim() ?? ''),
-                                ],
+                                  child: (room?.photoURL == null || room?.photoURL.isEmpty == true)
+                                      ? Icon(
+                                          Icons.local_activity_rounded,
+                                          size: 64,
+                                          color: AppTheme.op,
+                                        )
+                                      : FutureSpaceBuilder(
+                                          path: room?.photoURL,
+                                          radius: 16,
+                                        ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              allRoomsUsers.when(
+                data: (roomUsers) {
+                  if (roomUsers.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Animate(
+                        effects: const [FadeEffect()],
+                        child: Lottie.asset(
+                          Asset.lEmpty,
+                          reverse: false,
+                          repeat: true,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverList.builder(
+                    itemBuilder: (context, index) {
+                      return Consumer(
+                        builder: (context, ref, child) {
+                          final roomuser = roomUsers[index] ?? RoomUser();
+
+                          final room = ref.watch(GetRoomByIdProvider(roomuser.room)).value;
+                          if (room == null) {
+                            return const SizedBox.shrink();
+                          }
+
+                          final count = ref.watch(GetNewTweetCountProvider(roomuser)).value;
+
+                          return ListTile(
+                            key: ValueKey(room.nick),
+                            tileColor: index % 2 == 1 ? null : Color.lerp(AppTheme.card, context.theme.csPri, .005),
+                            title: Text(room.displayName.replaceAll(user?.displayName ?? '***', '').trim()),
+                            subtitle: Text(room.nick),
+                            leading: CircleAvatar(
+                              radius: 28,
+                              child: FutureSpaceBuilder(
+                                path: room.photoURL,
+                                radius: 100,
                               ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: allRoomsUsers.when(
-                    data: (roomUsers) {
-                      return Animate(
-                        effects: const [FadeEffect()],
-                        child: (roomUsers.isEmpty)
-                            ? Lottie.asset(
-                                Asset.lEmpty,
-                                reverse: false,
-                                repeat: true,
-                              )
-                            : ListView.builder(
-                                itemBuilder: (context, index) {
-                                  return Consumer(builder: (context, ref, child) {
-                                    final roomuser = roomUsers[index] ?? RoomUser();
-
-                                    final room = ref.watch(GetRoomByIdProvider(roomuser.room)).value;
-                                    if (room == null) {
-                                      return const SizedBox.shrink();
-                                    }
-
-                                    final count = ref.watch(GetNewTweetCountProvider(roomuser)).value;
-
-                                    return ListTile(
-                                      key: ValueKey(room.nick),
-                                      tileColor:
-                                          index % 2 == 1 ? null : Color.lerp(AppTheme.card, context.theme.csPri, .005),
-                                      title: Text(room.displayName.replaceAll(user?.displayName ?? '***', '').trim()),
-                                      subtitle: Text(room.nick),
-                                      leading: CircleAvatar(
-                                        radius: 28,
-                                        child: FutureSpaceBuilder(
-                                          path: room.photoURL,
-                                          radius: 100,
-                                        ),
-                                      ),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (!subscription) Text(room.updated.timeString),
-                                          if (count != 0) const SizedBox(width: 10),
-                                          if (count != 0)
-                                            AnimatedFlipCounter(
-                                              value: (count == null) ? 0 : min(99, count),
-                                              wholeDigits: 1,
-                                              duration: const Duration(seconds: 1),
-                                            ),
-                                          if (roomuser.isRequest || roomuser.isInvite) const SizedBox(width: 10),
-                                          if (roomuser.isRequest || roomuser.isInvite) const Icon(Icons.pets_rounded),
-                                          if (subscription) const SizedBox(width: 10),
-                                          if (subscription)
-                                            AsyncLock(
-                                              builder: (loading, status, lock, open, setStatus) {
-                                                return Switch(
-                                                  value: roomuser.subscribed,
-                                                  thumbIcon:
-                                                      const MaterialStatePropertyAll(Icon(Icons.nights_stay_sharp)),
-                                                  onChanged: (v) async {
-                                                    lock();
-                                                    if (v) {
-                                                      await SpaceMoon.fn('messaging-callSubscribeFromTopic')
-                                                          .call(roomuser.toMap());
-                                                    } else {
-                                                      await SpaceMoon.fn('messaging-callUnsubscribeFromTopic')
-                                                          .call(roomuser.toMap());
-                                                    }
-                                                    await 1.sec.delay();
-                                                    open();
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                        ],
-                                      ),
-                                      onTap: subscription
-                                          ? null
-                                          : () {
-                                              dino(room.uid);
-                                              ChatRoute(chatId: room.uid).go(context);
-                                            },
-                                    );
-                                  });
-                                },
-                                itemCount: roomUsers.length,
-                              ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (!subscription) Text(room.updated.timeString),
+                                if (count != 0) const SizedBox(width: 10),
+                                if (count != 0)
+                                  AnimatedFlipCounter(
+                                    value: (count == null) ? 0 : min(99, count),
+                                    wholeDigits: 1,
+                                    duration: const Duration(seconds: 1),
+                                  ),
+                                if (roomuser.isRequest || roomuser.isInvite) const SizedBox(width: 10),
+                                if (roomuser.isRequest || roomuser.isInvite) const Icon(Icons.pets_rounded),
+                                if (subscription) const SizedBox(width: 10),
+                                if (subscription)
+                                  AsyncLock(
+                                    builder: (loading, status, lock, open, setStatus) {
+                                      return Switch(
+                                        value: roomuser.subscribed,
+                                        thumbIcon: const MaterialStatePropertyAll(Icon(Icons.nights_stay_sharp)),
+                                        onChanged: (v) async {
+                                          lock();
+                                          if (v) {
+                                            await SpaceMoon.fn('messaging-callSubscribeFromTopic')
+                                                .call(roomuser.toMap());
+                                          } else {
+                                            await SpaceMoon.fn('messaging-callUnsubscribeFromTopic')
+                                                .call(roomuser.toMap());
+                                          }
+                                          await 1.sec.delay();
+                                          open();
+                                        },
+                                      );
+                                    },
+                                  ),
+                              ],
+                            ),
+                            onTap: subscription
+                                ? null
+                                : () {
+                                    dino(room.uid);
+                                    ChatRoute(chatId: room.uid).go(context);
+                                  },
+                          );
+                        },
                       );
                     },
-                    error: (error, stackTrace) {
-                      return Text(error.toString());
-                    },
-                    loading: () => const SizedBox(),
-                  ),
-                ),
+                    itemCount: roomUsers.length,
+                  );
+                },
+                error: (error, stackTrace) {
+                  return SliverToBoxAdapter(child: Text(error.toString()));
+                },
+                loading: () => const SliverToBoxAdapter(child: SizedBox()),
               ),
             ],
           ),

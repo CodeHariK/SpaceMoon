@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
@@ -23,6 +24,7 @@ import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:spacemoon/main.dart';
 
 class ChatRoute extends GoRouteData {
   final String chatId;
@@ -191,7 +193,36 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               radius: 100,
             ),
           ),
-          trailing: (meInRoom.isUserOrAdmin) ? InviteButton(room: room) : null,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () async {
+                  final url = SpaceMoon.domain + GoRouterState.of(context).uri.path;
+                  await Clipboard.setData(
+                    ClipboardData(text: url),
+                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Copied to Clipboard')),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.copy_rounded),
+              ),
+              if (meInRoom.isUserOrAdmin)
+                IconButton(
+                  onPressed: () {
+                    context.bSlidePush(
+                      SearchPage(
+                        room: room,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
+            ],
+          ),
         ),
       ),
       body: SafeArea(
@@ -340,35 +371,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class InviteButton extends StatelessWidget {
-  const InviteButton({
-    super.key,
-    required this.room,
-  });
-
-  final Room? room;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: () {
-            context.bSlidePush(
-              SearchPage(
-                room: room,
-              ),
-            );
-          },
-          icon: const Icon(Icons.add_circle_outline),
-        ),
-        const SizedBox(width: 5)
-      ],
     );
   }
 }

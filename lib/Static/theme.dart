@@ -210,35 +210,35 @@ class AppTheme {
       );
 
   TextTheme get textTheme => TextTheme(
-        displayLarge: TextStyle(letterSpacing: 4.c, fontSize: 30),
-        displayMedium: TextStyle(letterSpacing: 4.c, fontSize: 28),
-        displaySmall: TextStyle(letterSpacing: 4.c, fontSize: 26),
-        headlineLarge: TextStyle(letterSpacing: 4.c, fontSize: 24),
-        headlineMedium: TextStyle(letterSpacing: 3.c, fontSize: 22),
-        headlineSmall: const TextStyle(fontSize: 20),
+        displayLarge: TextStyle(letterSpacing: 4.c, fontSize: (30, 32).c),
+        displayMedium: TextStyle(letterSpacing: 4.c, fontSize: (28, 30).c),
+        displaySmall: TextStyle(letterSpacing: 4.c, fontSize: (26, 28).c),
+        headlineLarge: TextStyle(letterSpacing: 4.c, fontSize: (24, 26).c),
+        headlineMedium: TextStyle(letterSpacing: 3.c, fontSize: (22, 24).c),
+        headlineSmall: TextStyle(fontSize: (20, 22).c),
 
         //Appbar
-        titleLarge: TextStyle(letterSpacing: 2.c, fontSize: 18),
+        titleLarge: TextStyle(letterSpacing: 2.c, fontSize: (18, 20).c),
 
         //CupertinoListTile, ListTile Title, Textfield label
-        titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: 17, fontWeight: FontWeight.w400),
+        titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: (17, 19).c, fontWeight: FontWeight.w400),
 
-        titleSmall: TextStyle(letterSpacing: 1.c, color: op, fontSize: 16),
+        titleSmall: TextStyle(letterSpacing: 1.c, color: op, fontSize: (16, 18).c),
 
         //CupertinoFormSection header, ListTile Title,
-        bodyLarge: TextStyle(color: op, fontSize: 15), //Textfield font
+        bodyLarge: TextStyle(color: op, fontSize: (15, 17).c), //Textfield font
 
-        bodyMedium: const TextStyle(fontSize: 14),
+        bodyMedium: TextStyle(fontSize: (14, 16).c),
 
         //ListTile subtitle
-        bodySmall: TextStyle(color: op, fontSize: 13),
+        bodySmall: TextStyle(color: op, fontSize: (13, 15).c),
 
-        labelLarge: TextStyle(letterSpacing: .5.c, fontSize: 12, fontWeight: FontWeight.w400),
+        labelLarge: TextStyle(letterSpacing: .5.c, fontSize: (12, 14).c, fontWeight: FontWeight.w400),
 
         //BottomNavBar
-        labelMedium: const TextStyle(fontSize: 11),
+        labelMedium: TextStyle(fontSize: (11, 13).c),
 
-        labelSmall: const TextStyle(fontSize: 10),
+        labelSmall: TextStyle(fontSize: (10, 12).c),
       );
 
   ThemeData get theme => ThemeData(

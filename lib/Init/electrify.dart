@@ -41,9 +41,9 @@ void electrify({
 
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       await SystemChrome.setPreferredOrientations([
-        // DeviceOrientation.landscapeLeft,
-        // DeviceOrientation.landscapeRight,
-        // DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+        DeviceOrientation.portraitDown,
         DeviceOrientation.portraitUp,
       ]);
 

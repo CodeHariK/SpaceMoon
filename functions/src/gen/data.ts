@@ -343,6 +343,7 @@ export interface User {
   created?: Date | undefined;
   updated?: Date | undefined;
   open?: Visible | undefined;
+  admin?: boolean | undefined;
 }
 
 export interface Messaging {
@@ -390,10 +391,7 @@ export interface ImageMetadata {
   localUrl?: string | undefined;
   width?: number | undefined;
   height?: number | undefined;
-  caption?:
-    | string
-    | undefined;
-  /** optional string blurhash = 60; */
+  caption?: string | undefined;
   type?: string | undefined;
 }
 
@@ -410,6 +408,7 @@ function createBaseUser(): User {
     created: undefined,
     updated: undefined,
     open: undefined,
+    admin: undefined,
   };
 }
 
@@ -447,6 +446,9 @@ export const User = {
     }
     if (message.open !== undefined) {
       writer.uint32(880).int32(message.open);
+    }
+    if (message.admin !== undefined) {
+      writer.uint32(960).bool(message.admin);
     }
     return writer;
   },
@@ -535,6 +537,13 @@ export const User = {
 
           message.open = reader.int32() as any;
           continue;
+        case 120:
+          if (tag !== 960) {
+            break;
+          }
+
+          message.admin = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -557,6 +566,7 @@ export const User = {
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : undefined,
+      admin: isSet(object.admin) ? globalThis.Boolean(object.admin) : undefined,
     };
   },
 
@@ -595,6 +605,9 @@ export const User = {
     if (message.open !== undefined) {
       obj.open = visibleToJSON(message.open);
     }
+    if (message.admin !== undefined) {
+      obj.admin = message.admin;
+    }
     return obj;
   },
 
@@ -614,6 +627,7 @@ export const User = {
     message.created = object.created ?? undefined;
     message.updated = object.updated ?? undefined;
     message.open = object.open ?? undefined;
+    message.admin = object.admin ?? undefined;
     return message;
   },
 };

@@ -72,6 +72,7 @@ message User {
     optional google.protobuf.Timestamp created = 90;
     optional google.protobuf.Timestamp updated = 100;
     optional Visible open = 110;
+    optional bool admin = 120;
 }
 
 message Messaging {
@@ -121,5 +122,4 @@ message ImageMetadata {
     optional int32 height = 50;
     optional string caption = 60;
     optional string type = 70;
-    // optional string blurhash = 60;
 }

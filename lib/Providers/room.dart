@@ -130,23 +130,24 @@ class CurrentRoom extends _$CurrentRoom {
     }
     //
     else if (id != null && id != state.value?.uid) {
-      await FirebaseFirestore.instance
+      final idDoc = await FirebaseFirestore.instance
           .collection(
             Const.rooms.name,
           )
           .doc(id)
-          .get()
-          .then((value) {
-        state = AsyncValue.data(fromDocSnap(Room(), value));
-      }).onError((error, stackTrace) async {
+          .get();
+
+      if (idDoc.exists) {
+        state = AsyncValue.data(fromDocSnap(Room(), idDoc));
+      } else {
         final nickRooms = await getRoomByNick(id);
 
         if (nickRooms.firstOrNull != null) {
           state = AsyncValue.data(nickRooms.first);
         } else {
-          lava(error);
+          lava('No Room Found');
         }
-      });
+      }
     }
   }
 

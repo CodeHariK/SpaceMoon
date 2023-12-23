@@ -31,6 +31,7 @@ class User extends $pb.GeneratedMessage {
     $0.Timestamp? created,
     $0.Timestamp? updated,
     Visible? open,
+    $core.bool? admin,
   }) {
     final $result = create();
     if (uid != null) {
@@ -66,6 +67,9 @@ class User extends $pb.GeneratedMessage {
     if (open != null) {
       $result.open = open;
     }
+    if (admin != null) {
+      $result.admin = admin;
+    }
     return $result;
   }
   User._() : super();
@@ -84,6 +88,7 @@ class User extends $pb.GeneratedMessage {
     ..aOM<$0.Timestamp>(90, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
     ..aOM<$0.Timestamp>(100, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
     ..e<Visible>(110, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOB(120, _omitFieldNames ? '' : 'admin')
     ..hasRequiredFields = false
   ;
 
@@ -204,6 +209,15 @@ class User extends $pb.GeneratedMessage {
   $core.bool hasOpen() => $_has(10);
   @$pb.TagNumber(110)
   void clearOpen() => clearField(110);
+
+  @$pb.TagNumber(120)
+  $core.bool get admin => $_getBF(11);
+  @$pb.TagNumber(120)
+  set admin($core.bool v) { $_setBool(11, v); }
+  @$pb.TagNumber(120)
+  $core.bool hasAdmin() => $_has(11);
+  @$pb.TagNumber(120)
+  void clearAdmin() => clearField(120);
 }
 
 class Messaging extends $pb.GeneratedMessage {
