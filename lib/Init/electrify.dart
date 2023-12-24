@@ -195,7 +195,7 @@ class SpaceMoonHome extends HookConsumerWidget {
         builder: (context, child) {
           initializeDateFormatting();
 
-          return Directionality(
+          final renderChild = Directionality(
             textDirection: TextDirection.ltr,
             child: Scaffold(
               key: ValueKey(globalAppTheme.theme),
@@ -218,6 +218,17 @@ class SpaceMoonHome extends HookConsumerWidget {
               ),
             ),
           );
+
+          // if (kIsWeb) {
+          //   return Center(
+          //     child: ConstrainedBox(
+          //       constraints: const BoxConstraints(maxWidth: 1200),
+          //       child: renderChild,
+          //     ),
+          //   );
+          // }
+
+          return renderChild;
         },
       ),
     );

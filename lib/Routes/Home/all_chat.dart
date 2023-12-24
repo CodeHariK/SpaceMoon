@@ -147,18 +147,19 @@ class AllChatPage extends ConsumerWidget {
                               radius: 28,
                               child: FutureSpaceBuilder(
                                 path: room.photoURL,
-                                radius: 100,
+                                radius: 200,
                               ),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (!subscription) Text(room.updated.timeString),
+                                if (!subscription) Text(room.updated.timeString, style: context.ll),
                                 if (count != 0) const SizedBox(width: 10),
                                 if (count != 0)
                                   AnimatedFlipCounter(
                                     value: (count == null) ? 0 : min(99, count),
                                     wholeDigits: 1,
+                                    textStyle: context.ll,
                                     duration: const Duration(seconds: 1),
                                   ),
                                 if (roomuser.isRequest || roomuser.isInvite) const SizedBox(width: 10),

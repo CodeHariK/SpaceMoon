@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:barcode_widget/barcode_widget.dart';
@@ -45,46 +46,52 @@ class QrBox extends StatelessWidget {
               )
             : RepaintBoundary(
                 key: repaintKey,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: BarcodeWidget(
-                      barcode: code == BarcodeType.QrCode
-                          ? Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high)
-                          : Barcode.fromType(code),
-                      padding: const EdgeInsets.all(8),
-                      // margin: EdgeInsets.all(4),
-                      errorBuilder: (context, error) => SizedBox(
-                        width: context.mq.w,
-                        height: context.mq.w,
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            Icon(
-                              Icons.qr_code_rounded,
-                              size: context.mq.w,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 500),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: SizedBox(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: BarcodeWidget(
+                          barcode: code == BarcodeType.QrCode
+                              ? Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high)
+                              : Barcode.fromType(code),
+                          padding: const EdgeInsets.all(8),
+                          // margin: EdgeInsets.all(4),
+                          backgroundColor: AppTheme.darkness ? Colors.black : Colors.white,
+                          errorBuilder: (context, error) => SizedBox(
+                            width: context.mq.w,
+                            height: context.mq.w,
+                            child: Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                Icon(
+                                  Icons.qr_code_rounded,
+                                  size: context.mq.w,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.black87,
+                                    border: Border.all(color: AppTheme.seedColor, width: 2),
+                                  ),
+                                  child: Text(
+                                    error,
+                                    style: context.hs.c(Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.black87,
-                                border: Border.all(color: AppTheme.seedColor, width: 2),
-                              ),
-                              child: const Text(
-                                'Error : Input too large',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                            ),
-                          ],
+                          ),
+                          data: qrText,
+                          // width: context.mq.w,
+                          // height: context.mq.w,
+                          // backgroundColor: AppTheme.darkness ? Colors.black : Colors.white,
+                          color: AppTheme.darkness ? Colors.white : Colors.black, // AppTheme.seedColor,
                         ),
                       ),
-                      data: qrText,
-                      // width: context.mq.w,
-                      // height: context.mq.w,
-                      // backgroundColor: AppTheme.darkness ? Colors.black : Colors.white,
-                      color: AppTheme.darkness ? Colors.white : Colors.black, // AppTheme.seedColor,
                     ),
                   ),
                 ),
@@ -124,6 +131,7 @@ class QrDialog extends HookWidget {
           children: [
             //
             Scaffold(
+              floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
               floatingActionButton: (qrtext.value.isEmpty)
                   ? null
                   : SendButton(
@@ -138,8 +146,6 @@ class QrDialog extends HookWidget {
                       repaintKey: repaintKey,
                       codeQrtext: '${barcodeType.value.name}||${qrtext.value}',
                     ),
-
-                    Text((qrtext.value.isEmpty).toString()),
 
                     //
                     Row(
@@ -177,20 +183,8 @@ class QrDialog extends HookWidget {
                                 var byteData = await image.toByteData(format: ImageByteFormat.png);
                                 var pngBytes = byteData?.buffer.asUint8List();
 
-                                if (pngBytes != null) {
-                                  final saved = await SaverGallery.saveImage(
-                                    pngBytes,
-                                    name: '${randomString(12)}.png',
-                                    androidRelativePath: "Pictures/Spacemoon/QrCodes/",
-                                    androidExistNotSave: false,
-                                  );
-                                  if (context.mounted) {
-                                    if (saved.isSuccess) {
-                                      marioBar(context: context, content: 'Image saved');
-                                    } else {
-                                      marioBar(context: context, content: 'Error : Cannot Save image');
-                                    }
-                                  }
+                                if (context.mounted) {
+                                  await saveToGallery(pngBytes, context, 'QrCodes');
                                 }
                               } catch (e) {
                                 lava(e);
@@ -224,6 +218,24 @@ class QrDialog extends HookWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> saveToGallery(Uint8List? pngBytes, BuildContext context, String path) async {
+  if (pngBytes != null) {
+    final saved = await SaverGallery.saveImage(
+      pngBytes,
+      name: '${randomString(12)}.png',
+      androidRelativePath: "Pictures/Spacemoon/$path/",
+      androidExistNotSave: false,
+    );
+    if (context.mounted) {
+      if (saved.isSuccess) {
+        marioBar(context: context, content: 'Image saved');
+      } else {
+        marioBar(context: context, content: 'Error : Cannot Save image');
+      }
+    }
   }
 }
 

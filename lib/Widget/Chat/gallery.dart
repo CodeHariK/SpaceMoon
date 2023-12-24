@@ -9,16 +9,19 @@ import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
+import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 import 'package:spacemoon/Widget/Common/video_player.dart';
+import 'package:http/http.dart' as http;
 
 part 'gallery.g.dart';
 
@@ -112,6 +115,7 @@ class GalleryImage extends StatelessWidget {
               FutureSpaceBuilder(
                 imageMetadata: imageMetadata,
                 thumbnail: !inScaffold,
+                showDownload: inScaffold,
               ),
               // if (imageMetadata.url.isNotEmpty)
               //   CustomCacheImage(
@@ -426,7 +430,7 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                               milliseconds: 1000,
                               maxLines: 3,
                               decoration: (AsyncText value, galleryCon) => const InputDecoration(
-                                fillColor: Colors.black38,
+                                fillColor: Colors.black54,
                                 hintStyle: TextStyle(color: Colors.white70),
                                 filled: true,
                                 focusedBorder: InputBorder.none,
@@ -437,7 +441,7 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                           ),
                         if (startSelection)
                           Align(
-                            alignment: Alignment.topRight,
+                            alignment: Alignment.topLeft,
                             child: Checkbox(
                               value: selected.contains(tweet.gallery[index]),
                               onChanged: (v) {
@@ -541,9 +545,11 @@ class FutureSpaceBuilder extends ConsumerWidget {
     this.thumbnail = false,
     this.builder,
     this.radius,
+    this.showDownload = false,
   });
 
   final bool thumbnail;
+  final bool showDownload;
   final Widget Function(String url)? builder;
   final ImageMetadata? imageMetadata;
   final String? path;
@@ -551,11 +557,45 @@ class FutureSpaceBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Widget spaceBuild(String url) {
+      if (builder == null) {
+        if (!showDownload) {
+          return CustomCacheImage(
+            radius: radius ?? 0,
+            imageUrl: url,
+          );
+        }
+        return Stack(
+          children: [
+            CustomCacheImage(
+              radius: radius ?? 0,
+              imageUrl: url,
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: AsyncLock(
+                builder: (loading, status, lock, open, setStatus) => IconButton.filled(
+                  onPressed: () async {
+                    lock();
+                    final bytes = (await http.get(Uri.parse(url))).bodyBytes;
+                    if (context.mounted) {
+                      await saveToGallery(bytes, context, 'Unsplash');
+                    }
+                    open();
+                  },
+                  icon: loading ? const CircularProgressIndicator() : const Icon(Icons.download),
+                ),
+              ),
+            ),
+          ],
+        );
+      } else {
+        return builder!(url);
+      }
+    }
+
     if (imageMetadata?.unsplashurl.isNotEmpty ?? false) {
-      return CustomCacheImage(
-        radius: radius ?? 0,
-        imageUrl: imageMetadata?.unsplashurl ?? '',
-      );
+      return spaceBuild(imageMetadata?.unsplashurl ?? '');
     }
 
     final p = path ?? imageMetadata?.path ?? '';
@@ -564,14 +604,7 @@ class FutureSpaceBuilder extends ConsumerWidget {
 
     return spaceurl.when(
       data: (url) {
-        if (builder == null) {
-          return CustomCacheImage(
-            radius: radius ?? 0,
-            imageUrl: url,
-          );
-        } else {
-          return builder!(url);
-        }
+        return spaceBuild(url);
       },
       error: (error, stackTrace) => const SizedBox(),
       loading: () => const SizedBox(),

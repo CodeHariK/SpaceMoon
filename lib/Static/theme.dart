@@ -42,6 +42,10 @@ class AppTheme {
     appColor: Colors.indigo,
   );
 
+  static bool get isMobile => currentAppTheme.size.width < 500;
+  static bool get isTab => currentAppTheme.size.width < 900;
+  static bool get isDesktop => currentAppTheme.size.width < 1200;
+
   static bool get darkness => currentAppTheme.dark;
   static Color get background => AppTheme.darkness ? const Color.fromARGB(255, 20, 20, 20) : Colors.white;
   static Color get op => AppTheme.darkness ? Colors.white : const Color.fromARGB(255, 55, 55, 55);
@@ -115,6 +119,8 @@ class AppTheme {
         // selectedIconTheme: IconThemeData(size: (24, 28).c),
         // unselectedIconTheme: IconThemeData(size: (24, 28).c),
       );
+
+  TabBarTheme get tabBarTheme => const TabBarTheme();
 
   static InputDecorationTheme get inputDecoration => InputDecorationTheme(
         border: OutlineInputBorder(
@@ -236,7 +242,7 @@ class AppTheme {
         labelLarge: TextStyle(letterSpacing: .5.c, fontSize: (12, 14).c, fontWeight: FontWeight.w400),
 
         //BottomNavBar
-        labelMedium: TextStyle(fontSize: (11, 13).c),
+        labelMedium: TextStyle(fontSize: (11, 14).c),
 
         labelSmall: TextStyle(fontSize: (10, 12).c),
       );
@@ -273,6 +279,7 @@ class AppTheme {
         textButtonTheme: textButton,
 
         bottomNavigationBarTheme: bottomNavigationBarTheme,
+        tabBarTheme: tabBarTheme,
 
         //
         dialogTheme: dialogTheme,

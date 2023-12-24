@@ -8,11 +8,13 @@ import 'package:moonspace/painter/wave_clipper.dart';
 import 'package:spacemoon/Static/theme.dart';
 
 class ShellData {
+  final String? title;
   final String name;
   final List<String> location;
   final Widget icon;
 
   ShellData({
+    this.title,
     required this.name,
     required this.location,
     required this.icon,
@@ -20,7 +22,7 @@ class ShellData {
 }
 
 extension SuperShellData on List<ShellData> {
-  String title(BuildContext context) => this[getCurrentIndex(context)].name;
+  String title(BuildContext context) => this[getCurrentIndex(context)].title ?? this[getCurrentIndex(context)].name;
 
   int getCurrentIndex(BuildContext context) {
     try {
@@ -42,7 +44,8 @@ extension SuperShellData on List<ShellData> {
 
   void goToIndex(BuildContext context, int v) => context.goNamed(this[v].location.first);
 
-  BottomNavigationBar bottomNavigationBar(BuildContext context, {TabController? controller}) => BottomNavigationBar(
+  BottomNavigationBar bottomNavigationBar({required BuildContext context, TabController? controller}) =>
+      BottomNavigationBar(
         currentIndex: getCurrentIndex(context),
         onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         items: map(
@@ -54,7 +57,7 @@ extension SuperShellData on List<ShellData> {
         type: BottomNavigationBarType.fixed,
       );
 
-  CupertinoTabBar cupertinoTabBar(BuildContext context, {TabController? controller}) => CupertinoTabBar(
+  CupertinoTabBar cupertinoTabBar({required BuildContext context, TabController? controller}) => CupertinoTabBar(
         currentIndex: getCurrentIndex(context),
         onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         items: map(
@@ -72,18 +75,57 @@ extension SuperShellData on List<ShellData> {
         ),
       ).toList();
 
-  NavigationBar navigationBar(BuildContext context, {TabController? controller}) => NavigationBar(
+  List<NavigationRailDestination> get navRailDestinations => map(
+        (e) => NavigationRailDestination(
+          icon: e.icon,
+          label: Text(e.name),
+        ),
+      ).toList();
+
+  List<NavigationDrawerDestination> get navDrawerDestinations => map(
+        (e) => NavigationDrawerDestination(
+          icon: e.icon,
+          label: Text(e.name),
+        ),
+      ).toList();
+
+  NavigationBar navigationBar({required BuildContext context, TabController? controller}) => NavigationBar(
         selectedIndex: getCurrentIndex(context),
         onDestinationSelected: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
-        destinations: map(
-          (e) => NavigationDestination(
-            icon: e.icon,
-            label: e.name,
-          ),
-        ).toList(),
+        destinations: navDestinations,
       );
 
-  Widget googleBar(BuildContext context, {TabController? controller}) => Container(
+  NavigationDrawer navigationDrawer({
+    required BuildContext context,
+    TabController? controller,
+  }) =>
+      NavigationDrawer(
+        selectedIndex: getCurrentIndex(context),
+        onDestinationSelected: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
+        children: navDrawerDestinations,
+      );
+
+  NavigationRail navigationRail({
+    required BuildContext context,
+    TabController? controller,
+    bool extended = false,
+    NavigationRailLabelType labelType = NavigationRailLabelType.all,
+    double groupAlignment = -1,
+    double minExtendedWidth = 180,
+    double minWidth = 72,
+  }) =>
+      NavigationRail(
+        labelType: extended ? null : labelType,
+        extended: extended,
+        minExtendedWidth: minExtendedWidth,
+        minWidth: minWidth,
+        groupAlignment: groupAlignment,
+        selectedIndex: getCurrentIndex(context),
+        onDestinationSelected: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
+        destinations: navRailDestinations,
+      );
+
+  Widget googleBar({required BuildContext context, TabController? controller}) => Container(
         color: Colors.transparent,
         margin: context.mq.pad.copyWith(top: 0, left: 16, right: 16),
         child: PhysicalShape(
@@ -123,7 +165,7 @@ extension SuperShellData on List<ShellData> {
         ),
       );
 
-  TabBar tabBar(BuildContext context, {TabController? controller}) => TabBar(
+  TabBar tabBar({required BuildContext context, TabController? controller}) => TabBar(
         controller: controller,
         onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         indicatorSize: TabBarIndicatorSize.tab,

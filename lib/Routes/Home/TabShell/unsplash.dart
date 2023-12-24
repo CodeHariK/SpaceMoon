@@ -190,175 +190,177 @@ class UnsplashGrid extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = useState(<Result>{});
 
-    return Stack(
-      alignment: Alignment.bottomRight,
-      children: [
-        GridView.count(
-          physics: const BouncingScrollPhysics(),
-          crossAxisCount: (2, 4).c.toInt(),
-          children: res?.results?.map(
-                (res) {
-                  final url = res.urls?.small ?? res.urls?.regular ?? res.urls?.full;
-                  if (url != null) {
-                    return InkWell(
-                      onLongPress: () {
-                        if (selected.value.contains(res)) {
-                          final s = selected.value.toList()..remove(res);
-                          selected.value = s.toSet();
-                        } else {
-                          selected.value = {...selected.value, res};
-                        }
-                      },
-                      onTap: selected.value.isNotEmpty
-                          ? () {
-                              if (selected.value.contains(res)) {
-                                final s = selected.value.toList()..remove(res);
-                                selected.value = s.toSet();
-                              } else {
-                                selected.value = {...selected.value, res};
+    return SafeArea(
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          GridView.count(
+            physics: const BouncingScrollPhysics(),
+            crossAxisCount: (2, 4).c.toInt(),
+            children: res?.results?.map(
+                  (res) {
+                    final url = res.urls?.small ?? res.urls?.regular ?? res.urls?.full;
+                    if (url != null) {
+                      return InkWell(
+                        onLongPress: () {
+                          if (selected.value.contains(res)) {
+                            final s = selected.value.toList()..remove(res);
+                            selected.value = s.toSet();
+                          } else {
+                            selected.value = {...selected.value, res};
+                          }
+                        },
+                        onTap: selected.value.isNotEmpty
+                            ? () {
+                                if (selected.value.contains(res)) {
+                                  final s = selected.value.toList()..remove(res);
+                                  selected.value = s.toSet();
+                                } else {
+                                  selected.value = {...selected.value, res};
+                                }
                               }
-                            }
-                          : () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  fullscreenDialog: true,
-                                  pageBuilder: (context, animation, secondaryAnimation) {
-                                    return Scaffold(
-                                      floatingActionButton: FloatingActionButton(
-                                        heroTag: 'UnsplashGridSend',
-                                        onPressed: () async {
-                                          await ref.read(tweetsProvider.notifier).sendTweet(
-                                                tweet: Tweet(
-                                                  room: roomUser.room,
-                                                  user: roomUser.user,
-                                                  mediaType: MediaType.GALLERY,
-                                                  gallery: [
-                                                    ImageMetadata(
-                                                      unsplashurl: url,
-                                                      caption: res.description,
-                                                    ),
-                                                  ],
+                            : () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    fullscreenDialog: true,
+                                    pageBuilder: (context, animation, secondaryAnimation) {
+                                      return Scaffold(
+                                        floatingActionButton: FloatingActionButton(
+                                          heroTag: 'UnsplashGridSend',
+                                          onPressed: () async {
+                                            await ref.read(tweetsProvider.notifier).sendTweet(
+                                                  tweet: Tweet(
+                                                    room: roomUser.room,
+                                                    user: roomUser.user,
+                                                    mediaType: MediaType.GALLERY,
+                                                    gallery: [
+                                                      ImageMetadata(
+                                                        unsplashurl: url,
+                                                        caption: res.description,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                            if (context.mounted) {
+                                              context.pop();
+                                            }
+                                          },
+                                          child: const Icon(Icons.send),
+                                        ),
+                                        appBar: AppBar(),
+                                        body: Stack(
+                                          children: [
+                                            Hero(
+                                              tag: res.id!,
+                                              child: InteractiveViewer(
+                                                child: CustomCacheImage(
+                                                  imageUrl: url,
+                                                  // blurHash: e.blurHash,
                                                 ),
-                                              );
-                                          if (context.mounted) {
-                                            context.pop();
-                                          }
-                                        },
-                                        child: const Icon(Icons.send),
-                                      ),
-                                      appBar: AppBar(),
-                                      body: Stack(
-                                        children: [
-                                          Hero(
-                                            tag: res.id!,
-                                            child: InteractiveViewer(
-                                              child: CustomCacheImage(
-                                                imageUrl: url,
-                                                // blurHash: e.blurHash,
                                               ),
                                             ),
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                stops: const [0, 1],
-                                                colors: [
-                                                  (HexColor(res.color ?? '#ffffff')),
-                                                  (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                  stops: const [0, 1],
+                                                  colors: [
+                                                    (HexColor(res.color ?? '#ffffff')),
+                                                    (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                                  ],
+                                                ),
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  if (res.description != null || (res.description?.isNotEmpty ?? false))
+                                                    Text(
+                                                      res.description.toString().toUpperCase(),
+                                                      style: context.hs.c(HexColor(res.color ?? '#ffffff').mop),
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  if (res.altDescription != null ||
+                                                      (res.altDescription?.isNotEmpty ?? false))
+                                                    Text(
+                                                      res.altDescription.toString().toUpperCase(),
+                                                      style: context.tm.c(HexColor(res.color ?? '#ffffff').mop),
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
                                                 ],
                                               ),
                                             ),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                if (res.description != null || (res.description?.isNotEmpty ?? false))
-                                                  Text(
-                                                    res.description.toString().toUpperCase(),
-                                                    style: context.hs.c(HexColor(res.color ?? '#ffffff').mop),
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                if (res.altDescription != null ||
-                                                    (res.altDescription?.isNotEmpty ?? false))
-                                                  Text(
-                                                    res.altDescription.toString().toUpperCase(),
-                                                    style: context.tm.c(HexColor(res.color ?? '#ffffff').mop),
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            Container(
+                              foregroundDecoration: BoxDecoration(
+                                color: selected.value.contains(res) ? const Color.fromARGB(120, 218, 218, 218) : null,
+                              ),
+                              child: Hero(
+                                tag: res.id!,
+                                child: CustomCacheImage(
+                                  imageUrl: url,
+                                  blurHash: res.blurHash,
                                 ),
-                              );
-                            },
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          Container(
-                            foregroundDecoration: BoxDecoration(
-                              color: selected.value.contains(res) ? const Color.fromARGB(120, 218, 218, 218) : null,
-                            ),
-                            child: Hero(
-                              tag: res.id!,
-                              child: CustomCacheImage(
-                                imageUrl: url,
-                                blurHash: res.blurHash,
                               ),
                             ),
-                          ),
-                          if (selected.value.contains(res))
-                            const Icon(
-                              Icons.done,
-                              color: Colors.black,
-                              size: 40,
-                            )
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const Placeholder();
-                  }
-                },
-              ).toList() ??
-              [],
-        ),
-        if (selected.value.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: FloatingActionButton(
-              heroTag: 'UnsplashGridFloatingActionButton',
-              onPressed: () async {
-                await ref.read(tweetsProvider.notifier).sendTweet(
-                      tweet: Tweet(
-                        room: roomUser.room,
-                        user: roomUser.user,
-                        mediaType: MediaType.GALLERY,
-                        gallery: selected.value.map(
-                          (res) => ImageMetadata(
-                            unsplashurl: res.urls?.small ?? res.urls?.regular ?? res.urls?.full,
-                            caption: res.description,
+                            if (selected.value.contains(res))
+                              const Icon(
+                                Icons.done,
+                                color: Colors.black,
+                                size: 40,
+                              )
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const Placeholder();
+                    }
+                  },
+                ).toList() ??
+                [],
+          ),
+          if (selected.value.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FloatingActionButton(
+                heroTag: 'UnsplashGridFloatingActionButton',
+                onPressed: () async {
+                  await ref.read(tweetsProvider.notifier).sendTweet(
+                        tweet: Tweet(
+                          room: roomUser.room,
+                          user: roomUser.user,
+                          mediaType: MediaType.GALLERY,
+                          gallery: selected.value.map(
+                            (res) => ImageMetadata(
+                              unsplashurl: res.urls?.small ?? res.urls?.regular ?? res.urls?.full,
+                              caption: res.description,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                if (context.mounted) {
-                  context.pop();
-                }
-              },
-              child: const Icon(Icons.send),
+                      );
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
+                child: const Icon(Icons.send),
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

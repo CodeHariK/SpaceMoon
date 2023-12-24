@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:appflowy_editor/appflowy_editor.dart' show safeLaunchUrl;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -163,31 +164,39 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
 
                     const SocialButtons(),
 
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 400),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                safeLaunchUrl(SpaceMoon.googleplay);
-                              },
-                              child: Image.asset(Asset.googleplay),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                onTap: () {
-                                  safeLaunchUrl(SpaceMoon.appstore);
-                                },
-                                child: Image.asset(Asset.appstore),
+                    FutureBuilder(
+                      future: FirebaseFirestore.instance.doc('Spacemoon/appinfo').get(),
+                      builder: (context, snapshot) {
+                        final googleplay = snapshot.data?.data()?['googleplay'] ?? SpaceMoon.googleplay;
+                        final appstore = snapshot.data?.data()?['appstore'] ?? SpaceMoon.appstore;
+
+                        return ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 400),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {
+                                    safeLaunchUrl(googleplay);
+                                  },
+                                  child: Image.asset(Asset.googleplay),
+                                ),
                               ),
-                            ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: InkWell(
+                                    onTap: () {
+                                      safeLaunchUrl(appstore);
+                                    },
+                                    child: Image.asset(Asset.appstore),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
 
                     SizedBox(height: (10, 20).c),

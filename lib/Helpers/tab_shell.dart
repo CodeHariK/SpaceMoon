@@ -12,6 +12,9 @@ class TabShell extends StatefulWidget {
     this.showAppbar = true,
     this.showTabbar = false,
     this.showNavigationBar = true,
+    this.showDrawer = false,
+    this.showNavigationRail = false,
+    this.navRailExtend = true,
     this.actions = const [],
     this.canPop = false,
   });
@@ -22,6 +25,9 @@ class TabShell extends StatefulWidget {
   final bool showAppbar;
   final bool showTabbar;
   final bool showNavigationBar;
+  final bool showNavigationRail;
+  final bool navRailExtend;
+  final bool showDrawer;
   final List<Widget> actions;
   final bool canPop;
 
@@ -70,6 +76,38 @@ class _TabShellState extends State<TabShell> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final tabview = TabBarView(
+      controller: tabcon,
+      children: widget.children,
+    );
+
+    Widget childWithTab = (widget.showTabbar)
+        ? Column(
+            children: [
+              if (widget.showTabbar) widget.shellData.tabBar(context: context, controller: tabcon),
+              Expanded(
+                child: tabview,
+              ),
+            ],
+          )
+        : tabview;
+
+    Widget childWithRail = (widget.showNavigationRail)
+        ? Row(
+            children: [
+              if (widget.showNavigationRail)
+                widget.shellData.navigationRail(
+                  context: context,
+                  controller: tabcon,
+                  extended: widget.navRailExtend,
+                ),
+              Expanded(
+                child: childWithTab,
+              ),
+            ],
+          )
+        : childWithTab;
+
     return Scaffold(
       appBar: !widget.showAppbar
           ? null
@@ -82,52 +120,27 @@ class _TabShellState extends State<TabShell> with SingleTickerProviderStateMixin
                         HomeRoute().go(context);
                       },
                     ),
-              title: Text(widget.shellData[widget.navigationShell.currentIndex].name),
+              title: Text(widget.shellData.title(context)),
               actions: [
                 ...widget.actions,
-                Builder(builder: (context) {
-                  return IconButton(
-                    onPressed: () {
-                      Scaffold.of(context).openEndDrawer();
+                if (widget.showDrawer)
+                  Builder(
+                    builder: (context) {
+                      return IconButton(
+                        onPressed: () {
+                          Scaffold.of(context).openEndDrawer();
+                        },
+                        icon: const Icon(Icons.menu_open_rounded),
+                      );
                     },
-                    icon: Icon(
-                      Icons.show_chart,
-                    ),
-                  );
-                }),
+                  ),
               ],
             ),
-      endDrawer: NavigationDrawer(
-        children: [
-          ListTile(
-            title: Text('sh'),
-          ),
-        ],
-      ),
+      endDrawer: !widget.showDrawer ? null : widget.shellData.navigationDrawer(context: context, controller: tabcon),
       bottomNavigationBar:
-          !widget.showNavigationBar ? null : widget.shellData.bottomNavigationBar(context, controller: tabcon),
+          !widget.showNavigationBar ? null : widget.shellData.bottomNavigationBar(context: context, controller: tabcon),
       body: SafeArea(
-        child: Row(
-          children: [
-            Container(
-              width: 200,
-              color: Colors.red,
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  if (widget.showTabbar) widget.shellData.tabBar(context, controller: tabcon),
-                  Expanded(
-                    child: TabBarView(
-                      controller: tabcon,
-                      children: widget.children,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: childWithRail,
       ),
     );
   }

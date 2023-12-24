@@ -100,14 +100,15 @@ class TweetBox extends ConsumerWidget {
               //     ),
               //   ),
 
-              if (tweet.mediaType == MediaType.TEXT && !isURL(tweet.text) /*&& !isHero*/)
+              if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
+                  !isURL(tweet.text) /*&& !isHero*/)
                 SelectableLinkify(
                   onOpen: (link) async {
                     if (!await safeLaunchUrl(link.url)) {
                       throw Exception('Could not launch ${link.url}');
                     }
                   },
-                  text: tweet.text,
+                  text: tweet.mediaType == MediaType.QR ? tweet.text.split('||')[1] : tweet.text,
                   style: context.bm,
                   linkStyle: context.bm.c(Colors.blue),
                 ),
@@ -134,7 +135,8 @@ class TweetBox extends ConsumerWidget {
                   CircleAvatar(
                     child: FutureSpaceBuilder(
                       path: tweetuser.photoURL,
-                      radius: 100,
+                      key: ValueKey(tweetuser.photoURL.hashCode),
+                      radius: 200,
                     ),
                   ),
                 const SizedBox(height: 5),
@@ -220,43 +222,58 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
       onTap: () {
         safeLaunchUrl(widget.url);
       },
-      child: LinkPreview(
-        enableAnimation: true,
-        onPreviewDataFetched: (d) {
-          data = d;
-          if (context.mounted) {
-            setState(() {});
-          }
-        },
-        textStyle: context.bl,
-        metadataTextStyle: context.bl,
-        previewData: data,
-        text: widget.url,
-        width: MediaQuery.of(context).size.width,
-        previewBuilder: (p0, data) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                data.title ?? '',
-                style: context.tm.bold,
-              ),
-              Text(data.description ?? ''),
-              Align(
-                alignment: Alignment.center,
-                child: CachedNetworkImage(
-                  imageUrl: data.image?.url ?? '',
-                  errorWidget: (context, url, error) => const SizedBox(),
+      child: AnimatedScale(
+        scale: data != null ? 1 : .95,
+        duration: const Duration(milliseconds: 300),
+        child: LinkPreview(
+          enableAnimation: true,
+          onPreviewDataFetched: (d) {
+            data = d;
+            if (context.mounted) {
+              setState(() {});
+            }
+          },
+          textStyle: context.bl,
+          metadataTextStyle: context.bl,
+          previewData: data,
+          text: widget.url,
+          textWidget: Container(
+            height: (250, 500).c + 16,
+            width: (250, 500).c + 16,
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              widget.url,
+              style: context.bl.under.c(AppTheme.op),
+            ),
+          ),
+          width: MediaQuery.of(context).size.width,
+          previewBuilder: (p0, data) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  data.title ?? '',
+                  style: context.tm.bold,
                 ),
-              ),
-              Text(
-                data.link ?? '',
-                style: context.bl.under.c(AppTheme.op),
-              ),
-            ],
-          );
-        },
+                Text(data.description ?? ''),
+                Align(
+                  alignment: Alignment.center,
+                  child: CachedNetworkImage(
+                    imageUrl: data.image?.url ?? '',
+                    fit: BoxFit.cover,
+                    errorListener: (value) {},
+                    errorWidget: (context, url, error) => const SizedBox(),
+                  ),
+                ),
+                Text(
+                  data.link ?? '',
+                  style: context.bl.under.c(AppTheme.op),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

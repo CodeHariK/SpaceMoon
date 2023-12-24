@@ -15,6 +15,7 @@ import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Home/settings.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Static/theme.dart';
 
 part 'home.g.dart';
 
@@ -106,7 +107,8 @@ class HomeShellRoute extends StatefulShellRouteData {
   static final GlobalKey<NavigatorState> $navigatorKey = AppRouter.homeShellNavigatorKey;
 
   static List<ShellData> data = [
-    ShellData(name: 'Spacemoon', location: [AppRouter.allchat], icon: const Icon(Icons.chat_bubble_outline)),
+    ShellData(
+        name: 'Chat', title: 'Spacemoon', location: [AppRouter.allchat], icon: const Icon(Icons.chat_bubble_outline)),
     ShellData(name: 'Search', location: [AppRouter.search], icon: const Icon(Icons.search)),
     // ShellData(
     //     name: 'Notification',
@@ -140,12 +142,18 @@ class HomeShellRoute extends StatefulShellRouteData {
     StatefulNavigationShell navigationShell,
     List<Widget> children,
   ) {
-    return TabShell(
-      navigationShell: navigationShell,
-      shellData: data,
-      showTabbar: true,
-      actions: actions(context),
-      children: children,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return TabShell(
+          navigationShell: navigationShell,
+          shellData: data,
+          showTabbar: AppTheme.isTab,
+          showNavigationBar: false,
+          showNavigationRail: !AppTheme.isTab,
+          actions: actions(context),
+          children: children,
+        );
+      },
     );
   }
 }
@@ -173,7 +181,7 @@ class ExitPage extends StatelessWidget {
       ),
       body: navigator,
       extendBody: true,
-      bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context),
+      bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context: context),
     );
   }
 }
