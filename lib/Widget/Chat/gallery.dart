@@ -532,8 +532,8 @@ class GalleryUploaderButton extends StatelessWidget {
 }
 
 @Riverpod(keepAlive: true)
-FutureOr<String> spaceStoreRef(SpaceStoreRefRef ref, String url) async {
-  final r = await FirebaseStorage.instance.ref(url).getDownloadURL();
+FutureOr<String> spaceStoreRef(SpaceStoreRefRef ref, String path) async {
+  final r = await FirebaseStorage.instance.ref(path).getDownloadURL();
   return r;
 }
 
@@ -574,7 +574,7 @@ class FutureSpaceBuilder extends ConsumerWidget {
             Align(
               alignment: Alignment.topRight,
               child: AsyncLock(
-                builder: (loading, status, lock, open, setStatus) => IconButton.filled(
+                builder: (loading, status, lock, open, setStatus) => IconButton.filledTonal(
                   onPressed: () async {
                     lock();
                     final bytes = (await http.get(Uri.parse(url))).bodyBytes;

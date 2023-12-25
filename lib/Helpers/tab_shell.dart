@@ -40,6 +40,7 @@ class _TabShellState extends State<TabShell> with SingleTickerProviderStateMixin
 
   @override
   void initState() {
+    super.initState();
     tabcon = TabController(vsync: this, length: widget.shellData.length, initialIndex: 0);
 
     // print(navigationShell.route.branches.map((e) => e.defaultRoute?.path.toString() ?? '-').toString());
@@ -50,8 +51,6 @@ class _TabShellState extends State<TabShell> with SingleTickerProviderStateMixin
     }
 
     tabcon.addListener(goTo);
-
-    super.initState();
   }
 
   @override

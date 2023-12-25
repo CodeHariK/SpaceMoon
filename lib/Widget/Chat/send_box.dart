@@ -20,12 +20,14 @@ class SendBox extends HookConsumerWidget {
     this.mediaType = MediaType.TEXT,
     this.link,
     this.onChanged,
+    this.onSubmit,
   });
 
   final RoomUser roomUser;
   final MediaType mediaType;
   final String? link;
   final void Function(String value)? onChanged;
+  final Future<void> Function(TextEditingController)? onSubmit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,9 +42,10 @@ class SendBox extends HookConsumerWidget {
               asyncValidator: (value) async {
                 return null;
               },
-              onSubmit: (controller) async {
-                sendTweet(context, tweetCon, null, ref, mediaType, link);
-              },
+              onSubmit: onSubmit ??
+                  (controller) async {
+                    sendTweet(context, tweetCon, null, ref, mediaType, link);
+                  },
               textInputAction: TextInputAction.done,
               controller: tweetCon,
               minLines: 1,

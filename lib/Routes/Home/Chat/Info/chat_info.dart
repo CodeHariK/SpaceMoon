@@ -142,7 +142,10 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
-                              child: FutureSpaceBuilder(path: room.photoURL),
+                              child: FutureSpaceBuilder(
+                                path: room.photoURL,
+                                thumbnail: true,
+                              ),
                             ),
                     ),
                   ),
@@ -223,7 +226,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                     key: ValueKey(room.description),
                     initialValue: room.description,
                     enabled: meInRoom?.isAdmin == true,
-                    style: context.tl,
+                    style: context.ts,
                     maxLines: null,
                     asyncValidator: (value) async {
                       return value.checkMin(8);
@@ -411,6 +414,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                   child: FutureSpaceBuilder(
                                     path: user.photoURL,
                                     radius: 100,
+                                    thumbnail: true,
                                   ),
                                 ),
                           trailing: Row(

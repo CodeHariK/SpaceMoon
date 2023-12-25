@@ -59,6 +59,7 @@ class SearchPage extends HookConsumerWidget {
                   milliseconds: 600,
                   textInputAction: TextInputAction.done,
                   asyncValidator: (v) async {
+                    if (v.isEmpty) return null;
                     if (v.checkMin(8) != null) {
                       return v.checkMin(8);
                     }
@@ -72,6 +73,7 @@ class SearchPage extends HookConsumerWidget {
                     return null;
                   },
                   showSubmitSuffix: false,
+                  showClear: true,
                 ),
               ),
               if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)

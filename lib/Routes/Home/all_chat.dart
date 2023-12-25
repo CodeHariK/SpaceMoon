@@ -51,6 +51,7 @@ class AllChatPage extends ConsumerWidget {
               if (!subscription)
                 SliverAppBar(
                   pinned: true,
+                  backgroundColor: AppTheme.background,
                   collapsedHeight: 82,
                   flexibleSpace: Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 16),
@@ -86,8 +87,9 @@ class AllChatPage extends ConsumerWidget {
                                   }
                                 },
                                 child: Container(
-                                  width: 120,
-                                  height: 120,
+                                  width: (120, 160).c,
+                                  height: (120, 160).c,
+                                  margin: const EdgeInsets.only(right: 8),
                                   decoration: BoxDecoration(
                                     color: AppTheme.seedCard,
                                     borderRadius: BorderRadius.circular(16),

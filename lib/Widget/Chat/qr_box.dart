@@ -34,20 +34,16 @@ class QrBox extends StatelessWidget {
     return Column(
       children: [
         qrText.isEmpty
-            ? SizedBox(
-                width: context.mq.w,
-                height: context.mq.w,
-                child: Center(
-                  child: Icon(
-                    Icons.qr_code_rounded,
-                    size: context.mq.w,
-                  ),
+            ? Center(
+                child: Icon(
+                  Icons.qr_code_rounded,
+                  size: (200, 500).c,
                 ),
               )
             : RepaintBoundary(
                 key: repaintKey,
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 500),
+                  constraints: const BoxConstraints(maxWidth: 500),
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: SizedBox(
@@ -57,7 +53,7 @@ class QrBox extends StatelessWidget {
                           barcode: code == BarcodeType.QrCode
                               ? Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high)
                               : Barcode.fromType(code),
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(16),
                           // margin: EdgeInsets.all(4),
                           backgroundColor: AppTheme.darkness ? Colors.black : Colors.white,
                           errorBuilder: (context, error) => SizedBox(
@@ -113,7 +109,7 @@ class QrDialog extends HookWidget {
   Widget build(BuildContext context) {
     final qrtext = useState('');
     final barcodeType = useState(BarcodeType.QrCode);
-    final repaintKey = GlobalKey();
+    final GlobalKey repaintKey = GlobalKey();
 
     return DefaultTabController(
       length: 2,
@@ -131,7 +127,6 @@ class QrDialog extends HookWidget {
           children: [
             //
             Scaffold(
-              floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
               floatingActionButton: (qrtext.value.isEmpty)
                   ? null
                   : SendButton(
@@ -175,21 +170,7 @@ class QrDialog extends HookWidget {
                         ),
                         if (qrtext.value.isNotEmpty)
                           OutlinedButton(
-                            onPressed: () async {
-                              try {
-                                RenderRepaintBoundary boundary =
-                                    repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-                                var image = await boundary.toImage(pixelRatio: 1 + (qrtext.value.length ~/ 120) / 10);
-                                var byteData = await image.toByteData(format: ImageByteFormat.png);
-                                var pngBytes = byteData?.buffer.asUint8List();
-
-                                if (context.mounted) {
-                                  await saveToGallery(pngBytes, context, 'QrCodes');
-                                }
-                              } catch (e) {
-                                lava(e);
-                              }
-                            },
+                            onPressed: () => saveQr(context, repaintKey, qrtext.value),
                             child: const Text('Download'),
                           ),
                       ],
@@ -202,6 +183,7 @@ class QrDialog extends HookWidget {
                         qrtext.value = value;
                       },
                       mediaType: MediaType.QR,
+                      onSubmit: (controller) async {},
                     ),
                   ],
                 ),
@@ -260,5 +242,20 @@ class QrActionButton extends StatelessWidget {
         AnimatedOverlay.hide();
       },
     );
+  }
+}
+
+void saveQr(BuildContext context, GlobalKey repaintKey, String qrtext) async {
+  try {
+    RenderRepaintBoundary boundary = repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+    var image = await boundary.toImage(pixelRatio: 1 + (qrtext.length ~/ 120) / 10);
+    var byteData = await image.toByteData(format: ImageByteFormat.png);
+    var pngBytes = byteData?.buffer.asUint8List();
+
+    if (context.mounted) {
+      await saveToGallery(pngBytes, context, 'QrCodes');
+    }
+  } catch (e) {
+    lava(e);
   }
 }

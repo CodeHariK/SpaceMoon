@@ -258,8 +258,8 @@ class MobileEditor extends StatelessWidget {
 EditorStyle customizeEditorStyle(bool editable) {
   return EditorStyle(
     padding: const EdgeInsets.symmetric(horizontal: 20),
-    cursorColor: AppTheme.seedCard,
-    selectionColor: AppTheme.seedCard.withOpacity(0.5),
+    cursorColor: AppTheme.seedColor,
+    selectionColor: AppTheme.seedColor.withOpacity(0.7),
 
     textStyleConfiguration: TextStyleConfiguration(
       text: TextStyle(

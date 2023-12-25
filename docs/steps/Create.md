@@ -11,6 +11,8 @@ flutterfire configure
 * google-services.json
 * firebase_app_id_file.json
 * GoogleService-Info.plist
+* serviceAccountKey.json
+* key.properties
 
 ## Add Firebase Core
 

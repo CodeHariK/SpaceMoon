@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +22,9 @@ class VideoPlayerCache extends _$VideoPlayerCache {
       ),
     );
 
-    await controller.initialize();
+    await controller.initialize().whenComplete(() => controller.seekTo(
+          Duration(seconds: (controller.value.duration.inSeconds * (Random().nextDouble() * 0.1)).toInt()),
+        ));
 
     return controller;
   }

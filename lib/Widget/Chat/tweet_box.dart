@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
@@ -102,15 +101,19 @@ class TweetBox extends ConsumerWidget {
 
               if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
                   !isURL(tweet.text) /*&& !isHero*/)
-                SelectableLinkify(
-                  onOpen: (link) async {
-                    if (!await safeLaunchUrl(link.url)) {
-                      throw Exception('Could not launch ${link.url}');
-                    }
-                  },
-                  text: tweet.mediaType == MediaType.QR ? tweet.text.split('||')[1] : tweet.text,
-                  style: context.bm,
-                  linkStyle: context.bm.c(Colors.blue),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: SelectableLinkify(
+                    onOpen: (link) async {
+                      if (!await safeLaunchUrl(link.url)) {
+                        throw Exception('Could not launch ${link.url}');
+                      }
+                    },
+                    text:
+                        tweet.mediaType == MediaType.QR ? tweet.text.split('||').lastOrNull ?? tweet.text : tweet.text,
+                    style: context.bm,
+                    linkStyle: context.bm.c(Colors.blue),
+                  ),
                 ),
             ],
           ),
@@ -136,6 +139,7 @@ class TweetBox extends ConsumerWidget {
                     child: FutureSpaceBuilder(
                       path: tweetuser.photoURL,
                       key: ValueKey(tweetuser.photoURL.hashCode),
+                      thumbnail: true,
                       radius: 200,
                     ),
                   ),
@@ -171,21 +175,20 @@ class TweetBox extends ConsumerWidget {
                     roomuser.user == tweet.user)
                 ? null
                 : () {
-                    tweetuser;
                     marioAlertDialog(
                       context: context,
                       title: 'Delete Tweet',
-                      actions: [
+                      actions: (context) => [
                         MAction(
                           text: 'cancel',
-                          fn: () => context.pop(),
+                          fn: () => context.nav.pop(),
                         ),
                         MAction(
                           text: 'Yes',
                           fn: () async {
                             await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
                             if (context.mounted) {
-                              context.pop();
+                              context.nav.pop();
                             }
                           },
                         ),

@@ -1,5 +1,5 @@
 name: spacemoon
-description: A new Flutter project.
+description: Flutter Chat Application
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -63,6 +63,8 @@ dependencies:
 
   path_provider: ^2.1.1
   path: ^1.8.3
+
+  feedback: ^3.0.0
 
   flutter_adaptive_scaffold: ^0.1.7+1
   scrollable_positioned_list: ^0.3.8

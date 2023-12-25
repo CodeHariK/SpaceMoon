@@ -1,11 +1,14 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:feedback/feedback.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -114,7 +117,32 @@ class SettingsPage extends ConsumerWidget {
                       AccountRoute().push(context);
                     },
                     leading: const Icon(Icons.chevron_right_rounded),
-                    title: const Text('Account Management'),
+                    title: Text('Account Management', style: context.tm),
+                  ),
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      context.fPush(const FeedbackPage());
+                    },
+                    leading: const Icon(Icons.chevron_right_rounded),
+                    trailing: FilledButton(
+                      onPressed: () {
+                        BetterFeedback.of(context).show(
+                          (UserFeedback feedback) {
+                            FirebaseStorage.instance.ref('feedback/${DateTime.now().toIso8601String()}').putData(
+                                  feedback.screenshot,
+                                  SettableMetadata(
+                                    contentType: 'feedback/png',
+                                    customMetadata: {
+                                      'feedback': feedback.text,
+                                    },
+                                  ),
+                                );
+                          },
+                        );
+                      },
+                      child: const Text('Send Feedback'),
+                    ),
+                    title: Text('Feedback', style: context.tm),
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
@@ -137,7 +165,7 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      safeLaunchUrl('https://spacemoon.shark.run/privacy/policy.html');
+                      safeLaunchUrl('https://spacemoonfire.web.app/privacy/policy.html');
                     },
                     title: Text('Privacy Policy', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
@@ -197,6 +225,71 @@ class AttibutionPage extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class FeedbackPage extends StatefulWidget {
+  const FeedbackPage({super.key});
+
+  @override
+  State<FeedbackPage> createState() => _FeedbackPageState();
+}
+
+class _FeedbackPageState extends State<FeedbackPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Feedback')),
+      body: FutureBuilder(
+        future: FirebaseStorage.instance.ref('feedback').list(const ListOptions(maxResults: 10)),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) return const Text('Empty');
+
+          return ListView.builder(
+            itemCount: snapshot.data?.items.length,
+            itemBuilder: (context, index) {
+              final item = snapshot.data?.items[index];
+
+              return FutureBuilder(
+                key: ObjectKey(item),
+                future: item?.getMetadata(),
+                builder: (context, feedbackSnap) {
+                  return ListTile(
+                    title: Text(feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
+                    subtitle: Text(item?.name ?? '-'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        await item?.delete();
+                        setState(() {});
+                      },
+                    ),
+                    onTap: () {
+                      context.cPush(
+                        FutureBuilder(
+                          future: item?.getDownloadURL(),
+                          builder: (context, imgSnap) {
+                            return Scaffold(
+                              appBar: AppBar(
+                                title: Text(feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
+                                actions: [Text(item?.name ?? '-')],
+                              ),
+                              body: (imgSnap.data == null)
+                                  ? const Placeholder()
+                                  : PhotoView(imageProvider: Image.network(imgSnap.data ?? '').image),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -55,3 +55,5 @@ GoogleService-Info.plist
 proto/node_modules
 
 serviceAccountKey.json
+
+key.properties

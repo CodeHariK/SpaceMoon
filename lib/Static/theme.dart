@@ -229,7 +229,7 @@ class AppTheme {
         //CupertinoListTile, ListTile Title, Textfield label
         titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: (17, 19).c, fontWeight: FontWeight.w400),
 
-        titleSmall: TextStyle(letterSpacing: 1.c, color: op, fontSize: (16, 18).c),
+        titleSmall: TextStyle(letterSpacing: .5.c, color: op, fontSize: (16, 18).c, fontWeight: FontWeight.w400),
 
         //CupertinoFormSection header, ListTile Title,
         bodyLarge: TextStyle(color: op, fontSize: (15, 17).c), //Textfield font

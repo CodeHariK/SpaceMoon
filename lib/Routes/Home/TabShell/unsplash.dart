@@ -128,7 +128,7 @@ class UnslashRow extends StatelessWidget {
             itemCount: res?.results?.length,
             itemBuilder: (context, index) {
               final e = res?.results?[index];
-              final url = e?.urls?.small ?? e?.urls?.regular ?? e?.urls?.full;
+              final url = e?.urls?.regular ?? e?.urls?.full;
 
               if (e == null || url == null) return const Placeholder();
               return Container(
@@ -199,7 +199,7 @@ class UnsplashGrid extends HookConsumerWidget {
             crossAxisCount: (2, 4).c.toInt(),
             children: res?.results?.map(
                   (res) {
-                    final url = res.urls?.small ?? res.urls?.regular ?? res.urls?.full;
+                    final url = res.urls?.regular ?? res.urls?.full;
                     if (url != null) {
                       return InkWell(
                         onLongPress: () {
@@ -346,7 +346,7 @@ class UnsplashGrid extends HookConsumerWidget {
                           mediaType: MediaType.GALLERY,
                           gallery: selected.value.map(
                             (res) => ImageMetadata(
-                              unsplashurl: res.urls?.small ?? res.urls?.regular ?? res.urls?.full,
+                              unsplashurl: res.urls?.regular ?? res.urls?.full,
                               caption: res.description,
                             ),
                           ),

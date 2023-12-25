@@ -7,7 +7,7 @@ import 'package:spacemoon/Init/electrify.dart';
 class SpaceMoon {
   static String harikrishnan = 'Hari Krishnan';
   static String title = 'Spacemoon';
-  static String domain = 'https://spacemoon.shark.run/';
+  static String domain = 'https://spacemoon.shark.run';
   static String spacemoonGithub = 'https://github.com/codeharik/SpaceMoon';
   static String github = 'https://github.com/codeharik';
   static String sharkrun = 'https://shark.run';
@@ -15,7 +15,7 @@ class SpaceMoon {
   static String twitter = 'https://www.twitter.com/codeharik';
 
   static String googleplay = 'https://play.google.com/store/apps/details?id=run.shark.spacemoon';
-  static String appstore = '';
+  static String appstore = 'https://apps.apple.com/us/app/spacemoon/id6469975482';
   static String web = 'spacemoon.shark.run';
 
   static bool useEmulator = false;

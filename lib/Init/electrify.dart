@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:feedback/feedback.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,7 @@ import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
+import 'package:spacemoon/Widget/Feedback/feedback_form.dart';
 
 void electrify({
   required String title,
@@ -103,10 +105,22 @@ void electrify({
       runApp(
         ProviderScope(
           parent: container,
-          child: SpaceMoonHome(
-            title: title,
-            localizationsDelegates: localizationsDelegates,
-            supportedLocales: supportedLocales,
+          child: BetterFeedback(
+            feedbackBuilder: (context, onSubmit, scrollController) {
+              return FeedbackForm(
+                onSubmit: onSubmit,
+                scrollController: scrollController,
+              );
+            },
+            theme: FeedbackThemeData(),
+            localizationsDelegates: [
+              GlobalFeedbackLocalizationsDelegate(),
+            ],
+            child: SpaceMoonHome(
+              title: title,
+              localizationsDelegates: localizationsDelegates,
+              supportedLocales: supportedLocales,
+            ),
           ),
         ),
       );
@@ -145,7 +159,6 @@ class SpaceMoonHome extends HookConsumerWidget {
       lava('$previous -> $current');
     });
 
-    dino('SpaceMoon Rebuild ${MediaQuery.of(context).size} \n');
     // return AppThemeWidget(
     //   dark: false,
     //   designSize: const Size(430, 932),
@@ -164,73 +177,77 @@ class SpaceMoonHome extends HookConsumerWidget {
     final brightness = globalAppTheme.theme.brightness;
     final appColor = globalAppTheme.color;
 
-    AppTheme.currentAppTheme = AppTheme(
-      dark: brightness == Brightness.dark,
-      size: MediaQuery.of(context).size,
-      maxSize: const Size(1366, 1024),
-      designSize: const Size(430, 932),
-      appColor: appColor,
-    );
-
     return RootRestorationScope(
       restorationId: AppRouter.spacemoonRestorationScopeId,
-      child: MaterialApp.router(
-        routerConfig: router,
-        title: title,
-        scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
-        localizationsDelegates: [
-          ...AppLocalizations.localizationsDelegates,
-          ...?localizationsDelegates,
-        ],
-        theme: AppTheme.currentAppTheme.theme,
-        themeAnimationCurve: Curves.ease,
-        debugShowCheckedModeBanner: kDebugMode,
-        restorationScopeId: AppRouter.appRestorationScopeId,
+      child: LayoutBuilder(builder: (context, constraints) {
+        AppTheme.currentAppTheme = AppTheme(
+          dark: brightness == Brightness.dark,
+          size: constraints.biggest,
+          maxSize: const Size(1366, 1024),
+          designSize: const Size(430, 932),
+          appColor: appColor,
+        );
 
-        // showSemanticsDebugger: true,
-        // showPerformanceOverlay: true,
+        dino('SpaceMoon Rebuild ${constraints.biggest} \n');
 
-        supportedLocales: AppLocalizations.supportedLocales,
+        return MaterialApp.router(
+          routerConfig: router,
+          title: title,
+          scaffoldMessengerKey: AppRouter.scaffoldMessengerKey,
+          localizationsDelegates: [
+            ...AppLocalizations.localizationsDelegates,
+            ...?localizationsDelegates,
+          ],
+          theme: AppTheme.currentAppTheme.theme,
+          themeAnimationCurve: Curves.ease,
+          debugShowCheckedModeBanner: kDebugMode,
+          restorationScopeId: AppRouter.appRestorationScopeId,
 
-        builder: (context, child) {
-          initializeDateFormatting();
+          // showSemanticsDebugger: true,
+          // showPerformanceOverlay: true,
 
-          final renderChild = Directionality(
-            textDirection: TextDirection.ltr,
-            child: Scaffold(
-              key: ValueKey(globalAppTheme.theme),
-              resizeToAvoidBottomInset: false,
-              body: Overlay(
-                initialEntries: [
-                  OverlayEntry(
-                    builder: (context) {
-                      return CupertinoTheme(
-                        key: AppRouter.cupertinoNavigatorKey,
-                        data: CupertinoThemeData(
-                          brightness: brightness,
-                          primaryColor: AppTheme.seedColor,
-                        ),
-                        child: child ?? const SimpleError(),
-                      );
-                    },
-                  ),
-                ],
+          supportedLocales: AppLocalizations.supportedLocales,
+
+          builder: (context, child) {
+            initializeDateFormatting();
+
+            final renderChild = Directionality(
+              textDirection: TextDirection.ltr,
+              child: Scaffold(
+                key: ValueKey(globalAppTheme.theme),
+                resizeToAvoidBottomInset: false,
+                body: Overlay(
+                  initialEntries: [
+                    OverlayEntry(
+                      builder: (context) {
+                        return CupertinoTheme(
+                          key: AppRouter.cupertinoNavigatorKey,
+                          data: CupertinoThemeData(
+                            brightness: brightness,
+                            primaryColor: AppTheme.seedColor,
+                          ),
+                          child: child ?? const SimpleError(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
 
-          // if (kIsWeb) {
-          //   return Center(
-          //     child: ConstrainedBox(
-          //       constraints: const BoxConstraints(maxWidth: 1200),
-          //       child: renderChild,
-          //     ),
-          //   );
-          // }
+            // if (kIsWeb) {
+            //   return Center(
+            //     child: ConstrainedBox(
+            //       constraints: const BoxConstraints(maxWidth: 1200),
+            //       child: renderChild,
+            //     ),
+            //   );
+            // }
 
-          return renderChild;
-        },
-      ),
+            return renderChild;
+          },
+        );
+      }),
     );
   }
 }

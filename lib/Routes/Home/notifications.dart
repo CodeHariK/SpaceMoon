@@ -167,7 +167,7 @@ class NotificationsPage extends StatelessWidget {
                                       width: 300,
                                       height: 300,
                                       child: AppFlowy(
-                                        key: ObjectKey(tweet),
+                                        key: ValueKey(tweet.hashCode + index),
                                         jsonData: tweet.text,
                                         showAppbar: false,
                                       ),

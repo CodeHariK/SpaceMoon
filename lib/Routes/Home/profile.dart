@@ -97,8 +97,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 docPath: 'users/${user.uid}',
                                 singlepath: Const.photoURL.name,
                               );
-
-                              setState(() {});
                             },
                       child: user?.photoURL == null || user?.photoURL.isEmpty == true
                           ? Icon(
@@ -107,7 +105,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(250),
-                              child: FutureSpaceBuilder(path: user?.photoURL),
+                              child: FutureSpaceBuilder(
+                                path: user?.photoURL,
+                                thumbnail: true,
+                              ),
                             ),
                     ),
                   ),

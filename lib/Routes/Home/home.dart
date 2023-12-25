@@ -142,18 +142,14 @@ class HomeShellRoute extends StatefulShellRouteData {
     StatefulNavigationShell navigationShell,
     List<Widget> children,
   ) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return TabShell(
-          navigationShell: navigationShell,
-          shellData: data,
-          showTabbar: AppTheme.isTab,
-          showNavigationBar: false,
-          showNavigationRail: !AppTheme.isTab,
-          actions: actions(context),
-          children: children,
-        );
-      },
+    return TabShell(
+      navigationShell: navigationShell,
+      shellData: data,
+      showTabbar: AppTheme.isTab,
+      showNavigationBar: false,
+      showNavigationRail: !AppTheme.isTab,
+      actions: actions(context),
+      children: children,
     );
   }
 }
