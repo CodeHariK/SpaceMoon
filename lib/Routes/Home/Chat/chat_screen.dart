@@ -191,6 +191,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             child: FutureSpaceBuilder(
               path: room.photoURL,
               radius: 100,
+              thumbnail: true,
             ),
           ),
           trailing: Row(

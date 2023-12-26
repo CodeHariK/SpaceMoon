@@ -12,8 +12,6 @@ import 'package:photo_view/photo_view.dart';
 import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:spacemoon/Routes/Home/account.dart';
-import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 import 'package:spacemoon/main.dart';
@@ -112,13 +110,13 @@ class SettingsPage extends ConsumerWidget {
               CupertinoFormSection.insetGrouped(
                 header: Text('About', style: context.bl),
                 children: [
-                  CupertinoListTile.notched(
-                    onTap: () {
-                      AccountRoute().push(context);
-                    },
-                    leading: const Icon(Icons.chevron_right_rounded),
-                    title: Text('Account Management', style: context.tm),
-                  ),
+                  // CupertinoListTile.notched(
+                  //   onTap: () {
+                  //     AccountRoute().push(context);
+                  //   },
+                  //   leading: const Icon(Icons.chevron_right_rounded),
+                  //   title: Text('Account Management', style: context.tm),
+                  // ),
                   CupertinoListTile.notched(
                     onTap: () {
                       context.fPush(const FeedbackPage());
@@ -245,7 +243,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       body: FutureBuilder(
         future: FirebaseStorage.instance.ref('feedback').list(const ListOptions(maxResults: 10)),
         builder: (context, snapshot) {
-          if (snapshot.data == null) return const Text('Empty');
+          if (snapshot.data == null) return const SizedBox();
 
           return ListView.builder(
             itemCount: snapshot.data?.items.length,

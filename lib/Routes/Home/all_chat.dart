@@ -62,7 +62,7 @@ class AllChatPage extends ConsumerWidget {
                         decoration: const InputDecoration(
                           hintText: 'abc...',
                           prefixIcon: Icon(Icons.search),
-                          labelText: 'Find Rooms or Users by nickname',
+                          labelText: 'Find by nickname',
                         ),
                         onTap: () {
                           SearchRoute().go(context);
@@ -101,6 +101,7 @@ class AllChatPage extends ConsumerWidget {
                                           color: AppTheme.op,
                                         )
                                       : FutureSpaceBuilder(
+                                          thumbnail: true,
                                           path: room?.photoURL,
                                           radius: 16,
                                         ),
@@ -148,6 +149,7 @@ class AllChatPage extends ConsumerWidget {
                             leading: CircleAvatar(
                               radius: 28,
                               child: FutureSpaceBuilder(
+                                thumbnail: true,
                                 path: room.photoURL,
                                 radius: 200,
                               ),

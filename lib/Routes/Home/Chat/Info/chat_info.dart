@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
+import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
@@ -36,19 +37,14 @@ class ChatInfoRoute extends GoRouteData {
   }
 }
 
-class ChatInfoPage extends StatefulHookConsumerWidget {
+class ChatInfoPage extends HookConsumerWidget {
   const ChatInfoPage({super.key, required this.chatId, this.showAppbar = true});
 
   final String chatId;
   final bool showAppbar;
 
   @override
-  ConsumerState<ChatInfoPage> createState() => _ChatInfoPageState();
-}
-
-class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final room = ref.watch(roomStreamProvider).value;
     final meUser = ref.watch(currentUserDataProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
@@ -56,7 +52,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
     final allRoomUsers = allRoomUsersPro.value ?? [];
 
     useEffect(() {
-      ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
+      ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
 
       return null;
     }, [room]);
@@ -79,7 +75,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
     // }
 
     return Scaffold(
-      appBar: !widget.showAppbar
+      appBar: !showAppbar
           ? null
           : AppBar(
               leading: BackButton(
@@ -127,13 +123,11 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                               await uploadFire(
                                 meta: imageMetadata.$1,
                                 file: imageMetadata.$2,
-                                imageName: 'profile',
+                                imageName: 'profile${randomString(4)}',
                                 docPath: 'rooms/${room.uid}',
                                 storagePath: 'profile/rooms/${room.uid}',
                                 singlepath: Const.photoURL.name,
                               );
-
-                              setState(() {});
                             },
                       child: room.photoURL.isEmpty == true
                           ? Icon(
@@ -322,70 +316,70 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (meInRoom != null && meInRoom.isAdmin)
-                        Align(
-                          child: AsyncLock(
-                            builder: (loading, status, lock, open, setStatus) {
-                              return OutlinedButton(
-                                onPressed: () async {
-                                  lock();
-                                  await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
-                                  if (context.mounted) {
-                                    HomeRoute().go(context);
-                                  }
-                                  open();
-                                },
-                                child: const Text('Delete Room'),
-                              );
+                  if (meInRoom != null && meInRoom.isAdmin)
+                    Align(
+                      child: AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return ListTile(
+                            onTap: () async {
+                              lock();
+                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
+                              if (context.mounted) {
+                                HomeRoute().go(context);
+                              }
+                              open();
                             },
-                          ),
-                        ),
-                      if (meInRoom != null)
-                        Align(
-                          child: AsyncLock(
-                            builder: (loading, status, lock, open, setStatus) {
-                              return OutlinedButton(
-                                onPressed: () async {
-                                  lock();
-                                  await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
-                                  ref.read(currentRoomProvider.notifier).exitRoom(null);
-                                  if (context.mounted) {
-                                    HomeRoute().go(context);
-                                  }
-                                  open();
-                                },
-                                child: const Text('Leave Room'),
-                              );
+                            leading: const Icon(Icons.delete),
+                            title: const Text('Delete Room'),
+                          );
+                        },
+                      ),
+                    ),
+                  if (meInRoom != null)
+                    Align(
+                      child: AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return ListTile(
+                            onTap: () async {
+                              lock();
+                              await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
+                              ref.read(currentRoomProvider.notifier).exitRoom(null);
+                              if (context.mounted) {
+                                HomeRoute().go(context);
+                              }
+                              open();
                             },
-                          ),
-                        ),
-                      if (meInRoom == null && room.open.value >= Visible.MODERATED.value)
-                        AsyncLock(
-                          builder: (loading, status, lock, open, setStatus) {
-                            return FilledButton.icon(
-                              onPressed: () async {
-                                lock();
-                                await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
-                                      RoomUser(
-                                        user: meUser?.uid,
-                                        room: room.uid,
-                                      ),
-                                    );
+                            leading: const Icon(Icons.logout),
+                            title: const Text('Leave Room'),
+                          );
+                        },
+                      ),
+                    ),
+                  if (meInRoom == null && room.open.value >= Visible.MODERATED.value)
+                    AsyncLock(
+                      builder: (loading, status, lock, open, setStatus) {
+                        return ListTile(
+                          onTap: () async {
+                            lock();
+                            await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
+                                  RoomUser(
+                                    user: meUser?.uid,
+                                    room: room.uid,
+                                  ),
+                                );
 
-                                ref.invalidate(currentRoomUserProvider);
-                                open();
-                              },
-                              icon: const Icon(Icons.mail),
-                              label: Text(room.open == Visible.OPEN ? 'Join' : 'Send Request'),
-                            );
+                            ref.invalidate(currentRoomUserProvider);
+                            open();
                           },
-                        ),
-                      if (meInRoom?.role == Role.REQUEST) const Text('Request Sent'),
-                    ],
-                  ),
+                          leading: const Icon(Icons.mail),
+                          title: Text(room.open == Visible.OPEN ? 'Join' : 'Send Request'),
+                        );
+                      },
+                    ),
+                  if (meInRoom?.role == Role.REQUEST)
+                    const ListTile(
+                      title: Text('Request Sent'),
+                    ),
                   const SizedBox(height: 10),
                 ],
               ),

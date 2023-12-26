@@ -59,13 +59,12 @@ Future<int> countUserByNick(String nick) async {
 }
 
 @Riverpod(keepAlive: true)
-Future<User?> getUserById(GetUserByIdRef ref, String userId) async {
-  User? user = await FirebaseFirestore.instance
+Stream<User?> getUserById(GetUserByIdRef ref, String userId) {
+  return FirebaseFirestore.instance
       .collection(Const.users.name)
       .doc(userId)
-      .get()
-      .then((value) => fromDocSnap(User(), value));
-  return user;
+      .snapshots()
+      .map((value) => fromDocSnap(User(), value));
 }
 
 Future<void> callUserUpdate(User user) async {

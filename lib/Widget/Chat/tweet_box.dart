@@ -109,6 +109,25 @@ class TweetBox extends ConsumerWidget {
                         throw Exception('Could not launch ${link.url}');
                       }
                     },
+                    contextMenuBuilder: (context, editableTextState) {
+                      return AdaptiveTextSelectionToolbar.buttonItems(
+                        anchors: editableTextState.contextMenuAnchors,
+                        buttonItems: <ContextMenuButtonItem>[
+                          ContextMenuButtonItem(
+                            onPressed: () {
+                              editableTextState.copySelection(SelectionChangedCause.toolbar);
+                            },
+                            type: ContextMenuButtonType.copy,
+                          ),
+                          ContextMenuButtonItem(
+                            onPressed: () {
+                              editableTextState.selectAll(SelectionChangedCause.toolbar);
+                            },
+                            type: ContextMenuButtonType.selectAll,
+                          ),
+                        ],
+                      );
+                    },
                     text:
                         tweet.mediaType == MediaType.QR ? tweet.text.split('||').lastOrNull ?? tweet.text : tweet.text,
                     style: context.bm,
@@ -138,7 +157,6 @@ class TweetBox extends ConsumerWidget {
                   CircleAvatar(
                     child: FutureSpaceBuilder(
                       path: tweetuser.photoURL,
-                      key: ValueKey(tweetuser.photoURL.hashCode),
                       thumbnail: true,
                       radius: 200,
                     ),
@@ -181,15 +199,13 @@ class TweetBox extends ConsumerWidget {
                       actions: (context) => [
                         MAction(
                           text: 'cancel',
-                          fn: () => context.nav.pop(),
+                          fn: () => Navigator.pop(context),
                         ),
                         MAction(
                           text: 'Yes',
-                          fn: () async {
-                            await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
-                            if (context.mounted) {
-                              context.nav.pop();
-                            }
+                          fn: () {
+                            Navigator.pop(context);
+                            ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
                           },
                         ),
                       ],

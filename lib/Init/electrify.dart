@@ -200,7 +200,7 @@ class SpaceMoonHome extends HookConsumerWidget {
           ],
           theme: AppTheme.currentAppTheme.theme,
           themeAnimationCurve: Curves.ease,
-          debugShowCheckedModeBanner: kDebugMode,
+          debugShowCheckedModeBanner: false,
           restorationScopeId: AppRouter.appRestorationScopeId,
 
           // showSemanticsDebugger: true,

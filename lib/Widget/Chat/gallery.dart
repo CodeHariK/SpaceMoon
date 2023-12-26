@@ -531,7 +531,7 @@ class GalleryUploaderButton extends StatelessWidget {
   }
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 FutureOr<String> spaceStoreRef(SpaceStoreRefRef ref, String path) async {
   final r = await FirebaseStorage.instance.ref(path).getDownloadURL();
   return r;

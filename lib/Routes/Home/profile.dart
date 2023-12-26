@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
+import 'package:moonspace/form/mario.dart';
+import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -42,7 +45,7 @@ class ProfileRoute extends GoRouteData {
   }
 }
 
-class ProfilePage extends ConsumerStatefulWidget {
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({
     super.key,
     this.searchuser,
@@ -51,21 +54,14 @@ class ProfilePage extends ConsumerStatefulWidget {
   final User? searchuser;
 
   @override
-  ConsumerState<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends ConsumerState<ProfilePage> {
-  User? get searchuser => widget.searchuser;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final user = searchuser ?? ref.watch(currentUserDataProvider).value;
 
     return Scaffold(
       appBar: searchuser != null ? AppBar() : null,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
           child: Center(
             child: SingleChildScrollView(
               child: Column(
@@ -92,7 +88,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               await uploadFire(
                                 meta: imageMetadata.$1,
                                 file: imageMetadata.$2,
-                                imageName: 'profile',
+                                imageName: 'profile${randomString(4)}',
                                 storagePath: 'profile/users/${user!.uid}',
                                 docPath: 'users/${user.uid}',
                                 singlepath: Const.photoURL.name,
@@ -225,7 +221,39 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         );
                       },
                     ),
-                  const RefreshTokenDisplay(),
+                  ListTile(
+                    leading: const Icon(Icons.logout),
+                    onTap: () {
+                      auth.FirebaseAuth.instance.signOut();
+                    },
+                    title: const Text('Sign out'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.delete),
+                    onTap: () {
+                      marioAlertDialog(
+                        context: context,
+                        title: 'Confirm Account Deletion',
+                        content:
+                            'Are you sure you want to delete your account? All your data will be automatically deleted.',
+                        actions: (context) => [
+                          MAction(
+                            text: 'cancel',
+                            fn: () => Navigator.pop(context),
+                          ),
+                          MAction(
+                            text: 'Yes',
+                            fn: () {
+                              Navigator.pop(context);
+                              auth.FirebaseAuth.instance.currentUser?.delete();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                    title: const Text('Delete Account'),
+                  ),
+                  // const RefreshTokenDisplay(),
                 ],
               ),
             ),

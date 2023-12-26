@@ -54,7 +54,7 @@ class SearchPage extends HookConsumerWidget {
                   autofocus: true,
                   decoration: (AsyncText value, roomCon) => const InputDecoration(
                     hintText: 'abc...',
-                    labelText: 'Find Rooms or Users by nickname',
+                    labelText: 'Find by nickname',
                   ),
                   milliseconds: 600,
                   textInputAction: TextInputAction.done,

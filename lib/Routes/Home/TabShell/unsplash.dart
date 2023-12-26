@@ -51,7 +51,7 @@ class UnsplashPage extends StatefulWidget {
 
 class _UnsplashPageState extends State<UnsplashPage> {
   int page = 1;
-  String query = 'india';
+  String query = 'flower';
   Unsplash? res;
 
   @override
@@ -80,6 +80,7 @@ class _UnsplashPageState extends State<UnsplashPage> {
               initialValue: query,
               showPrefix: false,
               showSubmitSuffix: false,
+              maxLines: 1,
               asyncValidator: (value) async {
                 query = value;
                 page = 1;

@@ -33,6 +33,12 @@ export const generateThumbnail = onObjectFinalized({
 
         const sharpImageMetaData = (await sharp(imageBuffer).metadata());
 
+        if (event.data.metadata?.single) {
+            await admin.storage().bucket().deleteFiles({
+                prefix: path.dirname(filePath)
+            });
+        }
+
         // Generate a thumbnail using sharp.
         const thumbnailBuffer = await sharp(imageBuffer).resize({
             width: 300,
@@ -68,11 +74,12 @@ export const generateThumbnail = onObjectFinalized({
 
         if (event.data.metadata?.single) {
             admin.firestore().doc(docpath).update({
-                [event.data.metadata?.single]: filePath
+                [event.data.metadata?.single]: filePath,
+                updated: (new Date()).toISOString(),
             });
         }
-        if (event.data.metadata?.multi) {
 
+        if (event.data.metadata?.multi) {
             let oldImageData = Tweet.fromJSON((await admin.firestore().doc(docpath).get())
                 .data()).gallery.find((imgData, __, ___) => {
                     return imgData.localUrl === event.data.metadata?.localUrl;
