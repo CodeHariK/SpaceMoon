@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -37,25 +36,36 @@ class ChatInfoRoute extends GoRouteData {
   }
 }
 
-class ChatInfoPage extends HookConsumerWidget {
+class ChatInfoPage extends ConsumerStatefulWidget {
   const ChatInfoPage({super.key, required this.chatId, this.showAppbar = true});
 
   final String chatId;
   final bool showAppbar;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatInfoPage> createState() => _ChatInfoPageState();
+}
+
+class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatInfoPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final room = ref.watch(roomStreamProvider).value;
     final meUser = ref.watch(currentUserDataProvider).value;
     final meInRoom = ref.watch(currentRoomUserProvider).value;
     final allRoomUsersPro = ref.watch(getAllRoomUsersInRoomProvider);
     final allRoomUsers = allRoomUsersPro.value ?? [];
-
-    useEffect(() {
-      ref.read(currentRoomProvider.notifier).updateRoom(id: chatId);
-
-      return null;
-    }, [room]);
 
     if (room == null) {
       return Scaffold(
@@ -75,7 +85,7 @@ class ChatInfoPage extends HookConsumerWidget {
     // }
 
     return Scaffold(
-      appBar: !showAppbar
+      appBar: !widget.showAppbar
           ? null
           : AppBar(
               leading: BackButton(
@@ -316,25 +326,6 @@ class ChatInfoPage extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (meInRoom != null && meInRoom.isAdmin)
-                    Align(
-                      child: AsyncLock(
-                        builder: (loading, status, lock, open, setStatus) {
-                          return ListTile(
-                            onTap: () async {
-                              lock();
-                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
-                              if (context.mounted) {
-                                HomeRoute().go(context);
-                              }
-                              open();
-                            },
-                            leading: const Icon(Icons.delete),
-                            title: const Text('Delete Room'),
-                          );
-                        },
-                      ),
-                    ),
                   if (meInRoom != null)
                     Align(
                       child: AsyncLock(
@@ -351,6 +342,25 @@ class ChatInfoPage extends HookConsumerWidget {
                             },
                             leading: const Icon(Icons.logout),
                             title: const Text('Leave Room'),
+                          );
+                        },
+                      ),
+                    ),
+                  if (meInRoom != null && meInRoom.isAdmin)
+                    Align(
+                      child: AsyncLock(
+                        builder: (loading, status, lock, open, setStatus) {
+                          return ListTile(
+                            onTap: () async {
+                              lock();
+                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
+                              if (context.mounted) {
+                                HomeRoute().go(context);
+                              }
+                              open();
+                            },
+                            leading: const Icon(Icons.delete),
+                            title: const Text('Delete Room'),
                           );
                         },
                       ),

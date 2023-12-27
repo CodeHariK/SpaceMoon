@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart' as auth;
-import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
@@ -23,15 +22,19 @@ Future<void> initFirebase() async {
   );
 
   if (!SpaceMoon.useEmulator) {
-    await FirebaseAppCheck.instance.activate(
-      webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
-      androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-      appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
-    );
+    await FirebaseAppCheck.instance
+        .activate(
+          webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
+          androidProvider: SpaceMoon.debugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+          appleProvider: SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
+        )
+        .onError(
+          (error, stackTrace) => lava(error),
+        );
   }
 
   if (Device.isMobile) {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!SpaceMoon.debugMode);
   }
 
   FirebaseUIAuth.configureProviders([
@@ -41,9 +44,7 @@ Future<void> initFirebase() async {
     auth.AppleProvider(),
   ]);
 
-  if (SpaceMoon.useEmulator) {
-    await emulator();
-  }
+  await emulator();
 
   if (!Device.isWeb) {
     await firebaseMessagingSetup();
@@ -51,10 +52,9 @@ Future<void> initFirebase() async {
 }
 
 Future<void> emulator() async {
-  if (kDebugMode) {
+  if (SpaceMoon.debugMode && SpaceMoon.useEmulator) {
     try {
-      const computerIp = '192.168.1.4';
-      final emulatorHost = defaultTargetPlatform == TargetPlatform.android ? computerIp : 'localhost';
+      final emulatorHost = Device.isAndroid ? SpaceMoon.computerIp : 'localhost';
 
       FirebaseFirestore.instance.settings = Settings(
         host: '$emulatorHost:8080',

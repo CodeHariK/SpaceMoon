@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -24,7 +23,7 @@ class SearchRoute extends GoRouteData {
   }
 }
 
-class SearchPage extends HookConsumerWidget {
+class SearchPage extends ConsumerWidget {
   const SearchPage({
     super.key,
     this.room,
@@ -34,7 +33,6 @@ class SearchPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomCon = useTextEditingController();
     final searchRooms = ref.watch(searchRoomByNickProvider).value ?? [];
     final searchUsers = ref.watch(searchUserByNickProvider).value ?? [];
     final me = ref.watch(currentUserDataProvider).value;
@@ -50,9 +48,8 @@ class SearchPage extends HookConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: AsyncTextFormField(
-                  controller: roomCon,
                   autofocus: true,
-                  decoration: (AsyncText value, roomCon) => const InputDecoration(
+                  decoration: (AsyncText value, controller) => const InputDecoration(
                     hintText: 'abc...',
                     labelText: 'Find by nickname',
                   ),
@@ -74,6 +71,9 @@ class SearchPage extends HookConsumerWidget {
                   },
                   showSubmitSuffix: false,
                   showClear: true,
+                  clearFunc: () {
+                    ref.read(searchTextProvider.notifier).change('');
+                  },
                 ),
               ),
               if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)
@@ -151,7 +151,7 @@ class UserTile extends ConsumerWidget {
       contentPadding: EdgeInsets.zero,
       onTap: () {
         if (context.mounted && searchUser?.uid != null) {
-          ProfileRoute($extra: searchUser).go(context);
+          ProfileRoute($extra: searchUser).push(context);
         }
       },
       title: Text(searchUser?.displayName ?? 'Name'),

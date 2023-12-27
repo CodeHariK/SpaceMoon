@@ -8,9 +8,8 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
@@ -20,6 +19,7 @@ import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Widget/Feedback/feedback_form.dart';
+import 'package:spacemoon/main.dart';
 
 void electrify({
   required String title,
@@ -140,7 +140,7 @@ void electrify({
   );
 }
 
-class SpaceMoonHome extends HookConsumerWidget {
+class SpaceMoonHome extends ConsumerWidget {
   const SpaceMoonHome({
     super.key,
     required this.title,
@@ -155,10 +155,6 @@ class SpaceMoonHome extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    useOnAppLifecycleStateChange((previous, current) {
-      lava('$previous -> $current');
-    });
-
     // return AppThemeWidget(
     //   dark: false,
     //   designSize: const Size(430, 932),
@@ -200,7 +196,7 @@ class SpaceMoonHome extends HookConsumerWidget {
           ],
           theme: AppTheme.currentAppTheme.theme,
           themeAnimationCurve: Curves.ease,
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: (SpaceMoon.debugMode || SpaceMoon.useEmulator || kDebugMode),
           restorationScopeId: AppRouter.appRestorationScopeId,
 
           // showSemanticsDebugger: true,

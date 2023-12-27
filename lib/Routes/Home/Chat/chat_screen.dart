@@ -5,7 +5,7 @@ import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
@@ -67,18 +67,26 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   });
 
   @override
+  void didUpdateWidget(covariant ChatPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
+    itemPositionsListener.itemPositions.addListener(itemPositionListener);
+  }
+
+  void itemPositionListener() {
+    dateStream.add((itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
+  }
+
+  @override
   void initState() {
     super.initState();
-
     ref.read(currentRoomProvider.notifier).updateRoom(id: widget.chatId);
-
-    itemPositionsListener.itemPositions.addListener(() {
-      dateStream.add((itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
-    });
+    itemPositionsListener.itemPositions.addListener(itemPositionListener);
   }
 
   @override
   void dispose() {
+    itemPositionsListener.itemPositions.removeListener(itemPositionListener);
     super.dispose();
   }
 
@@ -160,7 +168,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
         ),
         body: ChatInfoPage(
-          chatId: room.uid,
+          chatId: widget.chatId,
           showAppbar: false,
         ),
       );

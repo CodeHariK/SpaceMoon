@@ -221,38 +221,70 @@ class ProfilePage extends ConsumerWidget {
                         );
                       },
                     ),
-                  ListTile(
-                    leading: const Icon(Icons.logout),
-                    onTap: () {
-                      auth.FirebaseAuth.instance.signOut();
-                    },
-                    title: const Text('Sign out'),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.delete),
-                    onTap: () {
-                      marioAlertDialog(
-                        context: context,
-                        title: 'Confirm Account Deletion',
-                        content:
-                            'Are you sure you want to delete your account? All your data will be automatically deleted.',
-                        actions: (context) => [
-                          MAction(
-                            text: 'cancel',
-                            fn: () => Navigator.pop(context),
-                          ),
-                          MAction(
-                            text: 'Yes',
-                            fn: () {
-                              Navigator.pop(context);
-                              auth.FirebaseAuth.instance.currentUser?.delete();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                    title: const Text('Delete Account'),
-                  ),
+                  if (searchuser == null)
+                    ListTile(
+                      leading: const Icon(Icons.logout),
+                      onTap: () {
+                        marioAlertDialog(
+                          context: context,
+                          title: 'Are you sure you want to sign out?',
+                          actions: (context) => [
+                            MAction(
+                              text: 'cancel',
+                              fn: () => Navigator.pop(context),
+                            ),
+                            MAction(
+                              text: 'Yes',
+                              fn: () async {
+                                Navigator.pop(context);
+                                auth.FirebaseAuth.instance.signOut();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                      title: const Text('Sign out'),
+                    ),
+                  if (searchuser == null)
+                    ListTile(
+                      leading: const Icon(Icons.delete),
+                      onTap: () async {
+                        String? errorMessage = await marioAlertDialog<String?>(
+                          context: context,
+                          title: 'Confirm Account Deletion',
+                          content:
+                              'Are you sure you want to delete your account? All your data will be automatically deleted.',
+                          actions: (context) => [
+                            MAction(
+                              text: 'cancel',
+                              fn: () => Navigator.pop(context),
+                            ),
+                            MAction(
+                              text: 'Yes',
+                              fn: () async {
+                                await auth.FirebaseAuth.instance.currentUser?.delete().then((value) {
+                                  Navigator.pop(context);
+                                }).onError(
+                                  (auth.FirebaseAuthException error, stackTrace) {
+                                    Navigator.pop(context, error.message);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        );
+
+                        if (context.mounted && errorMessage != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 10),
+                              content: Text(errorMessage),
+                            ),
+                          );
+                        }
+                      },
+                      title: const Text('Delete Account'),
+                    ),
                   // const RefreshTokenDisplay(),
                 ],
               ),

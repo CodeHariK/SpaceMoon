@@ -285,7 +285,7 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
                     errorWidget: (context, url, error) => const SizedBox(),
                   ),
                 ),
-                Text(
+                SelectableText(
                   data.link ?? '',
                   style: context.bl.under.c(AppTheme.op),
                 ),
