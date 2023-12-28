@@ -170,9 +170,14 @@ extension SuperShellData on List<ShellData> {
         onTap: (v) => controller != null ? controller.animateTo(v) : goToIndex(context, v),
         indicatorSize: TabBarIndicatorSize.tab,
         tabs: map(
-          (e) => Tab(
-            // icon: e.icon,
-            text: e.name,
+          (e) => Semantics(
+            label: 'Go to ${e.name}',
+            button: true,
+            enabled: true,
+            child: Tab(
+              // icon: e.icon,
+              text: e.name,
+            ),
           ),
         ).toList(),
       );

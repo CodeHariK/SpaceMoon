@@ -48,7 +48,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return AboutPage(
-      onboard: () {
+      onboarded: () {
         ref.read(onboardedProvider.notifier).set(true);
       },
     );

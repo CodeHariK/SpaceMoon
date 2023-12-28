@@ -27,7 +27,10 @@ class UnsplashButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
-      icon: const Icon(Icons.sailing_outlined),
+      icon: const Icon(
+        Icons.sailing_outlined,
+        semanticLabel: 'unsplash',
+      ),
       onPressed: () {
         context.cPush(
           UnsplashPage(
@@ -74,19 +77,22 @@ class _UnsplashPageState extends State<UnsplashPage> {
         title: const Text('Unsplash'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AsyncTextFormField(
-              initialValue: query,
-              showPrefix: false,
-              showSubmitSuffix: false,
-              maxLines: 1,
-              asyncValidator: (value) async {
-                query = value;
-                page = 1;
-                await fetch();
-                return null;
-              },
+          child: Semantics(
+            label: 'Unsplash Search',
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AsyncTextFormField(
+                initialValue: query,
+                showPrefix: false,
+                showSubmitSuffix: false,
+                maxLines: 1,
+                asyncValidator: (value) async {
+                  query = value;
+                  page = 1;
+                  await fetch();
+                  return null;
+                },
+              ),
             ),
           ),
         ),
@@ -104,6 +110,7 @@ class _UnsplashPageState extends State<UnsplashPage> {
         },
         child: const Icon(
           Icons.replay_outlined,
+          semanticLabel: 'UnsplashPageReload',
         ),
       ),
     );
@@ -132,25 +139,28 @@ class UnslashRow extends StatelessWidget {
               final url = e?.urls?.regular ?? e?.urls?.full;
 
               if (e == null || url == null) return const Placeholder();
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 1,
-                      spreadRadius: 1,
-                      offset: Offset(0, 2),
+              return Semantics(
+                label: 'Image',
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 1,
+                        spreadRadius: 1,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  margin: const EdgeInsets.all(8.0),
+                  child: Hero(
+                    tag: e.id ?? 'e.id',
+                    child: CustomCacheImage(
+                      imageUrl: url,
+                      radius: 12,
+                      blurHash: e.blurHash,
                     ),
-                  ],
-                ),
-                margin: const EdgeInsets.all(8.0),
-                child: Hero(
-                  tag: e.id ?? 'e.id',
-                  child: CustomCacheImage(
-                    imageUrl: url,
-                    radius: 12,
-                    blurHash: e.blurHash,
                   ),
                 ),
               );
@@ -246,85 +256,95 @@ class UnsplashGrid extends HookConsumerWidget {
                                               context.pop();
                                             }
                                           },
-                                          child: const Icon(Icons.send),
+                                          child: const Icon(
+                                            Icons.send,
+                                            semanticLabel: 'UnsplashGridSend',
+                                          ),
                                         ),
                                         appBar: AppBar(),
-                                        body: Stack(
-                                          children: [
-                                            Hero(
-                                              tag: res.id!,
-                                              child: InteractiveViewer(
-                                                child: CustomCacheImage(
-                                                  imageUrl: url,
-                                                  // blurHash: e.blurHash,
+                                        body: Semantics(
+                                          label: 'Image',
+                                          child: Stack(
+                                            children: [
+                                              Hero(
+                                                tag: res.id!,
+                                                child: InteractiveViewer(
+                                                  child: CustomCacheImage(
+                                                    imageUrl: url,
+                                                    // blurHash: e.blurHash,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.all(8),
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                  stops: const [0, 1],
-                                                  colors: [
-                                                    (HexColor(res.color ?? '#ffffff')),
-                                                    (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                              Container(
+                                                padding: const EdgeInsets.all(8),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                    stops: const [0, 1],
+                                                    colors: [
+                                                      (HexColor(res.color ?? '#ffffff')),
+                                                      (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    if (res.description != null ||
+                                                        (res.description?.isNotEmpty ?? false))
+                                                      Text(
+                                                        res.description.toString().toUpperCase(),
+                                                        style: context.hs.c(HexColor(res.color ?? '#ffffff').mop),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    if (res.altDescription != null ||
+                                                        (res.altDescription?.isNotEmpty ?? false))
+                                                      Text(
+                                                        res.altDescription.toString().toUpperCase(),
+                                                        style: context.tm.c(HexColor(res.color ?? '#ffffff').mop),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
                                                   ],
                                                 ),
                                               ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  if (res.description != null || (res.description?.isNotEmpty ?? false))
-                                                    Text(
-                                                      res.description.toString().toUpperCase(),
-                                                      style: context.hs.c(HexColor(res.color ?? '#ffffff').mop),
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                  if (res.altDescription != null ||
-                                                      (res.altDescription?.isNotEmpty ?? false))
-                                                    Text(
-                                                      res.altDescription.toString().toUpperCase(),
-                                                      style: context.tm.c(HexColor(res.color ?? '#ffffff').mop),
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       );
                                     },
                                   ),
                                 );
                               },
-                        child: Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            Container(
-                              foregroundDecoration: BoxDecoration(
-                                color: selected.value.contains(res) ? const Color.fromARGB(120, 218, 218, 218) : null,
-                              ),
-                              child: Hero(
-                                tag: res.id!,
-                                child: CustomCacheImage(
-                                  imageUrl: url,
-                                  blurHash: res.blurHash,
+                        child: Semantics(
+                          label: 'Image',
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Container(
+                                foregroundDecoration: BoxDecoration(
+                                  color: selected.value.contains(res) ? const Color.fromARGB(120, 218, 218, 218) : null,
+                                ),
+                                child: Hero(
+                                  tag: res.id!,
+                                  child: CustomCacheImage(
+                                    imageUrl: url,
+                                    blurHash: res.blurHash,
+                                  ),
                                 ),
                               ),
-                            ),
-                            if (selected.value.contains(res))
-                              const Icon(
-                                Icons.done,
-                                color: Colors.black,
-                                size: 40,
-                              )
-                          ],
+                              if (selected.value.contains(res))
+                                const Icon(
+                                  Icons.done,
+                                  color: Colors.black,
+                                  size: 40,
+                                )
+                            ],
+                          ),
                         ),
                       );
                     } else {
@@ -357,7 +377,10 @@ class UnsplashGrid extends HookConsumerWidget {
                     context.pop();
                   }
                 },
-                child: const Icon(Icons.send),
+                child: const Icon(
+                  Icons.send,
+                  semanticLabel: 'UnsplashGridFloatingActionButton',
+                ),
               ),
             ),
         ],

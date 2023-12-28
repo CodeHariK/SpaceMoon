@@ -20,34 +20,37 @@ class AppFlowyBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final curuser = ref.watch(currentUserProvider).value;
 
-    return InkWell(
-      onTap: () async {
-        await context.cPush(
-          Hero(
-            tag: '${tweet.hashCode} Appflowy',
-            child: AppFlowy(
-              jsonData: tweet.text,
-              editable: curuser?.uid == tweet.user,
-              onPopInvoked: (pop, data) async {
-                if (curuser?.uid == tweet.user) {
-                  tweet.text = data;
-                  ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
-                }
-              },
+    return Semantics(
+      label: 'AppFlowy Editor',
+      child: InkWell(
+        onTap: () async {
+          await context.cPush(
+            Hero(
+              tag: '${tweet.hashCode} Appflowy',
+              child: AppFlowy(
+                jsonData: tweet.text,
+                editable: curuser?.uid == tweet.user,
+                onPopInvoked: (pop, data) async {
+                  if (curuser?.uid == tweet.user) {
+                    tweet.text = data;
+                    ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                  }
+                },
+              ),
             ),
-          ),
-        );
-      },
-      child: IgnorePointer(
-        child: SizedBox(
-          width: (250, 600).c,
-          height: (250, 600).c,
-          child: Hero(
-            tag: '${tweet.hashCode} Appflowy',
-            child: AppFlowy(
-              key: ObjectKey(tweet),
-              jsonData: tweet.text,
-              showAppbar: false,
+          );
+        },
+        child: IgnorePointer(
+          child: SizedBox(
+            width: (250, 600).c,
+            height: (250, 600).c,
+            child: Hero(
+              tag: '${tweet.hashCode} Appflowy',
+              child: AppFlowy(
+                key: ObjectKey(tweet),
+                jsonData: tweet.text,
+                showAppbar: false,
+              ),
             ),
           ),
         ),
@@ -86,7 +89,10 @@ class AppFlowyActionButton extends StatelessWidget {
           ),
         );
       },
-      icon: const Icon(Icons.post_add),
+      icon: const Icon(
+        Icons.post_add,
+        semanticLabel: 'post',
+      ),
     );
   }
 }

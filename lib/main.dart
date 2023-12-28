@@ -1,5 +1,6 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:spacemoon/Init/init.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:spacemoon/Init/electrify.dart';
@@ -18,9 +19,11 @@ class SpaceMoon {
   static String appstore = 'https://apps.apple.com/us/app/spacemoon/id6469975482';
   static String web = 'spacemoon.shark.run';
 
-  static bool debugMode = false;
-  static bool useEmulator = false;
+  static bool debugMode = kDebugMode && false;
+  static bool useEmulator = kDebugMode && false;
   static String computerIp = '192.168.1.4';
+
+  static String build = 'Build : 0.0.1+5';
 
   static HttpsCallable fn(String function) => useEmulator
       ? FirebaseFunctions.instance.httpsCallable(function)

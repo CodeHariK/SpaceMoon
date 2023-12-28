@@ -44,148 +44,154 @@ class GalleryImage extends StatelessWidget {
     final isVideo = imageMetadata.type.contains('video');
 
     if (isVideo) {
-      return Container(
-        height: 320,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-        alignment: Alignment.center,
-        child: Stack(
+      return Semantics(
+        label: 'video',
+        child: Container(
+          height: 320,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
           alignment: Alignment.center,
-          children: [
-            Transform.scale(
-              scale: 2,
-              child: FutureSpaceBuilder(
-                imageMetadata: imageMetadata,
-                builder: (url) {
-                  return VideoPlayerBox(
-                    title: imageMetadata.caption,
-                    url: url,
-                  );
-                },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Transform.scale(
+                scale: 2,
+                child: FutureSpaceBuilder(
+                  imageMetadata: imageMetadata,
+                  builder: (url) {
+                    return VideoPlayerBox(
+                      title: imageMetadata.caption,
+                      url: url,
+                    );
+                  },
+                ),
               ),
-            ),
-            const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
-          ],
+              const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
+            ],
+          ),
         ),
       );
     }
 
-    return GestureDetector(
-      onTap: !inScaffold
-          ? null
-          : () {
-              context.bSlidePush(
-                Scaffold(
-                  appBar: AppBar(
-                    title: Text(imageMetadata.caption),
-                  ),
-                  body: Container(
-                    constraints: BoxConstraints.expand(
-                      height: MediaQuery.of(context).size.height,
-                    ),
-                    child: FutureSpaceBuilder(
-                      imageMetadata: imageMetadata,
-                      builder: (url) {
-                        return PhotoView(
-                          imageProvider: NetworkImage(url),
-                          // tightMode: true,
-                          // maxScale: PhotoViewComputedScale.covered * 2.0,
-                          // minScale: PhotoViewComputedScale.contained * 0.8,
-                          initialScale: PhotoViewComputedScale.contained,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              );
-            },
-      child: Container(
-        height: (280, 500).c,
-        margin: const EdgeInsets.all(4),
-        decoration: imageMetadata.localUrl.isEmpty
+    return Semantics(
+      label: 'Gallery Image',
+      child: GestureDetector(
+        onTap: !inScaffold
             ? null
-            : BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-              ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              FutureSpaceBuilder(
-                imageMetadata: imageMetadata,
-                thumbnail: !inScaffold,
-                showDownload: inScaffold,
-              ),
-              // if (imageMetadata.url.isNotEmpty)
-              //   CustomCacheImage(
-              //     imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
-              //     // blurHash: imageMetadata.blurhash,
-              //   ),
-              if (imageMetadata.localUrl.isNotEmpty && !kIsWeb)
-                FutureBuilder(
-                  future: File(imageMetadata.localUrl).readAsBytes(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError || !snapshot.hasData) {
-                      return const SizedBox();
-                      // return BlurHash(hash: imageMetadata.blurhash);
-                    } else {
-                      return Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: Image.memory(snapshot.data!).image,
-                            fit: BoxFit.cover,
+            : () {
+                context.bSlidePush(
+                  Scaffold(
+                    appBar: AppBar(
+                      title: Text(imageMetadata.caption),
+                    ),
+                    body: Container(
+                      constraints: BoxConstraints.expand(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                      child: FutureSpaceBuilder(
+                        imageMetadata: imageMetadata,
+                        builder: (url) {
+                          return PhotoView(
+                            imageProvider: NetworkImage(url),
+                            // tightMode: true,
+                            // maxScale: PhotoViewComputedScale.covered * 2.0,
+                            // minScale: PhotoViewComputedScale.contained * 0.8,
+                            initialScale: PhotoViewComputedScale.contained,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+        child: Container(
+          height: (280, 500).c,
+          margin: const EdgeInsets.all(4),
+          decoration: imageMetadata.localUrl.isEmpty
+              ? null
+              : BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                FutureSpaceBuilder(
+                  imageMetadata: imageMetadata,
+                  thumbnail: !inScaffold,
+                  showDownload: inScaffold,
+                ),
+                // if (imageMetadata.url.isNotEmpty)
+                //   CustomCacheImage(
+                //     imageUrl: inScaffold ? imageMetadata.url : spaceThumbImage(imageMetadata.url),
+                //     // blurHash: imageMetadata.blurhash,
+                //   ),
+                if (imageMetadata.localUrl.isNotEmpty && !kIsWeb)
+                  FutureBuilder(
+                    future: File(imageMetadata.localUrl).readAsBytes(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const SizedBox();
+                        // return BlurHash(hash: imageMetadata.blurhash);
+                      } else {
+                        return Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: Image.memory(snapshot.data!).image,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              if (inScaffold && imageMetadata.localUrl.isNotEmpty && !kIsWeb)
-                FutureBuilder(
-                  future: File(imageMetadata.localUrl).exists(),
-                  builder: (context, snapshot) {
-                    if (snapshot.data == true) {
-                      return Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.black,
-                          boxShadow: const [
-                            BoxShadow(color: Color.fromARGB(160, 255, 255, 255), blurRadius: 2, spreadRadius: 4),
-                          ],
-                        ),
-                        child: IconButton(
-                          iconSize: 32,
-                          color: Colors.white,
-                          padding: const EdgeInsets.all(12),
-                          onPressed: () async {
-                            try {
-                              final p = tweet.path.split('/');
-                              final roomId = p[1];
-                              final tweetId = p[3];
+                        );
+                      }
+                    },
+                  ),
+                if (inScaffold && imageMetadata.localUrl.isNotEmpty && !kIsWeb)
+                  FutureBuilder(
+                    future: File(imageMetadata.localUrl).exists(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == true) {
+                        return Container(
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.black,
+                            boxShadow: const [
+                              BoxShadow(color: Color.fromARGB(160, 255, 255, 255), blurRadius: 2, spreadRadius: 4),
+                            ],
+                          ),
+                          child: IconButton(
+                            iconSize: 32,
+                            color: Colors.white,
+                            padding: const EdgeInsets.all(12),
+                            onPressed: () async {
+                              try {
+                                final p = tweet.path.split('/');
+                                final roomId = p[1];
+                                final tweetId = p[3];
 
-                              await uploadFire(
-                                imageName: randomString(12),
-                                storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
-                                docPath: 'rooms/$roomId/tweets/$tweetId',
-                                meta: imageMetadata,
-                                file: null,
-                                multipath: Const.gallery.name,
-                              );
-                            } catch (e) {
-                              debugPrint(e.toString());
-                            }
-                          },
-                          icon: const Icon(CupertinoIcons.cloud_upload_fill),
-                        ),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                ),
-            ],
+                                await uploadFire(
+                                  imageName: randomString(12),
+                                  storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                                  docPath: 'rooms/$roomId/tweets/$tweetId',
+                                  meta: imageMetadata,
+                                  file: null,
+                                  multipath: Const.gallery.name,
+                                );
+                              } catch (e) {
+                                debugPrint(e.toString());
+                              }
+                            },
+                            icon: const Icon(CupertinoIcons.cloud_upload_fill),
+                          ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -213,54 +219,57 @@ class GalleryBox extends StatelessWidget {
     final uploaded = tweet.avaiable.length;
     final total = tweet.gallery.length;
 
-    final child = Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          height: (250, 500).c,
-          width: (250, 500).c,
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(child: GalleryImage(tweet: tweet, index: 0)),
-                    if (tweet.gallery.length > 1) Expanded(child: GalleryImage(tweet: tweet, index: 1)),
-                  ],
-                ),
-              ),
-              if (tweet.gallery.length > 2)
+    final child = Semantics(
+      label: 'GalleryBox',
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            height: (250, 500).c,
+            width: (250, 500).c,
+            child: Column(
+              children: [
                 Expanded(
                   child: Row(
                     children: [
-                      if (tweet.gallery.length > 2) Expanded(child: GalleryImage(tweet: tweet, index: 2)),
-                      if (tweet.gallery.length > 3) Expanded(child: GalleryImage(tweet: tweet, index: 3)),
+                      Expanded(child: GalleryImage(tweet: tweet, index: 0)),
+                      if (tweet.gallery.length > 1) Expanded(child: GalleryImage(tweet: tweet, index: 1)),
                     ],
                   ),
                 ),
-            ],
-          ),
-        ),
-        if (uploaded != total)
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Colors.white,
-            ),
-            padding: const EdgeInsets.all(8),
-            child: CircularProgressIndicator(
-              strokeWidth: 6,
-              value: uploaded / total,
+                if (tweet.gallery.length > 2)
+                  Expanded(
+                    child: Row(
+                      children: [
+                        if (tweet.gallery.length > 2) Expanded(child: GalleryImage(tweet: tweet, index: 2)),
+                        if (tweet.gallery.length > 3) Expanded(child: GalleryImage(tweet: tweet, index: 3)),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
-        if (uploaded != total)
-          Text(
-            '$uploaded / $total',
-            style: const TextStyle(fontSize: 20, color: Colors.black),
-          ),
-      ],
+          if (uploaded != total)
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Colors.white,
+              ),
+              padding: const EdgeInsets.all(8),
+              child: CircularProgressIndicator(
+                strokeWidth: 6,
+                value: uploaded / total,
+              ),
+            ),
+          if (uploaded != total)
+            Text(
+              '$uploaded / $total',
+              style: const TextStyle(fontSize: 20, color: Colors.black),
+            ),
+        ],
+      ),
     );
 
     return InkWell(
@@ -335,20 +344,29 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    FloatingActionButton(
-                      onPressed: null,
-                      child: Consumer(
-                        builder: (context, ref, child) => GalleryUploaderButton(
-                          tonal: false,
-                          ref: ref,
-                          tweet: tweet,
+                    Semantics(
+                      label: 'Gallery Upload',
+                      child: FloatingActionButton(
+                        heroTag: 'Gallery Upload',
+                        onPressed: null,
+                        child: Consumer(
+                          builder: (context, ref, child) => GalleryUploaderButton(
+                            tonal: false,
+                            ref: ref,
+                            tweet: tweet,
+                          ),
                         ),
                       ),
                     ),
                     if (tweet.uploaded != tweet.total) ...[
                       const SizedBox(width: 10),
                       FloatingActionButton(
-                        child: const Icon(CupertinoIcons.refresh_circled_solid, size: 40),
+                        heroTag: 'Gallery Scaffold Refresh',
+                        child: const Icon(
+                          CupertinoIcons.refresh_circled_solid,
+                          size: 40,
+                          semanticLabel: 'Gallery Scaffold Refresh',
+                        ),
                         onPressed: () async {
                           for (var img in tweet.notAvaiable) {
                             try {
@@ -389,67 +407,70 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                   setState(() {});
                 }
 
-                return Container(
-                  foregroundDecoration: BoxDecoration(
-                    color: selected.contains(tweet.gallery[index]) ? Colors.black12 : null,
-                  ),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onLongPress: () {
-                      setState(() => startSelection = true);
+                return Semantics(
+                  label: 'Gallery',
+                  child: Container(
+                    foregroundDecoration: BoxDecoration(
+                      color: selected.contains(tweet.gallery[index]) ? Colors.black12 : null,
+                    ),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onLongPress: () {
+                        setState(() => startSelection = true);
 
-                      selector();
-                    },
-                    onTap: !startSelection ? null : selector,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        IgnorePointer(
-                          ignoring: startSelection,
-                          child: GalleryImage(
-                            key: ObjectKey(tweet.gallery[index].hashCode + index),
-                            tweet: tweet,
-                            index: index,
-                            inScaffold: true,
+                        selector();
+                      },
+                      onTap: !startSelection ? null : selector,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          IgnorePointer(
+                            ignoring: startSelection,
+                            child: GalleryImage(
+                              key: ObjectKey(tweet.gallery[index].hashCode + index),
+                              tweet: tweet,
+                              index: index,
+                              inScaffold: true,
+                            ),
                           ),
-                        ),
-                        if (me?.uid == tweet.user)
-                          Consumer(
-                            builder: (_, ref, ___) => AsyncTextFormField(
-                              initialValue: tweet.gallery[index].caption,
-                              asyncValidator: (value) async {
-                                final uIndex = tweet.gallery.indexWhere((element) => element == tweet.gallery[index]);
-                                tweet.gallery[uIndex].caption = value;
+                          if (me?.uid == tweet.user)
+                            Consumer(
+                              builder: (_, ref, ___) => AsyncTextFormField(
+                                initialValue: tweet.gallery[index].caption,
+                                asyncValidator: (value) async {
+                                  final uIndex = tweet.gallery.indexWhere((element) => element == tweet.gallery[index]);
+                                  tweet.gallery[uIndex].caption = value;
 
-                                ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                                  ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
 
-                                return null;
-                              },
-                              style: context.hs.c(Colors.white),
-                              showPrefix: false,
-                              milliseconds: 1000,
-                              maxLines: 3,
-                              decoration: (AsyncText value, galleryCon) => const InputDecoration(
-                                fillColor: Colors.black54,
-                                hintStyle: TextStyle(color: Colors.white70),
-                                filled: true,
-                                focusedBorder: InputBorder.none,
-                                border: InputBorder.none,
-                                hintText: 'Add Caption...',
+                                  return null;
+                                },
+                                style: context.hs.c(Colors.white),
+                                showPrefix: false,
+                                milliseconds: 1000,
+                                maxLines: 3,
+                                decoration: (AsyncText value, galleryCon) => const InputDecoration(
+                                  fillColor: Colors.black54,
+                                  hintStyle: TextStyle(color: Colors.white70),
+                                  filled: true,
+                                  focusedBorder: InputBorder.none,
+                                  border: InputBorder.none,
+                                  hintText: 'Add Caption...',
+                                ),
                               ),
                             ),
-                          ),
-                        if (startSelection)
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Checkbox(
-                              value: selected.contains(tweet.gallery[index]),
-                              onChanged: (v) {
-                                selector();
-                              },
+                          if (startSelection)
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Checkbox(
+                                value: selected.contains(tweet.gallery[index]),
+                                onChanged: (v) {
+                                  selector();
+                                },
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -520,13 +541,19 @@ class GalleryUploaderButton extends StatelessWidget {
     if (tonal) {
       return IconButton.filledTonal(
         onPressed: func,
-        icon: const Icon(CupertinoIcons.photo),
+        icon: const Icon(
+          CupertinoIcons.photo,
+          semanticLabel: 'Gallery Upload',
+        ),
       );
     }
 
     return IconButton(
       onPressed: func,
-      icon: const Icon(CupertinoIcons.photo),
+      icon: const Icon(
+        CupertinoIcons.photo,
+        semanticLabel: 'Gallery Upload',
+      ),
     );
   }
 }
@@ -583,7 +610,12 @@ class FutureSpaceBuilder extends ConsumerWidget {
                     }
                     open();
                   },
-                  icon: loading ? const CircularProgressIndicator() : const Icon(Icons.download),
+                  icon: loading
+                      ? const CircularProgressIndicator()
+                      : const Icon(
+                          Icons.download,
+                          semanticLabel: 'Download Image',
+                        ),
                 ),
               ),
             ),

@@ -106,7 +106,10 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.add_circle_outline),
+                    icon: const Icon(
+                      Icons.add_circle_outline,
+                      semanticLabel: 'Invite Users',
+                    ),
                   ),
               ],
             ),
@@ -121,63 +124,69 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                     height: (240, 300).c,
                     width: (240, 300).c,
                     padding: const EdgeInsets.all(8),
-                    child: InkWell(
-                      splashFactory: InkSplash.splashFactory,
-                      onTap: meInRoom?.role != Role.ADMIN
-                          ? null
-                          : () async {
-                              final imageMetadata = await selectImageMedia();
+                    child: Semantics(
+                      label: 'Change profile picture',
+                      child: InkWell(
+                        splashFactory: InkSplash.splashFactory,
+                        onTap: meInRoom?.role != Role.ADMIN
+                            ? null
+                            : () async {
+                                final imageMetadata = await selectImageMedia();
 
-                              if (imageMetadata == null) return;
+                                if (imageMetadata == null) return;
 
-                              await uploadFire(
-                                meta: imageMetadata.$1,
-                                file: imageMetadata.$2,
-                                imageName: 'profile${randomString(4)}',
-                                docPath: 'rooms/${room.uid}',
-                                storagePath: 'profile/rooms/${room.uid}',
-                                singlepath: Const.photoURL.name,
-                              );
-                            },
-                      child: room.photoURL.isEmpty == true
-                          ? Icon(
-                              CupertinoIcons.person_crop_circle_badge_plus,
-                              size: (120, 160).c,
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(250),
-                              child: FutureSpaceBuilder(
-                                path: room.photoURL,
-                                thumbnail: true,
+                                await uploadFire(
+                                  meta: imageMetadata.$1,
+                                  file: imageMetadata.$2,
+                                  imageName: 'profile${randomString(4)}',
+                                  docPath: 'rooms/${room.uid}',
+                                  storagePath: 'profile/rooms/${room.uid}',
+                                  singlepath: Const.photoURL.name,
+                                );
+                              },
+                        child: room.photoURL.isEmpty == true
+                            ? Icon(
+                                CupertinoIcons.person_crop_circle_badge_plus,
+                                size: (120, 160).c,
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(250),
+                                child: FutureSpaceBuilder(
+                                  path: room.photoURL,
+                                  thumbnail: true,
+                                ),
                               ),
-                            ),
+                      ),
                     ),
                   ),
                 ),
               ),
               SliverList.list(
                 children: [
-                  AsyncTextFormField(
-                    key: ValueKey(room.displayName),
-                    initialValue: room.displayName,
-                    enabled: meInRoom?.isAdmin == true,
-                    style: context.hm,
-                    asyncValidator: (value) async {
-                      return value.checkMin(8);
-                    },
-                    maxLines: 1,
-                    showPrefix: false,
-                    textInputAction: TextInputAction.done,
-                    onSubmit: (con) async {
-                      await ref.read(currentRoomProvider.notifier).updateRoomInfo(
-                            Room(
-                              uid: room.uid,
-                              displayName: con.text,
-                            ),
-                          );
-                    },
-                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
-                      hintText: 'Name',
+                  Semantics(
+                    label: 'Chat Name',
+                    child: AsyncTextFormField(
+                      key: ValueKey(room.displayName),
+                      initialValue: room.displayName,
+                      enabled: meInRoom?.isAdmin == true,
+                      style: context.hm,
+                      asyncValidator: (value) async {
+                        return value.checkMin(8);
+                      },
+                      maxLines: 1,
+                      showPrefix: false,
+                      textInputAction: TextInputAction.done,
+                      onSubmit: (con) async {
+                        await ref.read(currentRoomProvider.notifier).updateRoomInfo(
+                              Room(
+                                uid: room.uid,
+                                displayName: con.text,
+                              ),
+                            );
+                      },
+                      decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                        hintText: 'Name',
+                      ),
                     ),
                   ),
                   AsyncTextFormField(

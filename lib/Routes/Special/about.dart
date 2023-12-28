@@ -43,9 +43,9 @@ class ShimmmerCurve extends Curve {
 }
 
 class AboutPage extends ConsumerStatefulWidget {
-  const AboutPage({super.key, this.onboard});
+  const AboutPage({super.key, this.onboarded});
 
-  final Function? onboard;
+  final Function? onboarded;
 
   @override
   ConsumerState<AboutPage> createState() => _AboutPageState();
@@ -62,8 +62,8 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
       ..addStatusListener(
         (status) {
           if (animCon.value == 1) {
-            if (widget.onboard != null) {
-              widget.onboard?.call();
+            if (widget.onboarded != null) {
+              widget.onboarded?.call();
             } else {
               safeLaunchUrl(SpaceMoon.spacemoonGithub);
             }
@@ -84,131 +84,152 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: widget.onboard == null
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                widget.onboard?.call();
-              },
-              child: const Icon(Icons.chevron_right_rounded),
-            ),
-      body: GestureDetector(
-        onLongPressEnd: (details) {
-          if (DateTime.now().millisecondsSinceEpoch - pressStart!.millisecondsSinceEpoch < duration.inMilliseconds) {
-            animCon.reverse();
-          }
-        },
-        onLongPressStart: (details) {
-          pressStart = DateTime.now();
-          animCon.forward();
-        },
-        onTap: () {
-          animCon.animateTo(0.2).whenCompleteOrCancel(() {
-            animCon.reverse();
-          });
-        },
-        child: CustomPaint(
-          painter: DottedBackgroundPainter(),
-          child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    RainbowLogo(assetPath: widget.onboard != null ? Asset.spaceMoon : Asset.sharkrun),
-
-                    //
-                    const SizedBox(height: 20),
-                    Text.rich(
-                      TextSpan(
-                        text: SpaceMoon.title,
-                        style: context.tm,
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            safeLaunchUrl(SpaceMoon.web);
-                          },
+    return Semantics(
+      label: 'About Page',
+      child: Scaffold(
+        floatingActionButton: widget.onboarded == null
+            ? null
+            : FloatingActionButton(
+                onPressed: () {
+                  widget.onboarded?.call();
+                },
+                child: const Icon(
+                  Icons.chevron_right_rounded,
+                  semanticLabel: 'Continue',
+                ),
+              ),
+        body: GestureDetector(
+          onLongPressEnd: (details) {
+            if (DateTime.now().millisecondsSinceEpoch - pressStart!.millisecondsSinceEpoch < duration.inMilliseconds) {
+              animCon.reverse();
+            }
+          },
+          onLongPressStart: (details) {
+            pressStart = DateTime.now();
+            animCon.forward();
+          },
+          onTap: () {
+            animCon.animateTo(0.2).whenCompleteOrCancel(() {
+              animCon.reverse();
+            });
+          },
+          child: CustomPaint(
+            painter: DottedBackgroundPainter(),
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Semantics(
+                        label: 'Spacemoon logo',
+                        child: RainbowLogo(
+                          assetPath: widget.onboarded != null ? Asset.spaceMoon : Asset.sharkrun,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: (5, 10).c),
-                    Text(' Built by', style: context.ts),
-                    SizedBox(height: (5, 10).c),
-                    Text.rich(
-                      TextSpan(
-                        text: SpaceMoon.harikrishnan,
-                        style: context.tm,
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            safeLaunchUrl(SpaceMoon.github);
-                          },
+
+                      //
+                      const SizedBox(height: 20),
+                      Text.rich(
+                        TextSpan(
+                          text: SpaceMoon.title,
+                          style: context.tl,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              safeLaunchUrl(SpaceMoon.web);
+                            },
+                        ),
                       ),
-                    ),
-                    SizedBox(height: (5, 10).c),
-                    Text.rich(
-                      TextSpan(
-                        text: '@ shark.run',
-                        style: context.tm,
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            safeLaunchUrl(SpaceMoon.sharkrun);
-                          },
+                      SizedBox(height: (5, 10).c),
+                      Text(' Built by', style: context.ts),
+                      SizedBox(height: (5, 10).c),
+                      Text.rich(
+                        TextSpan(
+                          text: SpaceMoon.harikrishnan,
+                          style: context.tm,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              safeLaunchUrl(SpaceMoon.github);
+                            },
+                        ),
                       ),
-                    ),
+                      SizedBox(height: (5, 10).c),
+                      Text.rich(
+                        TextSpan(
+                          text: '@ shark.run',
+                          style: context.tm,
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              safeLaunchUrl(SpaceMoon.sharkrun);
+                            },
+                        ),
+                      ),
 
-                    SizedBox(height: (5, 10).c),
-                    Text(
-                      'Flutter Firebase App Developer',
-                      style: context.ts,
-                    ),
+                      SizedBox(height: (5, 10).c),
+                      Text(
+                        'Flutter Firebase App Developer',
+                        style: context.ts,
+                      ),
 
-                    SizedBox(height: (5, 10).c),
+                      SizedBox(height: (5, 10).c),
 
-                    const SocialButtons(),
+                      const SocialButtons(),
 
-                    FutureBuilder(
-                      future: FirebaseFirestore.instance.doc('Spacemoon/appinfo').get(),
-                      builder: (context, snapshot) {
-                        final googleplay = snapshot.data?.data()?['googleplay'] ?? SpaceMoon.googleplay;
-                        final appstore = snapshot.data?.data()?['appstore'] ?? SpaceMoon.appstore;
+                      if (widget.onboarded == null)
+                        FutureBuilder(
+                          future: FirebaseFirestore.instance.doc('Spacemoon/appinfo').get(),
+                          builder: (context, snapshot) {
+                            final googleplay = snapshot.data?.data()?['googleplay'] ?? SpaceMoon.googleplay;
+                            final appstore = snapshot.data?.data()?['appstore'] ?? SpaceMoon.appstore;
 
-                        return ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 400),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {
-                                    safeLaunchUrl(googleplay);
-                                  },
-                                  child: Image.asset(Asset.googleplay),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: InkWell(
-                                    onTap: () {
-                                      safeLaunchUrl(appstore);
-                                    },
-                                    child: Image.asset(Asset.appstore),
+                            return ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 400),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Semantics(
+                                      label: 'Go to google play',
+                                      child: InkWell(
+                                        onTap: () {
+                                          safeLaunchUrl(googleplay);
+                                        },
+                                        child: Image.asset(Asset.googleplay),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Expanded(
+                                    child: Semantics(
+                                      label: 'Go to appstore',
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: InkWell(
+                                          onTap: () {
+                                            safeLaunchUrl(appstore);
+                                          },
+                                          child: Image.asset(Asset.appstore),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            );
+                          },
+                        ),
+
+                      SizedBox(height: (10, 20).c),
+
+                      if (widget.onboarded == null)
+                        CustomPaint(
+                          painter: SolarPathPainter(Size((180, 220).c, (180, 220).c)),
+                          child: Sunflower(
+                            animCon: animCon,
+                            onboard: widget.onboarded != null,
                           ),
-                        );
-                      },
-                    ),
+                        ),
 
-                    SizedBox(height: (10, 20).c),
-
-                    CustomPaint(
-                      painter: SolarPathPainter(Size((180, 220).c, (180, 220).c)),
-                      child: Sunflower(
-                        animCon: animCon,
-                        onboard: widget.onboard != null,
-                      ),
-                    ),
-                  ],
+                      if (kDebugMode) Text(SpaceMoon.build, style: context.tl),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -233,17 +254,20 @@ class SocialButtons extends StatelessWidget {
           onPressed: () {
             safeLaunchUrl(SpaceMoon.github);
           },
-          icon: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.all(4),
-            child: SvgPicture.string(
-              githubSvg,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
+          icon: Semantics(
+            label: 'Go to github',
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.all(4),
+              child: SvgPicture.string(
+                githubSvg,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -251,17 +275,20 @@ class SocialButtons extends StatelessWidget {
           onPressed: () {
             safeLaunchUrl(SpaceMoon.linkedIn);
           },
-          icon: Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: SvgPicture.string(
-              linkedInSvg,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
+          icon: Semantics(
+            label: 'Go to LinkedIn',
+            child: Container(
+              padding: const EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SvgPicture.string(
+                linkedInSvg,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -269,17 +296,20 @@ class SocialButtons extends StatelessWidget {
           onPressed: () {
             safeLaunchUrl(SpaceMoon.twitter);
           },
-          icon: Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: SvgPicture.string(
-              twitterSvg,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
+          icon: Semantics(
+            label: 'Go to Twitter',
+            child: Container(
+              padding: const EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SvgPicture.string(
+                twitterSvg,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),

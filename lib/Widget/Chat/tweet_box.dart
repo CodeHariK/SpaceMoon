@@ -101,37 +101,41 @@ class TweetBox extends ConsumerWidget {
 
               if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
                   !isURL(tweet.text) /*&& !isHero*/)
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: SelectableLinkify(
-                    onOpen: (link) async {
-                      if (!await safeLaunchUrl(link.url)) {
-                        throw Exception('Could not launch ${link.url}');
-                      }
-                    },
-                    contextMenuBuilder: (context, editableTextState) {
-                      return AdaptiveTextSelectionToolbar.buttonItems(
-                        anchors: editableTextState.contextMenuAnchors,
-                        buttonItems: <ContextMenuButtonItem>[
-                          ContextMenuButtonItem(
-                            onPressed: () {
-                              editableTextState.copySelection(SelectionChangedCause.toolbar);
-                            },
-                            type: ContextMenuButtonType.copy,
-                          ),
-                          ContextMenuButtonItem(
-                            onPressed: () {
-                              editableTextState.selectAll(SelectionChangedCause.toolbar);
-                            },
-                            type: ContextMenuButtonType.selectAll,
-                          ),
-                        ],
-                      );
-                    },
-                    text:
-                        tweet.mediaType == MediaType.QR ? tweet.text.split('||').lastOrNull ?? tweet.text : tweet.text,
-                    style: context.bm,
-                    linkStyle: context.bm.c(Colors.blue),
+                Semantics(
+                  label: tweet.text,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: SelectableLinkify(
+                      onOpen: (link) async {
+                        if (!await safeLaunchUrl(link.url)) {
+                          throw Exception('Could not launch ${link.url}');
+                        }
+                      },
+                      contextMenuBuilder: (context, editableTextState) {
+                        return AdaptiveTextSelectionToolbar.buttonItems(
+                          anchors: editableTextState.contextMenuAnchors,
+                          buttonItems: <ContextMenuButtonItem>[
+                            ContextMenuButtonItem(
+                              onPressed: () {
+                                editableTextState.copySelection(SelectionChangedCause.toolbar);
+                              },
+                              type: ContextMenuButtonType.copy,
+                            ),
+                            ContextMenuButtonItem(
+                              onPressed: () {
+                                editableTextState.selectAll(SelectionChangedCause.toolbar);
+                              },
+                              type: ContextMenuButtonType.selectAll,
+                            ),
+                          ],
+                        );
+                      },
+                      text: tweet.mediaType == MediaType.QR
+                          ? tweet.text.split('||').lastOrNull ?? tweet.text
+                          : tweet.text,
+                      style: context.bm,
+                      linkStyle: context.bm.c(Colors.blue),
+                    ),
                   ),
                 ),
             ],
@@ -146,24 +150,27 @@ class TweetBox extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          InkWell(
-            onTap: () {
-              context.cPush(ProfilePage(searchuser: tweetuser));
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (tweetuser != null)
-                  CircleAvatar(
-                    child: FutureSpaceBuilder(
-                      path: tweetuser.photoURL,
-                      thumbnail: true,
-                      radius: 200,
+          Semantics(
+            label: 'Tweet',
+            child: InkWell(
+              onTap: () {
+                context.cPush(ProfilePage(searchuser: tweetuser));
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (tweetuser != null)
+                    CircleAvatar(
+                      child: FutureSpaceBuilder(
+                        path: tweetuser.photoURL,
+                        thumbnail: true,
+                        radius: 200,
+                      ),
                     ),
-                  ),
-                const SizedBox(height: 5),
-                Text(tweet.created.timeString, style: context.ls),
-              ],
+                  const SizedBox(height: 5),
+                  Text(tweet.created.timeString, style: context.ls),
+                ],
+              ),
             ),
           ),
           (tweet.mediaType == MediaType.POST)
@@ -237,61 +244,64 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        safeLaunchUrl(widget.url);
-      },
-      child: AnimatedScale(
-        scale: data != null ? 1 : .95,
-        duration: const Duration(milliseconds: 300),
-        child: LinkPreview(
-          enableAnimation: true,
-          onPreviewDataFetched: (d) {
-            data = d;
-            if (context.mounted) {
-              setState(() {});
-            }
-          },
-          textStyle: context.bl,
-          metadataTextStyle: context.bl,
-          previewData: data,
-          text: widget.url,
-          textWidget: Container(
-            height: (250, 500).c + 16,
-            width: (250, 500).c + 16,
-            alignment: Alignment.bottomCenter,
-            child: Text(
-              widget.url,
-              style: context.bl.under.c(AppTheme.op),
+    return Semantics(
+      label: widget.url,
+      child: InkWell(
+        onTap: () {
+          safeLaunchUrl(widget.url);
+        },
+        child: AnimatedScale(
+          scale: data != null ? 1 : .95,
+          duration: const Duration(milliseconds: 300),
+          child: LinkPreview(
+            enableAnimation: true,
+            onPreviewDataFetched: (d) {
+              data = d;
+              if (context.mounted) {
+                setState(() {});
+              }
+            },
+            textStyle: context.bl,
+            metadataTextStyle: context.bl,
+            previewData: data,
+            text: widget.url,
+            textWidget: Container(
+              height: (250, 500).c + 16,
+              width: (250, 500).c + 16,
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                widget.url,
+                style: context.bl.under.c(AppTheme.op),
+              ),
             ),
-          ),
-          width: MediaQuery.of(context).size.width,
-          previewBuilder: (p0, data) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  data.title ?? '',
-                  style: context.tm.bold,
-                ),
-                Text(data.description ?? ''),
-                Align(
-                  alignment: Alignment.center,
-                  child: CachedNetworkImage(
-                    imageUrl: data.image?.url ?? '',
-                    fit: BoxFit.cover,
-                    errorListener: (value) {},
-                    errorWidget: (context, url, error) => const SizedBox(),
+            width: MediaQuery.of(context).size.width,
+            previewBuilder: (p0, data) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    data.title ?? '',
+                    style: context.tm.bold,
                   ),
-                ),
-                SelectableText(
-                  data.link ?? '',
-                  style: context.bl.under.c(AppTheme.op),
-                ),
-              ],
-            );
-          },
+                  Text(data.description ?? ''),
+                  Align(
+                    alignment: Alignment.center,
+                    child: CachedNetworkImage(
+                      imageUrl: data.image?.url ?? '',
+                      fit: BoxFit.cover,
+                      errorListener: (value) {},
+                      errorWidget: (context, url, error) => const SizedBox(),
+                    ),
+                  ),
+                  SelectableText(
+                    data.link ?? '',
+                    style: context.bl.under.c(AppTheme.op),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

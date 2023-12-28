@@ -97,6 +97,7 @@ class SendActionMenu extends ConsumerWidget {
       icon: const Icon(
         Icons.add_circle_outline_sharp,
         size: 20,
+        semanticLabel: 'features',
       ),
       onPressed: () {
         AnimatedDialogBox(
@@ -144,7 +145,10 @@ class SendButton extends ConsumerWidget {
           await sendTweet(context, tweetCon, text, ref, mediaType, link);
           open();
         },
-        child: const Icon(Icons.send),
+        child: const Icon(
+          Icons.send,
+          semanticLabel: 'Send tweet',
+        ),
       ),
     );
   }

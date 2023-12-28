@@ -207,30 +207,6 @@ class SpaceMoonHome extends ConsumerWidget {
           builder: (context, child) {
             initializeDateFormatting();
 
-            final renderChild = Directionality(
-              textDirection: TextDirection.ltr,
-              child: Scaffold(
-                key: ValueKey(globalAppTheme.theme),
-                resizeToAvoidBottomInset: false,
-                body: Overlay(
-                  initialEntries: [
-                    OverlayEntry(
-                      builder: (context) {
-                        return CupertinoTheme(
-                          key: AppRouter.cupertinoNavigatorKey,
-                          data: CupertinoThemeData(
-                            brightness: brightness,
-                            primaryColor: AppTheme.seedColor,
-                          ),
-                          child: child ?? const SimpleError(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-
             // if (kIsWeb) {
             //   return Center(
             //     child: ConstrainedBox(
@@ -240,10 +216,49 @@ class SpaceMoonHome extends ConsumerWidget {
             //   );
             // }
 
-            return renderChild;
+            return ElectricWrap(
+              theme: globalAppTheme.theme,
+              brightness: brightness,
+              child: child,
+            );
           },
         );
       }),
+    );
+  }
+}
+
+class ElectricWrap extends StatelessWidget {
+  const ElectricWrap({super.key, this.child, required this.theme, required this.brightness});
+
+  final Widget? child;
+  final ThemeType theme;
+  final Brightness brightness;
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        key: ValueKey(theme),
+        resizeToAvoidBottomInset: false,
+        body: Overlay(
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) {
+                return CupertinoTheme(
+                  key: AppRouter.cupertinoNavigatorKey,
+                  data: CupertinoThemeData(
+                    brightness: brightness,
+                    primaryColor: AppTheme.seedColor,
+                  ),
+                  child: child ?? const Error404Page(),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

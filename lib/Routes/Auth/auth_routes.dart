@@ -20,75 +20,78 @@ class LoginRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return SignInScreen(
-      styles: const {EmailFormStyle(signInButtonVariant: ButtonVariant.filled)},
-      headerBuilder: headerImage(Asset.spaceMoon),
-      sideBuilder: sideImage(Asset.spaceMoon),
-      subtitleBuilder: (context, action) {
-        final actionText = switch (action) {
-          AuthAction.signIn => 'Please sign in to continue.',
-          AuthAction.signUp => 'Please create an account to continue',
-          _ => throw Exception('Invalid action: $action'),
-        };
+    return Semantics(
+      label: 'SignInScreen',
+      child: SignInScreen(
+        styles: const {EmailFormStyle(signInButtonVariant: ButtonVariant.filled)},
+        headerBuilder: headerImage(Asset.spaceMoon),
+        sideBuilder: sideImage(Asset.spaceMoon),
+        subtitleBuilder: (context, action) {
+          final actionText = switch (action) {
+            AuthAction.signIn => 'Please sign in to continue.',
+            AuthAction.signUp => 'Please create an account to continue',
+            _ => throw Exception('Invalid action: $action'),
+          };
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Text('Welcome to ${SpaceMoon.title}! $actionText.'),
-        );
-      },
-      footerBuilder: (context, action) {
-        final actionText = switch (action) {
-          AuthAction.signIn => 'signing in',
-          AuthAction.signUp => 'registering',
-          _ => throw Exception('Invalid action: $action'),
-        };
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text('Welcome to ${SpaceMoon.title}! $actionText.'),
+          );
+        },
+        footerBuilder: (context, action) {
+          final actionText = switch (action) {
+            AuthAction.signIn => 'signing in',
+            AuthAction.signUp => 'registering',
+            _ => throw Exception('Invalid action: $action'),
+          };
 
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Text(
-              'By $actionText, you agree to our terms and conditions.',
-              style: const TextStyle(color: Colors.grey),
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(
+                'By $actionText, you agree to our terms and conditions.',
+                style: const TextStyle(color: Colors.grey),
+              ),
             ),
+          );
+        },
+        actions: [
+          VerifyPhoneAction((context, _) {
+            PhoneRoute().push(context);
+          }),
+          ForgotPasswordAction((context, email) {
+            ForgotPasswordRoute(email: email).push(context);
+          }),
+          EmailLinkSignInAction((context) {
+            EmailLinkRoute().push(context);
+          }),
+          AuthStateChangeAction<MFARequired>(
+            (context, state) async {
+              await startMFAVerification(
+                resolver: state.resolver,
+                context: context,
+              );
+
+              if (context.mounted) AccountRoute().pushReplacement(context);
+            },
           ),
-        );
-      },
-      actions: [
-        VerifyPhoneAction((context, _) {
-          PhoneRoute().push(context);
-        }),
-        ForgotPasswordAction((context, email) {
-          ForgotPasswordRoute(email: email).push(context);
-        }),
-        EmailLinkSignInAction((context) {
-          EmailLinkRoute().push(context);
-        }),
-        AuthStateChangeAction<MFARequired>(
-          (context, state) async {
-            await startMFAVerification(
-              resolver: state.resolver,
-              context: context,
-            );
+          // AuthStateChangeAction((context, AuthState state) {
+          //   final user = switch (state) {
+          //     SignedIn(user: final user) => user,
+          //     CredentialLinked(user: final user) => user,
+          //     UserCreated(credential: final cred) => cred.user,
+          //     _ => null,
+          //   };
 
-            if (context.mounted) AccountRoute().pushReplacement(context);
-          },
-        ),
-        // AuthStateChangeAction((context, AuthState state) {
-        //   final user = switch (state) {
-        //     SignedIn(user: final user) => user,
-        //     CredentialLinked(user: final user) => user,
-        //     UserCreated(credential: final cred) => cred.user,
-        //     _ => null,
-        //   };
-
-        //   switch (user) {
-        //     case User(emailVerified: true):
-        //       AccountRoute().pushReplacement(context);
-        //     // case User(emailVerified: false, email: final String _):
-        //     //   VerifyEmailRoute().push(context);
-        //   }
-        // }),
-      ],
+          //   switch (user) {
+          //     case User(emailVerified: true):
+          //       AccountRoute().pushReplacement(context);
+          //     // case User(emailVerified: false, email: final String _):
+          //     //   VerifyEmailRoute().push(context);
+          //   }
+          // }),
+        ],
+      ),
     );
   }
 }

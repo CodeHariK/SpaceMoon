@@ -217,7 +217,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     );
                   }
                 },
-                icon: const Icon(Icons.copy_rounded),
+                icon: const Icon(
+                  Icons.copy_rounded,
+                  semanticLabel: 'Copy chat url',
+                ),
               ),
               if (meInRoom.isUserOrAdmin)
                 IconButton(
@@ -228,7 +231,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.add_circle_outline),
+                  icon: const Icon(
+                    Icons.add_circle_outline,
+                    semanticLabel: 'Invite users',
+                  ),
                 ),
             ],
           ),

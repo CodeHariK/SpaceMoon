@@ -136,6 +136,7 @@ class QrDialog extends HookWidget {
               body: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     QrBox(
                       repaintKey: repaintKey,
@@ -144,13 +145,16 @@ class QrDialog extends HookWidget {
 
                     //
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Expanded(
                           child: DropdownButtonFormField(
                             value: barcodeType.value,
+                            icon: const SizedBox(),
                             decoration: const InputDecoration(
                               contentPadding: EdgeInsets.zero,
+                              hintText: 'Qr Type',
+                              focusedBorder: InputBorder.none,
+                              border: InputBorder.none,
                             ),
                             alignment: Alignment.center,
                             items: BarcodeType.values
@@ -169,21 +173,27 @@ class QrDialog extends HookWidget {
                           ),
                         ),
                         if (qrtext.value.isNotEmpty)
-                          OutlinedButton(
-                            onPressed: () => saveQr(context, repaintKey, qrtext.value),
-                            child: const Text('Download'),
+                          Expanded(
+                            child: ListTile(
+                              leading: const Icon(Icons.download, semanticLabel: 'Download qr'),
+                              onTap: () => saveQr(context, repaintKey, qrtext.value),
+                              title: const Text('Download'),
+                            ),
                           ),
                       ],
                     ),
 
                     //
-                    SendBox(
-                      roomUser: roomUser,
-                      onChanged: (value) {
-                        qrtext.value = value;
-                      },
-                      mediaType: MediaType.QR,
-                      onSubmit: (controller) async {},
+                    Semantics(
+                      label: 'Qr Send Box',
+                      child: SendBox(
+                        roomUser: roomUser,
+                        onChanged: (value) {
+                          qrtext.value = value;
+                        },
+                        mediaType: MediaType.QR,
+                        onSubmit: (controller) async {},
+                      ),
                     ),
                   ],
                 ),
@@ -232,7 +242,10 @@ class QrActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
-      icon: const Icon(Icons.qr_code_rounded),
+      icon: const Icon(
+        Icons.qr_code_rounded,
+        semanticLabel: 'Qr',
+      ),
       onPressed: () {
         context.rSlidePush(
           QrDialog(

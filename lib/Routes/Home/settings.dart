@@ -86,17 +86,22 @@ class SettingsPage extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: Colors.primaries
                             .map(
-                              (c) => InkWell(
-                                onTap: () {
-                                  ref.read(globalThemeProvider.notifier).setColor(c);
-                                },
-                                child: Container(
-                                  width: 25,
-                                  height: 25,
-                                  margin: const EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: c,
+                              (c) => Semantics(
+                                label: 'Color',
+                                button: true,
+                                enabled: true,
+                                child: InkWell(
+                                  onTap: () {
+                                    ref.read(globalThemeProvider.notifier).setColor(c);
+                                  },
+                                  child: Container(
+                                    width: 48,
+                                    height: 48,
+                                    margin: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: c,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -174,6 +179,10 @@ class SettingsPage extends ConsumerWidget {
                     },
                     leading: const Icon(Icons.chevron_right_rounded),
                     title: Text('Attribution', style: context.tm),
+                  ),
+                  CupertinoListTile.notched(
+                    leading: const Icon(Icons.star),
+                    title: Text(SpaceMoon.build, style: context.tl),
                   ),
                   if (kDebugMode)
                     CupertinoListTile.notched(

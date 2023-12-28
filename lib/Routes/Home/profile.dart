@@ -76,94 +76,103 @@ class ProfilePage extends ConsumerWidget {
                             border: Border.all(width: 10, color: AppTheme.seedCard),
                             borderRadius: BorderRadius.circular(300),
                           ),
-                    child: InkWell(
-                      splashFactory: InkSplash.splashFactory,
-                      onTap: searchuser != null
-                          ? null
-                          : () async {
-                              final imageMetadata = await selectImageMedia();
+                    child: Semantics(
+                      label: 'Update profile picture',
+                      child: InkWell(
+                        splashFactory: InkSplash.splashFactory,
+                        onTap: searchuser != null
+                            ? null
+                            : () async {
+                                final imageMetadata = await selectImageMedia();
 
-                              if (imageMetadata == null) return;
+                                if (imageMetadata == null) return;
 
-                              await uploadFire(
-                                meta: imageMetadata.$1,
-                                file: imageMetadata.$2,
-                                imageName: 'profile${randomString(4)}',
-                                storagePath: 'profile/users/${user!.uid}',
-                                docPath: 'users/${user.uid}',
-                                singlepath: Const.photoURL.name,
-                              );
-                            },
-                      child: user?.photoURL == null || user?.photoURL.isEmpty == true
-                          ? Icon(
-                              CupertinoIcons.person_crop_circle_badge_plus,
-                              size: (120, 160).c,
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(250),
-                              child: FutureSpaceBuilder(
-                                path: user?.photoURL,
-                                thumbnail: true,
+                                await uploadFire(
+                                  meta: imageMetadata.$1,
+                                  file: imageMetadata.$2,
+                                  imageName: 'profile${randomString(4)}',
+                                  storagePath: 'profile/users/${user!.uid}',
+                                  docPath: 'users/${user.uid}',
+                                  singlepath: Const.photoURL.name,
+                                );
+                              },
+                        child: user?.photoURL == null || user?.photoURL.isEmpty == true
+                            ? Icon(
+                                CupertinoIcons.person_crop_circle_badge_plus,
+                                size: (120, 160).c,
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(250),
+                                child: FutureSpaceBuilder(
+                                  path: user?.photoURL,
+                                  thumbnail: true,
+                                ),
                               ),
-                            ),
-                    ),
-                  ),
-                  AsyncTextFormField(
-                    key: ValueKey('Name ${user?.displayName}'),
-                    initialValue: user?.displayName,
-                    enabled: searchuser == null,
-                    style: context.hm,
-                    asyncValidator: (value) async {
-                      return value.checkMin(8);
-                    },
-                    maxLines: 1,
-                    showPrefix: false,
-                    textInputAction: TextInputAction.done,
-                    onSubmit: (con) async => await callUserUpdate(
-                      User(
-                        displayName: con.text,
                       ),
                     ),
-                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
-                      hintText: 'Name',
+                  ),
+                  Semantics(
+                    label: 'Update display name',
+                    child: AsyncTextFormField(
+                      key: ValueKey('Name ${user?.displayName}'),
+                      initialValue: user?.displayName,
+                      enabled: searchuser == null,
+                      style: context.hm,
+                      asyncValidator: (value) async {
+                        return value.checkMin(8);
+                      },
+                      maxLines: 1,
+                      showPrefix: false,
+                      textInputAction: TextInputAction.done,
+                      onSubmit: (con) async => await callUserUpdate(
+                        User(
+                          displayName: con.text,
+                        ),
+                      ),
+                      decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                        hintText: 'Name',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  AsyncTextFormField(
-                    key: ValueKey('Nick ${user?.nick}'),
-                    initialValue: user?.nick,
-                    autocorrect: false,
-                    enableSuggestions: false,
-                    enabled: searchuser == null,
-                    style: context.tl,
-                    maxLines: 1,
-                    asyncValidator: (value) async {
-                      if (value.checkMin(8) != null) {
-                        return value.checkMin(8);
-                      }
-                      if (value.checkAlphanumeric() != null) {
-                        return value.checkAlphanumeric();
-                      }
-                      if (user?.nick == value) {
-                        return null;
-                      }
+                  Semantics(
+                    label: 'Update Nick name',
+                    child: AsyncTextFormField(
+                      key: ValueKey('Nick ${user?.nick}'),
+                      initialValue: user?.nick,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      enabled: searchuser == null,
+                      style: context.tl,
+                      maxLines: 1,
+                      asyncValidator: (value) async {
+                        if (value.checkMin(8) != null) {
+                          return value.checkMin(8);
+                        }
+                        if (value.checkAlphanumeric() != null) {
+                          return value.checkAlphanumeric();
+                        }
+                        if (user?.nick == value) {
+                          return null;
+                        }
 
-                      final count = await countUserByNick(value);
-                      if (count != 0) {
-                        return 'Not available';
-                      }
-                      return null;
-                    },
-                    showPrefix: false,
-                    textInputAction: TextInputAction.done,
-                    onSubmit: (con) async => await callUserUpdate(
-                      User(
-                        nick: con.text,
+                        final count = await countUserByNick(value);
+                        if (count != 0) {
+                          return 'Not available';
+                        }
+                        return null;
+                      },
+                      showPrefix: false,
+                      textInputAction: TextInputAction.done,
+                      onSubmit: (con) async => await callUserUpdate(
+                        User(
+                          nick: con.text,
+                        ),
                       ),
-                    ),
-                    decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
-                      hintText: 'Nick name',
-                      prefix: const Text('Nick name : @'),
+                      decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                        hintText: 'Nick name',
+                        prefix: const Text('Nick name : @'),
+                      ),
                     ),
                   ),
                   if (user?.email.isNotEmpty ?? false)

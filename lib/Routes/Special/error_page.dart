@@ -68,29 +68,3 @@ class ErrorPage extends StatelessWidget {
     );
   }
 }
-
-class SimpleError extends StatelessWidget {
-  const SimpleError({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Scaffold(
-          body: Center(
-            child: Column(
-              children: [
-                const Text('Unknown error'),
-                TextButton(
-                  onPressed: () => context.go('/'),
-                  child: const Text('Home'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

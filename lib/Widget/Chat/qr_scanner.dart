@@ -56,7 +56,10 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
             }
           }
         },
-        child: const Icon(Icons.photo),
+        child: const Icon(
+          Icons.photo,
+          semanticLabel: 'GalleryQr',
+        ),
       ),
       bottomNavigationBar: (barcode == null)
           ? null
@@ -80,7 +83,10 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
                         );
                       }
                     },
-                    child: const Icon(Icons.copy),
+                    child: const Icon(
+                      Icons.copy,
+                      semanticLabel: 'Copy',
+                    ),
                   ),
                   body: CustomScrollView(
                     controller: scrollController,

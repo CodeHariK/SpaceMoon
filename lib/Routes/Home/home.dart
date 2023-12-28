@@ -127,13 +127,19 @@ class HomeShellRoute extends StatefulShellRouteData {
           onPressed: () {
             NotificationsRoute().push(context);
           },
-          icon: const Icon(Icons.notifications_none_outlined),
+          icon: const Icon(
+            Icons.notifications_none_outlined,
+            semanticLabel: 'Open notifications',
+          ),
         ),
         IconButton(
           onPressed: () {
             SettingsRoute().push(context);
           },
-          icon: const Icon(Icons.settings),
+          icon: const Icon(
+            Icons.settings,
+            semanticLabel: 'Open settings',
+          ),
         ),
       ];
 
