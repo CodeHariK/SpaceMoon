@@ -41,7 +41,7 @@ Future<void> initFirebase() async {
     EmailAuthProvider(),
     PhoneAuthProvider(),
     GoogleProvider(clientId: '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com'),
-    auth.AppleProvider(),
+    if (Device.isIos || Device.isMacOS) auth.AppleProvider(),
   ]);
 
   await emulator();

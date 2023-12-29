@@ -84,8 +84,11 @@ const Const$json = {
     {'1': 'tweets', '2': 20},
     {'1': 'roomusers', '2': 30},
     {'1': 'uid', '2': 40},
-    {'1': 'nick', '2': 50},
-    {'1': 'displayName', '2': 60},
+    {'1': 'nick', '2': 45},
+    {'1': 'role', '2': 50},
+    {'1': 'user', '2': 55},
+    {'1': 'room', '2': 60},
+    {'1': 'displayName', '2': 65},
     {'1': 'email', '2': 70},
     {'1': 'phoneNumber', '2': 80},
     {'1': 'photoURL', '2': 90},
@@ -106,11 +109,11 @@ const Const$json = {
 /// Descriptor for `Const`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List constDescriptor = $convert.base64Decode(
     'CgVDb25zdBIJCgV1c2VycxAAEgkKBXJvb21zEAoSCgoGdHdlZXRzEBQSDQoJcm9vbXVzZXJzEB'
-    '4SBwoDdWlkECgSCAoEbmljaxAyEg8KC2Rpc3BsYXlOYW1lEDwSCQoFZW1haWwQRhIPCgtwaG9u'
-    'ZU51bWJlchBQEgwKCHBob3RvVVJMEFoSDAoIZmNtVG9rZW4QZBIKCgZzdGF0dXMQbhILCgdjcm'
-    'VhdGVkEHgSDAoHdXBkYXRlZBCCARIOCgl0aW1lc3RhbXAQjAESCQoEb3BlbhCWARILCgZmYW1v'
-    'dXMQmwESDAoHbWVtYmVycxCgARIQCgt0d2VldF9jb3VudBCqARIQCgtkZXNjcmlwdGlvbhC0AR'
-    'IMCgdnYWxsZXJ5EL4B');
+    '4SBwoDdWlkECgSCAoEbmljaxAtEggKBHJvbGUQMhIICgR1c2VyEDcSCAoEcm9vbRA8Eg8KC2Rp'
+    'c3BsYXlOYW1lEEESCQoFZW1haWwQRhIPCgtwaG9uZU51bWJlchBQEgwKCHBob3RvVVJMEFoSDA'
+    'oIZmNtVG9rZW4QZBIKCgZzdGF0dXMQbhILCgdjcmVhdGVkEHgSDAoHdXBkYXRlZBCCARIOCgl0'
+    'aW1lc3RhbXAQjAESCQoEb3BlbhCWARILCgZmYW1vdXMQmwESDAoHbWVtYmVycxCgARIQCgt0d2'
+    'VldF9jb3VudBCqARIQCgtkZXNjcmlwdGlvbhC0ARIMCgdnYWxsZXJ5EL4B');
 
 @$core.Deprecated('Use userDescriptor instead')
 const User$json = {

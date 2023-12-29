@@ -190,8 +190,11 @@ export enum Const {
   tweets = 20,
   roomusers = 30,
   uid = 40,
-  nick = 50,
-  displayName = 60,
+  nick = 45,
+  role = 50,
+  user = 55,
+  room = 60,
+  displayName = 65,
   email = 70,
   phoneNumber = 80,
   photoURL = 90,
@@ -226,10 +229,19 @@ export function constFromJSON(object: any): Const {
     case 40:
     case "uid":
       return Const.uid;
-    case 50:
+    case 45:
     case "nick":
       return Const.nick;
+    case 50:
+    case "role":
+      return Const.role;
+    case 55:
+    case "user":
+      return Const.user;
     case 60:
+    case "room":
+      return Const.room;
+    case 65:
     case "displayName":
       return Const.displayName;
     case 70:
@@ -295,6 +307,12 @@ export function constToJSON(object: Const): string {
       return "uid";
     case Const.nick:
       return "nick";
+    case Const.role:
+      return "role";
+    case Const.user:
+      return "user";
+    case Const.room:
+      return "room";
     case Const.displayName:
       return "displayName";
     case Const.email:

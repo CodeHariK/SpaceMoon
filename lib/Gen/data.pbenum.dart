@@ -95,8 +95,11 @@ class Const extends $pb.ProtobufEnum {
   static const Const tweets = Const._(20, _omitEnumNames ? '' : 'tweets');
   static const Const roomusers = Const._(30, _omitEnumNames ? '' : 'roomusers');
   static const Const uid = Const._(40, _omitEnumNames ? '' : 'uid');
-  static const Const nick = Const._(50, _omitEnumNames ? '' : 'nick');
-  static const Const displayName = Const._(60, _omitEnumNames ? '' : 'displayName');
+  static const Const nick = Const._(45, _omitEnumNames ? '' : 'nick');
+  static const Const role = Const._(50, _omitEnumNames ? '' : 'role');
+  static const Const user = Const._(55, _omitEnumNames ? '' : 'user');
+  static const Const room = Const._(60, _omitEnumNames ? '' : 'room');
+  static const Const displayName = Const._(65, _omitEnumNames ? '' : 'displayName');
   static const Const email = Const._(70, _omitEnumNames ? '' : 'email');
   static const Const phoneNumber = Const._(80, _omitEnumNames ? '' : 'phoneNumber');
   static const Const photoURL = Const._(90, _omitEnumNames ? '' : 'photoURL');
@@ -119,6 +122,9 @@ class Const extends $pb.ProtobufEnum {
     roomusers,
     uid,
     nick,
+    role,
+    user,
+    room,
     displayName,
     email,
     phoneNumber,

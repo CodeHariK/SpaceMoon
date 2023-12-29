@@ -51,6 +51,8 @@ class AppTheme {
   static Color get op => AppTheme.darkness ? Colors.white : const Color.fromARGB(255, 55, 55, 55);
   static Color get card =>
       AppTheme.darkness ? const Color.fromARGB(255, 35, 35, 35) : const Color.fromARGB(255, 248, 248, 248);
+  static Color get cardLight =>
+      AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 240, 240, 240);
   static Color get seedCard => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
 
   static double get w => currentAppTheme.size.width;
@@ -83,32 +85,34 @@ class AppTheme {
 
   FilledButtonThemeData get filledButtonTheme => FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
-          padding: EdgeInsets.all(12.c),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular((8, 10).c)),
+          padding: EdgeInsets.all((14, 16).c),
+          textStyle: TextStyle(fontSize: (15, 17).c),
           // textStyle: poppins.copyWith(fontSize: (14, 18).c),
         ),
       );
 
   ElevatedButtonThemeData get elevatedButtonTheme => ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
-          padding: EdgeInsets.all(12.c),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular((8, 10).c)),
+          padding: EdgeInsets.all((14, 16).c),
+          textStyle: TextStyle(fontSize: (15, 17).c),
           // textStyle: poppins.copyWith(fontSize: (14, 18).c),
         ),
       );
 
   OutlinedButtonThemeData get outlinedButtonTheme => OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.c)),
-          padding: EdgeInsets.all(12.c),
-          textStyle: TextStyle(fontSize: (14, 16).c),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular((8, 10).c)),
+          padding: EdgeInsets.all((14, 16).c),
+          textStyle: TextStyle(fontSize: (15, 17).c),
           // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
       );
 
   TextButtonThemeData get textButton => TextButtonThemeData(
         style: TextButton.styleFrom(
-          textStyle: AppTheme.tx.bodySmall.under,
+          textStyle: TextStyle(fontSize: (15, 17).c).under,
           padding: EdgeInsets.zero,
         ),
       );
@@ -166,8 +170,7 @@ class AppTheme {
       );
 
   ListTileThemeData get listTileTheme => ListTileThemeData(
-        // tileColor: AppTheme.card,
-        // shape: 1.bs.c(AppTheme.seedCard).border,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         titleTextStyle: AppTheme.tx.bodyLarge,
         subtitleTextStyle: AppTheme.tx.bodySmall,
       );
@@ -204,9 +207,9 @@ class AppTheme {
         // tertiaryContainer: Colors.pink,
         // onTertiaryContainer: Colors.green,
 
-        // error: Colors.green,
+        error: Colors.white,
         // onError: Colors.lime,
-        // errorContainer: const Color.fromARGB(255, 167, 242, 170),
+        errorContainer: Colors.red[dark ? 1000 : 400],
         // onErrorContainer: const Color.fromARGB(255, 2, 135, 7),
 
         // outline: Colors.yellow, //textfield border

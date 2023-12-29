@@ -19,11 +19,12 @@ class SpaceMoon {
   static String appstore = 'https://apps.apple.com/us/app/spacemoon/id6469975482';
   static String web = 'spacemoon.shark.run';
 
-  static bool debugMode = kDebugMode && false;
+  static bool debugUi = false;
+  static bool debugMode = kDebugMode && true;
   static bool useEmulator = kDebugMode && false;
   static String computerIp = '192.168.1.4';
 
-  static String build = 'Build : 0.0.1+5';
+  static String build = 'Build : 0.0.1+6';
 
   static HttpsCallable fn(String function) => useEmulator
       ? FirebaseFunctions.instance.httpsCallable(function)

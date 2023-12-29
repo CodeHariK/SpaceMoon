@@ -196,7 +196,7 @@ class SpaceMoonHome extends ConsumerWidget {
           ],
           theme: AppTheme.currentAppTheme.theme,
           themeAnimationCurve: Curves.ease,
-          debugShowCheckedModeBanner: (SpaceMoon.debugMode || SpaceMoon.useEmulator || kDebugMode),
+          debugShowCheckedModeBanner: SpaceMoon.debugUi,
           restorationScopeId: AppRouter.appRestorationScopeId,
 
           // showSemanticsDebugger: true,

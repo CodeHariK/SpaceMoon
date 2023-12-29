@@ -98,7 +98,7 @@ class ProfilePage extends ConsumerWidget {
                               },
                         child: user?.photoURL == null || user?.photoURL.isEmpty == true
                             ? Icon(
-                                CupertinoIcons.person_crop_circle_badge_plus,
+                                Icons.face_2_outlined,
                                 size: (120, 160).c,
                               )
                             : ClipRRect(
@@ -232,64 +232,52 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   if (searchuser == null)
                     ListTile(
+                      tileColor: context.theme.csSecCon,
+                      titleTextStyle: context.ts.c(context.theme.csSec),
+                      iconColor: context.theme.csSec,
                       leading: const Icon(Icons.logout),
-                      onTap: () {
-                        marioAlertDialog(
-                          context: context,
-                          title: 'Are you sure you want to sign out?',
-                          actions: (context) => [
-                            MAction(
-                              text: 'cancel',
-                              fn: () => Navigator.pop(context),
-                            ),
-                            MAction(
-                              text: 'Yes',
-                              fn: () async {
-                                Navigator.pop(context);
-                                auth.FirebaseAuth.instance.signOut();
-                              },
-                            ),
-                          ],
-                        );
+                      onTap: () async {
+                        final res = await showYesNo(context: context, title: 'Are you sure you want to sign out?');
+                        if (res) {
+                          auth.FirebaseAuth.instance.signOut();
+                        }
                       },
                       title: const Text('Sign out'),
                     ),
+                  const SizedBox(height: 5),
                   if (searchuser == null)
                     ListTile(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      tileColor: context.theme.csErrCon,
+                      titleTextStyle: context.ts.c(context.theme.csErr),
+                      iconColor: context.theme.csErr,
                       leading: const Icon(Icons.delete),
                       onTap: () async {
-                        String? errorMessage = await marioAlertDialog<String?>(
+                        final res = await showYesNo(
                           context: context,
-                          title: 'Confirm Account Deletion',
+                          title: 'Confirm Account Deletion?',
                           content:
                               'Are you sure you want to delete your account? All your data will be automatically deleted.',
-                          actions: (context) => [
-                            MAction(
-                              text: 'cancel',
-                              fn: () => Navigator.pop(context),
-                            ),
-                            MAction(
-                              text: 'Yes',
-                              fn: () async {
-                                await auth.FirebaseAuth.instance.currentUser?.delete().then((value) {
-                                  Navigator.pop(context);
-                                }).onError(
-                                  (auth.FirebaseAuthException error, stackTrace) {
-                                    Navigator.pop(context, error.message);
-                                  },
-                                );
-                              },
-                            ),
-                          ],
                         );
+                        if (res) {
+                          String? errorMessage;
 
-                        if (context.mounted && errorMessage != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 10),
-                              content: Text(errorMessage),
-                            ),
+                          await auth.FirebaseAuth.instance.currentUser?.delete().then((value) {
+                            Navigator.pop(context);
+                          }).onError(
+                            (auth.FirebaseAuthException error, stackTrace) {
+                              errorMessage = error.message;
+                            },
                           );
+
+                          if (context.mounted && errorMessage != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 10),
+                                content: Text(errorMessage!),
+                              ),
+                            );
+                          }
                         }
                       },
                       title: const Text('Delete Account'),

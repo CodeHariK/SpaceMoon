@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import { Const, Role, Room, RoomUser, Visible, constToJSON } from "./Gen/data";
+import { Const, Role, Room, RoomUser, Visible, constToJSON, roleToJSON } from "./Gen/data";
 import { checkUserExists } from "./users";
 import { deleteCollection } from "./Helpers/subcollection";
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
@@ -89,6 +89,15 @@ export const deleteRoom = onCall({
     if (!roomUser.room) {
         throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
     }
+
+    await admin.firestore().collection(constToJSON(Const.roomusers))
+        .where(constToJSON(Const.room), '==', roomUser.room)
+        .where(constToJSON(Const.role), '==', roleToJSON(Role.ADMIN))
+        .count().get().then((e) => {
+            if (e.data().count > 1) {
+                throw new HttpsError('permission-denied', 'You do not have permission to delete room. More than one admin.');
+            }
+        });
 
     const adminUser = await getRoomUserById(adminId, roomUser.room);
 

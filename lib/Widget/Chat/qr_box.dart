@@ -144,43 +144,55 @@ class QrDialog extends HookWidget {
                     ),
 
                     //
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButtonFormField(
-                            value: barcodeType.value,
-                            icon: const SizedBox(),
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.zero,
-                              hintText: 'Qr Type',
-                              focusedBorder: InputBorder.none,
-                              border: InputBorder.none,
-                            ),
-                            alignment: Alignment.center,
-                            items: BarcodeType.values
-                                .map(
-                                  (e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Text(e.name),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                barcodeType.value = value;
-                              }
-                            },
-                          ),
-                        ),
-                        if (qrtext.value.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
                           Expanded(
-                            child: ListTile(
-                              leading: const Icon(Icons.download, semanticLabel: 'Download qr'),
-                              onTap: () => saveQr(context, repaintKey, qrtext.value),
-                              title: const Text('Download'),
+                            child: DropdownButtonFormField(
+                              value: barcodeType.value,
+                              icon: const SizedBox(),
+                              borderRadius: 8.br,
+                              dropdownColor: context.theme.csSecCon,
+                              decoration: InputDecoration(
+                                hintText: 'Qr Type',
+                                constraints: const BoxConstraints(maxWidth: 200),
+                                border: 0.bs.c(Colors.transparent).out.r(8),
+                                enabledBorder: 0.bs.c(Colors.transparent).out.r(8),
+                                focusedBorder: 0.bs.c(Colors.transparent).out.r(8),
+                                fillColor: context.theme.csSecCon,
+                                contentPadding: const EdgeInsets.all(16),
+                                filled: true,
+                              ),
+                              items: BarcodeType.values
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e,
+                                      child: Text(e.name),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  barcodeType.value = value;
+                                }
+                              },
                             ),
                           ),
-                      ],
+                          const SizedBox(width: 5),
+                          if (qrtext.value.isNotEmpty)
+                            Expanded(
+                              child: ListTile(
+                                tileColor: context.theme.csErrCon,
+                                titleTextStyle: context.ts.c(context.theme.csErr),
+                                iconColor: context.theme.csErr,
+                                leading: const Icon(Icons.download, semanticLabel: 'Download qr'),
+                                onTap: () => saveQr(context, repaintKey, qrtext.value),
+                                title: const Text('Download'),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
 
                     //

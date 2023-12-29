@@ -206,10 +206,10 @@ class CurrentRoom extends _$CurrentRoom {
   Future<void> deleteRoom(RoomUser user) async {
     try {
       await SpaceMoon.fn('room-deleteRoom').call(user.toMap());
+      exitRoom(user);
     } catch (e) {
-      debugPrint('deleteRoom Failed');
+      debugPrint('deleteRoom Failed $e');
     }
-    exitRoom(user);
   }
 
   Future<void> deleteRoomUser(RoomUser user) async {

@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
+import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
@@ -146,7 +148,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                               },
                         child: room.photoURL.isEmpty == true
                             ? Icon(
-                                CupertinoIcons.person_crop_circle_badge_plus,
+                                Icons.face_2_outlined,
                                 size: (120, 160).c,
                               )
                             : ClipRRect(
@@ -276,12 +278,15 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                   ),
                                 )
                                 .toList(),
-                            borderRadius: 20.br,
-                            decoration: const InputDecoration(
-                              labelText: 'Visiblity',
-                              constraints: BoxConstraints(maxWidth: 200),
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
+                            borderRadius: 8.br,
+                            dropdownColor: context.theme.csSecCon,
+                            decoration: InputDecoration(
+                              constraints: const BoxConstraints(maxWidth: 200),
+                              border: 0.bs.c(Colors.transparent).out.r(8),
+                              enabledBorder: 0.bs.c(Colors.transparent).out.r(8),
+                              focusedBorder: 0.bs.c(Colors.transparent).out.r(8),
+                              fillColor: context.theme.csSecCon,
+                              filled: true,
                             ),
                             onChanged: (value) async {
                               if (value != null) {
@@ -300,13 +305,16 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 5),
                   if (room.open == Visible.OPEN && meInRoom?.isAdmin == true && meUser?.admin == true)
                     AsyncLock(
                       builder: (loading, status, lock, open, setStatus) {
                         return SwitchListTile(
                           key: ValueKey(room.famous),
                           value: room.famous,
-                          title: Text('Famous Admin : ${meInRoom?.isAdmin} Manager : ${meUser?.admin}'),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                          title: Text('Famous', style: context.ts),
+                          tileColor: context.theme.csSecCon,
                           onChanged: (v) async {
                             lock();
                             await ref.read(currentRoomProvider.notifier).updateRoomInfo(
@@ -336,49 +344,80 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                   ),
                   const SizedBox(height: 10),
                   if (meInRoom != null)
-                    Align(
-                      child: AsyncLock(
-                        builder: (loading, status, lock, open, setStatus) {
-                          return ListTile(
-                            onTap: () async {
-                              lock();
+                    AsyncLock(
+                      builder: (loading, status, lock, open, setStatus) {
+                        return FilledButton.icon(
+                          icon: const Icon(Icons.logout),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: context.theme.csErrCon,
+                            foregroundColor: context.theme.csErr,
+                          ),
+                          onPressed: () async {
+                            lock();
+                            final res =
+                                await showYesNo(context: context, title: 'Are you sure you want to Leave this room?');
+                            if (res) {
                               await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
                               ref.read(currentRoomProvider.notifier).exitRoom(null);
                               if (context.mounted) {
                                 HomeRoute().go(context);
                               }
-                              open();
-                            },
-                            leading: const Icon(Icons.logout),
-                            title: const Text('Leave Room'),
-                          );
-                        },
-                      ),
+                            }
+                            open();
+                          },
+                          label: loading
+                              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
+                              : const Text('Leave Room'),
+                        );
+                      },
                     ),
+                  const SizedBox(height: 4),
                   if (meInRoom != null && meInRoom.isAdmin)
-                    Align(
-                      child: AsyncLock(
-                        builder: (loading, status, lock, open, setStatus) {
-                          return ListTile(
-                            onTap: () async {
-                              lock();
-                              await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
-                              if (context.mounted) {
-                                HomeRoute().go(context);
-                              }
-                              open();
+                    FutureBuilder(
+                      future: FirebaseFirestore.instance
+                          .collection(Const.roomusers.name)
+                          .where(Const.room.name, isEqualTo: meInRoom.room)
+                          .where(Const.role.name, isEqualTo: Role.ADMIN.name)
+                          .count()
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.data?.count == 1) {
+                          return AsyncLock(
+                            builder: (loading, status, lock, open, setStatus) {
+                              return FilledButton.icon(
+                                icon: const Icon(Icons.delete),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: context.theme.csErrCon,
+                                  foregroundColor: context.theme.csErr,
+                                ),
+                                onPressed: () async {
+                                  lock();
+                                  final res = await showYesNo(
+                                      context: context, title: 'Are you sure you want to Delete this room?');
+                                  if (res == true) {
+                                    await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
+                                    if (context.mounted) {
+                                      HomeRoute().go(context);
+                                    }
+                                  }
+                                  open();
+                                },
+                                label: loading
+                                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
+                                    : const Text('Delete Room'),
+                              );
                             },
-                            leading: const Icon(Icons.delete),
-                            title: const Text('Delete Room'),
                           );
-                        },
-                      ),
+                        }
+                        return const SizedBox();
+                      },
                     ),
                   if (meInRoom == null && room.open.value >= Visible.MODERATED.value)
                     AsyncLock(
                       builder: (loading, status, lock, open, setStatus) {
-                        return ListTile(
-                          onTap: () async {
+                        return FilledButton.icon(
+                          icon: const Icon(Icons.mail),
+                          onPressed: () async {
                             lock();
                             await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
                                   RoomUser(
@@ -390,14 +429,16 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                             ref.invalidate(currentRoomUserProvider);
                             open();
                           },
-                          leading: const Icon(Icons.mail),
-                          title: Text(room.open == Visible.OPEN ? 'Join' : 'Send Request'),
+                          label: Text(room.open == Visible.OPEN ? 'Join' : 'Send Request'),
                         );
                       },
                     ),
                   if (meInRoom?.role == Role.REQUEST)
-                    const ListTile(
-                      title: Text('Request Sent'),
+                    ListTile(
+                      tileColor: context.theme.csSecCon,
+                      titleTextStyle: context.ts.c(context.theme.csSec),
+                      iconColor: context.theme.csSec,
+                      title: const Text('Request Sent'),
                     ),
                   const SizedBox(height: 10),
                 ],
@@ -444,10 +485,14 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                           ? null
                                           : () async {
                                               lock();
-                                              await ref
-                                                  .read(currentRoomProvider.notifier)
-                                                  .upgradeAccessToRoom(roomUser);
-                                              ref.invalidate(currentRoomUserProvider);
+                                              final res = await showYesNo(
+                                                  context: context, title: 'Do you want to promote this user?');
+                                              if (res) {
+                                                await ref
+                                                    .read(currentRoomProvider.notifier)
+                                                    .upgradeAccessToRoom(roomUser);
+                                                ref.invalidate(currentRoomUserProvider);
+                                              }
                                               open();
                                             },
                                       icon: !loading
@@ -458,6 +503,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                     );
                                   },
                                 ),
+                              const SizedBox(width: 5),
                               if (roomUser.role.value < meInRoom.role.value &&
                                   roomUser != meInRoom &&
                                   meInRoom.isAdminOrMod)
@@ -466,7 +512,11 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                     return IconButton.filledTonal(
                                       onPressed: () async {
                                         lock();
-                                        await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
+                                        final res = await showYesNo(
+                                            context: context, title: 'Do you want to kickout this user?');
+                                        if (res) {
+                                          await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
+                                        }
                                         open();
                                         // ref.read(currentRoomProvider.notifier).exitRoom(null);
                                         // // ref.invalidate(currentRoomUserProvider);

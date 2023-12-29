@@ -14,6 +14,7 @@ import 'package:spacemoon/Providers/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
+import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/main.dart';
 
 @immutable
@@ -38,6 +39,7 @@ class SettingsPage extends ConsumerWidget {
     GlobalAppTheme globalAppTheme = ref.watch(globalThemeProvider);
 
     return CupertinoPageScaffold(
+      backgroundColor: AppTheme.cardLight,
       navigationBar: CupertinoNavigationBar(
         middle: Text('Settings', style: context.tl),
         // leading: BackButton(
@@ -45,9 +47,11 @@ class SettingsPage extends ConsumerWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          child: CupertinoFormSection(
+          child: CupertinoListSection(
+            backgroundColor: AppTheme.cardLight,
             children: [
               CupertinoFormSection.insetGrouped(
+                backgroundColor: AppTheme.cardLight,
                 // header: Text('', style: context.tl),
                 children: [
                   PopupMenuButton<ThemeType>(
@@ -113,6 +117,7 @@ class SettingsPage extends ConsumerWidget {
                 ],
               ),
               CupertinoFormSection.insetGrouped(
+                backgroundColor: AppTheme.cardLight,
                 header: Text('About', style: context.bl),
                 children: [
                   // CupertinoListTile.notched(
@@ -157,6 +162,7 @@ class SettingsPage extends ConsumerWidget {
                 ],
               ),
               CupertinoFormSection.insetGrouped(
+                backgroundColor: AppTheme.cardLight,
                 header: Text('Legals', style: context.bl),
                 children: [
                   CupertinoListTile.notched(
@@ -180,18 +186,19 @@ class SettingsPage extends ConsumerWidget {
                     leading: const Icon(Icons.chevron_right_rounded),
                     title: Text('Attribution', style: context.tm),
                   ),
-                  CupertinoListTile.notched(
-                    leading: const Icon(Icons.star),
-                    title: Text(SpaceMoon.build, style: context.tl),
-                  ),
-                  if (kDebugMode)
+                  if (SpaceMoon.debugUi)
+                    CupertinoListTile.notched(
+                      leading: const Icon(Icons.star),
+                      title: Text(SpaceMoon.build, style: context.tm),
+                    ),
+                  if (SpaceMoon.debugUi)
                     CupertinoListTile.notched(
                       onTap: () {
                         ref.read(onboardedProvider.notifier).set(false);
                       },
                       title: Text('Onboard false', style: context.tm),
                     ),
-                  if (kDebugMode)
+                  if (SpaceMoon.debugUi)
                     CupertinoListTile.notched(
                       onTap: () {
                         FirebaseMessaging.instance.deleteToken();

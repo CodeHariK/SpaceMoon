@@ -132,7 +132,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                       Text.rich(
                         TextSpan(
                           text: SpaceMoon.title,
-                          style: context.tl,
+                          style: context.hs,
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               safeLaunchUrl(SpaceMoon.web);
@@ -228,6 +228,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                         ),
 
                       if (kDebugMode) Text(SpaceMoon.build, style: context.tl),
+                      SizedBox(height: (10, 20).c),
                     ],
                   ),
                 ),
@@ -264,8 +265,8 @@ class SocialButtons extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               child: SvgPicture.string(
                 githubSvg,
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 fit: BoxFit.cover,
               ),
             ),
@@ -285,8 +286,8 @@ class SocialButtons extends StatelessWidget {
               ),
               child: SvgPicture.string(
                 linkedInSvg,
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 fit: BoxFit.cover,
               ),
             ),
@@ -306,8 +307,8 @@ class SocialButtons extends StatelessWidget {
               ),
               child: SvgPicture.string(
                 twitterSvg,
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 fit: BoxFit.cover,
               ),
             ),

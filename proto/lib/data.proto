@@ -39,8 +39,11 @@ enum Const {
     roomusers = 30;
 
     uid = 40;
-    nick = 50;
-    displayName = 60;
+    nick = 45;
+    role = 50;
+    user = 55;
+    room = 60;
+    displayName = 65;
     email = 70;
     phoneNumber = 80;
     photoURL = 90;
