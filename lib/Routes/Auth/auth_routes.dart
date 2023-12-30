@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -45,14 +46,19 @@ class LoginRoute extends GoRouteData {
             _ => throw Exception('Invalid action: $action'),
           };
 
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text(
-                'By $actionText, you agree to our terms and conditions.',
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ),
+          return FutureBuilder(
+            future: FirebaseAppCheck.instance.getToken(),
+            builder: (context, snapshot) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text(
+                    'By $actionText, you agree to our terms and conditions.',
+                    style: TextStyle(color: snapshot.data != null ? Colors.grey : Colors.red),
+                  ),
+                ),
+              );
+            },
           );
         },
         actions: [

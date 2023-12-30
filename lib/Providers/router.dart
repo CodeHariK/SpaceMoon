@@ -118,7 +118,7 @@ Future routerRedirector(RouterRedirectorRef ref) async {
   final user = ref.watch(currentUserProvider).value;
   final userData = ref.watch(currentUserDataProvider).value;
 
-  debugPrint('routerRedirector : ${user?.uid} $onboarded');
+  debugPrint('routerRedirector : ${user?.uid} ${userData?.uid} $onboarded');
 
   myConfig.value = _generateRoutingConfig(
     authenticated: user != null && userData != null, // && ((user.emailVerified == true) && verifyEmail),

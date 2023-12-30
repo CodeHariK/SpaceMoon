@@ -59,16 +59,20 @@ class AllChatPage extends ConsumerWidget {
                       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 16),
                       child: Hero(
                         tag: 'Search',
-                        child: TextFormField(
-                          autofocus: false,
-                          decoration: const InputDecoration(
-                            hintText: 'abc...',
-                            prefixIcon: Icon(Icons.search),
-                            labelText: 'Find by nickname',
-                          ),
+                        child: InkWell(
                           onTap: () {
                             SearchRoute().go(context);
                           },
+                          child: IgnorePointer(
+                            child: TextFormField(
+                              autofocus: false,
+                              decoration: const InputDecoration(
+                                hintText: 'abc...',
+                                prefixIcon: Icon(Icons.search),
+                                labelText: 'Find by nickname',
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),

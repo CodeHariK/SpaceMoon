@@ -20,7 +20,7 @@ class SpaceMoon {
   static String web = 'spacemoon.shark.run';
 
   static bool debugUi = false;
-  static bool debugMode = kDebugMode && true;
+  static bool debugMode = kDebugMode && false;
   static bool useEmulator = kDebugMode && false;
   static String computerIp = '192.168.1.4';
 

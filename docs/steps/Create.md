@@ -3,6 +3,8 @@
 ```bash
 flutter create --org run.shark spacemoon
 flutterfire configure
+firebase experiments:enable webframeworks
+firebase init
 ```
 
 ## Add to .gitignore
@@ -13,12 +15,6 @@ flutterfire configure
 * GoogleService-Info.plist
 * serviceAccountKey.json
 * key.properties
-
-## Add Firebase Core
-
-```bash
-flutter pub add firebase_core, google_fonts
-```
 
 ## Upgrade Project Defaults For IOS
 

@@ -26,6 +26,12 @@
     <category android:name="android.intent.category.BROWSABLE" />
     <data android:scheme="http" android:host="spacemoon.shark.run" />
     <data android:scheme="https" />
+</intent-filter>
+
+<intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
     <data android:scheme="spacemoon" android:host="" />
 </intent-filter>
 

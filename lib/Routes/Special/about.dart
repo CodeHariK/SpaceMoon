@@ -188,11 +188,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                                   Expanded(
                                     child: Semantics(
                                       label: 'Go to google play',
-                                      child: InkWell(
-                                        onTap: () {
-                                          safeLaunchUrl(googleplay);
-                                        },
-                                        child: Image.asset(Asset.googleplay),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: InkWell(
+                                          onTap: () {
+                                            safeLaunchUrl(googleplay);
+                                          },
+                                          child: Image.asset(Asset.googleplay),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -200,7 +203,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                                     child: Semantics(
                                       label: 'Go to appstore',
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(4.0),
                                         child: InkWell(
                                           onTap: () {
                                             safeLaunchUrl(appstore);
@@ -227,7 +230,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                           ),
                         ),
 
-                      if (kDebugMode) Text(SpaceMoon.build, style: context.tl),
+                      if (SpaceMoon.debugUi) Text(SpaceMoon.build, style: context.tl),
                       SizedBox(height: (10, 20).c),
                     ],
                   ),

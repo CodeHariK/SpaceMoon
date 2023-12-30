@@ -2,7 +2,7 @@ class Asset {
   static const String spaceMoon = 'assets/images/SpaceMoon.png';
   static const String sharkrun = 'assets/images/SpaceShark.webp';
 
-  static const String googleplay = 'assets/store/googleplay.png';
+  static const String googleplay = 'assets/store/googleplay.webp';
   static const String appstore = 'assets/store/appstore.png';
 
   static const String lDot = 'assets/lottie/dotlottie.zip';

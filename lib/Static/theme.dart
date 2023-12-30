@@ -52,7 +52,7 @@ class AppTheme {
   static Color get card =>
       AppTheme.darkness ? const Color.fromARGB(255, 35, 35, 35) : const Color.fromARGB(255, 248, 248, 248);
   static Color get cardLight =>
-      AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 240, 240, 240);
+      AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 242, 242, 242);
   static Color get seedCard => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
 
   static double get w => currentAppTheme.size.width;
@@ -128,10 +128,10 @@ class AppTheme {
 
   static InputDecorationTheme get inputDecoration => InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: seedColor),
         ),
 
@@ -207,10 +207,10 @@ class AppTheme {
         // tertiaryContainer: Colors.pink,
         // onTertiaryContainer: Colors.green,
 
-        error: Colors.white,
+        // error: Colors.white,
         // onError: Colors.lime,
         errorContainer: Colors.red[dark ? 1000 : 400],
-        // onErrorContainer: const Color.fromARGB(255, 2, 135, 7),
+        onErrorContainer: Colors.white,
 
         // outline: Colors.yellow, //textfield border
         // outlineVariant: Colors.green, //Divider

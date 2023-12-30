@@ -136,7 +136,7 @@ class QrDialog extends HookWidget {
               body: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     QrBox(
                       repaintKey: repaintKey,
@@ -184,8 +184,8 @@ class QrDialog extends HookWidget {
                             Expanded(
                               child: ListTile(
                                 tileColor: context.theme.csErrCon,
-                                titleTextStyle: context.ts.c(context.theme.csErr),
-                                iconColor: context.theme.csErr,
+                                titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+                                iconColor: context.theme.csOnErrCon,
                                 leading: const Icon(Icons.download, semanticLabel: 'Download qr'),
                                 onTap: () => saveQr(context, repaintKey, qrtext.value),
                                 title: const Text('Download'),

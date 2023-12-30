@@ -350,7 +350,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                           icon: const Icon(Icons.logout),
                           style: FilledButton.styleFrom(
                             backgroundColor: context.theme.csErrCon,
-                            foregroundColor: context.theme.csErr,
+                            foregroundColor: context.theme.csOnErrCon,
                           ),
                           onPressed: () async {
                             lock();
@@ -388,7 +388,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                                 icon: const Icon(Icons.delete),
                                 style: FilledButton.styleFrom(
                                   backgroundColor: context.theme.csErrCon,
-                                  foregroundColor: context.theme.csErr,
+                                  foregroundColor: context.theme.csOnErrCon,
                                 ),
                                 onPressed: () async {
                                   lock();

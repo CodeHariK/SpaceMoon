@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -249,8 +248,8 @@ class ProfilePage extends ConsumerWidget {
                     ListTile(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       tileColor: context.theme.csErrCon,
-                      titleTextStyle: context.ts.c(context.theme.csErr),
-                      iconColor: context.theme.csErr,
+                      titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+                      iconColor: context.theme.csOnErrCon,
                       leading: const Icon(Icons.delete),
                       onTap: () async {
                         final res = await showYesNo(
