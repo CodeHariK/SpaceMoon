@@ -22,6 +22,17 @@ cd android
 ### For Apple : Get your team id from Apple Developer account
 ```
 
+[Get started using App Check with App Attest on Apple platforms](https://firebase.google.com/docs/app-check/ios/app-attest-provider?authuser=0)
+
+``` Apple
+- Add Firebase to your Apple project if you haven’t already done so.
+- Register your apps to use App Check with the App Attest provider in the App Check section of the Firebase console.
+- In Xcode, add the App Attest capability to your app.
+- In your project's .entitlements file, set the App Attest environment to production
+```
+
+![Firebase Production](../images/Certificate/appleproduction.png)
+
 ## Flutter
 
 [Flutter App Check](https://firebase.google.com/docs/app-check/flutter/default-providers)
