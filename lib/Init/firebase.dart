@@ -21,17 +21,15 @@ Future<void> initFirebase() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  if (!SpaceMoon.useEmulator) {
-    await FirebaseAppCheck.instance
-        .activate(
-          webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
-          androidProvider: SpaceMoon.debugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-          appleProvider: SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
-        )
-        .onError(
-          (error, stackTrace) => lava(error),
-        );
-  }
+  await FirebaseAppCheck.instance
+      .activate(
+        webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
+        androidProvider: SpaceMoon.debugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+        appleProvider: SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
+      )
+      .onError(
+        (error, stackTrace) => lava(error),
+      );
 
   if (Device.isMobile) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!SpaceMoon.debugMode);
@@ -52,7 +50,7 @@ Future<void> initFirebase() async {
 }
 
 Future<void> emulator() async {
-  if (SpaceMoon.debugMode && SpaceMoon.useEmulator) {
+  if (SpaceMoon.useEmulator) {
     try {
       final emulatorHost = Device.isAndroid ? SpaceMoon.computerIp : 'localhost';
 

@@ -55,6 +55,45 @@ export function roleToJSON(object: Role): string {
   }
 }
 
+export enum UserRole {
+  DONTKNOW = 0,
+  BLOCKED = 10,
+  FRIEND = 20,
+  UNRECOGNIZED = -1,
+}
+
+export function userRoleFromJSON(object: any): UserRole {
+  switch (object) {
+    case 0:
+    case "DONTKNOW":
+      return UserRole.DONTKNOW;
+    case 10:
+    case "BLOCKED":
+      return UserRole.BLOCKED;
+    case 20:
+    case "FRIEND":
+      return UserRole.FRIEND;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return UserRole.UNRECOGNIZED;
+  }
+}
+
+export function userRoleToJSON(object: UserRole): string {
+  switch (object) {
+    case UserRole.DONTKNOW:
+      return "DONTKNOW";
+    case UserRole.BLOCKED:
+      return "BLOCKED";
+    case UserRole.FRIEND:
+      return "FRIEND";
+    case UserRole.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export enum MediaType {
   TEXT = 0,
   FILE = 10,
@@ -189,6 +228,7 @@ export enum Const {
   rooms = 10,
   tweets = 20,
   roomusers = 30,
+  userusers = 35,
   uid = 40,
   nick = 45,
   role = 50,
@@ -226,6 +266,9 @@ export function constFromJSON(object: any): Const {
     case 30:
     case "roomusers":
       return Const.roomusers;
+    case 35:
+    case "userusers":
+      return Const.userusers;
     case 40:
     case "uid":
       return Const.uid;
@@ -303,6 +346,8 @@ export function constToJSON(object: Const): string {
       return "tweets";
     case Const.roomusers:
       return "roomusers";
+    case Const.userusers:
+      return "userusers";
     case Const.uid:
       return "uid";
     case Const.nick:
@@ -357,11 +402,15 @@ export interface User {
   phoneNumber?: string | undefined;
   photoURL?: string | undefined;
   status?: Active | undefined;
-  friends: string[];
   created?: Date | undefined;
   updated?: Date | undefined;
   open?: Visible | undefined;
   admin?: boolean | undefined;
+}
+
+export interface UserUser {
+  uid?: string | undefined;
+  role?: UserRole | undefined;
 }
 
 export interface Messaging {
@@ -422,7 +471,6 @@ function createBaseUser(): User {
     phoneNumber: undefined,
     photoURL: undefined,
     status: undefined,
-    friends: [],
     created: undefined,
     updated: undefined,
     open: undefined,
@@ -453,20 +501,17 @@ export const User = {
     if (message.status !== undefined) {
       writer.uint32(560).int32(message.status);
     }
-    for (const v of message.friends) {
-      writer.uint32(642).string(v!);
-    }
     if (message.created !== undefined) {
-      Timestamp.encode(toTimestamp(message.created), writer.uint32(722).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(642).fork()).ldelim();
     }
     if (message.updated !== undefined) {
-      Timestamp.encode(toTimestamp(message.updated), writer.uint32(802).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.updated), writer.uint32(722).fork()).ldelim();
     }
     if (message.open !== undefined) {
-      writer.uint32(880).int32(message.open);
+      writer.uint32(800).int32(message.open);
     }
     if (message.admin !== undefined) {
-      writer.uint32(960).bool(message.admin);
+      writer.uint32(880).bool(message.admin);
     }
     return writer;
   },
@@ -532,31 +577,24 @@ export const User = {
             break;
           }
 
-          message.friends.push(reader.string());
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         case 90:
           if (tag !== 722) {
             break;
           }
 
-          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        case 100:
-          if (tag !== 802) {
-            break;
-          }
-
           message.updated = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
-        case 110:
-          if (tag !== 880) {
+        case 100:
+          if (tag !== 800) {
             break;
           }
 
           message.open = reader.int32() as any;
           continue;
-        case 120:
-          if (tag !== 960) {
+        case 110:
+          if (tag !== 880) {
             break;
           }
 
@@ -580,7 +618,6 @@ export const User = {
       phoneNumber: isSet(object.phoneNumber) ? globalThis.String(object.phoneNumber) : undefined,
       photoURL: isSet(object.photoURL) ? globalThis.String(object.photoURL) : undefined,
       status: isSet(object.status) ? activeFromJSON(object.status) : undefined,
-      friends: globalThis.Array.isArray(object?.friends) ? object.friends.map((e: any) => globalThis.String(e)) : [],
       created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
       updated: isSet(object.updated) ? fromJsonTimestamp(object.updated) : undefined,
       open: isSet(object.open) ? visibleFromJSON(object.open) : undefined,
@@ -611,9 +648,6 @@ export const User = {
     if (message.status !== undefined) {
       obj.status = activeToJSON(message.status);
     }
-    if (message.friends?.length) {
-      obj.friends = message.friends;
-    }
     if (message.created !== undefined) {
       obj.created = message.created.toISOString();
     }
@@ -641,11 +675,84 @@ export const User = {
     message.phoneNumber = object.phoneNumber ?? undefined;
     message.photoURL = object.photoURL ?? undefined;
     message.status = object.status ?? undefined;
-    message.friends = object.friends?.map((e) => e) || [];
     message.created = object.created ?? undefined;
     message.updated = object.updated ?? undefined;
     message.open = object.open ?? undefined;
     message.admin = object.admin ?? undefined;
+    return message;
+  },
+};
+
+function createBaseUserUser(): UserUser {
+  return { uid: undefined, role: undefined };
+}
+
+export const UserUser = {
+  encode(message: UserUser, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.uid !== undefined) {
+      writer.uint32(82).string(message.uid);
+    }
+    if (message.role !== undefined) {
+      writer.uint32(160).int32(message.role);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserUser {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserUser();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+        case 20:
+          if (tag !== 160) {
+            break;
+          }
+
+          message.role = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UserUser {
+    return {
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : undefined,
+      role: isSet(object.role) ? userRoleFromJSON(object.role) : undefined,
+    };
+  },
+
+  toJSON(message: UserUser): unknown {
+    const obj: any = {};
+    if (message.uid !== undefined) {
+      obj.uid = message.uid;
+    }
+    if (message.role !== undefined) {
+      obj.role = userRoleToJSON(message.role);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UserUser>, I>>(base?: I): UserUser {
+    return UserUser.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UserUser>, I>>(object: I): UserUser {
+    const message = createBaseUserUser();
+    message.uid = object.uid ?? undefined;
+    message.role = object.role ?? undefined;
     return message;
   },
 };

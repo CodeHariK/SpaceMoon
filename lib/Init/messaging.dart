@@ -50,21 +50,9 @@ Future<void> firebaseMessagingSetup() async {
 
     FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true);
 
-    FirebaseMessaging.onMessageOpenedApp.listen((message) => messageHandler(
-          message,
-          false,
-          HandlerType.onMessageOpened,
-        ));
-    FirebaseMessaging.onMessage.listen((message) => messageHandler(
-          message,
-          false,
-          HandlerType.onMessage,
-        ));
-    FirebaseMessaging.onBackgroundMessage((message) => messageHandler(
-          message,
-          true,
-          HandlerType.background,
-        ));
+    FirebaseMessaging.onMessageOpenedApp.listen(onMessageOpenedAppHandler);
+    FirebaseMessaging.onMessage.listen(onMessageHandler);
+    FirebaseMessaging.onBackgroundMessage(onBackgroundMessageHandler);
 
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       lava('tokenRefresh : $fcmToken');
@@ -73,6 +61,20 @@ Future<void> firebaseMessagingSetup() async {
       lava(err);
     });
   }
+}
+
+Function(RemoteMessage)? onMessageOpenedAppHandler(RemoteMessage message) {
+  messageHandler(message, false, HandlerType.onMessageOpened);
+  return null;
+}
+
+Function(RemoteMessage)? onMessageHandler(RemoteMessage message) {
+  messageHandler(message, false, HandlerType.onMessage);
+  return null;
+}
+
+Future<void> onBackgroundMessageHandler(RemoteMessage message) async {
+  messageHandler(message, true, HandlerType.background);
 }
 
 enum HandlerType { onMessage, onMessageOpened, background }

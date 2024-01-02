@@ -12,6 +12,12 @@ enum Role {
     ADMIN = 40;
 }
 
+enum UserRole {
+    DONTKNOW = 0;
+    BLOCKED = 10;
+    FRIEND = 20;
+}
+
 enum MediaType {
     TEXT = 0;
     FILE = 10;
@@ -37,6 +43,7 @@ enum Const {
     rooms = 10;
     tweets = 20;
     roomusers = 30;
+    userusers = 35;
 
     uid = 40;
     nick = 45;
@@ -71,11 +78,15 @@ message User {
     optional string phoneNumber = 50;
     optional string photoURL = 60;
     optional Active status = 70;
-    repeated string friends = 80;
-    optional google.protobuf.Timestamp created = 90;
-    optional google.protobuf.Timestamp updated = 100;
-    optional Visible open = 110;
-    optional bool admin = 120;
+    optional google.protobuf.Timestamp created = 80;
+    optional google.protobuf.Timestamp updated = 90;
+    optional Visible open = 100;
+    optional bool admin = 110;
+}
+
+message UserUser {
+    optional string uid = 10;
+    optional UserRole role = 20;
 }
 
 message Messaging {

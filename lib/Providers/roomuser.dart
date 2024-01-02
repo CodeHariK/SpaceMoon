@@ -63,6 +63,23 @@ Future<RoomUser?> getRoomUser(GetRoomUserRef ref, {required String roomId, requi
   return null;
 }
 
+@riverpod
+Stream<UserUser?> getUserUser(GetUserUserRef ref, {required String me, required String next}) {
+  final s = FirebaseFirestore.instance
+      .doc('${Const.userusers.name}/${me}_$next')
+      .snapshots()
+      .map((event) => fromDocSnap(UserUser(), event));
+  return s;
+}
+
+Future<void> blockUser({required String me, required String next, required UserRole role}) async {
+  FirebaseFirestore.instance.doc('${Const.userusers.name}/${me}_$next').set(
+        UserUser(
+          role: role,
+        ).toMap()!,
+      );
+}
+
 @Riverpod(keepAlive: true)
 Stream<List<RoomUser?>> getAllRoomUserForUser(GetAllRoomUserForUserRef ref) {
   final user = ref.watch(currentUserProvider).value;

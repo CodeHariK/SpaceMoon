@@ -151,7 +151,10 @@ class UserTile extends ConsumerWidget {
       contentPadding: EdgeInsets.zero,
       onTap: () {
         if (context.mounted && searchUser?.uid != null) {
-          context.rSlidePush(ProfilePage(searchuser: searchUser));
+          context.rSlidePush(ProfilePage(
+            searchuser: searchUser,
+            showAppbar: true,
+          ));
         }
       },
       title: Text(searchUser?.displayName ?? 'Name'),

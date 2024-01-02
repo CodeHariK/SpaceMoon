@@ -65,7 +65,8 @@ exports.messaging = {
 //     response.send("Hello from Firebase!");
 // });
 
-// export const sayHello = onCall((request) => {
+
+// const sayHello = onCall((request) => {
 //     console.log(request.data);
 
 //     return {
@@ -74,3 +75,7 @@ exports.messaging = {
 //         auth: request.auth,
 //     };
 // });
+
+// exports.hello = {
+//     sh: sayHello
+// }

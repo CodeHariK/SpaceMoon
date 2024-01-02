@@ -27,7 +27,6 @@ class User extends $pb.GeneratedMessage {
     $core.String? phoneNumber,
     $core.String? photoURL,
     Active? status,
-    $core.Iterable<$core.String>? friends,
     $0.Timestamp? created,
     $0.Timestamp? updated,
     Visible? open,
@@ -55,9 +54,6 @@ class User extends $pb.GeneratedMessage {
     if (status != null) {
       $result.status = status;
     }
-    if (friends != null) {
-      $result.friends.addAll(friends);
-    }
     if (created != null) {
       $result.created = created;
     }
@@ -84,11 +80,10 @@ class User extends $pb.GeneratedMessage {
     ..aOS(50, _omitFieldNames ? '' : 'phoneNumber', protoName: 'phoneNumber')
     ..aOS(60, _omitFieldNames ? '' : 'photoURL', protoName: 'photoURL')
     ..e<Active>(70, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: Active.OFFLINE, valueOf: Active.valueOf, enumValues: Active.values)
-    ..pPS(80, _omitFieldNames ? '' : 'friends')
-    ..aOM<$0.Timestamp>(90, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
-    ..aOM<$0.Timestamp>(100, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
-    ..e<Visible>(110, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
-    ..aOB(120, _omitFieldNames ? '' : 'admin')
+    ..aOM<$0.Timestamp>(80, _omitFieldNames ? '' : 'created', subBuilder: $0.Timestamp.create)
+    ..aOM<$0.Timestamp>(90, _omitFieldNames ? '' : 'updated', subBuilder: $0.Timestamp.create)
+    ..e<Visible>(100, _omitFieldNames ? '' : 'open', $pb.PbFieldType.OE, defaultOrMaker: Visible.CLOSE, valueOf: Visible.valueOf, enumValues: Visible.values)
+    ..aOB(110, _omitFieldNames ? '' : 'admin')
     ..hasRequiredFields = false
   ;
 
@@ -177,47 +172,108 @@ class User extends $pb.GeneratedMessage {
   void clearStatus() => clearField(70);
 
   @$pb.TagNumber(80)
-  $core.List<$core.String> get friends => $_getList(7);
+  $0.Timestamp get created => $_getN(7);
+  @$pb.TagNumber(80)
+  set created($0.Timestamp v) { setField(80, v); }
+  @$pb.TagNumber(80)
+  $core.bool hasCreated() => $_has(7);
+  @$pb.TagNumber(80)
+  void clearCreated() => clearField(80);
+  @$pb.TagNumber(80)
+  $0.Timestamp ensureCreated() => $_ensure(7);
 
   @$pb.TagNumber(90)
-  $0.Timestamp get created => $_getN(8);
+  $0.Timestamp get updated => $_getN(8);
   @$pb.TagNumber(90)
-  set created($0.Timestamp v) { setField(90, v); }
+  set updated($0.Timestamp v) { setField(90, v); }
   @$pb.TagNumber(90)
-  $core.bool hasCreated() => $_has(8);
+  $core.bool hasUpdated() => $_has(8);
   @$pb.TagNumber(90)
-  void clearCreated() => clearField(90);
+  void clearUpdated() => clearField(90);
   @$pb.TagNumber(90)
-  $0.Timestamp ensureCreated() => $_ensure(8);
+  $0.Timestamp ensureUpdated() => $_ensure(8);
 
   @$pb.TagNumber(100)
-  $0.Timestamp get updated => $_getN(9);
+  Visible get open => $_getN(9);
   @$pb.TagNumber(100)
-  set updated($0.Timestamp v) { setField(100, v); }
+  set open(Visible v) { setField(100, v); }
   @$pb.TagNumber(100)
-  $core.bool hasUpdated() => $_has(9);
+  $core.bool hasOpen() => $_has(9);
   @$pb.TagNumber(100)
-  void clearUpdated() => clearField(100);
-  @$pb.TagNumber(100)
-  $0.Timestamp ensureUpdated() => $_ensure(9);
+  void clearOpen() => clearField(100);
 
   @$pb.TagNumber(110)
-  Visible get open => $_getN(10);
+  $core.bool get admin => $_getBF(10);
   @$pb.TagNumber(110)
-  set open(Visible v) { setField(110, v); }
+  set admin($core.bool v) { $_setBool(10, v); }
   @$pb.TagNumber(110)
-  $core.bool hasOpen() => $_has(10);
+  $core.bool hasAdmin() => $_has(10);
   @$pb.TagNumber(110)
-  void clearOpen() => clearField(110);
+  void clearAdmin() => clearField(110);
+}
 
-  @$pb.TagNumber(120)
-  $core.bool get admin => $_getBF(11);
-  @$pb.TagNumber(120)
-  set admin($core.bool v) { $_setBool(11, v); }
-  @$pb.TagNumber(120)
-  $core.bool hasAdmin() => $_has(11);
-  @$pb.TagNumber(120)
-  void clearAdmin() => clearField(120);
+class UserUser extends $pb.GeneratedMessage {
+  factory UserUser({
+    $core.String? uid,
+    UserRole? role,
+  }) {
+    final $result = create();
+    if (uid != null) {
+      $result.uid = uid;
+    }
+    if (role != null) {
+      $result.role = role;
+    }
+    return $result;
+  }
+  UserUser._() : super();
+  factory UserUser.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory UserUser.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'UserUser', package: const $pb.PackageName(_omitMessageNames ? '' : 'user'), createEmptyInstance: create)
+    ..aOS(10, _omitFieldNames ? '' : 'uid')
+    ..e<UserRole>(20, _omitFieldNames ? '' : 'role', $pb.PbFieldType.OE, defaultOrMaker: UserRole.DONTKNOW, valueOf: UserRole.valueOf, enumValues: UserRole.values)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  UserUser clone() => UserUser()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  UserUser copyWith(void Function(UserUser) updates) => super.copyWith((message) => updates(message as UserUser)) as UserUser;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static UserUser create() => UserUser._();
+  UserUser createEmptyInstance() => create();
+  static $pb.PbList<UserUser> createRepeated() => $pb.PbList<UserUser>();
+  @$core.pragma('dart2js:noInline')
+  static UserUser getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<UserUser>(create);
+  static UserUser? _defaultInstance;
+
+  @$pb.TagNumber(10)
+  $core.String get uid => $_getSZ(0);
+  @$pb.TagNumber(10)
+  set uid($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(10)
+  $core.bool hasUid() => $_has(0);
+  @$pb.TagNumber(10)
+  void clearUid() => clearField(10);
+
+  @$pb.TagNumber(20)
+  UserRole get role => $_getN(1);
+  @$pb.TagNumber(20)
+  set role(UserRole v) { setField(20, v); }
+  @$pb.TagNumber(20)
+  $core.bool hasRole() => $_has(1);
+  @$pb.TagNumber(20)
+  void clearRole() => clearField(20);
 }
 
 class Messaging extends $pb.GeneratedMessage {

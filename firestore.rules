@@ -12,7 +12,6 @@ service cloud.firestore {
       allow write: if false;
     }
 
-
     match /users/{userId} {
       allow read: if request.auth.uid != null;
       allow write: if request.auth.uid != null && request.auth.uid == userId;
@@ -69,6 +68,10 @@ service cloud.firestore {
       allow read: if roomUserIsAuthenticated(roomId);
       allow write: if resource.data.user == request.auth.uid;
       allow delete: if resource.data.user == request.auth.uid || roomUserIsAdminOrMod(roomId);
+    }
+
+    match /userusers/{uid}{
+      allow read, write: if (uid.split('_')[0] == request.auth.uid || uid.split('_')[1] == request.auth.uid);
     }
   }
 }

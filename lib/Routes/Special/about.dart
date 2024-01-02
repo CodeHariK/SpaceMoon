@@ -174,7 +174,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
 
                       const SocialButtons(),
 
-                      if (widget.onboarded == null)
+                      if (widget.onboarded == null && Device.isWeb)
                         FutureBuilder(
                           future: FirebaseFirestore.instance.doc('Spacemoon/appinfo').get(),
                           builder: (context, snapshot) {

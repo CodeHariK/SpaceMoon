@@ -23,7 +23,6 @@ export const onUserCreate = functions
                     created: new Date(),
                     updated: new Date(),
                     status: Active.ONLINE,
-                    friends: [],
                     admin: false,
                 })) as Map<string, any>
                 , { merge: true });

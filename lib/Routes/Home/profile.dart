@@ -14,6 +14,7 @@ import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
+import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -39,6 +40,7 @@ class ProfileRoute extends GoRouteData {
       state,
       ProfilePage(
         searchuser: $extra,
+        showAppbar: false,
       ),
     );
   }
@@ -48,16 +50,24 @@ class ProfilePage extends ConsumerWidget {
   const ProfilePage({
     super.key,
     this.searchuser,
+    required this.showAppbar,
   });
 
   final User? searchuser;
+  final bool showAppbar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = searchuser ?? ref.watch(currentUserDataProvider).value;
 
+    final currentRoomUser = ref.watch(currentUserDataProvider).value;
+
+    final useruser = user?.uid != null && currentRoomUser?.uid != null && currentRoomUser?.uid != user?.uid
+        ? ref.watch(getUserUserProvider(next: user!.uid, me: currentRoomUser!.uid))
+        : null;
+
     return Scaffold(
-      appBar: searchuser != null ? AppBar() : null,
+      appBar: showAppbar ? AppBar() : null,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
@@ -184,6 +194,35 @@ class ProfilePage extends ConsumerWidget {
                       contentPadding: EdgeInsets.zero,
                       title: Text('Phone : ${user?.phoneNumber}', style: context.ts),
                     ),
+
+                  //
+                  const SizedBox(height: 5),
+                  if (currentRoomUser?.uid != null && user?.uid != null && currentRoomUser?.uid != user?.uid)
+                    DropdownButtonFormField(
+                      decoration: const InputDecoration(label: Text('Status')),
+                      items: const [
+                        DropdownMenuItem(
+                          value: UserRole.FRIEND,
+                          child: Text('Friend'),
+                        ),
+                        DropdownMenuItem(
+                          value: UserRole.BLOCKED,
+                          child: Text('Blocked'),
+                        ),
+                        DropdownMenuItem(
+                          value: UserRole.DONTKNOW,
+                          child: Text('Dont Know'),
+                        ),
+                      ],
+                      value: useruser?.value?.role ?? UserRole.DONTKNOW,
+                      onChanged: (value) async {
+                        if (value != null) {
+                          await blockUser(next: user!.uid, me: currentRoomUser!.uid, role: value);
+                        }
+                      },
+                    ),
+
+                  const SizedBox(height: 5),
                   // ListTile(
                   //   title: Text('Visibility : ${user?.open.name}', style: context.tm),
                   // ),
@@ -244,6 +283,8 @@ class ProfilePage extends ConsumerWidget {
                       title: const Text('Sign out'),
                     ),
                   const SizedBox(height: 5),
+
+                  //
                   if (searchuser == null)
                     ListTile(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

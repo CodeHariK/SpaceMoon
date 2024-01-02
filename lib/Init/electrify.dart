@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:device_preview/device_preview.dart';
 import 'package:feedback/feedback.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -207,14 +208,17 @@ class SpaceMoonHome extends ConsumerWidget {
           builder: (context, child) {
             initializeDateFormatting();
 
-            // if (kIsWeb) {
-            //   return Center(
-            //     child: ConstrainedBox(
-            //       constraints: const BoxConstraints(maxWidth: 1200),
-            //       child: renderChild,
-            //     ),
-            //   );
-            // }
+            if (kIsWeb) {
+              return DevicePreview(
+                builder: (context) {
+                  return ElectricWrap(
+                    theme: globalAppTheme.theme,
+                    brightness: brightness,
+                    child: child,
+                  );
+                },
+              );
+            }
 
             return ElectricWrap(
               theme: globalAppTheme.theme,

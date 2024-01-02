@@ -34,6 +34,23 @@ class Role extends $pb.ProtobufEnum {
   const Role._($core.int v, $core.String n) : super(v, n);
 }
 
+class UserRole extends $pb.ProtobufEnum {
+  static const UserRole DONTKNOW = UserRole._(0, _omitEnumNames ? '' : 'DONTKNOW');
+  static const UserRole BLOCKED = UserRole._(10, _omitEnumNames ? '' : 'BLOCKED');
+  static const UserRole FRIEND = UserRole._(20, _omitEnumNames ? '' : 'FRIEND');
+
+  static const $core.List<UserRole> values = <UserRole> [
+    DONTKNOW,
+    BLOCKED,
+    FRIEND,
+  ];
+
+  static final $core.Map<$core.int, UserRole> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static UserRole? valueOf($core.int value) => _byValue[value];
+
+  const UserRole._($core.int v, $core.String n) : super(v, n);
+}
+
 class MediaType extends $pb.ProtobufEnum {
   static const MediaType TEXT = MediaType._(0, _omitEnumNames ? '' : 'TEXT');
   static const MediaType FILE = MediaType._(10, _omitEnumNames ? '' : 'FILE');
@@ -94,6 +111,7 @@ class Const extends $pb.ProtobufEnum {
   static const Const rooms = Const._(10, _omitEnumNames ? '' : 'rooms');
   static const Const tweets = Const._(20, _omitEnumNames ? '' : 'tweets');
   static const Const roomusers = Const._(30, _omitEnumNames ? '' : 'roomusers');
+  static const Const userusers = Const._(35, _omitEnumNames ? '' : 'userusers');
   static const Const uid = Const._(40, _omitEnumNames ? '' : 'uid');
   static const Const nick = Const._(45, _omitEnumNames ? '' : 'nick');
   static const Const role = Const._(50, _omitEnumNames ? '' : 'role');
@@ -120,6 +138,7 @@ class Const extends $pb.ProtobufEnum {
     rooms,
     tweets,
     roomusers,
+    userusers,
     uid,
     nick,
     role,

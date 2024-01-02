@@ -22,9 +22,10 @@ class SpaceMoon {
   static bool debugUi = false;
   static bool debugMode = kDebugMode && false;
   static bool useEmulator = kDebugMode && false;
-  static String computerIp = '192.168.1.4';
+  static String computerIp = '10.0.2.2';
+  // static String computerIp = '192.168.1.4';
 
-  static String build = 'Build : 0.0.1+6';
+  static String build = 'Build : 0.0.1+9';
 
   static HttpsCallable fn(String function) => useEmulator
       ? FirebaseFunctions.instance.httpsCallable(function)
