@@ -158,10 +158,6 @@ class TweetBox extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          IconButton(
-            onPressed: () => tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
-            icon: const Icon(Icons.more),
-          ),
           Semantics(
             label: 'Tweet',
             child: InkWell(
@@ -177,6 +173,10 @@ class TweetBox extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  IconButton(
+                    onPressed: () => tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
+                    icon: const Icon(Icons.more_horiz),
+                  ),
                   if (tweetuser != null)
                     CircleAvatar(
                       child: FutureSpaceBuilder(
@@ -229,29 +229,24 @@ class TweetBox extends ConsumerWidget {
 
 tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser roomuser, RoomUser? tweetroomuser,
     UserUser? useruser) async {
-  await marioActionSheet(
+  marioSheet(
     context: context,
-    title: 'Actions',
-    actions: tweetactions(context, ref, tweet, roomuser, tweetroomuser, useruser),
-  );
-}
-
-List<MAction> tweetactions(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser roomuser, RoomUser? tweetroomuser,
-        UserUser? useruser) =>
-    [
-      MAction(
-        text: ((tweetroomuser != null && roomuser.role.value > tweetroomuser.role.value) || roomuser.user == tweet.user)
-            ? 'Delete this tweet'
-            : 'Report this tweet',
-        destructive: true,
-        fn: (context) async {
+    children: (context) => [
+      ListTile(
+        title:
+            ((tweetroomuser != null && roomuser.role.value > tweetroomuser.role.value) || roomuser.user == tweet.user)
+                ? const Text('Delete this tweet')
+                : const Text('Report this tweet'),
+        leading: const Icon(Icons.delete),
+        onTap: () async {
           context.nav.pop(await deleteTweet(context, ref, tweet, false));
         },
       ),
       if (tweet.user != roomuser.user && useruser?.role != UserRole.BLOCKED)
-        MAction(
-          text: 'Block User',
-          fn: (context) async {
+        ListTile(
+          title: const Text('Block User'),
+          leading: const Icon(Icons.block),
+          onTap: () async {
             final res = await showYesNo(context: context, title: 'Block User');
             if (res) {
               await blockUser(me: roomuser.user, next: tweet.user, role: UserRole.BLOCKED);
@@ -261,7 +256,9 @@ List<MAction> tweetactions(BuildContext context, WidgetRef ref, Tweet tweet, Roo
             }
           },
         ),
-    ];
+    ],
+  );
+}
 
 Future<bool> deleteTweet(BuildContext context, WidgetRef ref, Tweet tweet, bool report) async {
   final res = await showYesNo(

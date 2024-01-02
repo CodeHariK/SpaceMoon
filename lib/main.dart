@@ -25,7 +25,7 @@ class SpaceMoon {
   static String computerIp = '10.0.2.2';
   // static String computerIp = '192.168.1.4';
 
-  static String build = 'Build : 0.0.1+9';
+  static String build = 'Build : 0.0.1+10';
 
   static HttpsCallable fn(String function) => useEmulator
       ? FirebaseFunctions.instance.httpsCallable(function)

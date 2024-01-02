@@ -114,6 +114,8 @@ adb start-server
 
 adb devices
 
+adb reboot
+
 # Connect wirelessly with a device after an initial USB connection
 adb tcpip 5555 && adb connect device_ip_address:5555
 

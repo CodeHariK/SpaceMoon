@@ -225,7 +225,7 @@ class AllChatPage extends ConsumerWidget {
                     );
                   },
                   error: (error, stackTrace) {
-                    return SliverToBoxAdapter(child: Text(error.toString()));
+                    return SliverToBoxAdapter(child: SelectableText(error.toString()));
                   },
                   loading: () => const SliverToBoxAdapter(child: SizedBox()),
                 ),

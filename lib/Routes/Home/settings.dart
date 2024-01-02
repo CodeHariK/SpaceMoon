@@ -15,8 +15,6 @@ import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/main.dart';
-// ignore: depend_on_referenced_packages
-import 'package:url_launcher/url_launcher.dart';
 
 @immutable
 class SettingsRoute extends GoRouteData {
@@ -188,37 +186,10 @@ class SettingsPage extends ConsumerWidget {
                     title: Text('Attribution', style: context.tm),
                   ),
                   CupertinoListTile.notched(
-                    onTap: () async {
-                      const email = 'dev.shark.run@gmail.com';
-                      final Uri emailLaunchUri = Uri(
-                        scheme: 'mailto',
-                        path: email,
-                        queryParameters: {
-                          'subject': 'Contact Us Inquiry',
-                          'body': 'Hello, I have a question...',
-                        },
-                      );
-
-                      if (await canLaunchUrl(emailLaunchUri)) {
-                        await launchUrl(emailLaunchUri);
-                      } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not launch email'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    leading: const Icon(Icons.chevron_right_rounded),
-                    title: Text('Contact Us', style: context.tm),
-                  ),
-                  CupertinoListTile.notched(
                     onTap: () {
                       safeLaunchUrl('https://spacemoonfire.web.app/privacy/support.html');
                     },
-                    title: Text('Support Page', style: context.tm),
+                    title: Text('Contact Us', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
                   ),
                   Padding(
