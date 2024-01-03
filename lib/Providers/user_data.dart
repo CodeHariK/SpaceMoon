@@ -74,3 +74,11 @@ Future<void> callUserUpdate(User user) async {
     debugPrint('callUserUpdate Failed');
   }
 }
+
+Future<void> reportUser(User user, Set<String> reason) async {
+  try {
+    await SpaceMoon.fn('user-reportUser').call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
+  } catch (e) {
+    debugPrint('reportRoom Failed $e');
+  }
+}

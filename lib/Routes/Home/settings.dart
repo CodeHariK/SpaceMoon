@@ -180,24 +180,24 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      context.cPush(const AttibutionPage());
-                    },
-                    leading: const Icon(Icons.chevron_right_rounded),
-                    title: Text('Attribution', style: context.tm),
-                  ),
-                  CupertinoListTile.notched(
-                    onTap: () {
                       safeLaunchUrl('https://spacemoonfire.web.app/privacy/support.html');
                     },
                     title: Text('Contact Us', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      'This is just a demo application, do not expect your data to preserved for long time. It can be wiped any moment.',
-                      style: context.tm.c(Colors.red),
-                    ),
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      safeLaunchUrl('https://spacemoonfire.web.app/privacy/eula.html');
+                    },
+                    title: Text('End-User License', style: context.tm),
+                    leading: const Icon(Icons.chevron_right_rounded),
+                  ),
+                  CupertinoListTile.notched(
+                    onTap: () {
+                      context.cPush(const AttibutionPage());
+                    },
+                    leading: const Icon(Icons.chevron_right_rounded),
+                    title: Text('Attribution', style: context.tm),
                   ),
                   if (SpaceMoon.debugUi)
                     CupertinoListTile.notched(

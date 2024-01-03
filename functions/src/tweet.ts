@@ -122,10 +122,7 @@ export const deleteTweet = onCall({
         throw new HttpsError('invalid-argument', 'Not part of room')
     }
 
-    //
-    // if (tweet.user === userId || !tweetUser || u.role! > tweetUser!.role!) {
-    //
-    if (true) {
+    if (tweet.user === userId || !tweetUser || u.role! > tweetUser!.role!) {
         await admin.firestore().doc(tweet.path!).delete();
     } else {
         throw new HttpsError('invalid-argument', 'Not enough privilege')
@@ -143,6 +140,39 @@ export const onTweetDeleted = onDocumentDeleted({
             prefix: path
         });
     });
+
+export const reportTweet = onCall({
+    enforceAppCheck: true,
+    region: 'asia-south1',
+}, async (request) => {
+    let userId = request.auth!.uid;
+
+    let tweet = Tweet.fromJSON(request.data.tweet)
+
+    console.log(request.data.reason)
+
+    if (!tweet.room) {
+        throw new HttpsError('invalid-argument', 'Invalid Room ID')
+    }
+    if (!tweet.uid) {
+        throw new HttpsError('invalid-argument', 'Invalid Tweet ID')
+    }
+
+    let u = await getRoomUserById(userId, tweet.room)
+    let fetchTweet = await getTweetById(tweet.uid, tweet.room);
+
+    if (!fetchTweet) {
+        throw new HttpsError('invalid-argument', 'Invalid Tweet')
+    }
+
+    let tweetUser = await getRoomUserById(fetchTweet.user!, tweet.room)
+
+    if (!u) {
+        throw new HttpsError('invalid-argument', 'Not part of room')
+    }
+
+    await admin.firestore().doc(tweet.path!).delete();
+});
 
 export const getTweetById = async (tweetId: string, roomId: string) => {
     const tweetQuery = admin.firestore()

@@ -16,6 +16,7 @@ import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
+import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
@@ -99,6 +100,50 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                 room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim(),
               ),
               actions: [
+                MarioChoice<String>(
+                  multi: true,
+                  title: Text(
+                    'Reasons for reporting this room?',
+                    style: context.tm,
+                  ),
+                  choices: const {'Contains offensive media', 'Promotes violence', 'Is not appropriate for community'},
+                  child: const Icon(
+                    Icons.report,
+                    color: Colors.red,
+                    semanticLabel: 'Report this chat',
+                  ),
+                  actions: (marioContext, selection) => Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      OutlinedButton(
+                        child: const Text('CANCEL'),
+                        onPressed: () {
+                          marioContext.nav.pop();
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: marioContext.theme.csErrCon,
+                          foregroundColor: marioContext.theme.csOnErrCon,
+                        ),
+                        child: const Text('Report'),
+                        onPressed: () async {
+                          if (selection.isNotEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text('Your report is under review, action will be taken within 12 hrs.'),
+                            ));
+                            marioContext.nav.pop();
+                            HomeRoute().go(context);
+                            if (meInRoom != null) {
+                              await ref.read(currentRoomProvider.notifier).reportRoom(meInRoom, selection);
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 if (meInRoom?.isUserOrAdmin == true)
                   IconButton(
                     onPressed: () {
@@ -462,6 +507,12 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                         return ListTile(
                           title: Text(user?.displayName ?? roomUser.user),
                           subtitle: Text(roomUser.role.name),
+                          onTap: () {
+                            context.rSlidePush(ProfilePage(
+                              searchuser: user,
+                              showAppbar: true,
+                            ));
+                          },
                           leading: (user == null)
                               ? Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle)
                               : CircleAvatar(

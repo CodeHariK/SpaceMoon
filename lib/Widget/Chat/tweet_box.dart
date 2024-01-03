@@ -42,6 +42,10 @@ class TweetBox extends ConsumerWidget {
     final tweetroomuser = ref.watch(GetRoomUserProvider(roomId: tweet.room, userId: tweet.user)).value;
     final useruser = ref.watch(getUserUserProvider(me: roomuser.user, next: tweet.user));
 
+    if (useruser.value?.role == UserRole.BLOCKED || useruser.isLoading) {
+      return const SizedBox();
+    }
+
     final box = Material(
       color: Colors.transparent,
       child: Container(
@@ -64,90 +68,83 @@ class TweetBox extends ConsumerWidget {
               ),
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-          child: useruser.isLoading
-              ? const SizedBox()
-              : (useruser.value?.role == UserRole.BLOCKED)
-                  ? Icon(
-                      Icons.block,
-                      color: context.theme.csErr,
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (tweet.mediaType == MediaType.QR)
-                          SizedBox(
-                            height: (250, 500).c,
-                            width: (250, 500).c,
-                            child: QrBox(
-                              codeQrtext: tweet.text,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (tweet.mediaType == MediaType.QR)
+                SizedBox(
+                  height: (250, 500).c,
+                  width: (250, 500).c,
+                  child: QrBox(
+                    codeQrtext: tweet.text,
+                  ),
+                ),
+
+              if (tweet.mediaType == MediaType.GALLERY && tweet.gallery.isNotEmpty) GalleryBox(tweet: tweet),
+
+              if (tweet.mediaType == MediaType.POST) AppFlowyBox(tweet: tweet),
+
+              if (isWebsite(tweet.text))
+                SizedBox(
+                  width: (250, 500).c,
+                  child: LinkPreviewer(url: tweet.text),
+                ),
+
+              // if (isHero)
+              //   TextFormField(
+              //     initialValue: tweet.text,
+              //     minLines: 1,
+              //     maxLines: 10,
+              //     decoration: const InputDecoration(
+              //       hintText: 'Type...',
+              //       border: InputBorder.none,
+              //       enabledBorder: InputBorder.none,
+              //       focusedBorder: InputBorder.none,
+              //     ),
+              //   ),
+
+              if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
+                  !isURL(tweet.text) /*&& !isHero*/)
+                Semantics(
+                  label: tweet.text,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: SelectableLinkify(
+                      onOpen: (link) async {
+                        if (!await safeLaunchUrl(link.url)) {
+                          throw Exception('Could not launch ${link.url}');
+                        }
+                      },
+                      contextMenuBuilder: (context, editableTextState) {
+                        return AdaptiveTextSelectionToolbar.buttonItems(
+                          anchors: editableTextState.contextMenuAnchors,
+                          buttonItems: <ContextMenuButtonItem>[
+                            ContextMenuButtonItem(
+                              onPressed: () {
+                                editableTextState.copySelection(SelectionChangedCause.toolbar);
+                              },
+                              type: ContextMenuButtonType.copy,
                             ),
-                          ),
-
-                        if (tweet.mediaType == MediaType.GALLERY && tweet.gallery.isNotEmpty) GalleryBox(tweet: tweet),
-
-                        if (tweet.mediaType == MediaType.POST) AppFlowyBox(tweet: tweet),
-
-                        if (isWebsite(tweet.text))
-                          SizedBox(
-                            width: (250, 500).c,
-                            child: LinkPreviewer(url: tweet.text),
-                          ),
-
-                        // if (isHero)
-                        //   TextFormField(
-                        //     initialValue: tweet.text,
-                        //     minLines: 1,
-                        //     maxLines: 10,
-                        //     decoration: const InputDecoration(
-                        //       hintText: 'Type...',
-                        //       border: InputBorder.none,
-                        //       enabledBorder: InputBorder.none,
-                        //       focusedBorder: InputBorder.none,
-                        //     ),
-                        //   ),
-
-                        if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
-                            !isURL(tweet.text) /*&& !isHero*/)
-                          Semantics(
-                            label: tweet.text,
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: SelectableLinkify(
-                                onOpen: (link) async {
-                                  if (!await safeLaunchUrl(link.url)) {
-                                    throw Exception('Could not launch ${link.url}');
-                                  }
-                                },
-                                contextMenuBuilder: (context, editableTextState) {
-                                  return AdaptiveTextSelectionToolbar.buttonItems(
-                                    anchors: editableTextState.contextMenuAnchors,
-                                    buttonItems: <ContextMenuButtonItem>[
-                                      ContextMenuButtonItem(
-                                        onPressed: () {
-                                          editableTextState.copySelection(SelectionChangedCause.toolbar);
-                                        },
-                                        type: ContextMenuButtonType.copy,
-                                      ),
-                                      ContextMenuButtonItem(
-                                        onPressed: () {
-                                          editableTextState.selectAll(SelectionChangedCause.toolbar);
-                                        },
-                                        type: ContextMenuButtonType.selectAll,
-                                      ),
-                                    ],
-                                  );
-                                },
-                                text: tweet.mediaType == MediaType.QR
-                                    ? tweet.text.split('||').lastOrNull ?? tweet.text
-                                    : tweet.text,
-                                style: context.bm,
-                                linkStyle: context.bm.c(Colors.blue),
-                              ),
+                            ContextMenuButtonItem(
+                              onPressed: () {
+                                editableTextState.selectAll(SelectionChangedCause.toolbar);
+                              },
+                              type: ContextMenuButtonType.selectAll,
                             ),
-                          ),
-                      ],
+                          ],
+                        );
+                      },
+                      text: tweet.mediaType == MediaType.QR
+                          ? tweet.text.split('||').lastOrNull ?? tweet.text
+                          : tweet.text,
+                      style: context.bm,
+                      linkStyle: context.bm.c(Colors.blue),
                     ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -175,7 +172,10 @@ class TweetBox extends ConsumerWidget {
                 children: [
                   IconButton(
                     onPressed: () => tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
-                    icon: const Icon(Icons.more_horiz),
+                    icon: const Icon(
+                      Icons.more_horiz,
+                      semanticLabel: 'More options',
+                    ),
                   ),
                   if (tweetuser != null)
                     CircleAvatar(
@@ -232,24 +232,74 @@ tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser room
   marioSheet(
     context: context,
     children: (context) => [
-      ListTile(
-        title:
-            ((tweetroomuser != null && roomuser.role.value > tweetroomuser.role.value) || roomuser.user == tweet.user)
-                ? const Text('Delete this tweet')
-                : const Text('Report this tweet'),
-        leading: const Icon(Icons.delete),
-        onTap: () async {
-          context.nav.pop(await deleteTweet(context, ref, tweet, false));
+      MarioChoice<String>(
+        multi: true,
+        title: Text(
+          'Reasons for reporting this user?',
+          style: context.tm,
+        ),
+        choices: const {
+          'Is offensive, or harrasement, or stalker',
+          'Promotes violence',
+          'Is not appropriate for community'
         },
+        child: ListTile(
+          tileColor: context.theme.csErrCon,
+          titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+          iconColor: context.theme.csOnErrCon,
+          leading: Icon(
+            (roomuser.user == tweet.user) ? Icons.delete : Icons.report,
+            semanticLabel: 'Report this user',
+          ),
+          title: (roomuser.user == tweet.user) ? const Text('Delete this tweet') : const Text('Report this tweet'),
+        ),
+        actions: (marioContext, selection) => Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            OutlinedButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                marioContext.nav.pop();
+              },
+            ),
+            const SizedBox(width: 10),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: marioContext.theme.csErrCon,
+                foregroundColor: marioContext.theme.csOnErrCon,
+              ),
+              child: const Text('Report'),
+              onPressed: () async {
+                if (selection.isNotEmpty) {
+                  marioContext.nav.pop();
+
+                  await deleteTweet(context, ref, tweet, (roomuser.user != tweet.user), selection);
+                  if (context.mounted) {
+                    context.nav.pop();
+                  }
+                }
+              },
+            ),
+          ],
+        ),
       ),
+      const SizedBox(height: 5),
       if (tweet.user != roomuser.user && useruser?.role != UserRole.BLOCKED)
         ListTile(
           title: const Text('Block User'),
           leading: const Icon(Icons.block),
+          tileColor: context.theme.csErrCon,
+          titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+          iconColor: context.theme.csOnErrCon,
           onTap: () async {
-            final res = await showYesNo(context: context, title: 'Block User');
+            final res = await showYesNo(context: context, title: 'Block this user');
             if (res) {
               await blockUser(me: roomuser.user, next: tweet.user, role: UserRole.BLOCKED);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('You have succesfully blocked this user, now they won\'t bother you.'),
+                ));
+              }
               if (context.mounted) {
                 context.nav.pop();
               }
@@ -260,16 +310,28 @@ tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser room
   );
 }
 
-Future<bool> deleteTweet(BuildContext context, WidgetRef ref, Tweet tweet, bool report) async {
-  final res = await showYesNo(
-    context: context,
-    title: report ? 'Report : contains offensive or sensitive content' : 'Delete Tweet',
-  );
+Future<bool> deleteTweet(BuildContext context, WidgetRef ref, Tweet tweet, bool report, Set<String> reason) async {
+  final res = report
+      ? true
+      : await showYesNo(
+          context: context,
+          title: 'Delete Tweet',
+        );
 
   if (res) {
-    await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+    if (report) {
+      await ref.read(tweetsProvider.notifier).reportTweet(tweet: tweet, reason: reason);
+    } else {
+      await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
+    }
     if (report && context.mounted) {
-      marioBar(context: context, content: report ? 'Tweet Reported' : 'Tweet Deleted');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          report
+              ? 'Tweet has been reported and is under evaluation of moderators. Action will be taken within 12 hrs. Thank you for reporting.'
+              : 'Tweet Deleted',
+        ),
+      ));
     }
   }
   return res;

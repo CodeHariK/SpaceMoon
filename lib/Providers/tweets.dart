@@ -77,6 +77,14 @@ class Tweets extends _$Tweets {
       debugPrint('deleteTweet Failed');
     }
   }
+
+  FutureOr<void> reportTweet({required Tweet tweet, required Set<String> reason}) async {
+    try {
+      await SpaceMoon.fn('tweet-reportTweet').call({'tweet': tweet.toMap(), 'reason': reason.toList()});
+    } catch (e) {
+      debugPrint('reportTweet Failed$e');
+    }
+  }
 }
 
 @riverpod

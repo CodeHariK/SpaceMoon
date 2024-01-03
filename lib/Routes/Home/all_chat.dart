@@ -128,10 +128,13 @@ class AllChatPage extends ConsumerWidget {
                       return SliverToBoxAdapter(
                         child: Animate(
                           effects: const [FadeEffect()],
-                          child: Lottie.asset(
-                            Asset.lEmpty,
-                            reverse: false,
-                            repeat: true,
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 500, maxWidth: 500),
+                            child: Lottie.asset(
+                              Asset.lEmpty,
+                              reverse: false,
+                              repeat: true,
+                            ),
                           ),
                         ),
                       );

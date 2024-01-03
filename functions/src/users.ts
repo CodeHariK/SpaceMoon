@@ -65,6 +65,25 @@ export const callUserUpdate = onCall({
     }
 });
 
+export const reportUser = onCall({
+    enforceAppCheck: true,
+    region: 'asia-south1',
+}, async (request) => {
+    let userId = request.auth!.uid;
+
+    let user = User.fromJSON(request.data)
+
+    console.log(request.data.reason)
+
+    // if (user.uid) {
+    //     await admin.firestore().collection(constToJSON(Const.users))
+    //         .doc(user.uid).delete()
+    //         .catch((error) => {
+    //             console.error('Error deleteAuthUser'/*, error*/);
+    //         });
+    // }
+});
+
 export const deleteAuthUser = functions
     .region('asia-south1')
     .auth.user().onDelete(async (user) => {

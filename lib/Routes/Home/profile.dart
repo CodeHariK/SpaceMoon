@@ -218,6 +218,13 @@ class ProfilePage extends ConsumerWidget {
                       onChanged: (value) async {
                         if (value != null) {
                           await blockUser(next: user!.uid, me: currentRoomUser!.uid, role: value);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(value == UserRole.BLOCKED
+                                  ? 'You have succesfully blocked this user, now they won\'t bother you.'
+                                  : 'Status changed'),
+                            ));
+                          }
                         }
                       },
                     ),
@@ -246,6 +253,63 @@ class ProfilePage extends ConsumerWidget {
                       style: context.ts,
                     ),
                   ),
+                  if (currentRoomUser != user)
+                    MarioChoice<String>(
+                      multi: true,
+                      title: Text(
+                        'Reasons for reporting this user?',
+                        style: context.tm,
+                      ),
+                      choices: const {
+                        'Is offensive, or harrasement, or stalker',
+                        'Promotes violence',
+                        'Is not appropriate for community'
+                      },
+                      child: ListTile(
+                        tileColor: context.theme.csErrCon,
+                        titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+                        iconColor: context.theme.csOnErrCon,
+                        leading: const Icon(
+                          Icons.report,
+                          semanticLabel: 'Report this user',
+                        ),
+                        title: const Text('Report this user'),
+                      ),
+                      actions: (marioContext, selection) => Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          OutlinedButton(
+                            child: const Text('CANCEL'),
+                            onPressed: () {
+                              marioContext.nav.pop();
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: marioContext.theme.csErrCon,
+                              foregroundColor: marioContext.theme.csOnErrCon,
+                            ),
+                            child: const Text('Report'),
+                            onPressed: () async {
+                              if (selection.isNotEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'Your report is under review. we will take action within 12 hours. Thank you'),
+                                ));
+                                marioContext.nav.pop();
+                                context.pop();
+                                if (user != null) {
+                                  await reportUser(user, selection);
+                                }
+                                await blockUser(next: user!.uid, me: currentRoomUser!.uid, role: UserRole.BLOCKED);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
                   if (searchuser != null && searchuser != user)
                     Consumer(
                       builder: (context, ref, child) {

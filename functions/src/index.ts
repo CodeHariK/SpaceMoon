@@ -26,6 +26,7 @@ exports.user = {
     callUserUpdate: users.callUserUpdate,
     deleteAuthUser: users.deleteAuthUser,
     deleteUser: users.deleteUser,
+    reportUser: users.reportUser,
 }
 
 exports.room = {
@@ -33,6 +34,7 @@ exports.room = {
     updateRoomInfo: room.updateRoomInfo,
     deleteRoom: room.deleteRoom,
     onRoomDeleted: room.onRoomDeleted,
+    reportRoom: room.reportRoom,
 }
 
 exports.roomuser = {
@@ -47,6 +49,7 @@ exports.tweet = {
     updateTweet: tweet.updateTweet,
     onTweetDeleted: tweet.onTweetDeleted,
     deleteTweet: tweet.deleteTweet,
+    reportTweet: tweet.reportTweet,
 }
 
 export const generateThumbnail = image.generateThumbnail;

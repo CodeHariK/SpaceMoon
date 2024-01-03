@@ -173,6 +173,26 @@ export const updateRoomInfo = onCall({
     }
 });
 
+export const reportRoom = onCall({
+    enforceAppCheck: true,
+    region: 'asia-south1',
+}, async (request) => {
+    let adminId = request.auth!.uid;
+    let roomUser = RoomUser.fromJSON(request.data)
+
+    console.log(request.data.reason);
+
+    if (!roomUser.room) {
+        throw new HttpsError('invalid-argument', 'You must provide a RoomUser to remove.');
+    }
+
+    await admin.firestore().collection(constToJSON(Const.rooms))
+        .doc(roomUser.room).delete();
+
+    return { message: 'Room Deleted.' };
+});
+
+
 async function roomNickExist(nick: string) {
     if (nick != null) {
         let nickCount = await admin.firestore().collection(constToJSON(Const.rooms))
