@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/animated_overlay.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
+import 'package:spacemoon/Widget/TextEditor/text_editor.dart';
 
-class AppFlowyBox extends ConsumerWidget {
-  const AppFlowyBox({
+class TextEditorBox extends ConsumerWidget {
+  const TextEditorBox({
     super.key,
     required this.tweet,
   });
@@ -21,13 +21,13 @@ class AppFlowyBox extends ConsumerWidget {
     final curuser = ref.watch(currentUserProvider).value;
 
     return Semantics(
-      label: 'AppFlowy Editor',
+      label: 'Editor',
       child: InkWell(
         onTap: () async {
           await context.cPush(
             Hero(
-              tag: '${tweet.hashCode} Appflowy',
-              child: AppFlowy(
+              tag: '${tweet.hashCode} TextEditor',
+              child: TextEditor(
                 jsonData: tweet.text,
                 editable: curuser?.uid == tweet.user,
                 onPopInvoked: (pop, data) async {
@@ -45,8 +45,8 @@ class AppFlowyBox extends ConsumerWidget {
             width: (250, 600).c,
             height: (250, 600).c,
             child: Hero(
-              tag: '${tweet.hashCode} Appflowy',
-              child: AppFlowy(
+              tag: '${tweet.hashCode} TextEditor',
+              child: TextEditor(
                 key: ObjectKey(tweet),
                 jsonData: tweet.text,
                 showAppbar: false,
@@ -59,8 +59,8 @@ class AppFlowyBox extends ConsumerWidget {
   }
 }
 
-class AppFlowyActionButton extends StatelessWidget {
-  const AppFlowyActionButton({
+class TextEditorActionButton extends StatelessWidget {
+  const TextEditorActionButton({
     super.key,
     required this.ref,
   });
@@ -74,9 +74,8 @@ class AppFlowyActionButton extends StatelessWidget {
         AnimatedOverlay.hide();
         await context.cPush<String>(
           Hero(
-            tag: 'Appflowy',
-            child: AppFlowy(
-              jsonData: exampleJson,
+            tag: 'TextEditor',
+            child: TextEditor(
               onPopInvoked: (pop, data) async {
                 ref.read(tweetsProvider.notifier).sendTweet(
                       tweet: Tweet(

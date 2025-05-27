@@ -118,7 +118,7 @@ export async function tweetToTopic(tweet: Tweet) {
     let user = await getUserById(tweet.user!)
     let room = await getRoomById(tweet.room!)
     let text = tweet.text?.substring(0, 120);
-    text = text?.includes('AppFlowy') ? 'Post' : text
+    text = text?.includes('TextEditor') ? 'Post' : text
 
     admin.messaging().send(
         {

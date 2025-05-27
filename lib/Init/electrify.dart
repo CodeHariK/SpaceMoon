@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:spacemoon/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -202,7 +202,10 @@ class SpaceMoonHome extends ConsumerWidget {
           // showSemanticsDebugger: true,
           // showPerformanceOverlay: true,
 
-          supportedLocales: AppLocalizations.supportedLocales,
+          supportedLocales: [
+            ...AppLocalizations.supportedLocales,
+            ...?supportedLocales
+          ],
 
           builder: (context, child) {
             initializeDateFormatting();
@@ -232,7 +235,8 @@ class SpaceMoonHome extends ConsumerWidget {
 }
 
 class ElectricWrap extends StatelessWidget {
-  const ElectricWrap({super.key, this.child, required this.theme, required this.brightness});
+  const ElectricWrap(
+      {super.key, this.child, required this.theme, required this.brightness});
 
   final Widget? child;
   final ThemeType theme;

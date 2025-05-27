@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -11,11 +9,12 @@ import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Static/theme.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
+import 'package:spacemoon/Widget/TextEditor/text_editor_box.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 
-import 'package:moonspace/form/mario.dart';
+import 'package:moonspace/widgets/functions.dart';
+import 'package:moonspace/form/form.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
@@ -23,6 +22,7 @@ import 'package:moonspace/helper/validator/validator.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class TweetBox extends ConsumerWidget {
   const TweetBox({
@@ -39,8 +39,11 @@ class TweetBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tweetuser = ref.watch(getUserByIdProvider(tweet.user)).value;
-    final tweetroomuser = ref.watch(GetRoomUserProvider(roomId: tweet.room, userId: tweet.user)).value;
-    final useruser = ref.watch(getUserUserProvider(me: roomuser.user, next: tweet.user));
+    final tweetroomuser = ref
+        .watch(GetRoomUserProvider(roomId: tweet.room, userId: tweet.user))
+        .value;
+    final useruser =
+        ref.watch(getUserUserProvider(me: roomuser.user, next: tweet.user));
 
     if (useruser.value?.role == UserRole.BLOCKED || useruser.isLoading) {
       return const SizedBox();
@@ -61,8 +64,10 @@ class TweetBox extends ConsumerWidget {
                 // color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(80) : Color.fromARGB(66, 238, 238, 238),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
-                  bottomLeft: Radius.circular(((roomuser.user == tweet.user) ? 20 : 0)),
-                  bottomRight: Radius.circular((roomuser.user == tweet.user) ? 0 : 20),
+                  bottomLeft:
+                      Radius.circular(((roomuser.user == tweet.user) ? 20 : 0)),
+                  bottomRight:
+                      Radius.circular((roomuser.user == tweet.user) ? 0 : 20),
                   topRight: const Radius.circular(20),
                 ),
               ),
@@ -81,9 +86,12 @@ class TweetBox extends ConsumerWidget {
                   ),
                 ),
 
-              if (tweet.mediaType == MediaType.GALLERY && tweet.gallery.isNotEmpty) GalleryBox(tweet: tweet),
+              if (tweet.mediaType == MediaType.GALLERY &&
+                  tweet.gallery.isNotEmpty)
+                GalleryBox(tweet: tweet),
 
-              if (tweet.mediaType == MediaType.POST) AppFlowyBox(tweet: tweet),
+              if (tweet.mediaType == MediaType.POST)
+                TextEditorBox(tweet: tweet),
 
               if (isWebsite(tweet.text))
                 SizedBox(
@@ -104,7 +112,8 @@ class TweetBox extends ConsumerWidget {
               //     ),
               //   ),
 
-              if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
+              if ((tweet.mediaType == MediaType.TEXT ||
+                      tweet.mediaType == MediaType.QR) &&
                   !isURL(tweet.text) /*&& !isHero*/)
                 Semantics(
                   label: tweet.text,
@@ -112,7 +121,7 @@ class TweetBox extends ConsumerWidget {
                     padding: const EdgeInsets.all(4.0),
                     child: SelectableLinkify(
                       onOpen: (link) async {
-                        if (!await safeLaunchUrl(link.url)) {
+                        if (!await canLaunchUrlString(link.url)) {
                           throw Exception('Could not launch ${link.url}');
                         }
                       },
@@ -122,13 +131,15 @@ class TweetBox extends ConsumerWidget {
                           buttonItems: <ContextMenuButtonItem>[
                             ContextMenuButtonItem(
                               onPressed: () {
-                                editableTextState.copySelection(SelectionChangedCause.toolbar);
+                                editableTextState.copySelection(
+                                    SelectionChangedCause.toolbar);
                               },
                               type: ContextMenuButtonType.copy,
                             ),
                             ContextMenuButtonItem(
                               onPressed: () {
-                                editableTextState.selectAll(SelectionChangedCause.toolbar);
+                                editableTextState
+                                    .selectAll(SelectionChangedCause.toolbar);
                               },
                               type: ContextMenuButtonType.selectAll,
                             ),
@@ -164,14 +175,17 @@ class TweetBox extends ConsumerWidget {
                   showAppbar: true,
                 ));
               },
-              onLongPress: (useruser.isLoading || useruser.value?.role == UserRole.BLOCKED)
+              onLongPress: (useruser.isLoading ||
+                      useruser.value?.role == UserRole.BLOCKED)
                   ? null
-                  : () => tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
+                  : () => tweetActionSheet(context, ref, tweet, roomuser,
+                      tweetroomuser, useruser.value),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    onPressed: () => tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
+                    onPressed: () => tweetActionSheet(context, ref, tweet,
+                        roomuser, tweetroomuser, useruser.value),
                     icon: const Icon(
                       Icons.more_horiz,
                       semanticLabel: 'More options',
@@ -214,7 +228,8 @@ class TweetBox extends ConsumerWidget {
                 child: box,
               )
         : GestureDetector(
-            onLongPress: () => tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
+            onLongPress: () => tweetActionSheet(
+                context, ref, tweet, roomuser, tweetroomuser, useruser.value),
             // onTap: () {
             //   TweetRoute(
             //     chatId: tweet.room,
@@ -227,10 +242,9 @@ class TweetBox extends ConsumerWidget {
   }
 }
 
-tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser roomuser, RoomUser? tweetroomuser,
-    UserUser? useruser) async {
-  marioSheet(
-    context: context,
+tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet,
+    RoomUser roomuser, RoomUser? tweetroomuser, UserUser? useruser) async {
+  context.showBottomSheet(
     children: (context) => [
       MarioChoice<String>(
         multi: true,
@@ -251,7 +265,9 @@ tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser room
             (roomuser.user == tweet.user) ? Icons.delete : Icons.report,
             semanticLabel: 'Report this user',
           ),
-          title: (roomuser.user == tweet.user) ? const Text('Delete this tweet') : const Text('Report this tweet'),
+          title: (roomuser.user == tweet.user)
+              ? const Text('Delete this tweet')
+              : const Text('Report this tweet'),
         ),
         actions: (marioContext, selection) => Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -273,7 +289,8 @@ tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser room
                 if (selection.isNotEmpty) {
                   marioContext.nav.pop();
 
-                  await deleteTweet(context, ref, tweet, (roomuser.user != tweet.user), selection);
+                  await deleteTweet(context, ref, tweet,
+                      (roomuser.user != tweet.user), selection);
                   if (context.mounted) {
                     context.nav.pop();
                   }
@@ -292,12 +309,14 @@ tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser room
           titleTextStyle: context.ts.c(context.theme.csOnErrCon),
           iconColor: context.theme.csOnErrCon,
           onTap: () async {
-            final res = await showYesNo(context: context, title: 'Block this user');
+            final res = await context.showYesNo(title: 'Block this user');
             if (res) {
-              await blockUser(me: roomuser.user, next: tweet.user, role: UserRole.BLOCKED);
+              await blockUser(
+                  me: roomuser.user, next: tweet.user, role: UserRole.BLOCKED);
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('You have succesfully blocked this user, now they won\'t bother you.'),
+                  content: Text(
+                      'You have succesfully blocked this user, now they won\'t bother you.'),
                 ));
               }
               if (context.mounted) {
@@ -310,17 +329,15 @@ tweetActionSheet(BuildContext context, WidgetRef ref, Tweet tweet, RoomUser room
   );
 }
 
-Future<bool> deleteTweet(BuildContext context, WidgetRef ref, Tweet tweet, bool report, Set<String> reason) async {
-  final res = report
-      ? true
-      : await showYesNo(
-          context: context,
-          title: 'Delete Tweet',
-        );
+Future<bool> deleteTweet(BuildContext context, WidgetRef ref, Tweet tweet,
+    bool report, Set<String> reason) async {
+  final res = report ? true : await context.showYesNo(title: 'Delete Tweet');
 
   if (res) {
     if (report) {
-      await ref.read(tweetsProvider.notifier).reportTweet(tweet: tweet, reason: reason);
+      await ref
+          .read(tweetsProvider.notifier)
+          .reportTweet(tweet: tweet, reason: reason);
     } else {
       await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
     }
@@ -355,7 +372,7 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
       label: widget.url,
       child: InkWell(
         onTap: () {
-          safeLaunchUrl(widget.url);
+          canLaunchUrlString(widget.url);
         },
         child: AnimatedScale(
           scale: data != null ? 1 : .95,

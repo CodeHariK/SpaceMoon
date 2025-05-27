@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 
 extension AppThemeTextstyle on TextStyle {
@@ -47,13 +46,16 @@ class AppTheme {
   static bool get isDesktop => currentAppTheme.size.width < 1200;
 
   static bool get darkness => currentAppTheme.dark;
-  static Color get background => AppTheme.darkness ? const Color.fromARGB(255, 20, 20, 20) : Colors.white;
-  static Color get op => AppTheme.darkness ? Colors.white : const Color.fromARGB(255, 55, 55, 55);
-  static Color get card =>
-      AppTheme.darkness ? const Color.fromARGB(255, 35, 35, 35) : const Color.fromARGB(255, 248, 248, 248);
-  static Color get cardLight =>
-      AppTheme.darkness ? const Color.fromARGB(255, 45, 45, 45) : const Color.fromARGB(255, 242, 242, 242);
-  static Color get seedCard => AppTheme.darkness ? seedColor.darken(.6) : seedColor.lighten(.2);
+  static Color get background =>
+      AppTheme.darkness ? const Color.fromARGB(255, 20, 20, 20) : Colors.white;
+  static Color get op =>
+      AppTheme.darkness ? Colors.white : const Color.fromARGB(255, 55, 55, 55);
+  static Color get card => AppTheme.darkness
+      ? const Color.fromARGB(255, 35, 35, 35)
+      : const Color.fromARGB(255, 248, 248, 248);
+  static Color get cardLight => AppTheme.darkness
+      ? const Color.fromARGB(255, 45, 45, 45)
+      : const Color.fromARGB(255, 242, 242, 242);
 
   static double get w => currentAppTheme.size.width;
   static double get dw => currentAppTheme.designSize.width;
@@ -63,11 +65,16 @@ class AppTheme {
   static double get mh => currentAppTheme.maxSize.height;
 
   static num get a => (AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh);
-  static num get m => min((AppTheme.w / AppTheme.dw), (AppTheme.h / AppTheme.dh));
-  static num get s => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 1 / 2);
-  static num get c => pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 0.2);
-  static num get maxs => pow((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh), 1 / 2);
-  static num get maxc => pow((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh), 0.2);
+  static num get m =>
+      min((AppTheme.w / AppTheme.dw), (AppTheme.h / AppTheme.dh));
+  static num get s =>
+      pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 1 / 2);
+  static num get c =>
+      pow((AppTheme.w / AppTheme.dw) * (AppTheme.h / AppTheme.dh), 0.2);
+  static num get maxs =>
+      pow((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh), 1 / 2);
+  static num get maxc =>
+      pow((AppTheme.mw / AppTheme.dw) * (AppTheme.mh / AppTheme.dh), 0.2);
   static num get rs => min(1, max(0, AppTheme.s - 1) / (AppTheme.maxs - 1));
   static num get rc => min(1, max(0, AppTheme.c - 1) / (AppTheme.maxc - 1));
 
@@ -85,7 +92,8 @@ class AppTheme {
 
   FilledButtonThemeData get filledButtonTheme => FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular((8, 10).c)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular((8, 10).c)),
           padding: EdgeInsets.all((14, 16).c),
           textStyle: TextStyle(fontSize: (15, 17).c),
           // textStyle: poppins.copyWith(fontSize: (14, 18).c),
@@ -94,7 +102,8 @@ class AppTheme {
 
   ElevatedButtonThemeData get elevatedButtonTheme => ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular((8, 10).c)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular((8, 10).c)),
           padding: EdgeInsets.all((14, 16).c),
           textStyle: TextStyle(fontSize: (15, 17).c),
           // textStyle: poppins.copyWith(fontSize: (14, 18).c),
@@ -103,7 +112,8 @@ class AppTheme {
 
   OutlinedButtonThemeData get outlinedButtonTheme => OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular((8, 10).c)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular((8, 10).c)),
           padding: EdgeInsets.all((14, 16).c),
           textStyle: TextStyle(fontSize: (15, 17).c),
           // foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -117,14 +127,15 @@ class AppTheme {
         ),
       );
 
-  BottomNavigationBarThemeData get bottomNavigationBarTheme => BottomNavigationBarThemeData(
+  BottomNavigationBarThemeData get bottomNavigationBarTheme =>
+      BottomNavigationBarThemeData(
         selectedLabelStyle: AppTheme.tx.labelMedium,
         unselectedLabelStyle: AppTheme.tx.labelMedium,
         // selectedIconTheme: IconThemeData(size: (24, 28).c),
         // unselectedIconTheme: IconThemeData(size: (24, 28).c),
       );
 
-  TabBarTheme get tabBarTheme => const TabBarTheme();
+  TabBarThemeData get tabBarTheme => const TabBarThemeData();
 
   static InputDecorationTheme get inputDecoration => InputDecorationTheme(
         border: OutlineInputBorder(
@@ -145,10 +156,11 @@ class AppTheme {
         // border: InputBorder.none,
         focusedBorder: 1.bs.c(const Color.fromARGB(50, 103, 103, 103)).uline,
         errorBorder: 1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
-        focusedErrorBorder: 1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
+        focusedErrorBorder:
+            1.bs.c(const Color.fromARGB(139, 255, 116, 116)).uline,
       );
 
-  DialogTheme get dialogTheme => DialogTheme(
+  DialogThemeData get dialogTheme => DialogThemeData(
         shadowColor: seedColor,
         elevation: 2,
         actionsPadding: const EdgeInsets.only(right: 12, bottom: 8),
@@ -164,8 +176,10 @@ class AppTheme {
         surfaceTintColor: Colors.white,
       );
 
-  CardTheme get cardTheme => CardTheme(
-        color: AppTheme.darkness ? const Color.fromARGB(255, 68, 61, 71) : const Color.fromARGB(255, 250, 239, 255),
+  CardThemeData get cardTheme => CardThemeData(
+        color: AppTheme.darkness
+            ? const Color.fromARGB(255, 68, 61, 71)
+            : const Color.fromARGB(255, 250, 239, 255),
         elevation: 0,
       );
 
@@ -230,9 +244,17 @@ class AppTheme {
         titleLarge: TextStyle(letterSpacing: 2.c, fontSize: (18, 20).c),
 
         //CupertinoListTile, ListTile Title, Textfield label
-        titleMedium: TextStyle(letterSpacing: 1.c, color: op, fontSize: (17, 19).c, fontWeight: FontWeight.w400),
+        titleMedium: TextStyle(
+            letterSpacing: 1.c,
+            color: op,
+            fontSize: (17, 19).c,
+            fontWeight: FontWeight.w400),
 
-        titleSmall: TextStyle(letterSpacing: .5.c, color: op, fontSize: (16, 18).c, fontWeight: FontWeight.w400),
+        titleSmall: TextStyle(
+            letterSpacing: .5.c,
+            color: op,
+            fontSize: (16, 18).c,
+            fontWeight: FontWeight.w400),
 
         //CupertinoFormSection header, ListTile Title,
         bodyLarge: TextStyle(color: op, fontSize: (15, 17).c), //Textfield font
@@ -242,7 +264,10 @@ class AppTheme {
         //ListTile subtitle
         bodySmall: TextStyle(color: op, fontSize: (13, 15).c),
 
-        labelLarge: TextStyle(letterSpacing: .5.c, fontSize: (12, 14).c, fontWeight: FontWeight.w400),
+        labelLarge: TextStyle(
+            letterSpacing: .5.c,
+            fontSize: (12, 14).c,
+            fontWeight: FontWeight.w400),
 
         //BottomNavBar
         labelMedium: TextStyle(fontSize: (11, 14).c),

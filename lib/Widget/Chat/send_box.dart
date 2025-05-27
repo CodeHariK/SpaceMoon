@@ -3,15 +3,15 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
-import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
+import 'package:moonspace/widgets/animated_dialog.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Routes/Home/TabShell/unsplash.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy_box.dart';
+import 'package:moonspace/widgets/async_lock.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
+import 'package:spacemoon/Widget/TextEditor/text_editor_box.dart';
 
 class SendBox extends HookConsumerWidget {
   const SendBox({
@@ -53,18 +53,23 @@ class SendBox extends HookConsumerWidget {
               onChanged: onChanged,
               scrollPhysics: const ClampingScrollPhysics(),
               buildCounter: mediaType == MediaType.QR
-                  ? ((context, {required currentLength, required isFocused, maxLength}) {
-                      return Text('$currentLength ${currentLength == 1200 ? "Max Length" : ""}');
+                  ? ((context,
+                      {required currentLength, required isFocused, maxLength}) {
+                      return Text(
+                          '$currentLength ${currentLength == 1200 ? "Max Length" : ""}');
                     })
                   : null,
               maxLength: mediaType == MediaType.QR ? 1200 : null,
               showPrefix: false,
               showSubmitSuffix: false,
               suffix: [
-                if (mediaType != MediaType.QR) SendActionMenu(roomUser: roomUser),
+                if (mediaType != MediaType.QR)
+                  SendActionMenu(roomUser: roomUser),
               ],
               decoration: (asyncText, textCon) => InputDecoration(
-                hintText: mediaType == MediaType.QR ? 'Type to generate QR Code' : 'Type...',
+                hintText: mediaType == MediaType.QR
+                    ? 'Type to generate QR Code'
+                    : 'Type...',
                 contentPadding: 16.e,
                 prefixIcon: const Icon(Icons.star),
               ),
@@ -110,7 +115,7 @@ class SendActionMenu extends ConsumerWidget {
             children: [
               QrActionButton(roomUser: roomUser),
               GalleryUploaderButton(ref: ref),
-              AppFlowyActionButton(ref: ref),
+              TextEditorActionButton(ref: ref),
               UnsplashButton(roomUser: roomUser)
             ],
           ),

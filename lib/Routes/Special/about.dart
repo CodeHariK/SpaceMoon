@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:appflowy_editor/appflowy_editor.dart' show safeLaunchUrl;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -17,6 +16,7 @@ import 'package:spacemoon/Static/theme.dart';
 
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/main.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 part 'about.g.dart';
 
@@ -27,7 +27,8 @@ class About {
 @TypedGoRoute<AboutRoute>(path: AppRouter.about)
 @immutable
 class AboutRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      AppRouter.rootNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -51,7 +52,8 @@ class AboutPage extends ConsumerStatefulWidget {
   ConsumerState<AboutPage> createState() => _AboutPageState();
 }
 
-class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProviderStateMixin {
+class _AboutPageState extends ConsumerState<AboutPage>
+    with SingleTickerProviderStateMixin {
   final duration = const Duration(seconds: 1);
   late final AnimationController animCon;
   DateTime? pressStart;
@@ -65,7 +67,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
             if (widget.onboarded != null) {
               widget.onboarded?.call();
             } else {
-              safeLaunchUrl(SpaceMoon.spacemoonGithub);
+              canLaunchUrlString(SpaceMoon.spacemoonGithub);
             }
             context.pop();
             animCon.reset();
@@ -100,7 +102,9 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
               ),
         body: GestureDetector(
           onLongPressEnd: (details) {
-            if (DateTime.now().millisecondsSinceEpoch - pressStart!.millisecondsSinceEpoch < duration.inMilliseconds) {
+            if (DateTime.now().millisecondsSinceEpoch -
+                    pressStart!.millisecondsSinceEpoch <
+                duration.inMilliseconds) {
               animCon.reverse();
             }
           },
@@ -123,7 +127,9 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                       Semantics(
                         label: 'Spacemoon logo',
                         child: RainbowLogo(
-                          assetPath: widget.onboarded != null ? Asset.spaceMoon : Asset.sharkrun,
+                          assetPath: widget.onboarded != null
+                              ? Asset.spaceMoon
+                              : Asset.sharkrun,
                         ),
                       ),
 
@@ -135,7 +141,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                           style: context.hs,
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              safeLaunchUrl(SpaceMoon.web);
+                              canLaunchUrlString(SpaceMoon.web);
                             },
                         ),
                       ),
@@ -148,7 +154,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                           style: context.tm,
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              safeLaunchUrl(SpaceMoon.github);
+                              canLaunchUrlString(SpaceMoon.github);
                             },
                         ),
                       ),
@@ -159,7 +165,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                           style: context.tm,
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              safeLaunchUrl(SpaceMoon.sharkrun);
+                              canLaunchUrlString(SpaceMoon.sharkrun);
                             },
                         ),
                       ),
@@ -176,10 +182,16 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
 
                       if (widget.onboarded == null)
                         FutureBuilder(
-                          future: FirebaseFirestore.instance.doc('Spacemoon/appinfo').get(),
+                          future: FirebaseFirestore.instance
+                              .doc('Spacemoon/appinfo')
+                              .get(),
                           builder: (context, snapshot) {
-                            final googleplay = snapshot.data?.data()?['googleplay'] ?? SpaceMoon.googleplay;
-                            final appstore = snapshot.data?.data()?['appstore'] ?? SpaceMoon.appstore;
+                            final String googleplay =
+                                snapshot.data?.data()?['googleplay'] ??
+                                    SpaceMoon.googleplay;
+                            final String appstore =
+                                snapshot.data?.data()?['appstore'] ??
+                                    SpaceMoon.appstore;
 
                             return ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 400),
@@ -192,7 +204,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                                         padding: const EdgeInsets.all(4.0),
                                         child: InkWell(
                                           onTap: () {
-                                            safeLaunchUrl(googleplay);
+                                            canLaunchUrlString(googleplay);
                                           },
                                           child: Image.asset(Asset.googleplay),
                                         ),
@@ -206,7 +218,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
                                         padding: const EdgeInsets.all(4.0),
                                         child: InkWell(
                                           onTap: () {
-                                            safeLaunchUrl(appstore);
+                                            canLaunchUrlString(appstore);
                                           },
                                           child: Image.asset(Asset.appstore),
                                         ),
@@ -223,14 +235,16 @@ class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProvider
 
                       if (widget.onboarded == null)
                         CustomPaint(
-                          painter: SolarPathPainter(Size((180, 220).c, (180, 220).c)),
+                          painter: SolarPathPainter(
+                              Size((180, 220).c, (180, 220).c)),
                           child: Sunflower(
                             animCon: animCon,
                             onboard: widget.onboarded != null,
                           ),
                         ),
 
-                      if (SpaceMoon.debugUi) Text(SpaceMoon.build, style: context.tl),
+                      if (SpaceMoon.debugUi)
+                        Text(SpaceMoon.build, style: context.tl),
                       SizedBox(height: (10, 20).c),
                     ],
                   ),
@@ -256,7 +270,7 @@ class SocialButtons extends StatelessWidget {
       children: [
         IconButton(
           onPressed: () {
-            safeLaunchUrl(SpaceMoon.github);
+            canLaunchUrlString(SpaceMoon.github);
           },
           icon: Semantics(
             label: 'Go to github',
@@ -277,7 +291,7 @@ class SocialButtons extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            safeLaunchUrl(SpaceMoon.linkedIn);
+            canLaunchUrlString(SpaceMoon.linkedIn);
           },
           icon: Semantics(
             label: 'Go to LinkedIn',
@@ -298,7 +312,7 @@ class SocialButtons extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            safeLaunchUrl(SpaceMoon.twitter);
+            canLaunchUrlString(SpaceMoon.twitter);
           },
           icon: Semantics(
             label: 'Go to Twitter',
@@ -390,7 +404,8 @@ class DottedBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = AppTheme.darkness ? Colors.white38 : AppTheme.seedColor.withAlpha(80)
+      ..color =
+          AppTheme.darkness ? Colors.white38 : AppTheme.seedColor.withAlpha(80)
       ..strokeWidth = 1.0;
 
     for (double j = 0; j < size.height; j += gap) {
@@ -504,7 +519,8 @@ class _SunflowerState extends State<Sunflower> {
                 case 0:
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.asset(widget.onboard ? Asset.sharkrun : Asset.spaceMoon),
+                    child: Image.asset(
+                        widget.onboard ? Asset.sharkrun : Asset.spaceMoon),
                   );
                 case 1:
                   return IconButton(
@@ -561,7 +577,10 @@ class SolarPathPainter extends CustomPainter {
       );
 
     for (double t = 0.0; t <= 1.0; t += 0.1) {
-      Tangent? pos = path.computeMetrics().single.getTangentForOffset(t * path.computeMetrics().single.length);
+      Tangent? pos = path
+          .computeMetrics()
+          .single
+          .getTangentForOffset(t * path.computeMetrics().single.length);
       if (pos?.position != null) {
         points.add(pos!.position);
       }
@@ -603,7 +622,10 @@ class SolarPathPainter extends CustomPainter {
     distance += 0.002;
     distance = distance > .999 ? 0.002 : distance;
 
-    Tangent? pos = path.computeMetrics().single.getTangentForOffset(distance * path.computeMetrics().single.length);
+    Tangent? pos = path
+        .computeMetrics()
+        .single
+        .getTangentForOffset(distance * path.computeMetrics().single.length);
     if (pos?.position != null) {
       movingPoint = pos!.position;
     }

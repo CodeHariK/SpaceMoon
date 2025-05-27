@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/helper/stream/functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
+import 'package:moonspace/widgets/async_lock.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -31,7 +31,8 @@ class ChatRoute extends GoRouteData {
 
   const ChatRoute({required this.chatId});
 
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      AppRouter.rootNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -55,9 +56,12 @@ class ChatPage extends ConsumerStatefulWidget {
 class _ChatPageState extends ConsumerState<ChatPage> {
   //
   final ItemScrollController itemScrollController = ItemScrollController();
-  final ScrollOffsetController scrollOffsetController = ScrollOffsetController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-  final ScrollOffsetListener scrollOffsetListener = ScrollOffsetListener.create();
+  final ScrollOffsetController scrollOffsetController =
+      ScrollOffsetController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
+  final ScrollOffsetListener scrollOffsetListener =
+      ScrollOffsetListener.create();
 
   late final StreamController<(int? index, bool show)> dateStream =
       createDebounceFunc(1000, ((int? index, bool show) value) async {
@@ -74,7 +78,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void itemPositionListener() {
-    dateStream.add((itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
+    dateStream.add(
+        (itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
   }
 
   @override
@@ -157,7 +162,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       return const Error404Page();
     }
 
-    if (meInRoom == null || meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/) {
+    if (meInRoom == null ||
+        meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/) {
       return Scaffold(
         appBar: AppBar(
           leading: BackButton(
@@ -207,7 +213,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             children: [
               IconButton(
                 onPressed: () async {
-                  final url = SpaceMoon.domain + GoRouterState.of(context).uri.path;
+                  final url =
+                      SpaceMoon.domain + GoRouterState.of(context).uri.path;
                   await Clipboard.setData(
                     ClipboardData(text: url),
                   );
@@ -279,12 +286,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           final tweet = doc.data()!;
 
                           if (index > 0 && index < allTweetSnap.docs.length) {
-                            Tweet lastTweet = allTweetSnap.docs[index + 1].data()!;
+                            Tweet lastTweet =
+                                allTweetSnap.docs[index + 1].data()!;
 
                             final lDate = lastTweet.created.date;
                             final cDate = tweet.created.date;
 
-                            if (lDate.month != cDate.month || lDate.day != cDate.day || lDate.year != cDate.year) {
+                            if (lDate.month != cDate.month ||
+                                lDate.day != cDate.day ||
+                                lDate.year != cDate.year) {
                               return Chip(
                                 padding: EdgeInsets.zero,
                                 label: Text(tweet.created.dateString),
@@ -294,7 +304,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           return const SizedBox.shrink();
                         },
                         itemBuilder: (context, index) {
-                          if (allTweetSnap.hasMore && index + 1 == allTweetSnap.docs.length) {
+                          if (allTweetSnap.hasMore &&
+                              index + 1 == allTweetSnap.docs.length) {
                             allTweetSnap.fetchMore();
                           }
                           final doc = allTweetSnap.docs[index];
@@ -315,14 +326,19 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           builder: (context, dateSnapshot) {
                             final value = dateSnapshot.data;
                             final index = value?.$1;
-                            if (index == null || allTweetSnap.docs.length <= index) {
+                            if (index == null ||
+                                allTweetSnap.docs.length <= index) {
                               return const SizedBox();
                             }
                             final show = value!.$2;
-                            final date = allTweetSnap.docs[index].data()!.created.dateString;
+                            final date = allTweetSnap.docs[index]
+                                .data()!
+                                .created
+                                .dateString;
 
                             return TweenAnimationBuilder(
-                              tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
+                              tween: Tween<double>(
+                                  begin: show ? 0 : 1, end: show ? 1 : 0),
                               curve: Curves.linear,
                               duration: const Duration(seconds: 1),
                               builder: (context, value, child) {
@@ -355,8 +371,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         return OutlinedButton(
                           onPressed: () async {
                             lock();
-                            await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
-                            ref.read(currentRoomProvider.notifier).exitRoom(null);
+                            await ref
+                                .read(currentRoomProvider.notifier)
+                                .deleteRoomUser(meInRoom);
+                            ref
+                                .read(currentRoomProvider.notifier)
+                                .exitRoom(null);
                             if (context.mounted) {
                               HomeRoute().go(context);
                             }
@@ -371,7 +391,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         return FilledButton(
                           onPressed: () async {
                             lock();
-                            await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(meInRoom);
+                            await ref
+                                .read(currentRoomProvider.notifier)
+                                .upgradeAccessToRoom(meInRoom);
                             ref.invalidate(currentRoomUserProvider);
                             open();
                           },

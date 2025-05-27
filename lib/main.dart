@@ -1,5 +1,5 @@
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fleather/fleather.dart';
 import 'package:flutter/foundation.dart';
 import 'package:spacemoon/Init/init.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
@@ -15,8 +15,10 @@ class SpaceMoon {
   static String linkedIn = 'https://www.linkedin.com/in/codeharik';
   static String twitter = 'https://www.twitter.com/codeharik';
 
-  static String googleplay = 'https://play.google.com/store/apps/details?id=run.shark.spacemoon';
-  static String appstore = 'https://apps.apple.com/us/app/spacemoon/id6469975482';
+  static String googleplay =
+      'https://play.google.com/store/apps/details?id=run.shark.spacemoon';
+  static String appstore =
+      'https://apps.apple.com/us/app/spacemoon/id6469975482';
   static String web = 'spacemoon.shark.run';
 
   static bool debugUi = false;
@@ -29,7 +31,8 @@ class SpaceMoon {
 
   static HttpsCallable fn(String function) => useEmulator
       ? FirebaseFunctions.instance.httpsCallable(function)
-      : FirebaseFunctions.instanceFor(region: 'asia-south1').httpsCallable(function);
+      : FirebaseFunctions.instanceFor(region: 'asia-south1')
+          .httpsCallable(function);
 }
 
 void main() {
@@ -37,8 +40,9 @@ void main() {
     title: SpaceMoon.title,
     init: init,
     localizationsDelegates: [
+      FleatherLocalizations.delegate,
       FirebaseUILocalizations.delegate,
-      AppFlowyEditorLocalizations.delegate,
     ],
+    supportedLocales: FleatherLocalizations.supportedLocales,
   );
 }

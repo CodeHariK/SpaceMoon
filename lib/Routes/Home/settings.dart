@@ -1,4 +1,3 @@
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:feedback/feedback.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -15,10 +14,12 @@ import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 import 'package:spacemoon/Static/theme.dart';
 import 'package:spacemoon/main.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 @immutable
 class SettingsRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      AppRouter.rootNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -60,7 +61,8 @@ class SettingsPage extends ConsumerWidget {
                             (e) => PopupMenuItem(
                               value: e,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [Text(e.name.toUpperCase()), e.icon],
                               ),
                             ),
@@ -95,7 +97,9 @@ class SettingsPage extends ConsumerWidget {
                                 enabled: true,
                                 child: InkWell(
                                   onTap: () {
-                                    ref.read(globalThemeProvider.notifier).setColor(c);
+                                    ref
+                                        .read(globalThemeProvider.notifier)
+                                        .setColor(c);
                                   },
                                   child: Container(
                                     width: 48,
@@ -135,7 +139,10 @@ class SettingsPage extends ConsumerWidget {
                       onPressed: () {
                         BetterFeedback.of(context).show(
                           (UserFeedback feedback) {
-                            FirebaseStorage.instance.ref('feedback/${DateTime.now().toIso8601String()}').putData(
+                            FirebaseStorage.instance
+                                .ref(
+                                    'feedback/${DateTime.now().toIso8601String()}')
+                                .putData(
                                   feedback.screenshot,
                                   SettableMetadata(
                                     contentType: 'feedback/png',
@@ -173,21 +180,24 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      safeLaunchUrl('https://spacemoonfire.web.app/privacy/policy.html');
+                      canLaunchUrlString(
+                          'https://spacemoonfire.web.app/privacy/policy.html');
                     },
                     title: Text('Privacy Policy', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      safeLaunchUrl('https://spacemoonfire.web.app/privacy/support.html');
+                      canLaunchUrlString(
+                          'https://spacemoonfire.web.app/privacy/support.html');
                     },
                     title: Text('Contact Us', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      safeLaunchUrl('https://spacemoonfire.web.app/privacy/eula.html');
+                      canLaunchUrlString(
+                          'https://spacemoonfire.web.app/privacy/eula.html');
                     },
                     title: Text('End-User License', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
@@ -216,7 +226,8 @@ class SettingsPage extends ConsumerWidget {
                       onTap: () {
                         FirebaseMessaging.instance.deleteToken();
                       },
-                      title: Text('Firebase Messaging Token delete', style: context.tm),
+                      title: Text('Firebase Messaging Token delete',
+                          style: context.tm),
                     ),
                 ],
               ),
@@ -241,15 +252,16 @@ class AttibutionPage extends StatelessWidget {
             title: const Text('Unsplash'),
             subtitle: const Text('For their wonderful api'),
             onTap: () {
-              safeLaunchUrl('https://unsplash.com/');
+              canLaunchUrlString('https://unsplash.com/');
             },
           ),
           if (Device.isAndroid)
             ListTile(
               title: const Text('Google Play'),
-              subtitle: const Text('Google Play and the Google Play logo are trademarks of Google LLC.'),
+              subtitle: const Text(
+                  'Google Play and the Google Play logo are trademarks of Google LLC.'),
               onTap: () {
-                safeLaunchUrl(SpaceMoon.googleplay);
+                canLaunchUrlString(SpaceMoon.googleplay);
               },
             ),
         ],
@@ -271,7 +283,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Feedback')),
       body: FutureBuilder(
-        future: FirebaseStorage.instance.ref('feedback').list(const ListOptions(maxResults: 10)),
+        future: FirebaseStorage.instance
+            .ref('feedback')
+            .list(const ListOptions(maxResults: 10)),
         builder: (context, snapshot) {
           if (snapshot.data == null) return const SizedBox();
 
@@ -285,7 +299,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 future: item?.getMetadata(),
                 builder: (context, feedbackSnap) {
                   return ListTile(
-                    title: Text(feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
+                    title: Text(
+                        feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
                     subtitle: Text(item?.name ?? '-'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
@@ -301,12 +316,17 @@ class _FeedbackPageState extends State<FeedbackPage> {
                           builder: (context, imgSnap) {
                             return Scaffold(
                               appBar: AppBar(
-                                title: Text(feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
+                                title: Text(feedbackSnap
+                                        .data?.customMetadata?['feedback'] ??
+                                    '-'),
                                 actions: [Text(item?.name ?? '-')],
                               ),
                               body: (imgSnap.data == null)
                                   ? const Placeholder()
-                                  : PhotoView(imageProvider: Image.network(imgSnap.data ?? '').image),
+                                  : PhotoView(
+                                      imageProvider:
+                                          Image.network(imgSnap.data ?? '')
+                                              .image),
                             );
                           },
                         ),

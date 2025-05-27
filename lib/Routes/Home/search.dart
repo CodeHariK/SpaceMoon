@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:moonspace/form/async_text_field.dart';
+import 'package:moonspace/widgets/async_lock.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/widgets/animated/animated_buttons.dart';
@@ -49,7 +50,8 @@ class SearchPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: AsyncTextFormField(
                   autofocus: true,
-                  decoration: (AsyncText value, controller) => const InputDecoration(
+                  decoration: (AsyncText value, controller) =>
+                      const InputDecoration(
                     hintText: 'abc...',
                     labelText: 'Find by nickname',
                   ),
@@ -105,7 +107,8 @@ class SearchPage extends ConsumerWidget {
                             contentPadding: EdgeInsets.zero,
                             onTap: () {
                               if (context.mounted && searchRoom?.uid != null) {
-                                ChatRoute(chatId: searchRoom!.uid).push(context);
+                                ChatRoute(chatId: searchRoom!.uid)
+                                    .push(context);
                               }
                             },
                             title: Text(searchRoom?.displayName ?? 'Name'),
@@ -145,8 +148,11 @@ class UserTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final searchRoomUser =
-        (room == null || me == null) ? null : ref.watch(getRoomUserProvider(roomId: room!.uid, userId: me!.uid)).value;
+    final searchRoomUser = (room == null || me == null)
+        ? null
+        : ref
+            .watch(getRoomUserProvider(roomId: room!.uid, userId: me!.uid))
+            .value;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       onTap: () {
@@ -163,14 +169,17 @@ class UserTile extends ConsumerWidget {
         children: [
           const Text('User'),
           const SizedBox(width: 10),
-          if (searchUser?.uid != me?.uid && (searchRoomUser != null || room == null))
+          if (searchUser?.uid != me?.uid &&
+              (searchRoomUser != null || room == null))
             AsyncLock(
               builder: (loading, status, lock, open, setStatus) {
                 return IconButton.filledTonal(
                   onPressed: () async {
                     lock();
                     if (room != null) {
-                      await ref.read(currentRoomProvider.notifier).upgradeAccessToRoom(
+                      await ref
+                          .read(currentRoomProvider.notifier)
+                          .upgradeAccessToRoom(
                             RoomUser(
                               user: searchUser?.uid,
                               room: room?.uid,
@@ -181,8 +190,12 @@ class UserTile extends ConsumerWidget {
                       }
                     } else {
                       if (me != null && searchUser != null) {
-                        final room = await ref.read(currentRoomProvider.notifier).createRoom(
-                          room: Room(displayName: '${me!.displayName} ${searchUser!.displayName}'),
+                        final room = await ref
+                            .read(currentRoomProvider.notifier)
+                            .createRoom(
+                          room: Room(
+                              displayName:
+                                  '${me!.displayName} ${searchUser!.displayName}'),
                           users: [
                             me!.uid,
                             searchUser!.uid,
@@ -195,7 +208,9 @@ class UserTile extends ConsumerWidget {
                     }
                     open();
                   },
-                  icon: !loading ? const Icon(Icons.add_circle_outline_outlined) : const CircularProgress(size: 20),
+                  icon: !loading
+                      ? const Icon(Icons.add_circle_outline_outlined)
+                      : const CircularProgress(size: 20),
                 );
               },
             ),

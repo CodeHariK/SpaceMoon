@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
-import 'package:moonspace/form/mario.dart';
+import 'package:moonspace/form/form.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
+import 'package:moonspace/widgets/functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/proto.dart';
@@ -62,8 +63,11 @@ class ProfilePage extends ConsumerWidget {
 
     final currentRoomUser = ref.watch(currentUserDataProvider).value;
 
-    final useruser = user?.uid != null && currentRoomUser?.uid != null && currentRoomUser?.uid != user?.uid
-        ? ref.watch(getUserUserProvider(next: user!.uid, me: currentRoomUser!.uid))
+    final useruser = user?.uid != null &&
+            currentRoomUser?.uid != null &&
+            currentRoomUser?.uid != user?.uid
+        ? ref.watch(
+            getUserUserProvider(next: user!.uid, me: currentRoomUser!.uid))
         : null;
 
     return Scaffold(
@@ -82,7 +86,7 @@ class ProfilePage extends ConsumerWidget {
                     foregroundDecoration: user?.admin == false
                         ? null
                         : BoxDecoration(
-                            border: Border.all(width: 10, color: AppTheme.seedCard),
+                            border: Border.all(width: 10),
                             borderRadius: BorderRadius.circular(300),
                           ),
                     child: Semantics(
@@ -105,7 +109,8 @@ class ProfilePage extends ConsumerWidget {
                                   singlepath: Const.photoURL.name,
                                 );
                               },
-                        child: user?.photoURL == null || user?.photoURL.isEmpty == true
+                        child: user?.photoURL == null ||
+                                user?.photoURL.isEmpty == true
                             ? Icon(
                                 Icons.face_2_outlined,
                                 size: (120, 160).c,
@@ -138,7 +143,8 @@ class ProfilePage extends ConsumerWidget {
                           displayName: con.text,
                         ),
                       ),
-                      decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                      decoration: (AsyncText value, nickCon) =>
+                          AppTheme.uInputDecoration.copyWith(
                         hintText: 'Name',
                       ),
                     ),
@@ -178,7 +184,8 @@ class ProfilePage extends ConsumerWidget {
                           nick: con.text,
                         ),
                       ),
-                      decoration: (AsyncText value, nickCon) => AppTheme.uInputDecoration.copyWith(
+                      decoration: (AsyncText value, nickCon) =>
+                          AppTheme.uInputDecoration.copyWith(
                         hintText: 'Nick name',
                         prefix: const Text('Nick name : @'),
                       ),
@@ -192,12 +199,15 @@ class ProfilePage extends ConsumerWidget {
                   if (user?.phoneNumber.isNotEmpty ?? false)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text('Phone : ${user?.phoneNumber}', style: context.ts),
+                      title: Text('Phone : ${user?.phoneNumber}',
+                          style: context.ts),
                     ),
 
                   //
                   const SizedBox(height: 5),
-                  if (currentRoomUser?.uid != null && user?.uid != null && currentRoomUser?.uid != user?.uid)
+                  if (currentRoomUser?.uid != null &&
+                      user?.uid != null &&
+                      currentRoomUser?.uid != user?.uid)
                     DropdownButtonFormField(
                       decoration: const InputDecoration(label: Text('Status')),
                       items: const [
@@ -217,7 +227,10 @@ class ProfilePage extends ConsumerWidget {
                       value: useruser?.value?.role ?? UserRole.DONTKNOW,
                       onChanged: (value) async {
                         if (value != null) {
-                          await blockUser(next: user!.uid, me: currentRoomUser!.uid, role: value);
+                          await blockUser(
+                              next: user!.uid,
+                              me: currentRoomUser!.uid,
+                              role: value);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(value == UserRole.BLOCKED
@@ -293,7 +306,8 @@ class ProfilePage extends ConsumerWidget {
                             child: const Text('Report'),
                             onPressed: () async {
                               if (selection.isNotEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
                                   content: Text(
                                       'Your report is under review. we will take action within 12 hours. Thank you'),
                                 ));
@@ -302,7 +316,10 @@ class ProfilePage extends ConsumerWidget {
                                 if (user != null) {
                                   await reportUser(user, selection);
                                 }
-                                await blockUser(next: user!.uid, me: currentRoomUser!.uid, role: UserRole.BLOCKED);
+                                await blockUser(
+                                    next: user!.uid,
+                                    me: currentRoomUser!.uid,
+                                    role: UserRole.BLOCKED);
                               }
                             },
                           ),
@@ -317,8 +334,12 @@ class ProfilePage extends ConsumerWidget {
 
                         return OutlinedButton(
                           onPressed: () async {
-                            final room = await ref.read(currentRoomProvider.notifier).createRoom(
-                              room: Room(displayName: '${me!.displayName} ${user!.displayName}'),
+                            final room = await ref
+                                .read(currentRoomProvider.notifier)
+                                .createRoom(
+                              room: Room(
+                                  displayName:
+                                      '${me!.displayName} ${user!.displayName}'),
                               users: [
                                 me.uid,
                                 user.uid,
@@ -339,7 +360,8 @@ class ProfilePage extends ConsumerWidget {
                       iconColor: context.theme.csSec,
                       leading: const Icon(Icons.logout),
                       onTap: () async {
-                        final res = await showYesNo(context: context, title: 'Are you sure you want to sign out?');
+                        final res = await context.showYesNo(
+                            title: 'Are you sure you want to sign out?');
                         if (res) {
                           auth.FirebaseAuth.instance.signOut();
                         }
@@ -351,14 +373,14 @@ class ProfilePage extends ConsumerWidget {
                   //
                   if (searchuser == null)
                     ListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       tileColor: context.theme.csErrCon,
                       titleTextStyle: context.ts.c(context.theme.csOnErrCon),
                       iconColor: context.theme.csOnErrCon,
                       leading: const Icon(Icons.delete),
                       onTap: () async {
-                        final res = await showYesNo(
-                          context: context,
+                        final res = await context.showYesNo(
                           title: 'Confirm Account Deletion?',
                           content:
                               'Are you sure you want to delete your account? All your data will be automatically deleted.',
@@ -366,7 +388,9 @@ class ProfilePage extends ConsumerWidget {
                         if (res) {
                           String? errorMessage;
 
-                          await auth.FirebaseAuth.instance.currentUser?.delete().then((value) {
+                          await auth.FirebaseAuth.instance.currentUser
+                              ?.delete()
+                              .then((value) {
                             Navigator.pop(context);
                           }).onError(
                             (auth.FirebaseAuthException error, stackTrace) {

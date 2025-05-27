@@ -6,11 +6,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
-import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/color.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:moonspace/widgets/animated_overlay.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Static/theme.dart';
@@ -97,7 +97,9 @@ class _UnsplashPageState extends State<UnsplashPage> {
           ),
         ),
       ),
-      body: res == null ? null : UnsplashGrid(res: res, roomUser: widget.roomUser),
+      body: res == null
+          ? null
+          : UnsplashGrid(res: res, roomUser: widget.roomUser),
       // body: res == null ? null : UnslashRow(res),
       extendBody: true,
       bottomNavigationBar: SizedBox(height: context.mq.pad.bottom),
@@ -224,7 +226,8 @@ class UnsplashGrid extends HookConsumerWidget {
                         onTap: selected.value.isNotEmpty
                             ? () {
                                 if (selected.value.contains(res)) {
-                                  final s = selected.value.toList()..remove(res);
+                                  final s = selected.value.toList()
+                                    ..remove(res);
                                   selected.value = s.toSet();
                                 } else {
                                   selected.value = {...selected.value, res};
@@ -234,20 +237,26 @@ class UnsplashGrid extends HookConsumerWidget {
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
                                     fullscreenDialog: true,
-                                    pageBuilder: (context, animation, secondaryAnimation) {
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
                                       return Scaffold(
-                                        floatingActionButton: FloatingActionButton(
+                                        floatingActionButton:
+                                            FloatingActionButton(
                                           heroTag: 'UnsplashGridSend',
                                           onPressed: () async {
-                                            await ref.read(tweetsProvider.notifier).sendTweet(
+                                            await ref
+                                                .read(tweetsProvider.notifier)
+                                                .sendTweet(
                                                   tweet: Tweet(
                                                     room: roomUser.room,
                                                     user: roomUser.user,
-                                                    mediaType: MediaType.GALLERY,
+                                                    mediaType:
+                                                        MediaType.GALLERY,
                                                     gallery: [
                                                       ImageMetadata(
                                                         unsplashurl: url,
-                                                        caption: res.description,
+                                                        caption:
+                                                            res.description,
                                                       ),
                                                     ],
                                                   ),
@@ -276,7 +285,8 @@ class UnsplashGrid extends HookConsumerWidget {
                                                 ),
                                               ),
                                               Container(
-                                                padding: const EdgeInsets.all(8),
+                                                padding:
+                                                    const EdgeInsets.all(8),
                                                 width: double.infinity,
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
@@ -284,30 +294,45 @@ class UnsplashGrid extends HookConsumerWidget {
                                                     end: Alignment.bottomCenter,
                                                     stops: const [0, 1],
                                                     colors: [
-                                                      (HexColor(res.color ?? '#ffffff')),
-                                                      (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                                      (HexColor(res.color ??
+                                                          '#ffffff')),
+                                                      (HexColor(res.color ??
+                                                              '#ffffff'))
+                                                          .withAlpha(0),
                                                     ],
                                                   ),
                                                 ),
                                                 child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    if (res.description != null ||
-                                                        (res.description?.isNotEmpty ?? false))
+                                                    if (res.description !=
+                                                            null ||
+                                                        (res.description
+                                                                ?.isNotEmpty ??
+                                                            false))
                                                       Text(
-                                                        res.description.toString().toUpperCase(),
-                                                        style: context.hs.c(HexColor(res.color ?? '#ffffff').mop),
+                                                        res.description
+                                                            .toString()
+                                                            .toUpperCase(),
                                                         maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
-                                                    if (res.altDescription != null ||
-                                                        (res.altDescription?.isNotEmpty ?? false))
+                                                    if (res.altDescription !=
+                                                            null ||
+                                                        (res.altDescription
+                                                                ?.isNotEmpty ??
+                                                            false))
                                                       Text(
-                                                        res.altDescription.toString().toUpperCase(),
-                                                        style: context.tm.c(HexColor(res.color ?? '#ffffff').mop),
+                                                        res.altDescription
+                                                            .toString()
+                                                            .toUpperCase(),
                                                         maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
                                                   ],
                                                 ),
@@ -327,7 +352,9 @@ class UnsplashGrid extends HookConsumerWidget {
                             children: [
                               Container(
                                 foregroundDecoration: BoxDecoration(
-                                  color: selected.value.contains(res) ? const Color.fromARGB(120, 218, 218, 218) : null,
+                                  color: selected.value.contains(res)
+                                      ? const Color.fromARGB(120, 218, 218, 218)
+                                      : null,
                                 ),
                                 child: Hero(
                                   tag: res.id!,
@@ -407,13 +434,17 @@ class Unsplash {
   factory Unsplash.fromMap(Map<String, dynamic> json) => Unsplash(
         total: json["total"],
         totalPages: json["total_pages"],
-        results: json["results"] == null ? [] : List<Result>.from(json["results"]!.map((x) => Result.fromMap(x))),
+        results: json["results"] == null
+            ? []
+            : List<Result>.from(json["results"]!.map((x) => Result.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
         "total": total,
         "total_pages": totalPages,
-        "results": results == null ? [] : List<dynamic>.from(results!.map((x) => x.toMap())),
+        "results": results == null
+            ? []
+            : List<dynamic>.from(results!.map((x) => x.toMap())),
       };
 }
 
@@ -471,9 +502,15 @@ class Result {
   factory Result.fromMap(Map<String, dynamic> json) => Result(
         id: json["id"],
         slug: json["slug"],
-        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-        promotedAt: json["promoted_at"] == null ? null : DateTime.parse(json["promoted_at"]),
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+        promotedAt: json["promoted_at"] == null
+            ? null
+            : DateTime.parse(json["promoted_at"]),
         width: json["width"],
         height: json["height"],
         color: json["color"],
@@ -482,19 +519,25 @@ class Result {
         altDescription: json["alt_description"],
         breadcrumbs: json["breadcrumbs"] == null
             ? []
-            : List<Breadcrumb>.from(json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
+            : List<Breadcrumb>.from(
+                json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
         urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
-        links: json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
+        links:
+            json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
         likes: json["likes"],
         likedByUser: json["liked_by_user"],
         currentUserCollections: json["current_user_collections"] == null
             ? []
-            : List<dynamic>.from(json["current_user_collections"]!.map((x) => x)),
+            : List<dynamic>.from(
+                json["current_user_collections"]!.map((x) => x)),
         sponsorship: json["sponsorship"],
-        topicSubmissions:
-            json["topic_submissions"] == null ? null : ResultTopicSubmissions.fromMap(json["topic_submissions"]),
+        topicSubmissions: json["topic_submissions"] == null
+            ? null
+            : ResultTopicSubmissions.fromMap(json["topic_submissions"]),
         user: json["user"] == null ? null : ResultUser.fromMap(json["user"]),
-        tags: json["tags"] == null ? [] : List<Tag>.from(json["tags"]!.map((x) => Tag.fromMap(x))),
+        tags: json["tags"] == null
+            ? []
+            : List<Tag>.from(json["tags"]!.map((x) => Tag.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
@@ -509,17 +552,21 @@ class Result {
         "blur_hash": blurHash,
         "description": description,
         "alt_description": altDescription,
-        "breadcrumbs": breadcrumbs == null ? [] : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
+        "breadcrumbs": breadcrumbs == null
+            ? []
+            : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
         "urls": urls?.toMap(),
         "links": links?.toMap(),
         "likes": likes,
         "liked_by_user": likedByUser,
-        "current_user_collections":
-            currentUserCollections == null ? [] : List<dynamic>.from(currentUserCollections!.map((x) => x)),
+        "current_user_collections": currentUserCollections == null
+            ? []
+            : List<dynamic>.from(currentUserCollections!.map((x) => x)),
         "sponsorship": sponsorship,
         "topic_submissions": topicSubmissions?.toMap(),
         "user": user?.toMap(),
-        "tags": tags == null ? [] : List<dynamic>.from(tags!.map((x) => x.toMap())),
+        "tags":
+            tags == null ? [] : List<dynamic>.from(tags!.map((x) => x.toMap())),
       };
 }
 
@@ -536,7 +583,8 @@ class Breadcrumb {
     this.type,
   });
 
-  factory Breadcrumb.fromJson(String str) => Breadcrumb.fromMap(json.decode(str));
+  factory Breadcrumb.fromJson(String str) =>
+      Breadcrumb.fromMap(json.decode(str));
 
   @override
   String toString() => json.encode(toMap());
@@ -545,7 +593,9 @@ class Breadcrumb {
         slug: json["slug"],
         title: json["title"],
         index: json["index"],
-        type: UnsplashType.values.where((element) => element.name == json["type"]).firstOrNull,
+        type: UnsplashType.values
+            .where((element) => element.name == json["type"])
+            .firstOrNull,
       );
 
   Map<String, dynamic> toMap() => {
@@ -571,7 +621,8 @@ class ResultLinks {
     this.downloadLocation,
   });
 
-  factory ResultLinks.fromJson(String str) => ResultLinks.fromMap(json.decode(str));
+  factory ResultLinks.fromJson(String str) =>
+      ResultLinks.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
@@ -606,7 +657,9 @@ class Tag {
   String toJson() => json.encode(toMap());
 
   factory Tag.fromMap(Map<String, dynamic> json) => Tag(
-        type: UnsplashType.values.where((element) => element.name == json["type"]).firstOrNull,
+        type: UnsplashType.values
+            .where((element) => element.name == json["type"])
+            .firstOrNull,
         title: json["title"],
         source: json["source"] == null ? null : Source.fromMap(json["source"]),
       );
@@ -642,13 +695,17 @@ class Source {
   String toJson() => json.encode(toMap());
 
   factory Source.fromMap(Map<String, dynamic> json) => Source(
-        ancestry: json["ancestry"] == null ? null : Ancestry.fromMap(json["ancestry"]),
+        ancestry: json["ancestry"] == null
+            ? null
+            : Ancestry.fromMap(json["ancestry"]),
         title: json["title"],
         subtitle: json["subtitle"],
         description: json["description"],
         metaTitle: json["meta_title"],
         metaDescription: json["meta_description"],
-        coverPhoto: json["cover_photo"] == null ? null : CoverPhoto.fromMap(json["cover_photo"]),
+        coverPhoto: json["cover_photo"] == null
+            ? null
+            : CoverPhoto.fromMap(json["cover_photo"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -679,8 +736,12 @@ class Ancestry {
 
   factory Ancestry.fromMap(Map<String, dynamic> json) => Ancestry(
         type: json["type"] == null ? null : Category.fromMap(json["type"]),
-        category: json["category"] == null ? null : Category.fromMap(json["category"]),
-        subcategory: json["subcategory"] == null ? null : Category.fromMap(json["subcategory"]),
+        category: json["category"] == null
+            ? null
+            : Category.fromMap(json["category"]),
+        subcategory: json["subcategory"] == null
+            ? null
+            : Category.fromMap(json["subcategory"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -763,16 +824,23 @@ class CoverPhoto {
     this.user,
   });
 
-  factory CoverPhoto.fromJson(String str) => CoverPhoto.fromMap(json.decode(str));
+  factory CoverPhoto.fromJson(String str) =>
+      CoverPhoto.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory CoverPhoto.fromMap(Map<String, dynamic> json) => CoverPhoto(
         id: json["id"],
         slug: json["slug"],
-        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-        promotedAt: json["promoted_at"] == null ? null : DateTime.parse(json["promoted_at"]),
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+        promotedAt: json["promoted_at"] == null
+            ? null
+            : DateTime.parse(json["promoted_at"]),
         width: json["width"],
         height: json["height"],
         color: json["color"],
@@ -781,20 +849,25 @@ class CoverPhoto {
         altDescription: json["alt_description"],
         breadcrumbs: json["breadcrumbs"] == null
             ? []
-            : List<Breadcrumb>.from(json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
+            : List<Breadcrumb>.from(
+                json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
         urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
-        links: json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
+        links:
+            json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
         likes: json["likes"],
         likedByUser: json["liked_by_user"],
         currentUserCollections: json["current_user_collections"] == null
             ? []
-            : List<dynamic>.from(json["current_user_collections"]!.map((x) => x)),
+            : List<dynamic>.from(
+                json["current_user_collections"]!.map((x) => x)),
         sponsorship: json["sponsorship"],
-        topicSubmissions:
-            json["topic_submissions"] == null ? null : CoverPhotoTopicSubmissions.fromMap(json["topic_submissions"]),
+        topicSubmissions: json["topic_submissions"] == null
+            ? null
+            : CoverPhotoTopicSubmissions.fromMap(json["topic_submissions"]),
         premium: json["premium"],
         plus: json["plus"],
-        user: json["user"] == null ? null : CoverPhotoUser.fromMap(json["user"]),
+        user:
+            json["user"] == null ? null : CoverPhotoUser.fromMap(json["user"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -809,13 +882,16 @@ class CoverPhoto {
         "blur_hash": blurHash,
         "description": description,
         "alt_description": altDescription,
-        "breadcrumbs": breadcrumbs == null ? [] : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
+        "breadcrumbs": breadcrumbs == null
+            ? []
+            : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
         "urls": urls?.toMap(),
         "links": links?.toMap(),
         "likes": likes,
         "liked_by_user": likedByUser,
-        "current_user_collections":
-            currentUserCollections == null ? [] : List<dynamic>.from(currentUserCollections!.map((x) => x)),
+        "current_user_collections": currentUserCollections == null
+            ? []
+            : List<dynamic>.from(currentUserCollections!.map((x) => x)),
         "sponsorship": sponsorship,
         "topic_submissions": topicSubmissions?.toMap(),
         "premium": premium,
@@ -833,13 +909,19 @@ class CoverPhotoTopicSubmissions {
     this.animals,
   });
 
-  factory CoverPhotoTopicSubmissions.fromJson(String str) => CoverPhotoTopicSubmissions.fromMap(json.decode(str));
+  factory CoverPhotoTopicSubmissions.fromJson(String str) =>
+      CoverPhotoTopicSubmissions.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory CoverPhotoTopicSubmissions.fromMap(Map<String, dynamic> json) => CoverPhotoTopicSubmissions(
-        texturesPatterns: json["textures-patterns"] == null ? null : Wallpapers.fromMap(json["textures-patterns"]),
-        animals: json["animals"] == null ? null : Wallpapers.fromMap(json["animals"]),
+  factory CoverPhotoTopicSubmissions.fromMap(Map<String, dynamic> json) =>
+      CoverPhotoTopicSubmissions(
+        texturesPatterns: json["textures-patterns"] == null
+            ? null
+            : Wallpapers.fromMap(json["textures-patterns"]),
+        animals: json["animals"] == null
+            ? null
+            : Wallpapers.fromMap(json["animals"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -857,13 +939,16 @@ class Wallpapers {
     this.approvedOn,
   });
 
-  factory Wallpapers.fromJson(String str) => Wallpapers.fromMap(json.decode(str));
+  factory Wallpapers.fromJson(String str) =>
+      Wallpapers.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Wallpapers.fromMap(Map<String, dynamic> json) => Wallpapers(
         status: json["status"],
-        approvedOn: json["approved_on"] == null ? null : DateTime.parse(json["approved_on"]),
+        approvedOn: json["approved_on"] == null
+            ? null
+            : DateTime.parse(json["approved_on"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -955,13 +1040,16 @@ class CoverPhotoUser {
     this.social,
   });
 
-  factory CoverPhotoUser.fromJson(String str) => CoverPhotoUser.fromMap(json.decode(str));
+  factory CoverPhotoUser.fromJson(String str) =>
+      CoverPhotoUser.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory CoverPhotoUser.fromMap(Map<String, dynamic> json) => CoverPhotoUser(
         id: json["id"],
-        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
         username: json["username"],
         name: json["name"],
         firstName: json["first_name"],
@@ -971,7 +1059,9 @@ class CoverPhotoUser {
         bio: json["bio"],
         location: json["location"],
         links: json["links"] == null ? null : UserLinks.fromMap(json["links"]),
-        profileImage: json["profile_image"] == null ? null : ProfileImage.fromMap(json["profile_image"]),
+        profileImage: json["profile_image"] == null
+            ? null
+            : ProfileImage.fromMap(json["profile_image"]),
         instagramUsername: json["instagram_username"],
         totalCollections: json["total_collections"],
         totalLikes: json["total_likes"],
@@ -1059,7 +1149,8 @@ class ProfileImage {
     this.large,
   });
 
-  factory ProfileImage.fromJson(String str) => ProfileImage.fromMap(json.decode(str));
+  factory ProfileImage.fromJson(String str) =>
+      ProfileImage.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
@@ -1123,16 +1214,27 @@ class ResultTopicSubmissions {
     this.wallpapers,
   });
 
-  factory ResultTopicSubmissions.fromJson(String str) => ResultTopicSubmissions.fromMap(json.decode(str));
+  factory ResultTopicSubmissions.fromJson(String str) =>
+      ResultTopicSubmissions.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory ResultTopicSubmissions.fromMap(Map<String, dynamic> json) => ResultTopicSubmissions(
-        experimental: json["experimental"] == null ? null : ArtsCulture.fromMap(json["experimental"]),
-        artsCulture: json["arts-culture"] == null ? null : ArtsCulture.fromMap(json["arts-culture"]),
-        people: json["people"] == null ? null : ArtsCulture.fromMap(json["people"]),
-        technology: json["technology"] == null ? null : ArtsCulture.fromMap(json["technology"]),
-        wallpapers: json["wallpapers"] == null ? null : Wallpapers.fromMap(json["wallpapers"]),
+  factory ResultTopicSubmissions.fromMap(Map<String, dynamic> json) =>
+      ResultTopicSubmissions(
+        experimental: json["experimental"] == null
+            ? null
+            : ArtsCulture.fromMap(json["experimental"]),
+        artsCulture: json["arts-culture"] == null
+            ? null
+            : ArtsCulture.fromMap(json["arts-culture"]),
+        people:
+            json["people"] == null ? null : ArtsCulture.fromMap(json["people"]),
+        technology: json["technology"] == null
+            ? null
+            : ArtsCulture.fromMap(json["technology"]),
+        wallpapers: json["wallpapers"] == null
+            ? null
+            : Wallpapers.fromMap(json["wallpapers"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -1151,7 +1253,8 @@ class ArtsCulture {
     this.status,
   });
 
-  factory ArtsCulture.fromJson(String str) => ArtsCulture.fromMap(json.decode(str));
+  factory ArtsCulture.fromJson(String str) =>
+      ArtsCulture.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
@@ -1209,13 +1312,16 @@ class ResultUser {
     this.social,
   });
 
-  factory ResultUser.fromJson(String str) => ResultUser.fromMap(json.decode(str));
+  factory ResultUser.fromJson(String str) =>
+      ResultUser.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory ResultUser.fromMap(Map<String, dynamic> json) => ResultUser(
         id: json["id"],
-        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
         username: json["username"],
         name: json["name"],
         firstName: json["first_name"],
@@ -1225,7 +1331,9 @@ class ResultUser {
         bio: json["bio"],
         location: json["location"],
         links: json["links"] == null ? null : UserLinks.fromMap(json["links"]),
-        profileImage: json["profile_image"] == null ? null : ProfileImage.fromMap(json["profile_image"]),
+        profileImage: json["profile_image"] == null
+            ? null
+            : ProfileImage.fromMap(json["profile_image"]),
         instagramUsername: json["instagram_username"],
         totalCollections: json["total_collections"],
         totalLikes: json["total_likes"],

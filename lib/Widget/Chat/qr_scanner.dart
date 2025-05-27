@@ -15,17 +15,19 @@ class QrScanner extends StatefulWidget {
   State<QrScanner> createState() => _QrScannerState();
 }
 
-class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMixin {
+class _QrScannerState extends State<QrScanner>
+    with SingleTickerProviderStateMixin {
   final MobileScannerController controller = MobileScannerController();
   Barcode? barcode;
   BarcodeCapture? capture;
-  MobileScannerArguments? arguments;
 
   late final AnimationController animCon;
 
   @override
   void initState() {
-    animCon = AnimationController(vsync: this, duration: const Duration(milliseconds: 4000))..repeat();
+    animCon = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 4000))
+      ..repeat();
     super.initState();
   }
 
@@ -45,12 +47,15 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
       floatingActionButton: FloatingActionButton(
         heroTag: 'GalleryQr',
         onPressed: () async {
-          final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+          final scaf = ScaffoldMessenger.of(context);
+
+          final image =
+              await ImagePicker().pickImage(source: ImageSource.gallery);
 
           if (image?.path != null) {
             final result = await controller.analyzeImage(image!.path);
-            if (mounted && result == false) {
-              ScaffoldMessenger.of(context).showSnackBar(
+            if (mounted && result?.barcodes.isEmpty == true) {
+              scaf.showSnackBar(
                 const SnackBar(content: Text('No Code Found')),
               );
             }
@@ -124,18 +129,14 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
               MobileScanner(
                 scanWindow: scanWindow,
                 controller: controller,
-                onScannerStarted: (arguments) {
-                  this.arguments = arguments;
-                  setState(() {});
-                },
-                errorBuilder: (context, error, child) {
+                errorBuilder: (context, error) {
                   return ScannerErrorWidget(error: error);
                 },
                 onDetect: (BarcodeCapture capture) async {
                   this.capture = capture;
                   setState(() => barcode = capture.barcodes.first);
                 },
-                overlay: Center(
+                overlayBuilder: (context, overlayConstraints) => Center(
                   child: SizedBox(
                     width: 300,
                     height: 300,
@@ -149,13 +150,13 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
                   ),
                 ),
               ),
-              if (barcode != null && barcode?.corners != null && arguments != null)
+              if (barcode != null && barcode?.corners != null)
                 CustomPaint(
                   painter: BarcodeOverlay(
                     barcode: barcode!,
-                    arguments: arguments!,
                     boxFit: BoxFit.contain,
                     capture: capture!,
+                    scanWindow: scanWindow,
                   ),
                 ),
               // const ScanningPainter(),
@@ -172,15 +173,15 @@ class _QrScannerState extends State<QrScanner> with SingleTickerProviderStateMix
 class BarcodeOverlay extends CustomPainter {
   BarcodeOverlay({
     required this.barcode,
-    required this.arguments,
     required this.boxFit,
     required this.capture,
+    required this.scanWindow,
   });
 
   final BarcodeCapture capture;
   final Barcode barcode;
-  final MobileScannerArguments arguments;
   final BoxFit boxFit;
+  final Rect scanWindow;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -188,7 +189,7 @@ class BarcodeOverlay extends CustomPainter {
       return;
     }
 
-    final adjustedSize = applyBoxFit(boxFit, arguments.size, size);
+    final adjustedSize = applyBoxFit(boxFit, scanWindow.size, size);
 
     double verticalPadding = size.height - adjustedSize.destination.height;
     double horizontalPadding = size.width - adjustedSize.destination.width;
@@ -211,8 +212,8 @@ class BarcodeOverlay extends CustomPainter {
       ratioWidth = capture.size.width / adjustedSize.destination.width;
       ratioHeight = capture.size.height / adjustedSize.destination.height;
     } else {
-      ratioWidth = arguments.size.width / adjustedSize.destination.width;
-      ratioHeight = arguments.size.height / adjustedSize.destination.height;
+      ratioWidth = scanWindow.size.width / adjustedSize.destination.width;
+      ratioHeight = scanWindow.size.height / adjustedSize.destination.height;
     }
 
     final List<Offset> adjustedOffset = [];
@@ -378,5 +379,6 @@ class ScannerOverlay extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => oldDelegate != this;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) =>
+      oldDelegate != this;
 }

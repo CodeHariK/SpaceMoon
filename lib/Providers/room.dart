@@ -12,7 +12,10 @@ part 'room.g.dart';
 
 extension SuperRoom on Room {
   DocumentReference<Room?> get roomDoc {
-    return FirebaseFirestore.instance.collection(Const.rooms.name).doc(uid).withConverter(
+    return FirebaseFirestore.instance
+        .collection(Const.rooms.name)
+        .doc(uid)
+        .withConverter(
       fromFirestore: (snapshot, options) {
         return fromDocSnap(Room(), snapshot);
       },
@@ -23,7 +26,9 @@ extension SuperRoom on Room {
   }
 
   CollectionReference<Tweet?>? get tweetCol {
-    return FirebaseFirestore.instance.collection('${Const.rooms.name}/$uid/${Const.tweets.name}').withConverter(
+    return FirebaseFirestore.instance
+        .collection('${Const.rooms.name}/$uid/${Const.tweets.name}')
+        .withConverter(
       fromFirestore: (snapshot, options) {
         return fromDocSnap(Tweet(), snapshot);
       },
@@ -63,7 +68,8 @@ FutureOr<List<Room?>> searchFamousRooms(SearchFamousRoomsRef ref) async {
       .orderBy(Const.updated.name, descending: true)
       .limit(10)
       .get()
-      .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
+      .then(
+          (value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
 
   return rooms;
 }
@@ -73,12 +79,13 @@ Future<List<Room?>> getRoomByNick(String nick) async {
       .collection(Const.rooms.name)
       .where(Const.nick.name, isEqualTo: nick)
       .get()
-      .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
+      .then(
+          (value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
 
   return rooms;
 }
 
-Future<int> countRoomByNick(String nick) async {
+Future<int?> countRoomByNick(String nick) async {
   final count = await FirebaseFirestore.instance
       .collection(Const.rooms.name)
       .where(Const.nick.name, isEqualTo: nick)
@@ -214,7 +221,8 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> reportRoom(RoomUser user, Set<String> reason) async {
     try {
-      await SpaceMoon.fn('room-reportRoom').call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
+      await SpaceMoon.fn('room-reportRoom').call(
+          user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
       exitRoom(user);
     } catch (e) {
       debugPrint('reportRoom Failed $e');

@@ -6,10 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
-import 'package:moonspace/form/mario.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
+import 'package:moonspace/widgets/async_lock.dart';
+import 'package:moonspace/widgets/animated_overlay.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
@@ -66,7 +66,8 @@ class GalleryImage extends StatelessWidget {
                   },
                 ),
               ),
-              const IgnorePointer(child: Icon(Icons.play_circle_fill, size: 40)),
+              const IgnorePointer(
+                  child: Icon(Icons.play_circle_fill, size: 40)),
             ],
           ),
         ),
@@ -157,7 +158,10 @@ class GalleryImage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                             color: Colors.black,
                             boxShadow: const [
-                              BoxShadow(color: Color.fromARGB(160, 255, 255, 255), blurRadius: 2, spreadRadius: 4),
+                              BoxShadow(
+                                  color: Color.fromARGB(160, 255, 255, 255),
+                                  blurRadius: 2,
+                                  spreadRadius: 4),
                             ],
                           ),
                           child: IconButton(
@@ -172,7 +176,8 @@ class GalleryImage extends StatelessWidget {
 
                                 await uploadFire(
                                   imageName: randomString(12),
-                                  storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                                  storagePath:
+                                      'tweet/$roomId/${tweet.user}/$tweetId',
                                   docPath: 'rooms/$roomId/tweets/$tweetId',
                                   meta: imageMetadata,
                                   file: null,
@@ -200,8 +205,10 @@ class GalleryImage extends StatelessWidget {
 }
 
 extension SuperImageMetadata on Tweet {
-  List<ImageMetadata> get avaiable => gallery.where((element) => element.localUrl.isEmpty).toList();
-  List<ImageMetadata> get notAvaiable => gallery.where((element) => element.localUrl.isNotEmpty).toList();
+  List<ImageMetadata> get avaiable =>
+      gallery.where((element) => element.localUrl.isEmpty).toList();
+  List<ImageMetadata> get notAvaiable =>
+      gallery.where((element) => element.localUrl.isNotEmpty).toList();
   int get uploaded => avaiable.length;
   int get total => gallery.length;
 }
@@ -233,7 +240,8 @@ class GalleryBox extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(child: GalleryImage(tweet: tweet, index: 0)),
-                      if (tweet.gallery.length > 1) Expanded(child: GalleryImage(tweet: tweet, index: 1)),
+                      if (tweet.gallery.length > 1)
+                        Expanded(child: GalleryImage(tweet: tweet, index: 1)),
                     ],
                   ),
                 ),
@@ -241,8 +249,10 @@ class GalleryBox extends StatelessWidget {
                   Expanded(
                     child: Row(
                       children: [
-                        if (tweet.gallery.length > 2) Expanded(child: GalleryImage(tweet: tweet, index: 2)),
-                        if (tweet.gallery.length > 3) Expanded(child: GalleryImage(tweet: tweet, index: 3)),
+                        if (tweet.gallery.length > 2)
+                          Expanded(child: GalleryImage(tweet: tweet, index: 2)),
+                        if (tweet.gallery.length > 3)
+                          Expanded(child: GalleryImage(tweet: tweet, index: 3)),
                       ],
                     ),
                   ),
@@ -305,9 +315,11 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
     return StreamBuilder(
       stream: tweet.stream,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active && snapshot.data?.data() == null) {
+        if (snapshot.connectionState == ConnectionState.active &&
+            snapshot.data?.data() == null) {
+          final nav = Navigator.of(context);
           Future.delayed(const Duration(milliseconds: 50), () {
-            context.nav.pop();
+            nav.pop();
           });
         }
 
@@ -324,9 +336,12 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                   builder: (context, ref, child) {
                     return InkWell(
                       onTap: () {
-                        tweet.gallery.removeWhere((element) => selected.contains(element));
+                        tweet.gallery.removeWhere(
+                            (element) => selected.contains(element));
 
-                        ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                        ref
+                            .read(tweetsProvider.notifier)
+                            .updateTweet(tweet: tweet);
 
                         setState(() => startSelection = false);
                       },
@@ -350,7 +365,8 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                         heroTag: 'Gallery Upload',
                         onPressed: null,
                         child: Consumer(
-                          builder: (context, ref, child) => GalleryUploaderButton(
+                          builder: (context, ref, child) =>
+                              GalleryUploaderButton(
                             tonal: false,
                             ref: ref,
                             tweet: tweet,
@@ -376,7 +392,8 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
 
                               await uploadFire(
                                 imageName: randomString(12),
-                                storagePath: 'tweet/$roomId/${tweet.user}/$tweetId',
+                                storagePath:
+                                    'tweet/$roomId/${tweet.user}/$tweetId',
                                 docPath: 'rooms/$roomId/tweets/$tweetId',
                                 meta: img,
                                 file: null,
@@ -396,7 +413,8 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
             child: GridView.builder(
               cacheExtent: 2000,
               itemCount: tweet.gallery.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (1, 4).c.toInt()),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: (1, 4).c.toInt()),
               itemBuilder: (context, index) {
                 void selector() {
                   if (selected.contains(tweet.gallery[index])) {
@@ -411,7 +429,9 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                   label: 'Gallery',
                   child: Container(
                     foregroundDecoration: BoxDecoration(
-                      color: selected.contains(tweet.gallery[index]) ? Colors.black12 : null,
+                      color: selected.contains(tweet.gallery[index])
+                          ? Colors.black12
+                          : null,
                     ),
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
@@ -427,7 +447,8 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                           IgnorePointer(
                             ignoring: startSelection,
                             child: GalleryImage(
-                              key: ObjectKey(tweet.gallery[index].hashCode + index),
+                              key: ObjectKey(
+                                  tweet.gallery[index].hashCode + index),
                               tweet: tweet,
                               index: index,
                               inScaffold: true,
@@ -438,10 +459,14 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                               builder: (_, ref, ___) => AsyncTextFormField(
                                 initialValue: tweet.gallery[index].caption,
                                 asyncValidator: (value) async {
-                                  final uIndex = tweet.gallery.indexWhere((element) => element == tweet.gallery[index]);
+                                  final uIndex = tweet.gallery.indexWhere(
+                                      (element) =>
+                                          element == tweet.gallery[index]);
                                   tweet.gallery[uIndex].caption = value;
 
-                                  ref.read(tweetsProvider.notifier).updateTweet(tweet: tweet);
+                                  ref
+                                      .read(tweetsProvider.notifier)
+                                      .updateTweet(tweet: tweet);
 
                                   return null;
                                 },
@@ -449,7 +474,8 @@ class _GalleryScaffoldState extends ConsumerState<GalleryScaffold> {
                                 showPrefix: false,
                                 milliseconds: 1000,
                                 maxLines: 3,
-                                decoration: (AsyncText value, galleryCon) => const InputDecoration(
+                                decoration: (AsyncText value, galleryCon) =>
+                                    const InputDecoration(
                                   fillColor: Colors.black54,
                                   hintStyle: TextStyle(color: Colors.white70),
                                   filled: true,
@@ -601,7 +627,8 @@ class FutureSpaceBuilder extends ConsumerWidget {
             Align(
               alignment: Alignment.topRight,
               child: AsyncLock(
-                builder: (loading, status, lock, open, setStatus) => IconButton.filledTonal(
+                builder: (loading, status, lock, open, setStatus) =>
+                    IconButton.filledTonal(
                   onPressed: () async {
                     lock();
                     final bytes = (await http.get(Uri.parse(url))).bodyBytes;
@@ -632,7 +659,8 @@ class FutureSpaceBuilder extends ConsumerWidget {
 
     final p = path ?? imageMetadata?.path ?? '';
 
-    final spaceurl = ref.watch(spaceStoreRefProvider(thumbnail ? spaceThumbPath(p) : p));
+    final spaceurl =
+        ref.watch(spaceStoreRefProvider(thumbnail ? spaceThumbPath(p) : p));
 
     return spaceurl.when(
       data: (url) {

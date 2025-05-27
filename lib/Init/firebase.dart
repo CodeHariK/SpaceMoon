@@ -23,22 +23,29 @@ Future<void> initFirebase() async {
 
   await FirebaseAppCheck.instance
       .activate(
-        webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
-        androidProvider: SpaceMoon.debugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-        appleProvider: SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
+        webProvider:
+            ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
+        androidProvider: SpaceMoon.debugMode
+            ? AndroidProvider.debug
+            : AndroidProvider.playIntegrity,
+        appleProvider:
+            SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
       )
       .onError(
         (error, stackTrace) => lava(error),
       );
 
   if (Device.isMobile) {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!SpaceMoon.debugMode);
+    await FirebaseCrashlytics.instance
+        .setCrashlyticsCollectionEnabled(!SpaceMoon.debugMode);
   }
 
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),
     PhoneAuthProvider(),
-    GoogleProvider(clientId: '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com'),
+    GoogleProvider(
+        clientId:
+            '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com'),
     if (Device.isIos || Device.isMacOS) auth.AppleProvider(),
   ]);
 
@@ -52,7 +59,8 @@ Future<void> initFirebase() async {
 Future<void> emulator() async {
   if (SpaceMoon.useEmulator) {
     try {
-      final emulatorHost = Device.isAndroid ? SpaceMoon.computerIp : 'localhost';
+      final emulatorHost =
+          Device.isAndroid ? SpaceMoon.computerIp : 'localhost';
 
       FirebaseFirestore.instance.settings = Settings(
         host: '$emulatorHost:8080',

@@ -17,7 +17,11 @@ Stream<User?> currentUserData(CurrentUserDataRef ref) {
     return const Stream.empty();
   }
 
-  return FirebaseFirestore.instance.collection(Const.users.name).doc(user?.uid).snapshots().map((snapshot) {
+  return FirebaseFirestore.instance
+      .collection(Const.users.name)
+      .doc(user?.uid)
+      .snapshots()
+      .map((snapshot) {
     final userData = fromDocSnap(User(), snapshot);
 
     // if (userData == null || userData.uid != user?.uid) {
@@ -42,12 +46,13 @@ Future<List<User?>> searchUserByNick(SearchUserByNickRef ref) async {
       .collection(Const.users.name)
       .where(Const.nick.name, isEqualTo: nick)
       .get()
-      .then((value) => value.docs.map((e) => fromQuerySnap(User(), e)!).toList());
+      .then(
+          (value) => value.docs.map((e) => fromQuerySnap(User(), e)!).toList());
 
   return users;
 }
 
-Future<int> countUserByNick(String nick) async {
+Future<int?> countUserByNick(String nick) async {
   final count = await FirebaseFirestore.instance
       .collection(Const.users.name)
       .where(Const.nick.name, isEqualTo: nick)
@@ -77,7 +82,8 @@ Future<void> callUserUpdate(User user) async {
 
 Future<void> reportUser(User user, Set<String> reason) async {
   try {
-    await SpaceMoon.fn('user-reportUser').call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
+    await SpaceMoon.fn('user-reportUser')
+        .call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
   } catch (e) {
     debugPrint('reportRoom Failed $e');
   }

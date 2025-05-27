@@ -18,10 +18,11 @@ import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/all_chat.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Static/assets.dart';
-import 'package:spacemoon/Widget/AppFlowy/app_flowy.dart';
+import 'package:spacemoon/Widget/TextEditor/text_editor.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 
-final GlobalKey<NavigatorState> tabShellNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> tabShellNavigatorKey =
+    GlobalKey<NavigatorState>();
 
 class NotificationShell extends StatefulShellRouteData {
   const NotificationShell();
@@ -34,11 +35,15 @@ class NotificationShell extends StatefulShellRouteData {
       location: [AppRouter.notification],
       icon: const Icon(Icons.notifications_none_rounded),
     ),
-    ShellData(name: 'Subscription', location: [AppRouter.subscription], icon: const Icon(Icons.subject_sharp)),
+    ShellData(
+        name: 'Subscription',
+        location: [AppRouter.subscription],
+        icon: const Icon(Icons.subject_sharp)),
   ];
 
   @override
-  Page<void> pageBuilder(BuildContext context, GoRouterState state, StatefulNavigationShell navigationShell) {
+  Page<void> pageBuilder(BuildContext context, GoRouterState state,
+      StatefulNavigationShell navigationShell) {
     return fadePage(context, state, navigationShell);
   }
 
@@ -83,11 +88,12 @@ class SubscriptionsRoute extends GoRouteData {
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
 
-  static final StreamController<Tweet> tweetStream = StreamController<Tweet>.broadcast()
-    ..stream.listen((tweet) {
-      //
-      _tweets.add(tweet);
-    });
+  static final StreamController<Tweet> tweetStream =
+      StreamController<Tweet>.broadcast()
+        ..stream.listen((tweet) {
+          //
+          _tweets.add(tweet);
+        });
 
   static final List<Tweet> _tweets = [];
 
@@ -115,13 +121,15 @@ class NotificationsPage extends StatelessWidget {
                 final t = _tweets[index];
 
                 return Consumer(
-                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  builder:
+                      (BuildContext context, WidgetRef ref, Widget? child) {
                     final tweet = ref.watch(getTweetByIdProvider(t)).value;
                     final room = ref.watch(getRoomByIdProvider(t.room)).value;
                     if (tweet == null) return const SizedBox.shrink();
 
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
+                      padding:
+                          const EdgeInsets.only(bottom: 8, left: 4, right: 4),
                       child: DashedBorderContainer(
                         borderRadius: BorderRadius.circular(12),
                         child: InkWell(
@@ -149,7 +157,8 @@ class NotificationsPage extends StatelessWidget {
                                         text: room?.displayName ?? '-',
                                         children: [
                                           TextSpan(
-                                            text: ' @ ${tweet.created.timeString}',
+                                            text:
+                                                ' @ ${tweet.created.timeString}',
                                             style: context.ls,
                                           ),
                                         ],
@@ -160,19 +169,21 @@ class NotificationsPage extends StatelessWidget {
                                   if (tweet.mediaType == MediaType.TEXT)
                                     Align(
                                       alignment: Alignment.topLeft,
-                                      child: Text(tweet.text, style: context.tm),
+                                      child:
+                                          Text(tweet.text, style: context.tm),
                                     ),
                                   if (tweet.mediaType == MediaType.POST)
                                     SizedBox(
                                       width: 300,
                                       height: 300,
-                                      child: AppFlowy(
+                                      child: TextEditor(
                                         key: ValueKey(tweet.hashCode + index),
                                         jsonData: tweet.text,
                                         showAppbar: false,
                                       ),
                                     ),
-                                  if (tweet.mediaType == MediaType.GALLERY) GalleryBox(tweet: tweet),
+                                  if (tweet.mediaType == MediaType.GALLERY)
+                                    GalleryBox(tweet: tweet),
                                 ],
                               ),
                             ),
