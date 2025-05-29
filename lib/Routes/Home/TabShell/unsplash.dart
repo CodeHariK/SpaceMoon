@@ -13,30 +13,20 @@ import 'package:http/http.dart' as http;
 import 'package:moonspace/widgets/animated_overlay.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Static/theme.dart';
+import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
 
 class UnsplashButton extends StatelessWidget {
-  const UnsplashButton({
-    super.key,
-    required this.roomUser,
-  });
+  const UnsplashButton({super.key, required this.roomUser});
 
   final RoomUser roomUser;
 
   @override
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
-      icon: const Icon(
-        Icons.sailing_outlined,
-        semanticLabel: 'unsplash',
-      ),
+      icon: const Icon(Icons.sailing_outlined, semanticLabel: 'unsplash'),
       onPressed: () {
-        context.cPush(
-          UnsplashPage(
-            roomUser: roomUser,
-          ),
-        );
+        context.cPush(UnsplashPage(roomUser: roomUser));
         AnimatedOverlay.hide();
       },
     );
@@ -64,8 +54,11 @@ class _UnsplashPageState extends State<UnsplashPage> {
   }
 
   Future<void> fetch() async {
-    final r = await http.get(Uri.parse(
-        'https://api.unsplash.com/search/photos?per_page=20&page=$page&query=$query&orientation=portrait&client_id=i2I0ZoWiW1efbC6m-hc9aSfJJk7DnhQixKWhhDdq5Bo'));
+    final r = await http.get(
+      Uri.parse(
+        'https://api.unsplash.com/search/photos?per_page=20&page=$page&query=$query&orientation=portrait&client_id=i2I0ZoWiW1efbC6m-hc9aSfJJk7DnhQixKWhhDdq5Bo',
+      ),
+    );
     res = Unsplash.fromJson(r.body);
     setState(() {});
   }
@@ -119,82 +112,78 @@ class _UnsplashPageState extends State<UnsplashPage> {
   }
 }
 
-class UnslashRow extends StatelessWidget {
-  const UnslashRow(
-    this.res, {
-    super.key,
-  });
+// class UnslashRow extends StatelessWidget {
+//   const UnslashRow(
+//     this.res, {
+//     super.key,
+//   });
 
-  final Unsplash? res;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 400,
-          child: PageView.builder(
-            pageSnapping: false,
-            controller: PageController(viewportFraction: .8),
-            itemCount: res?.results?.length,
-            itemBuilder: (context, index) {
-              final e = res?.results?[index];
-              final url = e?.urls?.regular ?? e?.urls?.full;
+//   final Unsplash? res;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         SizedBox(
+//           height: 400,
+//           child: PageView.builder(
+//             pageSnapping: false,
+//             controller: PageController(viewportFraction: .8),
+//             itemCount: res?.results?.length,
+//             itemBuilder: (context, index) {
+//               final e = res?.results?[index];
+//               final url = e?.urls?.regular ?? e?.urls?.full;
 
-              if (e == null || url == null) return const Placeholder();
-              return Semantics(
-                label: 'Image',
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 1,
-                        spreadRadius: 1,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  margin: const EdgeInsets.all(8.0),
-                  child: Hero(
-                    tag: e.id ?? 'e.id',
-                    child: CustomCacheImage(
-                      imageUrl: url,
-                      radius: 12,
-                      blurHash: e.blurHash,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            res?.results?.length ?? 0,
-            (index) => Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey,
-              ),
-              width: 12,
-              height: 12,
-              margin: const EdgeInsets.all(8),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
+//               if (e == null || url == null) return const Placeholder();
+//               return Semantics(
+//                 label: 'Image',
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(16),
+//                     boxShadow: const [
+//                       BoxShadow(
+//                         color: Colors.black12,
+//                         blurRadius: 1,
+//                         spreadRadius: 1,
+//                         offset: Offset(0, 2),
+//                       ),
+//                     ],
+//                   ),
+//                   margin: const EdgeInsets.all(8.0),
+//                   child: Hero(
+//                     tag: e.id ?? 'e.id',
+//                     child: CustomCacheImage(
+//                       imageUrl: url,
+//                       radius: 12,
+//                       blurHash: e.blurHash,
+//                     ),
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: List.generate(
+//             res?.results?.length ?? 0,
+//             (index) => Container(
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(8),
+//                 color: Colors.grey,
+//               ),
+//               width: 12,
+//               height: 12,
+//               margin: const EdgeInsets.all(8),
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class UnsplashGrid extends HookConsumerWidget {
-  const UnsplashGrid({
-    super.key,
-    this.res,
-    required this.roomUser,
-  });
+  const UnsplashGrid({super.key, this.res, required this.roomUser});
 
   final Unsplash? res;
   final RoomUser roomUser;
@@ -210,175 +199,185 @@ class UnsplashGrid extends HookConsumerWidget {
           GridView.count(
             physics: const BouncingScrollPhysics(),
             crossAxisCount: (2, 4).c.toInt(),
-            children: res?.results?.map(
-                  (res) {
-                    final url = res.urls?.regular ?? res.urls?.full;
-                    if (url != null) {
-                      return InkWell(
-                        onLongPress: () {
-                          if (selected.value.contains(res)) {
-                            final s = selected.value.toList()..remove(res);
-                            selected.value = s.toSet();
-                          } else {
-                            selected.value = {...selected.value, res};
-                          }
-                        },
-                        onTap: selected.value.isNotEmpty
-                            ? () {
-                                if (selected.value.contains(res)) {
-                                  final s = selected.value.toList()
-                                    ..remove(res);
-                                  selected.value = s.toSet();
-                                } else {
-                                  selected.value = {...selected.value, res};
-                                }
+            children:
+                res?.results?.map((res) {
+                  final url = res.urls?.regular ?? res.urls?.full;
+                  if (url != null) {
+                    return InkWell(
+                      onLongPress: () {
+                        if (selected.value.contains(res)) {
+                          final s = selected.value.toList()..remove(res);
+                          selected.value = s.toSet();
+                        } else {
+                          selected.value = {...selected.value, res};
+                        }
+                      },
+                      onTap: selected.value.isNotEmpty
+                          ? () {
+                              if (selected.value.contains(res)) {
+                                final s = selected.value.toList()..remove(res);
+                                selected.value = s.toSet();
+                              } else {
+                                selected.value = {...selected.value, res};
                               }
-                            : () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    fullscreenDialog: true,
-                                    pageBuilder: (context, animation,
-                                        secondaryAnimation) {
-                                      return Scaffold(
-                                        floatingActionButton:
-                                            FloatingActionButton(
-                                          heroTag: 'UnsplashGridSend',
-                                          onPressed: () async {
-                                            await ref
-                                                .read(tweetsProvider.notifier)
-                                                .sendTweet(
-                                                  tweet: Tweet(
-                                                    room: roomUser.room,
-                                                    user: roomUser.user,
-                                                    mediaType:
-                                                        MediaType.GALLERY,
-                                                    gallery: [
-                                                      ImageMetadata(
-                                                        unsplashurl: url,
-                                                        caption:
-                                                            res.description,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                            if (context.mounted) {
-                                              context.pop();
-                                            }
-                                          },
-                                          child: const Icon(
-                                            Icons.send,
-                                            semanticLabel: 'UnsplashGridSend',
-                                          ),
-                                        ),
-                                        appBar: AppBar(),
-                                        body: Semantics(
-                                          label: 'Image',
-                                          child: Stack(
-                                            children: [
-                                              Hero(
-                                                tag: res.id!,
-                                                child: InteractiveViewer(
-                                                  child: CustomCacheImage(
-                                                    imageUrl: url,
-                                                    // blurHash: e.blurHash,
-                                                  ),
+                            }
+                          : () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  fullscreenDialog: true,
+                                  pageBuilder:
+                                      (context, animation, secondaryAnimation) {
+                                        return Scaffold(
+                                          floatingActionButton:
+                                              FloatingActionButton(
+                                                heroTag: 'UnsplashGridSend',
+                                                onPressed: () async {
+                                                  await ref
+                                                      .read(
+                                                        tweetsProvider.notifier,
+                                                      )
+                                                      .sendTweet(
+                                                        tweet: Tweet(
+                                                          room: roomUser.room,
+                                                          user: roomUser.user,
+                                                          mediaType:
+                                                              MediaType.GALLERY,
+                                                          gallery: [
+                                                            ImageMetadata(
+                                                              unsplashurl: url,
+                                                              caption: res
+                                                                  .description,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                  if (context.mounted) {
+                                                    context.pop();
+                                                  }
+                                                },
+                                                child: const Icon(
+                                                  Icons.send,
+                                                  semanticLabel:
+                                                      'UnsplashGridSend',
                                                 ),
                                               ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                    stops: const [0, 1],
-                                                    colors: [
-                                                      (HexColor(res.color ??
-                                                          '#ffffff')),
-                                                      (HexColor(res.color ??
-                                                              '#ffffff'))
-                                                          .withAlpha(0),
+                                          appBar: AppBar(),
+                                          body: Semantics(
+                                            label: 'Image',
+                                            child: Stack(
+                                              children: [
+                                                Hero(
+                                                  tag: res.id!,
+                                                  child: InteractiveViewer(
+                                                    child: CustomCacheImage(
+                                                      imageUrl: url,
+                                                      // blurHash: e.blurHash,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: const EdgeInsets.all(
+                                                    8,
+                                                  ),
+                                                  width: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      begin:
+                                                          Alignment.topCenter,
+                                                      end: Alignment
+                                                          .bottomCenter,
+                                                      stops: const [0, 1],
+                                                      colors: [
+                                                        (HexColor(
+                                                          res.color ??
+                                                              '#ffffff',
+                                                        )),
+                                                        (HexColor(
+                                                          res.color ??
+                                                              '#ffffff',
+                                                        )).withAlpha(0),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      if (res.description !=
+                                                              null ||
+                                                          (res
+                                                                  .description
+                                                                  ?.isNotEmpty ??
+                                                              false))
+                                                        Text(
+                                                          res.description
+                                                              .toString()
+                                                              .toUpperCase(),
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      if (res.altDescription !=
+                                                              null ||
+                                                          (res
+                                                                  .altDescription
+                                                                  ?.isNotEmpty ??
+                                                              false))
+                                                        Text(
+                                                          res.altDescription
+                                                              .toString()
+                                                              .toUpperCase(),
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
                                                     ],
                                                   ),
                                                 ),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    if (res.description !=
-                                                            null ||
-                                                        (res.description
-                                                                ?.isNotEmpty ??
-                                                            false))
-                                                      Text(
-                                                        res.description
-                                                            .toString()
-                                                            .toUpperCase(),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    if (res.altDescription !=
-                                                            null ||
-                                                        (res.altDescription
-                                                                ?.isNotEmpty ??
-                                                            false))
-                                                      Text(
-                                                        res.altDescription
-                                                            .toString()
-                                                            .toUpperCase(),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                        child: Semantics(
-                          label: 'Image',
-                          child: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              Container(
-                                foregroundDecoration: BoxDecoration(
-                                  color: selected.value.contains(res)
-                                      ? const Color.fromARGB(120, 218, 218, 218)
-                                      : null,
+                                        );
+                                      },
                                 ),
-                                child: Hero(
-                                  tag: res.id!,
-                                  child: CustomCacheImage(
-                                    imageUrl: url,
-                                    blurHash: res.blurHash,
-                                  ),
+                              );
+                            },
+                      child: Semantics(
+                        label: 'Image',
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            Container(
+                              foregroundDecoration: BoxDecoration(
+                                color: selected.value.contains(res)
+                                    ? const Color.fromARGB(120, 218, 218, 218)
+                                    : null,
+                              ),
+                              child: Hero(
+                                tag: res.id!,
+                                child: CustomCacheImage(
+                                  imageUrl: url,
+                                  blurHash: res.blurHash,
                                 ),
                               ),
-                              if (selected.value.contains(res))
-                                const Icon(
-                                  Icons.done,
-                                  color: Colors.black,
-                                  size: 40,
-                                )
-                            ],
-                          ),
+                            ),
+                            if (selected.value.contains(res))
+                              const Icon(
+                                Icons.done,
+                                color: Colors.black,
+                                size: 40,
+                              ),
+                          ],
                         ),
-                      );
-                    } else {
-                      return const Placeholder();
-                    }
-                  },
-                ).toList() ??
+                      ),
+                    );
+                  } else {
+                    return const Placeholder();
+                  }
+                }).toList() ??
                 [],
           ),
           if (selected.value.isNotEmpty)
@@ -387,7 +386,9 @@ class UnsplashGrid extends HookConsumerWidget {
               child: FloatingActionButton(
                 heroTag: 'UnsplashGridFloatingActionButton',
                 onPressed: () async {
-                  await ref.read(tweetsProvider.notifier).sendTweet(
+                  await ref
+                      .read(tweetsProvider.notifier)
+                      .sendTweet(
                         tweet: Tweet(
                           room: roomUser.room,
                           user: roomUser.user,
@@ -421,31 +422,27 @@ class Unsplash {
   final int? totalPages;
   final List<Result>? results;
 
-  Unsplash({
-    this.total,
-    this.totalPages,
-    this.results,
-  });
+  Unsplash({this.total, this.totalPages, this.results});
 
   factory Unsplash.fromJson(String str) => Unsplash.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Unsplash.fromMap(Map<String, dynamic> json) => Unsplash(
-        total: json["total"],
-        totalPages: json["total_pages"],
-        results: json["results"] == null
-            ? []
-            : List<Result>.from(json["results"]!.map((x) => Result.fromMap(x))),
-      );
+    total: json["total"],
+    totalPages: json["total_pages"],
+    results: json["results"] == null
+        ? []
+        : List<Result>.from(json["results"]!.map((x) => Result.fromMap(x))),
+  );
 
   Map<String, dynamic> toMap() => {
-        "total": total,
-        "total_pages": totalPages,
-        "results": results == null
-            ? []
-            : List<dynamic>.from(results!.map((x) => x.toMap())),
-      };
+    "total": total,
+    "total_pages": totalPages,
+    "results": results == null
+        ? []
+        : List<dynamic>.from(results!.map((x) => x.toMap())),
+  };
 }
 
 class Result {
@@ -500,74 +497,72 @@ class Result {
   String toJson() => json.encode(toMap());
 
   factory Result.fromMap(Map<String, dynamic> json) => Result(
-        id: json["id"],
-        slug: json["slug"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        promotedAt: json["promoted_at"] == null
-            ? null
-            : DateTime.parse(json["promoted_at"]),
-        width: json["width"],
-        height: json["height"],
-        color: json["color"],
-        blurHash: json["blur_hash"],
-        description: json["description"],
-        altDescription: json["alt_description"],
-        breadcrumbs: json["breadcrumbs"] == null
-            ? []
-            : List<Breadcrumb>.from(
-                json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
-        urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
-        links:
-            json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
-        likes: json["likes"],
-        likedByUser: json["liked_by_user"],
-        currentUserCollections: json["current_user_collections"] == null
-            ? []
-            : List<dynamic>.from(
-                json["current_user_collections"]!.map((x) => x)),
-        sponsorship: json["sponsorship"],
-        topicSubmissions: json["topic_submissions"] == null
-            ? null
-            : ResultTopicSubmissions.fromMap(json["topic_submissions"]),
-        user: json["user"] == null ? null : ResultUser.fromMap(json["user"]),
-        tags: json["tags"] == null
-            ? []
-            : List<Tag>.from(json["tags"]!.map((x) => Tag.fromMap(x))),
-      );
+    id: json["id"],
+    slug: json["slug"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    promotedAt: json["promoted_at"] == null
+        ? null
+        : DateTime.parse(json["promoted_at"]),
+    width: json["width"],
+    height: json["height"],
+    color: json["color"],
+    blurHash: json["blur_hash"],
+    description: json["description"],
+    altDescription: json["alt_description"],
+    breadcrumbs: json["breadcrumbs"] == null
+        ? []
+        : List<Breadcrumb>.from(
+            json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x)),
+          ),
+    urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
+    links: json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
+    likes: json["likes"],
+    likedByUser: json["liked_by_user"],
+    currentUserCollections: json["current_user_collections"] == null
+        ? []
+        : List<dynamic>.from(json["current_user_collections"]!.map((x) => x)),
+    sponsorship: json["sponsorship"],
+    topicSubmissions: json["topic_submissions"] == null
+        ? null
+        : ResultTopicSubmissions.fromMap(json["topic_submissions"]),
+    user: json["user"] == null ? null : ResultUser.fromMap(json["user"]),
+    tags: json["tags"] == null
+        ? []
+        : List<Tag>.from(json["tags"]!.map((x) => Tag.fromMap(x))),
+  );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "slug": slug,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "promoted_at": promotedAt?.toIso8601String(),
-        "width": width,
-        "height": height,
-        "color": color,
-        "blur_hash": blurHash,
-        "description": description,
-        "alt_description": altDescription,
-        "breadcrumbs": breadcrumbs == null
-            ? []
-            : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
-        "urls": urls?.toMap(),
-        "links": links?.toMap(),
-        "likes": likes,
-        "liked_by_user": likedByUser,
-        "current_user_collections": currentUserCollections == null
-            ? []
-            : List<dynamic>.from(currentUserCollections!.map((x) => x)),
-        "sponsorship": sponsorship,
-        "topic_submissions": topicSubmissions?.toMap(),
-        "user": user?.toMap(),
-        "tags":
-            tags == null ? [] : List<dynamic>.from(tags!.map((x) => x.toMap())),
-      };
+    "id": id,
+    "slug": slug,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "promoted_at": promotedAt?.toIso8601String(),
+    "width": width,
+    "height": height,
+    "color": color,
+    "blur_hash": blurHash,
+    "description": description,
+    "alt_description": altDescription,
+    "breadcrumbs": breadcrumbs == null
+        ? []
+        : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
+    "urls": urls?.toMap(),
+    "links": links?.toMap(),
+    "likes": likes,
+    "liked_by_user": likedByUser,
+    "current_user_collections": currentUserCollections == null
+        ? []
+        : List<dynamic>.from(currentUserCollections!.map((x) => x)),
+    "sponsorship": sponsorship,
+    "topic_submissions": topicSubmissions?.toMap(),
+    "user": user?.toMap(),
+    "tags": tags == null ? [] : List<dynamic>.from(tags!.map((x) => x.toMap())),
+  };
 }
 
 class Breadcrumb {
@@ -576,12 +571,7 @@ class Breadcrumb {
   final int? index;
   final UnsplashType? type;
 
-  Breadcrumb({
-    this.slug,
-    this.title,
-    this.index,
-    this.type,
-  });
+  Breadcrumb({this.slug, this.title, this.index, this.type});
 
   factory Breadcrumb.fromJson(String str) =>
       Breadcrumb.fromMap(json.decode(str));
@@ -590,20 +580,20 @@ class Breadcrumb {
   String toString() => json.encode(toMap());
 
   factory Breadcrumb.fromMap(Map<String, dynamic> json) => Breadcrumb(
-        slug: json["slug"],
-        title: json["title"],
-        index: json["index"],
-        type: UnsplashType.values
-            .where((element) => element.name == json["type"])
-            .firstOrNull,
-      );
+    slug: json["slug"],
+    title: json["title"],
+    index: json["index"],
+    type: UnsplashType.values
+        .where((element) => element.name == json["type"])
+        .firstOrNull,
+  );
 
   Map<String, dynamic> toMap() => {
-        "slug": slug,
-        "title": title,
-        "index": index,
-        "type": type?.name,
-      };
+    "slug": slug,
+    "title": title,
+    "index": index,
+    "type": type?.name,
+  };
 }
 
 enum UnsplashType { landingPage, search }
@@ -614,12 +604,7 @@ class ResultLinks {
   final String? download;
   final String? downloadLocation;
 
-  ResultLinks({
-    this.self,
-    this.html,
-    this.download,
-    this.downloadLocation,
-  });
+  ResultLinks({this.self, this.html, this.download, this.downloadLocation});
 
   factory ResultLinks.fromJson(String str) =>
       ResultLinks.fromMap(json.decode(str));
@@ -627,18 +612,18 @@ class ResultLinks {
   String toJson() => json.encode(toMap());
 
   factory ResultLinks.fromMap(Map<String, dynamic> json) => ResultLinks(
-        self: json["self"],
-        html: json["html"],
-        download: json["download"],
-        downloadLocation: json["download_location"],
-      );
+    self: json["self"],
+    html: json["html"],
+    download: json["download"],
+    downloadLocation: json["download_location"],
+  );
 
   Map<String, dynamic> toMap() => {
-        "self": self,
-        "html": html,
-        "download": download,
-        "download_location": downloadLocation,
-      };
+    "self": self,
+    "html": html,
+    "download": download,
+    "download_location": downloadLocation,
+  };
 }
 
 class Tag {
@@ -646,29 +631,25 @@ class Tag {
   final String? title;
   final Source? source;
 
-  Tag({
-    this.type,
-    this.title,
-    this.source,
-  });
+  Tag({this.type, this.title, this.source});
 
   factory Tag.fromJson(String str) => Tag.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Tag.fromMap(Map<String, dynamic> json) => Tag(
-        type: UnsplashType.values
-            .where((element) => element.name == json["type"])
-            .firstOrNull,
-        title: json["title"],
-        source: json["source"] == null ? null : Source.fromMap(json["source"]),
-      );
+    type: UnsplashType.values
+        .where((element) => element.name == json["type"])
+        .firstOrNull,
+    title: json["title"],
+    source: json["source"] == null ? null : Source.fromMap(json["source"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "type": type?.name,
-        "title": title,
-        "source": source?.toMap(),
-      };
+    "type": type?.name,
+    "title": title,
+    "source": source?.toMap(),
+  };
 }
 
 class Source {
@@ -695,28 +676,28 @@ class Source {
   String toJson() => json.encode(toMap());
 
   factory Source.fromMap(Map<String, dynamic> json) => Source(
-        ancestry: json["ancestry"] == null
-            ? null
-            : Ancestry.fromMap(json["ancestry"]),
-        title: json["title"],
-        subtitle: json["subtitle"],
-        description: json["description"],
-        metaTitle: json["meta_title"],
-        metaDescription: json["meta_description"],
-        coverPhoto: json["cover_photo"] == null
-            ? null
-            : CoverPhoto.fromMap(json["cover_photo"]),
-      );
+    ancestry: json["ancestry"] == null
+        ? null
+        : Ancestry.fromMap(json["ancestry"]),
+    title: json["title"],
+    subtitle: json["subtitle"],
+    description: json["description"],
+    metaTitle: json["meta_title"],
+    metaDescription: json["meta_description"],
+    coverPhoto: json["cover_photo"] == null
+        ? null
+        : CoverPhoto.fromMap(json["cover_photo"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "ancestry": ancestry?.toMap(),
-        "title": title,
-        "subtitle": subtitle,
-        "description": description,
-        "meta_title": metaTitle,
-        "meta_description": metaDescription,
-        "cover_photo": coverPhoto?.toMap(),
-      };
+    "ancestry": ancestry?.toMap(),
+    "title": title,
+    "subtitle": subtitle,
+    "description": description,
+    "meta_title": metaTitle,
+    "meta_description": metaDescription,
+    "cover_photo": coverPhoto?.toMap(),
+  };
 }
 
 class Ancestry {
@@ -724,55 +705,43 @@ class Ancestry {
   final Category? category;
   final Category? subcategory;
 
-  Ancestry({
-    this.type,
-    this.category,
-    this.subcategory,
-  });
+  Ancestry({this.type, this.category, this.subcategory});
 
   factory Ancestry.fromJson(String str) => Ancestry.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Ancestry.fromMap(Map<String, dynamic> json) => Ancestry(
-        type: json["type"] == null ? null : Category.fromMap(json["type"]),
-        category: json["category"] == null
-            ? null
-            : Category.fromMap(json["category"]),
-        subcategory: json["subcategory"] == null
-            ? null
-            : Category.fromMap(json["subcategory"]),
-      );
+    type: json["type"] == null ? null : Category.fromMap(json["type"]),
+    category: json["category"] == null
+        ? null
+        : Category.fromMap(json["category"]),
+    subcategory: json["subcategory"] == null
+        ? null
+        : Category.fromMap(json["subcategory"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "type": type?.toMap(),
-        "category": category?.toMap(),
-        "subcategory": subcategory?.toMap(),
-      };
+    "type": type?.toMap(),
+    "category": category?.toMap(),
+    "subcategory": subcategory?.toMap(),
+  };
 }
 
 class Category {
   final String? slug;
   final String? prettySlug;
 
-  Category({
-    this.slug,
-    this.prettySlug,
-  });
+  Category({this.slug, this.prettySlug});
 
   factory Category.fromJson(String str) => Category.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Category.fromMap(Map<String, dynamic> json) => Category(
-        slug: json["slug"],
-        prettySlug: json["pretty_slug"],
-      );
+  factory Category.fromMap(Map<String, dynamic> json) =>
+      Category(slug: json["slug"], prettySlug: json["pretty_slug"]);
 
-  Map<String, dynamic> toMap() => {
-        "slug": slug,
-        "pretty_slug": prettySlug,
-      };
+  Map<String, dynamic> toMap() => {"slug": slug, "pretty_slug": prettySlug};
 }
 
 class CoverPhoto {
@@ -830,84 +799,79 @@ class CoverPhoto {
   String toJson() => json.encode(toMap());
 
   factory CoverPhoto.fromMap(Map<String, dynamic> json) => CoverPhoto(
-        id: json["id"],
-        slug: json["slug"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        promotedAt: json["promoted_at"] == null
-            ? null
-            : DateTime.parse(json["promoted_at"]),
-        width: json["width"],
-        height: json["height"],
-        color: json["color"],
-        blurHash: json["blur_hash"],
-        description: json["description"],
-        altDescription: json["alt_description"],
-        breadcrumbs: json["breadcrumbs"] == null
-            ? []
-            : List<Breadcrumb>.from(
-                json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
-        urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
-        links:
-            json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
-        likes: json["likes"],
-        likedByUser: json["liked_by_user"],
-        currentUserCollections: json["current_user_collections"] == null
-            ? []
-            : List<dynamic>.from(
-                json["current_user_collections"]!.map((x) => x)),
-        sponsorship: json["sponsorship"],
-        topicSubmissions: json["topic_submissions"] == null
-            ? null
-            : CoverPhotoTopicSubmissions.fromMap(json["topic_submissions"]),
-        premium: json["premium"],
-        plus: json["plus"],
-        user:
-            json["user"] == null ? null : CoverPhotoUser.fromMap(json["user"]),
-      );
+    id: json["id"],
+    slug: json["slug"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    promotedAt: json["promoted_at"] == null
+        ? null
+        : DateTime.parse(json["promoted_at"]),
+    width: json["width"],
+    height: json["height"],
+    color: json["color"],
+    blurHash: json["blur_hash"],
+    description: json["description"],
+    altDescription: json["alt_description"],
+    breadcrumbs: json["breadcrumbs"] == null
+        ? []
+        : List<Breadcrumb>.from(
+            json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x)),
+          ),
+    urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
+    links: json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
+    likes: json["likes"],
+    likedByUser: json["liked_by_user"],
+    currentUserCollections: json["current_user_collections"] == null
+        ? []
+        : List<dynamic>.from(json["current_user_collections"]!.map((x) => x)),
+    sponsorship: json["sponsorship"],
+    topicSubmissions: json["topic_submissions"] == null
+        ? null
+        : CoverPhotoTopicSubmissions.fromMap(json["topic_submissions"]),
+    premium: json["premium"],
+    plus: json["plus"],
+    user: json["user"] == null ? null : CoverPhotoUser.fromMap(json["user"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "slug": slug,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
-        "promoted_at": promotedAt?.toIso8601String(),
-        "width": width,
-        "height": height,
-        "color": color,
-        "blur_hash": blurHash,
-        "description": description,
-        "alt_description": altDescription,
-        "breadcrumbs": breadcrumbs == null
-            ? []
-            : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
-        "urls": urls?.toMap(),
-        "links": links?.toMap(),
-        "likes": likes,
-        "liked_by_user": likedByUser,
-        "current_user_collections": currentUserCollections == null
-            ? []
-            : List<dynamic>.from(currentUserCollections!.map((x) => x)),
-        "sponsorship": sponsorship,
-        "topic_submissions": topicSubmissions?.toMap(),
-        "premium": premium,
-        "plus": plus,
-        "user": user?.toMap(),
-      };
+    "id": id,
+    "slug": slug,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "promoted_at": promotedAt?.toIso8601String(),
+    "width": width,
+    "height": height,
+    "color": color,
+    "blur_hash": blurHash,
+    "description": description,
+    "alt_description": altDescription,
+    "breadcrumbs": breadcrumbs == null
+        ? []
+        : List<dynamic>.from(breadcrumbs!.map((x) => x.toMap())),
+    "urls": urls?.toMap(),
+    "links": links?.toMap(),
+    "likes": likes,
+    "liked_by_user": likedByUser,
+    "current_user_collections": currentUserCollections == null
+        ? []
+        : List<dynamic>.from(currentUserCollections!.map((x) => x)),
+    "sponsorship": sponsorship,
+    "topic_submissions": topicSubmissions?.toMap(),
+    "premium": premium,
+    "plus": plus,
+    "user": user?.toMap(),
+  };
 }
 
 class CoverPhotoTopicSubmissions {
   final Wallpapers? texturesPatterns;
   final Wallpapers? animals;
 
-  CoverPhotoTopicSubmissions({
-    this.texturesPatterns,
-    this.animals,
-  });
+  CoverPhotoTopicSubmissions({this.texturesPatterns, this.animals});
 
   factory CoverPhotoTopicSubmissions.fromJson(String str) =>
       CoverPhotoTopicSubmissions.fromMap(json.decode(str));
@@ -925,19 +889,16 @@ class CoverPhotoTopicSubmissions {
       );
 
   Map<String, dynamic> toMap() => {
-        "textures-patterns": texturesPatterns?.toMap(),
-        "animals": animals?.toMap(),
-      };
+    "textures-patterns": texturesPatterns?.toMap(),
+    "animals": animals?.toMap(),
+  };
 }
 
 class Wallpapers {
   final String? status;
   final DateTime? approvedOn;
 
-  Wallpapers({
-    this.status,
-    this.approvedOn,
-  });
+  Wallpapers({this.status, this.approvedOn});
 
   factory Wallpapers.fromJson(String str) =>
       Wallpapers.fromMap(json.decode(str));
@@ -945,16 +906,16 @@ class Wallpapers {
   String toJson() => json.encode(toMap());
 
   factory Wallpapers.fromMap(Map<String, dynamic> json) => Wallpapers(
-        status: json["status"],
-        approvedOn: json["approved_on"] == null
-            ? null
-            : DateTime.parse(json["approved_on"]),
-      );
+    status: json["status"],
+    approvedOn: json["approved_on"] == null
+        ? null
+        : DateTime.parse(json["approved_on"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "status": status,
-        "approved_on": approvedOn?.toIso8601String(),
-      };
+    "status": status,
+    "approved_on": approvedOn?.toIso8601String(),
+  };
 }
 
 class Urls {
@@ -979,22 +940,22 @@ class Urls {
   String toJson() => json.encode(toMap());
 
   factory Urls.fromMap(Map<String, dynamic> json) => Urls(
-        raw: json["raw"],
-        full: json["full"],
-        regular: json["regular"],
-        small: json["small"],
-        thumb: json["thumb"],
-        smallS3: json["small_s3"],
-      );
+    raw: json["raw"],
+    full: json["full"],
+    regular: json["regular"],
+    small: json["small"],
+    thumb: json["thumb"],
+    smallS3: json["small_s3"],
+  );
 
   Map<String, dynamic> toMap() => {
-        "raw": raw,
-        "full": full,
-        "regular": regular,
-        "small": small,
-        "thumb": thumb,
-        "small_s3": smallS3,
-      };
+    "raw": raw,
+    "full": full,
+    "regular": regular,
+    "small": small,
+    "thumb": thumb,
+    "small_s3": smallS3,
+  };
 }
 
 class CoverPhotoUser {
@@ -1046,52 +1007,52 @@ class CoverPhotoUser {
   String toJson() => json.encode(toMap());
 
   factory CoverPhotoUser.fromMap(Map<String, dynamic> json) => CoverPhotoUser(
-        id: json["id"],
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        username: json["username"],
-        name: json["name"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        twitterUsername: json["twitter_username"],
-        portfolioUrl: json["portfolio_url"],
-        bio: json["bio"],
-        location: json["location"],
-        links: json["links"] == null ? null : UserLinks.fromMap(json["links"]),
-        profileImage: json["profile_image"] == null
-            ? null
-            : ProfileImage.fromMap(json["profile_image"]),
-        instagramUsername: json["instagram_username"],
-        totalCollections: json["total_collections"],
-        totalLikes: json["total_likes"],
-        totalPhotos: json["total_photos"],
-        acceptedTos: json["accepted_tos"],
-        forHire: json["for_hire"],
-        social: json["social"] == null ? null : Social.fromMap(json["social"]),
-      );
+    id: json["id"],
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    username: json["username"],
+    name: json["name"],
+    firstName: json["first_name"],
+    lastName: json["last_name"],
+    twitterUsername: json["twitter_username"],
+    portfolioUrl: json["portfolio_url"],
+    bio: json["bio"],
+    location: json["location"],
+    links: json["links"] == null ? null : UserLinks.fromMap(json["links"]),
+    profileImage: json["profile_image"] == null
+        ? null
+        : ProfileImage.fromMap(json["profile_image"]),
+    instagramUsername: json["instagram_username"],
+    totalCollections: json["total_collections"],
+    totalLikes: json["total_likes"],
+    totalPhotos: json["total_photos"],
+    acceptedTos: json["accepted_tos"],
+    forHire: json["for_hire"],
+    social: json["social"] == null ? null : Social.fromMap(json["social"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "updated_at": updatedAt?.toIso8601String(),
-        "username": username,
-        "name": name,
-        "first_name": firstName,
-        "last_name": lastName,
-        "twitter_username": twitterUsername,
-        "portfolio_url": portfolioUrl,
-        "bio": bio,
-        "location": location,
-        "links": links?.toMap(),
-        "profile_image": profileImage?.toMap(),
-        "instagram_username": instagramUsername,
-        "total_collections": totalCollections,
-        "total_likes": totalLikes,
-        "total_photos": totalPhotos,
-        "accepted_tos": acceptedTos,
-        "for_hire": forHire,
-        "social": social?.toMap(),
-      };
+    "id": id,
+    "updated_at": updatedAt?.toIso8601String(),
+    "username": username,
+    "name": name,
+    "first_name": firstName,
+    "last_name": lastName,
+    "twitter_username": twitterUsername,
+    "portfolio_url": portfolioUrl,
+    "bio": bio,
+    "location": location,
+    "links": links?.toMap(),
+    "profile_image": profileImage?.toMap(),
+    "instagram_username": instagramUsername,
+    "total_collections": totalCollections,
+    "total_likes": totalLikes,
+    "total_photos": totalPhotos,
+    "accepted_tos": acceptedTos,
+    "for_hire": forHire,
+    "social": social?.toMap(),
+  };
 }
 
 class UserLinks {
@@ -1118,24 +1079,24 @@ class UserLinks {
   String toJson() => json.encode(toMap());
 
   factory UserLinks.fromMap(Map<String, dynamic> json) => UserLinks(
-        self: json["self"],
-        html: json["html"],
-        photos: json["photos"],
-        likes: json["likes"],
-        portfolio: json["portfolio"],
-        following: json["following"],
-        followers: json["followers"],
-      );
+    self: json["self"],
+    html: json["html"],
+    photos: json["photos"],
+    likes: json["likes"],
+    portfolio: json["portfolio"],
+    following: json["following"],
+    followers: json["followers"],
+  );
 
   Map<String, dynamic> toMap() => {
-        "self": self,
-        "html": html,
-        "photos": photos,
-        "likes": likes,
-        "portfolio": portfolio,
-        "following": following,
-        "followers": followers,
-      };
+    "self": self,
+    "html": html,
+    "photos": photos,
+    "likes": likes,
+    "portfolio": portfolio,
+    "following": following,
+    "followers": followers,
+  };
 }
 
 class ProfileImage {
@@ -1143,11 +1104,7 @@ class ProfileImage {
   final String? medium;
   final String? large;
 
-  ProfileImage({
-    this.small,
-    this.medium,
-    this.large,
-  });
+  ProfileImage({this.small, this.medium, this.large});
 
   factory ProfileImage.fromJson(String str) =>
       ProfileImage.fromMap(json.decode(str));
@@ -1155,16 +1112,16 @@ class ProfileImage {
   String toJson() => json.encode(toMap());
 
   factory ProfileImage.fromMap(Map<String, dynamic> json) => ProfileImage(
-        small: json["small"],
-        medium: json["medium"],
-        large: json["large"],
-      );
+    small: json["small"],
+    medium: json["medium"],
+    large: json["large"],
+  );
 
   Map<String, dynamic> toMap() => {
-        "small": small,
-        "medium": medium,
-        "large": large,
-      };
+    "small": small,
+    "medium": medium,
+    "large": large,
+  };
 }
 
 class Social {
@@ -1185,18 +1142,18 @@ class Social {
   String toJson() => json.encode(toMap());
 
   factory Social.fromMap(Map<String, dynamic> json) => Social(
-        instagramUsername: json["instagram_username"],
-        portfolioUrl: json["portfolio_url"],
-        twitterUsername: json["twitter_username"],
-        paypalEmail: json["paypal_email"],
-      );
+    instagramUsername: json["instagram_username"],
+    portfolioUrl: json["portfolio_url"],
+    twitterUsername: json["twitter_username"],
+    paypalEmail: json["paypal_email"],
+  );
 
   Map<String, dynamic> toMap() => {
-        "instagram_username": instagramUsername,
-        "portfolio_url": portfolioUrl,
-        "twitter_username": twitterUsername,
-        "paypal_email": paypalEmail,
-      };
+    "instagram_username": instagramUsername,
+    "portfolio_url": portfolioUrl,
+    "twitter_username": twitterUsername,
+    "paypal_email": paypalEmail,
+  };
 }
 
 class ResultTopicSubmissions {
@@ -1227,8 +1184,9 @@ class ResultTopicSubmissions {
         artsCulture: json["arts-culture"] == null
             ? null
             : ArtsCulture.fromMap(json["arts-culture"]),
-        people:
-            json["people"] == null ? null : ArtsCulture.fromMap(json["people"]),
+        people: json["people"] == null
+            ? null
+            : ArtsCulture.fromMap(json["people"]),
         technology: json["technology"] == null
             ? null
             : ArtsCulture.fromMap(json["technology"]),
@@ -1238,33 +1196,28 @@ class ResultTopicSubmissions {
       );
 
   Map<String, dynamic> toMap() => {
-        "experimental": experimental?.toMap(),
-        "arts-culture": artsCulture?.toMap(),
-        "people": people?.toMap(),
-        "technology": technology?.toMap(),
-        "wallpapers": wallpapers?.toMap(),
-      };
+    "experimental": experimental?.toMap(),
+    "arts-culture": artsCulture?.toMap(),
+    "people": people?.toMap(),
+    "technology": technology?.toMap(),
+    "wallpapers": wallpapers?.toMap(),
+  };
 }
 
 class ArtsCulture {
   final String? status;
 
-  ArtsCulture({
-    this.status,
-  });
+  ArtsCulture({this.status});
 
   factory ArtsCulture.fromJson(String str) =>
       ArtsCulture.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory ArtsCulture.fromMap(Map<String, dynamic> json) => ArtsCulture(
-        status: json["status"],
-      );
+  factory ArtsCulture.fromMap(Map<String, dynamic> json) =>
+      ArtsCulture(status: json["status"]);
 
-  Map<String, dynamic> toMap() => {
-        "status": status,
-      };
+  Map<String, dynamic> toMap() => {"status": status};
 }
 
 class ResultUser {
@@ -1318,52 +1271,52 @@ class ResultUser {
   String toJson() => json.encode(toMap());
 
   factory ResultUser.fromMap(Map<String, dynamic> json) => ResultUser(
-        id: json["id"],
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        username: json["username"],
-        name: json["name"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        twitterUsername: json["twitter_username"],
-        portfolioUrl: json["portfolio_url"],
-        bio: json["bio"],
-        location: json["location"],
-        links: json["links"] == null ? null : UserLinks.fromMap(json["links"]),
-        profileImage: json["profile_image"] == null
-            ? null
-            : ProfileImage.fromMap(json["profile_image"]),
-        instagramUsername: json["instagram_username"],
-        totalCollections: json["total_collections"],
-        totalLikes: json["total_likes"],
-        totalPhotos: json["total_photos"],
-        totalPromotedPhotos: json["total_promoted_photos"],
-        acceptedTos: json["accepted_tos"],
-        forHire: json["for_hire"],
-        social: json["social"] == null ? null : Social.fromMap(json["social"]),
-      );
+    id: json["id"],
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    username: json["username"],
+    name: json["name"],
+    firstName: json["first_name"],
+    lastName: json["last_name"],
+    twitterUsername: json["twitter_username"],
+    portfolioUrl: json["portfolio_url"],
+    bio: json["bio"],
+    location: json["location"],
+    links: json["links"] == null ? null : UserLinks.fromMap(json["links"]),
+    profileImage: json["profile_image"] == null
+        ? null
+        : ProfileImage.fromMap(json["profile_image"]),
+    instagramUsername: json["instagram_username"],
+    totalCollections: json["total_collections"],
+    totalLikes: json["total_likes"],
+    totalPhotos: json["total_photos"],
+    totalPromotedPhotos: json["total_promoted_photos"],
+    acceptedTos: json["accepted_tos"],
+    forHire: json["for_hire"],
+    social: json["social"] == null ? null : Social.fromMap(json["social"]),
+  );
 
   Map<String, dynamic> toMap() => {
-        "id": id,
-        "updated_at": updatedAt?.toIso8601String(),
-        "username": username,
-        "name": name,
-        "first_name": firstName,
-        "last_name": lastName,
-        "twitter_username": twitterUsername,
-        "portfolio_url": portfolioUrl,
-        "bio": bio,
-        "location": location,
-        "links": links?.toMap(),
-        "profile_image": profileImage?.toMap(),
-        "instagram_username": instagramUsername,
-        "total_collections": totalCollections,
-        "total_likes": totalLikes,
-        "total_photos": totalPhotos,
-        "total_promoted_photos": totalPromotedPhotos,
-        "accepted_tos": acceptedTos,
-        "for_hire": forHire,
-        "social": social?.toMap(),
-      };
+    "id": id,
+    "updated_at": updatedAt?.toIso8601String(),
+    "username": username,
+    "name": name,
+    "first_name": firstName,
+    "last_name": lastName,
+    "twitter_username": twitterUsername,
+    "portfolio_url": portfolioUrl,
+    "bio": bio,
+    "location": location,
+    "links": links?.toMap(),
+    "profile_image": profileImage?.toMap(),
+    "instagram_username": instagramUsername,
+    "total_collections": totalCollections,
+    "total_likes": totalLikes,
+    "total_photos": totalPhotos,
+    "total_promoted_photos": totalPromotedPhotos,
+    "accepted_tos": acceptedTos,
+    "for_hire": forHire,
+    "social": social?.toMap(),
+  };
 }

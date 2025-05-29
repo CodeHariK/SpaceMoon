@@ -49,7 +49,8 @@ class Tweets extends _$Tweets {
 
     try {
       // Stopwatch stopwatch = Stopwatch()..start();
-      final res = await SpaceMoon.fn('tweet-sendTweet').call(tweet.toMap());
+      final res =
+          await SpaceMoon.httpCallable('tweet-sendTweet').call(tweet.toMap());
       // stopwatch.stop();
       // print(stopwatch.elapsedMilliseconds);
 
@@ -62,7 +63,7 @@ class Tweets extends _$Tweets {
 
   Future<void> updateTweet({required Tweet tweet}) async {
     try {
-      await SpaceMoon.fn('tweet-updateTweet').call(tweet.toMap());
+      await SpaceMoon.httpCallable('tweet-updateTweet').call(tweet.toMap());
     } catch (e) {
       debugPrint('updateTweet Failed');
     }
@@ -72,15 +73,17 @@ class Tweets extends _$Tweets {
     required Tweet tweet,
   }) async {
     try {
-      await SpaceMoon.fn('tweet-deleteTweet').call(tweet.toMap());
+      await SpaceMoon.httpCallable('tweet-deleteTweet').call(tweet.toMap());
     } catch (e) {
       debugPrint('deleteTweet Failed');
     }
   }
 
-  FutureOr<void> reportTweet({required Tweet tweet, required Set<String> reason}) async {
+  FutureOr<void> reportTweet(
+      {required Tweet tweet, required Set<String> reason}) async {
     try {
-      await SpaceMoon.fn('tweet-reportTweet').call({'tweet': tweet.toMap(), 'reason': reason.toList()});
+      await SpaceMoon.httpCallable('tweet-reportTweet')
+          .call({'tweet': tweet.toMap(), 'reason': reason.toList()});
     } catch (e) {
       debugPrint('reportTweet Failed$e');
     }
@@ -88,10 +91,11 @@ class Tweets extends _$Tweets {
 }
 
 @riverpod
-FutureOr<Tweet?> getTweetById(GetTweetByIdRef ref, Tweet tweet) async {
+FutureOr<Tweet?> getTweetById(Ref ref, Tweet tweet) async {
   try {
     final tweetDoc = await FirebaseFirestore.instance
-        .doc('${Const.rooms.name}/${tweet.room}/${Const.tweets.name}/${tweet.uid}')
+        .doc(
+            '${Const.rooms.name}/${tweet.room}/${Const.tweets.name}/${tweet.uid}')
         .get();
 
     return fromDocSnap(Tweet(), tweetDoc);
@@ -101,7 +105,7 @@ FutureOr<Tweet?> getTweetById(GetTweetByIdRef ref, Tweet tweet) async {
 }
 
 @riverpod
-Future<int?> getNewTweetCount(GetNewTweetCountRef ref, RoomUser user) async {
+Future<int?> getNewTweetCount(Ref ref, RoomUser user) async {
   return await user.tweetCol
       ?.where(
         Const.created.name,

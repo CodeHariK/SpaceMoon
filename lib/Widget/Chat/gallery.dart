@@ -15,7 +15,7 @@ import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Static/theme.dart';
+import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 import 'package:photo_view/photo_view.dart';
@@ -585,7 +585,7 @@ class GalleryUploaderButton extends StatelessWidget {
 }
 
 @riverpod
-FutureOr<String> spaceStoreRef(SpaceStoreRefRef ref, String path) async {
+FutureOr<String> spaceStoreRef(Ref ref, String path) async {
   final r = await FirebaseStorage.instance.ref(path).getDownloadURL();
   return r;
 }

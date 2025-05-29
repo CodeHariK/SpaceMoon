@@ -117,7 +117,7 @@ Future<void> messageHandler(
               ? (message.notification?.body ?? '')
               : '...',
         ).show(
-          AppRouter.cupertinoNavigatorKey.currentContext!,
+          AppRouter.ElectricNavigatorKey.currentContext!,
           alignment: const Alignment(0.0, -.8),
         );
       }
@@ -144,7 +144,7 @@ void callFCMtokenUpdate(String? fcmToken) async {
     return;
   }
   try {
-    await SpaceMoon.fn('messaging-callFCMtokenUpdate').call({
+    await SpaceMoon.httpCallable('messaging-callFCMtokenUpdate').call({
       Const.fcmToken.name: fcmToken,
     });
   } catch (e) {

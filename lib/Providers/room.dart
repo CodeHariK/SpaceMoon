@@ -52,7 +52,7 @@ class SearchText extends _$SearchText {
 }
 
 @riverpod
-Future<List<Room?>> searchRoomByNick(SearchRoomByNickRef ref) async {
+Future<List<Room?>> searchRoomByNick(Ref ref) async {
   final nick = ref.watch(searchTextProvider);
 
   if (nick == null || nick == '') return [];
@@ -61,7 +61,7 @@ Future<List<Room?>> searchRoomByNick(SearchRoomByNickRef ref) async {
 }
 
 @riverpod
-FutureOr<List<Room?>> searchFamousRooms(SearchFamousRoomsRef ref) async {
+FutureOr<List<Room?>> searchFamousRooms(Ref ref) async {
   final rooms = await FirebaseFirestore.instance
       .collection(Const.rooms.name)
       .where(Const.famous.name, isEqualTo: true)
@@ -97,7 +97,7 @@ Future<int?> countRoomByNick(String nick) async {
 }
 
 @Riverpod(keepAlive: true)
-Stream<Room?> getRoomById(GetRoomByIdRef ref, String roomId) {
+Stream<Room?> getRoomById(Ref ref, String roomId) {
   Stream<Room?>? room = FirebaseFirestore.instance
       .collection(Const.rooms.name)
       .doc(roomId)
@@ -108,7 +108,7 @@ Stream<Room?> getRoomById(GetRoomByIdRef ref, String roomId) {
 }
 
 @Riverpod(keepAlive: true)
-Stream<Room?> roomStream(RoomStreamRef ref) {
+Stream<Room?> roomStream(Ref ref) {
   final room = ref.watch(currentRoomProvider).value;
   final roomDoc = room?.roomDoc;
   if (room != null && roomDoc != null) {
@@ -163,7 +163,8 @@ class CurrentRoom extends _$CurrentRoom {
 
     if (roomUser != null) {
       try {
-        SpaceMoon.fn('roomuser-updateRoomUserTime').call(roomUser.toMap());
+        SpaceMoon.httpCallable('roomuser-updateRoomUserTime')
+            .call(roomUser.toMap());
       } catch (e) {
         debugPrint('updateRoomUserTime Failed');
       }
@@ -174,7 +175,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> updateRoomInfo(Room room) async {
     try {
-      await SpaceMoon.fn('room-updateRoomInfo').call(room.toMap());
+      await SpaceMoon.httpCallable('room-updateRoomInfo').call(room.toMap());
     } catch (e) {
       debugPrint('updateRoomInfo Failed');
     }
@@ -186,7 +187,7 @@ class CurrentRoom extends _$CurrentRoom {
     required List<String> users,
   }) async {
     try {
-      final roomId = (await SpaceMoon.fn('room-callCreateRoom').call(
+      final roomId = (await SpaceMoon.httpCallable('room-callCreateRoom').call(
         {
           'room': room.toMap(),
           'users': users,
@@ -204,7 +205,8 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> upgradeAccessToRoom(RoomUser user) async {
     try {
-      await SpaceMoon.fn('roomuser-upgradeAccessToRoom').call(user.toMap());
+      await SpaceMoon.httpCallable('roomuser-upgradeAccessToRoom')
+          .call(user.toMap());
     } catch (e) {
       debugPrint('upgradeAccessToRoom Failed');
     }
@@ -212,7 +214,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> deleteRoom(RoomUser user) async {
     try {
-      await SpaceMoon.fn('room-deleteRoom').call(user.toMap());
+      await SpaceMoon.httpCallable('room-deleteRoom').call(user.toMap());
       exitRoom(user);
     } catch (e) {
       debugPrint('deleteRoom Failed $e');
@@ -221,7 +223,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> reportRoom(RoomUser user, Set<String> reason) async {
     try {
-      await SpaceMoon.fn('room-reportRoom').call(
+      await SpaceMoon.httpCallable('room-reportRoom').call(
           user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
       exitRoom(user);
     } catch (e) {
@@ -231,7 +233,8 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> deleteRoomUser(RoomUser user) async {
     try {
-      await SpaceMoon.fn('roomuser-deleteRoomUser').call(user.toMap());
+      await SpaceMoon.httpCallable('roomuser-deleteRoomUser')
+          .call(user.toMap());
     } catch (e) {
       debugPrint('deleteRoomUser Failed');
     }

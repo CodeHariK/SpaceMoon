@@ -5,7 +5,7 @@ import 'package:moonspace/widgets/animated_overlay.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/tweets.dart';
-import 'package:spacemoon/Static/theme.dart';
+import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/TextEditor/text_editor.dart';
 
 class TextEditorBox extends ConsumerWidget {

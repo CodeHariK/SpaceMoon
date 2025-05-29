@@ -19,7 +19,7 @@ import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
-import 'package:spacemoon/Routes/Special/error_page.dart';
+import 'package:moonspace/pages/error_page.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 import 'package:spacemoon/Widget/Chat/tweet_box.dart';
@@ -36,11 +36,7 @@ class ChatRoute extends GoRouteData {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return MaterialPage(
-      child: ChatPage(
-        chatId: chatId,
-      ),
-    );
+    return MaterialPage(child: ChatPage(chatId: chatId));
   }
 }
 
@@ -65,10 +61,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   late final StreamController<(int? index, bool show)> dateStream =
       createDebounceFunc(1000, ((int? index, bool show) value) async {
-    if (value.$2) {
-      dateStream.add((value.$1, false));
-    }
-  });
+        if (value.$2) {
+          dateStream.add((value.$1, false));
+        }
+      });
 
   @override
   void didUpdateWidget(covariant ChatPage oldWidget) {
@@ -78,8 +74,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void itemPositionListener() {
-    dateStream.add(
-        (itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
+    dateStream.add((
+      itemPositionsListener.itemPositions.value.lastOrNull?.index,
+      true,
+    ));
   }
 
   @override
@@ -124,7 +122,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 uid: roomuser.value?.uid,
                 room: roomuser.value?.room,
                 user: roomuser.value?.user,
-                role: roomuser.value?.role),
+                role: roomuser.value?.role,
+              ),
       ),
     );
 
@@ -163,7 +162,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     }
 
     if (meInRoom == null ||
-        meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/) {
+        meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/ ) {
       return Scaffold(
         appBar: AppBar(
           leading: BackButton(
@@ -173,10 +172,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             },
           ),
         ),
-        body: ChatInfoPage(
-          chatId: widget.chatId,
-          showAppbar: false,
-        ),
+        body: ChatInfoPage(chatId: widget.chatId, showAppbar: false),
       );
     }
 
@@ -213,13 +209,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             children: [
               IconButton(
                 onPressed: () async {
+                  final scaf = ScaffoldMessenger.of(context);
                   final url =
                       SpaceMoon.domain + GoRouterState.of(context).uri.path;
-                  await Clipboard.setData(
-                    ClipboardData(text: url),
-                  );
+                  await Clipboard.setData(ClipboardData(text: url));
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaf.showSnackBar(
                       const SnackBar(content: Text('Copied to Clipboard')),
                     );
                   }
@@ -232,11 +227,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               if (meInRoom.isUserOrAdmin)
                 IconButton(
                   onPressed: () {
-                    context.bSlidePush(
-                      SearchPage(
-                        room: room,
-                      ),
-                    );
+                    context.bSlidePush(SearchPage(room: room));
                   },
                   icon: const Icon(
                     Icons.add_circle_outline,
@@ -286,8 +277,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           final tweet = doc.data()!;
 
                           if (index > 0 && index < allTweetSnap.docs.length) {
-                            Tweet lastTweet =
-                                allTweetSnap.docs[index + 1].data()!;
+                            Tweet lastTweet = allTweetSnap.docs[index + 1]
+                                .data()!;
 
                             final lDate = lastTweet.created.date;
                             final cDate = tweet.created.date;
@@ -320,6 +311,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           );
                         },
                       ),
+
                       if (allTweetSnap.docs.isNotEmpty)
                         StreamBuilder(
                           stream: dateStream.stream,
@@ -338,7 +330,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
                             return TweenAnimationBuilder(
                               tween: Tween<double>(
-                                  begin: show ? 0 : 1, end: show ? 1 : 0),
+                                begin: show ? 0 : 1,
+                                end: show ? 1 : 0,
+                              ),
                               curve: Curves.linear,
                               duration: const Duration(seconds: 1),
                               builder: (context, value, child) {
@@ -359,6 +353,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 },
               ),
             ),
+
             if (meInRoom.isInvite)
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -404,6 +399,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   ],
                 ),
               ),
+
             if (meInRoom.isUserOrAdmin) SendBox(roomUser: meInRoom),
           ],
         ),

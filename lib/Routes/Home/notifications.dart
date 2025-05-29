@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:moonspace/router/router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/painter/dashed_border.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Helpers/gorouter_ext.dart';
 import 'package:spacemoon/Helpers/proto.dart';
-import 'package:spacemoon/Helpers/shell_data.dart';
-import 'package:spacemoon/Helpers/tab_shell.dart';
+import 'package:moonspace/router/shell_data.dart';
+import 'package:moonspace/router/tab_shell.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/tweets.dart';
@@ -21,29 +21,34 @@ import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Widget/TextEditor/text_editor.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 
-final GlobalKey<NavigatorState> tabShellNavigatorKey =
+final GlobalKey<NavigatorState> notificationShellNavigatorKey =
     GlobalKey<NavigatorState>();
 
 class NotificationShell extends StatefulShellRouteData {
   const NotificationShell();
 
-  static final GlobalKey<NavigatorState> $navigatorKey = tabShellNavigatorKey;
+  static final GlobalKey<NavigatorState> $navigatorKey =
+      notificationShellNavigatorKey;
 
   static List<ShellData> data = [
     ShellData(
       name: 'Notification',
-      location: [AppRouter.notification],
+      locations: [AppRouter.notification],
       icon: const Icon(Icons.notifications_none_rounded),
     ),
     ShellData(
-        name: 'Subscription',
-        location: [AppRouter.subscription],
-        icon: const Icon(Icons.subject_sharp)),
+      name: 'Subscription',
+      locations: [AppRouter.subscription],
+      icon: const Icon(Icons.subject_sharp),
+    ),
   ];
 
   @override
-  Page<void> pageBuilder(BuildContext context, GoRouterState state,
-      StatefulNavigationShell navigationShell) {
+  Page<void> pageBuilder(
+    BuildContext context,
+    GoRouterState state,
+    StatefulNavigationShell navigationShell,
+  ) {
     return fadePage(context, state, navigationShell);
   }
 
@@ -55,7 +60,11 @@ class NotificationShell extends StatefulShellRouteData {
     return TabShell(
       navigationShell: navigationShell,
       shellData: NotificationShell.data,
-      canPop: true,
+      canPop: BackButton(
+        onPressed: () {
+          HomeRoute().go(context);
+        },
+      ),
       showTabbar: true,
       showNavigationBar: false,
       children: children,
@@ -67,9 +76,9 @@ class NotificationShellBranchData extends StatefulShellBranchData {
   const NotificationShellBranchData();
 }
 
-class SubscriptionShellBranchData extends StatefulShellBranchData {
-  const SubscriptionShellBranchData();
-}
+// class SubscriptionShellBranchData extends StatefulShellBranchData {
+//   const SubscriptionShellBranchData();
+// }
 
 class NotificationsRoute extends GoRouteData {
   @override
@@ -105,11 +114,7 @@ class NotificationsPage extends StatelessWidget {
         builder: (context, snapshot) {
           if (_tweets.isEmpty) {
             return Center(
-              child: Lottie.asset(
-                Asset.lEmpty,
-                reverse: false,
-                repeat: true,
-              ),
+              child: Lottie.asset(Asset.lEmpty, reverse: false, repeat: true),
             );
           }
           return Padding(
@@ -121,15 +126,18 @@ class NotificationsPage extends StatelessWidget {
                 final t = _tweets[index];
 
                 return Consumer(
-                  builder:
-                      (BuildContext context, WidgetRef ref, Widget? child) {
+                  builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                    //
                     final tweet = ref.watch(getTweetByIdProvider(t)).value;
                     final room = ref.watch(getRoomByIdProvider(t.room)).value;
                     if (tweet == null) return const SizedBox.shrink();
 
                     return Padding(
-                      padding:
-                          const EdgeInsets.only(bottom: 8, left: 4, right: 4),
+                      padding: const EdgeInsets.only(
+                        bottom: 8,
+                        left: 4,
+                        right: 4,
+                      ),
                       child: DashedBorderContainer(
                         borderRadius: BorderRadius.circular(12),
                         child: InkWell(
@@ -169,8 +177,10 @@ class NotificationsPage extends StatelessWidget {
                                   if (tweet.mediaType == MediaType.TEXT)
                                     Align(
                                       alignment: Alignment.topLeft,
-                                      child:
-                                          Text(tweet.text, style: context.tm),
+                                      child: Text(
+                                        tweet.text,
+                                        style: context.tm,
+                                      ),
                                     ),
                                   if (tweet.mediaType == MediaType.POST)
                                     SizedBox(
@@ -207,8 +217,6 @@ class SubscriptionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AllChatPage(
-      subscription: true,
-    );
+    return const AllChatPage(subscription: true);
   }
 }

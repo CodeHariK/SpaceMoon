@@ -10,7 +10,7 @@ import 'package:spacemoon/main.dart';
 part 'user_data.g.dart';
 
 @Riverpod(keepAlive: true)
-Stream<User?> currentUserData(CurrentUserDataRef ref) {
+Stream<User?> currentUserData(Ref ref) {
   final user = ref.watch(currentUserProvider).value;
 
   if (user?.uid == null) {
@@ -37,7 +37,7 @@ Stream<User?> currentUserData(CurrentUserDataRef ref) {
 }
 
 @riverpod
-Future<List<User?>> searchUserByNick(SearchUserByNickRef ref) async {
+Future<List<User?>> searchUserByNick(Ref ref) async {
   final nick = ref.watch(searchTextProvider);
 
   if (nick == null || nick.isEmpty) return [];
@@ -64,7 +64,7 @@ Future<int?> countUserByNick(String nick) async {
 }
 
 @Riverpod(keepAlive: true)
-Stream<User?> getUserById(GetUserByIdRef ref, String userId) {
+Stream<User?> getUserById(Ref ref, String userId) {
   return FirebaseFirestore.instance
       .collection(Const.users.name)
       .doc(userId)
@@ -74,7 +74,7 @@ Stream<User?> getUserById(GetUserByIdRef ref, String userId) {
 
 Future<void> callUserUpdate(User user) async {
   try {
-    await SpaceMoon.fn('user-callUserUpdate').call(user.toMap());
+    await SpaceMoon.httpCallable('user-callUserUpdate').call(user.toMap());
   } catch (e) {
     debugPrint('callUserUpdate Failed');
   }
@@ -82,7 +82,7 @@ Future<void> callUserUpdate(User user) async {
 
 Future<void> reportUser(User user, Set<String> reason) async {
   try {
-    await SpaceMoon.fn('user-reportUser')
+    await SpaceMoon.httpCallable('user-reportUser')
         .call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
   } catch (e) {
     debugPrint('reportRoom Failed $e');

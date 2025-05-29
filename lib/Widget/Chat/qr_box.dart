@@ -12,7 +12,7 @@ import 'package:moonspace/widgets/functions.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
-import 'package:spacemoon/Static/theme.dart';
+import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Chat/qr_scanner.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 

@@ -9,26 +9,29 @@ import 'package:spacemoon/Providers/room.dart';
 part 'roomuser.g.dart';
 
 extension SuperRoomUser on RoomUser {
-  bool get isUserOrAdmin => role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
+  bool get isUserOrAdmin =>
+      role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
   bool get isAdminOrMod => role == Role.ADMIN || role == Role.MODERATOR;
   bool get isRequest => role == Role.REQUEST;
   bool get isAdmin => role == Role.ADMIN;
   bool get isInvite => role == Role.INVITE;
 
   CollectionReference<Tweet?>? get tweetCol {
-    return FirebaseFirestore.instance.collection('${Const.rooms.name}/$room/${Const.tweets.name}').withConverter(
-      fromFirestore: (snapshot, options) {
-        return fromDocSnap(Tweet(), snapshot);
-      },
-      toFirestore: (value, options) {
-        return value?.toMap() ?? {};
-      },
-    );
+    return FirebaseFirestore.instance
+        .collection('${Const.rooms.name}/$room/${Const.tweets.name}')
+        .withConverter(
+          fromFirestore: (snapshot, options) {
+            return fromDocSnap(Tweet(), snapshot);
+          },
+          toFirestore: (value, options) {
+            return value?.toMap() ?? {};
+          },
+        );
   }
 }
 
 @Riverpod(keepAlive: true)
-Future<RoomUser?> currentRoomUser(CurrentRoomUserRef ref) async {
+Future<RoomUser?> currentRoomUser(Ref ref) async {
   final user = ref.watch(currentUserProvider).value;
   final room = ref.watch(currentRoomProvider).value;
 
@@ -50,7 +53,11 @@ Future<RoomUser?> currentRoomUser(CurrentRoomUserRef ref) async {
 }
 
 @Riverpod(keepAlive: true)
-Future<RoomUser?> getRoomUser(GetRoomUserRef ref, {required String roomId, required String userId}) async {
+Future<RoomUser?> getRoomUser(
+  Ref ref, {
+  required String roomId,
+  required String userId,
+}) async {
   final s = await FirebaseFirestore.instance
       .collection(Const.roomusers.name)
       .where('user', isEqualTo: userId)
@@ -64,7 +71,11 @@ Future<RoomUser?> getRoomUser(GetRoomUserRef ref, {required String roomId, requi
 }
 
 @riverpod
-Stream<UserUser?> getUserUser(GetUserUserRef ref, {required String me, required String next}) {
+Stream<UserUser?> getUserUser(
+  Ref ref, {
+  required String me,
+  required String next,
+}) {
   final s = FirebaseFirestore.instance
       .doc('${Const.userusers.name}/${me}_$next')
       .snapshots()
@@ -72,16 +83,18 @@ Stream<UserUser?> getUserUser(GetUserUserRef ref, {required String me, required 
   return s;
 }
 
-Future<void> blockUser({required String me, required String next, required UserRole role}) async {
-  FirebaseFirestore.instance.doc('${Const.userusers.name}/${me}_$next').set(
-        UserUser(
-          role: role,
-        ).toMap()!,
-      );
+Future<void> updateUserUserRole({
+  required String me,
+  required String next,
+  required UserRole role,
+}) async {
+  FirebaseFirestore.instance
+      .doc('${Const.userusers.name}/${me}_$next')
+      .set(UserUser(role: role).toMap()!);
 }
 
 @Riverpod(keepAlive: true)
-Stream<List<RoomUser?>> getAllRoomUserForUser(GetAllRoomUserForUserRef ref) {
+Stream<List<RoomUser?>> getAllRoomUserForUser(Ref ref) {
   final user = ref.watch(currentUserProvider).value;
 
   if (user == null) return const Stream.empty();
@@ -91,11 +104,13 @@ Stream<List<RoomUser?>> getAllRoomUserForUser(GetAllRoomUserForUserRef ref) {
       .where('user', isEqualTo: user.uid)
       .orderBy(Const.updated.name, descending: true)
       .snapshots()
-      .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
+      .map(
+        (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
+      );
 }
 
 @Riverpod(keepAlive: true)
-Stream<List<RoomUser?>> getAllRoomUsersInRoom(GetAllRoomUsersInRoomRef ref) {
+Stream<List<RoomUser?>> getAllRoomUsersInRoom(Ref ref) {
   final room = ref.watch(currentRoomProvider).value;
 
   if (room == null) return const Stream.empty();
@@ -104,7 +119,9 @@ Stream<List<RoomUser?>> getAllRoomUsersInRoom(GetAllRoomUsersInRoomRef ref) {
       .collection(Const.roomusers.name)
       .where('room', isEqualTo: room.uid)
       .snapshots()
-      .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
+      .map(
+        (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
+      );
 
   return t;
 }

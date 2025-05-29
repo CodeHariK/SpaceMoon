@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+11
 
 environment:
-  sdk: ">=3.2.3 <4.0.0"
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
@@ -54,10 +54,9 @@ dependencies:
   go_router: ^15.1.2
   go_router_builder: ^2.4.0
 
-  flutter_riverpod: ^2.4.9
-  riverpod_annotation: ^2.3.3
-  flutter_hooks: ^0.21.2
-  hooks_riverpod: ^2.4.9
+  flutter_riverpod: ^3.0.0-dev.15
+  riverpod_annotation: ^3.0.0-dev.15
+  hooks_riverpod: ^3.0.0-dev.15
 
   shared_preferences: ^2.2.2
 
@@ -106,11 +105,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
-  riverpod_generator: ^2.3.9
+  flutter_lints: ^6.0.0
+  riverpod_generator: ^3.0.0-dev.15
   build_runner: ^2.4.7
   custom_lint: ^0.7.5
-  riverpod_lint: ^2.6.5
+  riverpod_lint: ^3.0.0-dev.15
 
   flutter_launcher_icons: ^0.14.3
 
