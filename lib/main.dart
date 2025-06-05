@@ -6,10 +6,10 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:lottie/lottie.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:moonspace/pages/error_page.dart';
 import 'package:spacemoon/Init/firebase.dart';
 import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
-import 'package:moonspace/electrify.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/l10n/app_localizations.dart';
@@ -48,9 +48,11 @@ class SpaceMoon {
 void main() {
   electrify(
     title: SpaceMoon.title,
-    init: () async {
+    init: (container) async {
       usePathUrlStrategy();
       await initFirebase();
+
+      container.listen(routerRedirectorProvider, (prev, next) {});
     },
 
     localizationsDelegates: [
@@ -63,13 +65,7 @@ void main() {
       ...FleatherLocalizations.supportedLocales,
     ],
 
-    electricKey: AppRouter.ElectricNavigatorKey,
-
     router: spacemoonRouter,
-
-    providerInit: (providerContainer) {
-      providerContainer.listen(routerRedirectorProvider, (prev, next) {});
-    },
 
     before: (widgetsBinding) {
       FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -77,7 +73,6 @@ void main() {
     after: () {
       FlutterNativeSplash.remove();
     },
-
     errorChild: Error404Page(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -92,7 +87,6 @@ void main() {
     recordError: (Object error, StackTrace stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     },
-
     debugUi: SpaceMoon.debugUi,
   );
 }

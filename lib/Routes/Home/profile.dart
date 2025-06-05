@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
-import 'package:moonspace/form/form.dart';
+import 'package:moonspace/form/select.dart';
 import 'package:moonspace/router/router.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
@@ -246,8 +246,10 @@ class ProfileUpdateUserName extends StatelessWidget {
         textInputAction: TextInputAction.done,
         onSubmit: (con) async =>
             await callUserUpdate(User(displayName: con.text)),
-        decoration: (AsyncText value, nickCon) =>
-            AppTheme.uInputDecoration.copyWith(hintText: 'Name'),
+
+        decoration: (AsyncText value, nickCon) => InputDecoration(
+          hintText: 'Name',
+        ).applyDefaults(context.theme.inputDecorationTheme),
       ),
     );
   }
@@ -295,11 +297,10 @@ class ProfileUpdateUserNickName extends StatelessWidget {
         showPrefix: false,
         textInputAction: TextInputAction.done,
         onSubmit: (con) async => await callUserUpdate(User(nick: con.text)),
-        decoration: (AsyncText value, nickCon) =>
-            AppTheme.uInputDecoration.copyWith(
-              hintText: 'Nick name',
-              prefix: const Text('Nick name : @'),
-            ),
+        decoration: (AsyncText value, nickCon) => InputDecoration(
+          hintText: 'Nick name',
+          prefix: const Text('Nick name : @'),
+        ).applyDefaults(context.theme.inputDecorationTheme),
       ),
     );
   }
@@ -363,14 +364,14 @@ class ProfileReportUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MarioChoiceDialog<String>(
+    return OptionDialog<String>(
       multi: true,
       title: Text('Reasons for reporting this user?', style: context.tm),
-      choices: const {
-        'Is offensive, or harrasement, or stalker',
-        'Promotes violence',
-        'Is not appropriate for community',
-      },
+      options: const [
+        Option(value: 'Is offensive, or harrasement, or stalker'),
+        Option(value: 'Promotes violence'),
+        Option(value: 'Is not appropriate for community'),
+      ],
       child: ListTile(
         tileColor: context.theme.csErrCon,
         titleTextStyle: context.ts.c(context.theme.csOnErrCon),

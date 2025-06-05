@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:moonspace/form/form.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
@@ -14,7 +15,7 @@ import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Chat/qr_box.dart';
 
 import 'package:moonspace/widgets/functions.dart';
-import 'package:moonspace/form/form.dart';
+import 'package:moonspace/form/select.dart';
 import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
@@ -56,7 +57,7 @@ class TweetBox extends ConsumerWidget {
         decoration: isHero
             ? null
             : BoxDecoration(
-                color: AppTheme.darkness
+                color: AppTheme.isDark
                     ? const Color.fromARGB(221, 50, 50, 50)
                     : const Color.fromARGB(223, 246, 246, 246),
                 // border: Border.all(
@@ -263,95 +264,97 @@ void tweetActionSheet(
   UserUser? useruser,
 ) async {
   context.showBottomSheet(
-    children: (context) => [
-      MarioChoiceDialog<String>(
-        multi: true,
-        title: Text('Reasons for reporting this user?', style: context.tm),
-        choices: const {
-          'Is offensive, or harrasement, or stalker',
-          'Promotes violence',
-          'Is not appropriate for community',
-        },
-        child: ListTile(
-          tileColor: context.theme.csErrCon,
-          titleTextStyle: context.ts.c(context.theme.csOnErrCon),
-          iconColor: context.theme.csOnErrCon,
-          leading: Icon(
-            (roomuser.user == tweet.user) ? Icons.delete : Icons.report,
-            semanticLabel: 'Report this user',
-          ),
-          title: (roomuser.user == tweet.user)
-              ? const Text('Delete this tweet')
-              : const Text('Report this tweet'),
-        ),
-        actions: (marioContext, selection) => Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            OutlinedButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                marioContext.nav.pop();
-              },
-            ),
-            const SizedBox(width: 10),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: marioContext.theme.csErrCon,
-                foregroundColor: marioContext.theme.csOnErrCon,
-              ),
-              child: const Text('Report'),
-              onPressed: () async {
-                if (selection.isNotEmpty) {
-                  marioContext.nav.pop();
-
-                  await deleteTweet(
-                    context,
-                    ref,
-                    tweet,
-                    (roomuser.user != tweet.user),
-                    selection,
-                  );
-                  if (context.mounted) {
-                    context.nav.pop();
-                  }
-                }
-              },
-            ),
+    builder: (context) => Box(
+      children: (context) => [
+        OptionDialog<String>(
+          multi: true,
+          title: Text('Reasons for reporting this user?', style: context.tm),
+          options: const [
+            Option(value: 'Is offensive, or harrasement, or stalker'),
+            Option(value: 'Promotes violence'),
+            Option(value: 'Is not appropriate for community'),
           ],
+          child: ListTile(
+            tileColor: context.theme.csErrCon,
+            titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+            iconColor: context.theme.csOnErrCon,
+            leading: Icon(
+              (roomuser.user == tweet.user) ? Icons.delete : Icons.report,
+              semanticLabel: 'Report this user',
+            ),
+            title: (roomuser.user == tweet.user)
+                ? const Text('Delete this tweet')
+                : const Text('Report this tweet'),
+          ),
+          actions: (marioContext, selection) => Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              OutlinedButton(
+                child: const Text('CANCEL'),
+                onPressed: () {
+                  marioContext.nav.pop();
+                },
+              ),
+              const SizedBox(width: 10),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: marioContext.theme.csErrCon,
+                  foregroundColor: marioContext.theme.csOnErrCon,
+                ),
+                child: const Text('Report'),
+                onPressed: () async {
+                  if (selection.isNotEmpty) {
+                    marioContext.nav.pop();
+
+                    await deleteTweet(
+                      context,
+                      ref,
+                      tweet,
+                      (roomuser.user != tweet.user),
+                      selection,
+                    );
+                    if (context.mounted) {
+                      context.nav.pop();
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-      const SizedBox(height: 5),
-      if (tweet.user != roomuser.user && useruser?.role != UserRole.BLOCKED)
-        ListTile(
-          title: const Text('Block User'),
-          leading: const Icon(Icons.block),
-          tileColor: context.theme.csErrCon,
-          titleTextStyle: context.ts.c(context.theme.csOnErrCon),
-          iconColor: context.theme.csOnErrCon,
-          onTap: () async {
-            final res = await context.showYesNo(title: 'Block this user');
-            if (res) {
-              await updateUserUserRole(
-                me: roomuser.user,
-                next: tweet.user,
-                role: UserRole.BLOCKED,
-              );
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'You have succesfully blocked this user, now they won\'t bother you.',
-                    ),
-                  ),
+        const SizedBox(height: 5),
+        if (tweet.user != roomuser.user && useruser?.role != UserRole.BLOCKED)
+          ListTile(
+            title: const Text('Block User'),
+            leading: const Icon(Icons.block),
+            tileColor: context.theme.csErrCon,
+            titleTextStyle: context.ts.c(context.theme.csOnErrCon),
+            iconColor: context.theme.csOnErrCon,
+            onTap: () async {
+              final res = await context.showYesNo(title: 'Block this user');
+              if (res) {
+                await updateUserUserRole(
+                  me: roomuser.user,
+                  next: tweet.user,
+                  role: UserRole.BLOCKED,
                 );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'You have succesfully blocked this user, now they won\'t bother you.',
+                      ),
+                    ),
+                  );
+                }
+                if (context.mounted) {
+                  context.nav.pop();
+                }
               }
-              if (context.mounted) {
-                context.nav.pop();
-              }
-            }
-          },
-        ),
-    ],
+            },
+          ),
+      ],
+    ),
   );
 }
 
@@ -426,7 +429,7 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
               height: (250, 500).c + 16,
               width: (250, 500).c + 16,
               alignment: Alignment.bottomCenter,
-              child: Text(widget.url, style: context.bl.under.c(AppTheme.op)),
+              child: Text(widget.url),
             ),
             width: MediaQuery.of(context).size.width,
             previewBuilder: (p0, data) {
@@ -447,7 +450,7 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
                   ),
                   SelectableText(
                     data.link ?? '',
-                    style: context.bl.under.c(AppTheme.op),
+                    style: context.bl.under.c(Colors.red),
                   ),
                 ],
               );

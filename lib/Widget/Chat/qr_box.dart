@@ -17,19 +17,18 @@ import 'package:spacemoon/Widget/Chat/qr_scanner.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
 
 class QrBox extends StatelessWidget {
-  const QrBox({
-    super.key,
-    required this.codeQrtext,
-    this.repaintKey,
-  });
+  const QrBox({super.key, required this.codeQrtext, this.repaintKey});
 
   final String codeQrtext;
   final GlobalKey? repaintKey;
   @override
   Widget build(BuildContext context) {
-    final code = BarcodeType.values
-            .where((element) =>
-                element.name == (codeQrtext.split('||').firstOrNull ?? ''))
+    final code =
+        BarcodeType.values
+            .where(
+              (element) =>
+                  element.name == (codeQrtext.split('||').firstOrNull ?? ''),
+            )
             .firstOrNull ??
         BarcodeType.QrCode;
     final qrText = codeQrtext.split('||').lastOrNull ?? '';
@@ -37,12 +36,7 @@ class QrBox extends StatelessWidget {
     return Column(
       children: [
         qrText.isEmpty
-            ? Center(
-                child: Icon(
-                  Icons.qr_code_rounded,
-                  size: (200, 500).c,
-                ),
-              )
+            ? Center(child: Icon(Icons.qr_code_rounded, size: (200, 500).c))
             : RepaintBoundary(
                 key: repaintKey,
                 child: ConstrainedBox(
@@ -56,29 +50,30 @@ class QrBox extends StatelessWidget {
                           barcode: code == BarcodeType.QrCode
                               ? Barcode.qrCode(
                                   errorCorrectLevel:
-                                      BarcodeQRCorrectionLevel.high)
+                                      BarcodeQRCorrectionLevel.high,
+                                )
                               : Barcode.fromType(code),
                           padding: const EdgeInsets.all(16),
                           // margin: EdgeInsets.all(4),
-                          backgroundColor:
-                              AppTheme.darkness ? Colors.black : Colors.white,
+                          backgroundColor: AppTheme.isDark
+                              ? Colors.black
+                              : Colors.white,
                           errorBuilder: (context, error) => SizedBox(
                             width: context.mq.w,
                             height: context.mq.w,
                             child: Stack(
                               alignment: Alignment.bottomCenter,
                               children: [
-                                Icon(
-                                  Icons.qr_code_rounded,
-                                  size: context.mq.w,
-                                ),
+                                Icon(Icons.qr_code_rounded, size: context.mq.w),
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     color: Colors.black87,
                                     border: Border.all(
-                                        color: AppTheme.seedColor, width: 2),
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
                                   ),
                                   child: Text(
                                     error,
@@ -92,7 +87,7 @@ class QrBox extends StatelessWidget {
                           // width: context.mq.w,
                           // height: context.mq.w,
                           // backgroundColor: AppTheme.darkness ? Colors.black : Colors.white,
-                          color: AppTheme.darkness
+                          color: AppTheme.isDark
                               ? Colors.white
                               : Colors.black, // AppTheme.seedColor,
                         ),
@@ -107,10 +102,7 @@ class QrBox extends StatelessWidget {
 }
 
 class QrDialog extends HookWidget {
-  const QrDialog({
-    super.key,
-    required this.roomUser,
-  });
+  const QrDialog({super.key, required this.roomUser});
 
   final RoomUser roomUser;
 
@@ -165,13 +157,18 @@ class QrDialog extends HookWidget {
                               dropdownColor: context.theme.csSecCon,
                               decoration: InputDecoration(
                                 hintText: 'Qr Type',
-                                constraints:
-                                    const BoxConstraints(maxWidth: 200),
+                                constraints: const BoxConstraints(
+                                  maxWidth: 200,
+                                ),
                                 border: 0.bs.c(Colors.transparent).out.r(8),
-                                enabledBorder:
-                                    0.bs.c(Colors.transparent).out.r(8),
-                                focusedBorder:
-                                    0.bs.c(Colors.transparent).out.r(8),
+                                enabledBorder: 0.bs
+                                    .c(Colors.transparent)
+                                    .out
+                                    .r(8),
+                                focusedBorder: 0.bs
+                                    .c(Colors.transparent)
+                                    .out
+                                    .r(8),
                                 fillColor: context.theme.csSecCon,
                                 contentPadding: const EdgeInsets.all(16),
                                 filled: true,
@@ -196,11 +193,14 @@ class QrDialog extends HookWidget {
                             Expanded(
                               child: ListTile(
                                 tileColor: context.theme.csErrCon,
-                                titleTextStyle:
-                                    context.ts.c(context.theme.csOnErrCon),
+                                titleTextStyle: context.ts.c(
+                                  context.theme.csOnErrCon,
+                                ),
                                 iconColor: context.theme.csOnErrCon,
-                                leading: const Icon(Icons.download,
-                                    semanticLabel: 'Download qr'),
+                                leading: const Icon(
+                                  Icons.download,
+                                  semanticLabel: 'Download qr',
+                                ),
                                 onTap: () =>
                                     saveQr(context, repaintKey, qrtext.value),
                                 title: const Text('Download'),
@@ -229,9 +229,7 @@ class QrDialog extends HookWidget {
 
             Device.isMobile
                 ? const QrScanner()
-                : const Center(
-                    child: Text('Scanner Not available'),
-                  )
+                : const Center(child: Text('Scanner Not available')),
           ],
         ),
       ),
@@ -240,7 +238,10 @@ class QrDialog extends HookWidget {
 }
 
 Future<void> saveToGallery(
-    Uint8List? pngBytes, BuildContext context, String path) async {
+  Uint8List? pngBytes,
+  BuildContext context,
+  String path,
+) async {
   if (pngBytes != null) {
     final saved = await SaverGallery.saveImage(
       pngBytes,
@@ -259,26 +260,16 @@ Future<void> saveToGallery(
 }
 
 class QrActionButton extends StatelessWidget {
-  const QrActionButton({
-    super.key,
-    required this.roomUser,
-  });
+  const QrActionButton({super.key, required this.roomUser});
 
   final RoomUser roomUser;
 
   @override
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
-      icon: const Icon(
-        Icons.qr_code_rounded,
-        semanticLabel: 'Qr',
-      ),
+      icon: const Icon(Icons.qr_code_rounded, semanticLabel: 'Qr'),
       onPressed: () {
-        context.rSlidePush(
-          QrDialog(
-            roomUser: roomUser,
-          ),
-        );
+        context.rSlidePush(QrDialog(roomUser: roomUser));
         AnimatedOverlay.hide();
       },
     );
@@ -289,8 +280,9 @@ void saveQr(BuildContext context, GlobalKey repaintKey, String qrtext) async {
   try {
     RenderRepaintBoundary boundary =
         repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-    var image =
-        await boundary.toImage(pixelRatio: 1 + (qrtext.length ~/ 120) / 10);
+    var image = await boundary.toImage(
+      pixelRatio: 1 + (qrtext.length ~/ 120) / 10,
+    );
     var byteData = await image.toByteData(format: ImageByteFormat.png);
     var pngBytes = byteData?.buffer.asUint8List();
 

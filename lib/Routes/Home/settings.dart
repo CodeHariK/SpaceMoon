@@ -12,7 +12,6 @@ import 'package:moonspace/provider/global_theme.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
-import 'package:moonspace/theme.dart';
 import 'package:spacemoon/main.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -32,10 +31,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GlobalAppTheme globalAppTheme = ref.watch(globalThemeProvider);
-
     return CupertinoPageScaffold(
-      backgroundColor: AppTheme.cardLight,
       navigationBar: CupertinoNavigationBar(
         middle: Text('Settings', style: context.tl),
         // leading: BackButton(
@@ -44,82 +40,16 @@ class SettingsPage extends ConsumerWidget {
       child: SafeArea(
         child: SingleChildScrollView(
           child: CupertinoListSection(
-            backgroundColor: AppTheme.cardLight,
             children: [
               //-----
               CupertinoFormSection.insetGrouped(
-                backgroundColor: AppTheme.cardLight,
+                // backgroundColor: AppTheme.cardLight,
                 // header: Text('', style: context.tl),
-                children: [
-                  PopupMenuButton<ThemeType>(
-                    itemBuilder: (context) {
-                      return ThemeType.values
-                          .map<PopupMenuEntry<ThemeType>>(
-                            (e) => PopupMenuItem(
-                              value: e,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [Text(e.name.toUpperCase()), e.icon],
-                              ),
-                            ),
-                          )
-                          .toList();
-                    },
-                    onSelected: (v) {
-                      ref.read(globalThemeProvider.notifier).setThemeType(v);
-                    },
-                    position: PopupMenuPosition.under,
-                    offset: const Offset(1, -120),
-                    child: ListTile(
-                      visualDensity: VisualDensity.compact,
-                      title: Text('Theme', style: context.tm),
-                      subtitle: Text(globalAppTheme.theme.name),
-                      trailing: globalAppTheme.theme.icon,
-                    ),
-                  ),
-
-                  //
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: Colors.primaries
-                            .map(
-                              (c) => Semantics(
-                                label: 'Color',
-                                button: true,
-                                enabled: true,
-                                child: InkWell(
-                                  onTap: () {
-                                    ref
-                                        .read(globalThemeProvider.notifier)
-                                        .setColor(c);
-                                  },
-                                  child: Container(
-                                    width: 48,
-                                    height: 48,
-                                    margin: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: c,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                ],
+                children: [ThemeTypePopupButton(), ThemeSelector()],
               ),
 
               //-----
               CupertinoFormSection.insetGrouped(
-                backgroundColor: AppTheme.cardLight,
                 header: Text('About', style: context.bl),
                 children: [
                   // CupertinoListTile.notched(
@@ -168,7 +98,6 @@ class SettingsPage extends ConsumerWidget {
 
               //-----
               CupertinoFormSection.insetGrouped(
-                backgroundColor: AppTheme.cardLight,
                 header: Text('Legals', style: context.bl),
                 children: [
                   CupertinoListTile.notched(

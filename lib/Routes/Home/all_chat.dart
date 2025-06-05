@@ -154,7 +154,7 @@ class AllChatSliverAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: AppTheme.background,
+      // backgroundColor: AppTheme.background,
       collapsedHeight: 82,
       flexibleSpace: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 16),
@@ -214,11 +214,7 @@ class AllChatOpenRoomsSliverScrollRow extends StatelessWidget {
                         child:
                             (room?.photoURL == null ||
                                 room?.photoURL.isEmpty == true)
-                            ? Icon(
-                                Icons.local_activity_rounded,
-                                size: 64,
-                                color: AppTheme.op,
-                              )
+                            ? Icon(Icons.local_activity_rounded, size: 64)
                             : FutureSpaceBuilder(
                                 thumbnail: true,
                                 path: room?.photoURL,
@@ -263,9 +259,7 @@ class AllChatRoomTile extends StatelessWidget {
       child: ExcludeSemantics(
         child: ListTile(
           key: ValueKey(room.nick),
-          tileColor: tileIndex % 2 == 1
-              ? null
-              : Color.lerp(AppTheme.card, context.theme.csPri, .005),
+          tileColor: tileIndex % 2 == 1 ? null : Colors.red,
           title: Text(roomName),
           subtitle: Text(room.nick),
           leading: CircleAvatar(

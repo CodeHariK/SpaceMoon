@@ -13,8 +13,6 @@ import 'package:spacemoon/Routes/Special/onboard.dart';
 part 'router.g.dart';
 
 class AppRouter {
-  static final GlobalKey<NavigatorState> ElectricNavigatorKey =
-      GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> homeShellNavigatorKey =
@@ -69,7 +67,7 @@ final ValueNotifier<RoutingConfig> spacemoonRouterConfigNotifier =
       _generateRoutingConfig(authenticated: false, onboarded: false),
     );
 
-final GoRouter spacemoonRouter = GoRouter.routingConfig(
+GoRouter spacemoonRouter() => GoRouter.routingConfig(
   navigatorKey: AppRouter.rootNavigatorKey,
   // refreshListenable: GoRouterRefresh(),
   routingConfig: spacemoonRouterConfigNotifier,

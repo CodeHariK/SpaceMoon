@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonspace/form/async_text_field.dart';
-import 'package:moonspace/form/form.dart';
+import 'package:moonspace/form/select.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
@@ -495,8 +495,9 @@ class ChatInfoUpdateRoomDescription extends StatelessWidget {
             .read(currentRoomProvider.notifier)
             .updateRoomInfo(Room(uid: room.uid, description: con.text));
       },
-      decoration: (AsyncText value, nickCon) =>
-          AppTheme.uInputDecoration.copyWith(label: const Text('Description')),
+      decoration: (AsyncText value, nickCon) => InputDecoration(
+        label: const Text('Description'),
+      ).applyDefaults(context.theme.inputDecorationTheme),
     );
   }
 }
@@ -548,14 +549,13 @@ class ChatInfoUpdateRoomNickname extends StatelessWidget {
             .read(currentRoomProvider.notifier)
             .updateRoomInfo(Room(uid: room.uid, nick: con.text));
       },
-      decoration: (AsyncText value, nickCon) =>
-          AppTheme.uInputDecoration.copyWith(
-            hintText: '  abc...',
-            prefixIcon: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text('Nickname : #', style: context.tl)],
-            ),
-          ),
+      decoration: (AsyncText value, nickCon) => InputDecoration(
+        hintText: '  abc...',
+        prefixIcon: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Text('Nickname : #', style: context.tl)],
+        ),
+      ).applyDefaults(context.theme.inputDecorationTheme),
     );
   }
 }
@@ -592,8 +592,10 @@ class ChatInfoUpdateRoomName extends StatelessWidget {
               .read(currentRoomProvider.notifier)
               .updateRoomInfo(Room(uid: room.uid, displayName: con.text));
         },
-        decoration: (AsyncText value, nickCon) =>
-            AppTheme.uInputDecoration.copyWith(hintText: 'Name'),
+
+        decoration: (AsyncText value, nickCon) => InputDecoration(
+          hintText: 'Name',
+        ).applyDefaults(context.theme.inputDecorationTheme),
       ),
     );
   }
@@ -666,14 +668,14 @@ class ReportDialogButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MarioChoiceDialog<String>(
+    return OptionDialog<String>(
       multi: true,
       title: Text('Reasons for reporting this room?', style: context.tm),
-      choices: const {
-        'Contains offensive media',
-        'Promotes violence',
-        'Is not appropriate for community',
-      },
+      options: const [
+        Option(value: 'Contains offensive media'),
+        Option(value: 'Promotes violence'),
+        Option(value: 'Is not appropriate for community'),
+      ],
       child: const Icon(
         Icons.report,
         color: Colors.red,

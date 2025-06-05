@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Gen/data.pb.dart';
@@ -49,19 +50,23 @@ Future<void> firebaseMessagingSetup() async {
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     dino(initialMessage?.toMap());
 
-    FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(alert: true, badge: true);
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+    );
 
     FirebaseMessaging.onMessageOpenedApp.listen(onMessageOpenedAppHandler);
     FirebaseMessaging.onMessage.listen(onMessageHandler);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessageHandler);
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      lava('tokenRefresh : $fcmToken');
-      callFCMtokenUpdate(fcmToken);
-    }).onError((err) {
-      lava(err);
-    });
+    FirebaseMessaging.instance.onTokenRefresh
+        .listen((fcmToken) {
+          lava('tokenRefresh : $fcmToken');
+          callFCMtokenUpdate(fcmToken);
+        })
+        .onError((err) {
+          lava(err);
+        });
   }
 }
 
@@ -82,20 +87,21 @@ Future<void> onBackgroundMessageHandler(RemoteMessage message) async {
 enum HandlerType { onMessage, onMessageOpened, background }
 
 Future<void> messageHandler(
-    RemoteMessage message, bool background, HandlerType type) async {
+  RemoteMessage message,
+  bool background,
+  HandlerType type,
+) async {
   if (background) {
     await Firebase.initializeApp();
   }
 
   try {
     final tweet =
-
         // Tweet(
         //   uid: message.data['uid'],
         //   room: message.data['room'],
         //   user: message.data['user'],
         // );
-
         Tweet()..mergeFromProto3Json(message.data);
 
     if (FirebaseAuth.instance.currentUser?.uid == tweet.user) {
@@ -116,10 +122,7 @@ Future<void> messageHandler(
           content: tweet.mediaType == MediaType.TEXT
               ? (message.notification?.body ?? '')
               : '...',
-        ).show(
-          AppRouter.ElectricNavigatorKey.currentContext!,
-          alignment: const Alignment(0.0, -.8),
-        );
+        ).show(Electric.context, alignment: const Alignment(0.0, -.8));
       }
     }
 
@@ -144,9 +147,9 @@ void callFCMtokenUpdate(String? fcmToken) async {
     return;
   }
   try {
-    await SpaceMoon.httpCallable('messaging-callFCMtokenUpdate').call({
-      Const.fcmToken.name: fcmToken,
-    });
+    await SpaceMoon.httpCallable(
+      'messaging-callFCMtokenUpdate',
+    ).call({Const.fcmToken.name: fcmToken});
   } catch (e) {
     debugPrint('callFCMtokenUpdate Error');
   }

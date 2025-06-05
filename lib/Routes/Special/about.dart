@@ -106,9 +106,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
           },
           child: CustomPaint(
             painter: DottedBackgroundPainter(
-              color: AppTheme.darkness
-                  ? Colors.white38
-                  : AppTheme.seedColor.withAlpha(80),
+              color: AppTheme.isDark ? Colors.white38 : Colors.red,
             ),
             child: SafeArea(
               child: Center(
@@ -230,18 +228,18 @@ class _AboutPageState extends ConsumerState<AboutPage>
                         CustomPaint(
                           painter: SolarPathPainter(
                             Size((180, 220).c, (180, 220).c),
-                            AppTheme.seedColor.withAlpha(100),
+                            Colors.red,
                           ),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: AppTheme.seedColor.withAlpha(20),
+                              color: Colors.red,
                               shape: BoxShape.circle,
                             ),
                             width: (180, 220).c,
                             height: (180, 220).c,
                             child: Sunflower(
                               animCon: animCon,
-                              color: AppTheme.op,
+                              color: Colors.red,
                               builder: (AnimationController animCon) {
                                 switch (animCon.value) {
                                   case 0:
@@ -261,7 +259,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
                                       icon: Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: AppTheme.darkness
+                                          color: AppTheme.isDark
                                               ? Colors.white
                                               : Colors.black,
                                         ),
@@ -269,7 +267,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
                                         child: Icon(
                                           Icons.close,
                                           size: 40,
-                                          color: AppTheme.darkness
+                                          color: AppTheme.isDark
                                               ? Colors.black
                                               : Colors.white,
                                         ),
