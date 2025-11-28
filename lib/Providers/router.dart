@@ -13,8 +13,6 @@ import 'package:spacemoon/Routes/Special/onboard.dart';
 part 'router.g.dart';
 
 class AppRouter {
-  static final GlobalKey<NavigatorState> rootNavigatorKey =
-      GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> homeShellNavigatorKey =
       GlobalKey<NavigatorState>();
 
@@ -67,16 +65,17 @@ final ValueNotifier<RoutingConfig> spacemoonRouterConfigNotifier =
       _generateRoutingConfig(authenticated: false, onboarded: false),
     );
 
-GoRouter spacemoonRouter() => GoRouter.routingConfig(
-  navigatorKey: AppRouter.rootNavigatorKey,
-  // refreshListenable: GoRouterRefresh(),
-  routingConfig: spacemoonRouterConfigNotifier,
-  initialLocation: AppRouter.onboard,
-  errorPageBuilder: (context, state) =>
-      const MaterialPage(child: Error404Page()),
-  debugLogDiagnostics: true,
-  restorationScopeId: AppRouter.routerRestorationScopeId,
-);
+GoRouter spacemoonRouter(GlobalKey<NavigatorState> electricNavigatorKey) =>
+    GoRouter.routingConfig(
+      navigatorKey: electricNavigatorKey,
+      // refreshListenable: GoRouterRefresh(),
+      routingConfig: spacemoonRouterConfigNotifier,
+      initialLocation: AppRouter.onboard,
+      errorPageBuilder: (context, state) =>
+          const MaterialPage(child: Error404Page()),
+      debugLogDiagnostics: true,
+      restorationScopeId: AppRouter.routerRestorationScopeId,
+    );
 
 RoutingConfig _generateRoutingConfig({
   required bool authenticated,

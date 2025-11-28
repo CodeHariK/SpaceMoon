@@ -73,13 +73,20 @@ void main() {
     after: () {
       FlutterNativeSplash.remove();
     },
-    errorChild: Error404Page(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
-        padding: const EdgeInsets.all(32.0),
-        child: Lottie.asset(Asset.lNotFound, reverse: false, repeat: true),
-      ),
-    ),
+    wrap: (context, child) {
+      return child ??
+          Error404Page(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.all(32.0),
+              child: Lottie.asset(
+                Asset.lNotFound,
+                reverse: false,
+                repeat: true,
+              ),
+            ),
+          );
+    },
 
     recordFlutterFatalError: (details) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(details);

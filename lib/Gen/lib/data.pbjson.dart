@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: data.proto
-//
-// @dart = 2.12
+// Generated from lib/data.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -136,16 +138,84 @@ const User$json = {
   '1': 'User',
   '2': [
     {'1': 'uid', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'uid', '17': true},
-    {'1': 'displayName', '3': 20, '4': 1, '5': 9, '9': 1, '10': 'displayName', '17': true},
+    {
+      '1': 'displayName',
+      '3': 20,
+      '4': 1,
+      '5': 9,
+      '9': 1,
+      '10': 'displayName',
+      '17': true
+    },
     {'1': 'nick', '3': 30, '4': 1, '5': 9, '9': 2, '10': 'nick', '17': true},
     {'1': 'email', '3': 40, '4': 1, '5': 9, '9': 3, '10': 'email', '17': true},
-    {'1': 'phoneNumber', '3': 50, '4': 1, '5': 9, '9': 4, '10': 'phoneNumber', '17': true},
-    {'1': 'photoURL', '3': 60, '4': 1, '5': 9, '9': 5, '10': 'photoURL', '17': true},
-    {'1': 'status', '3': 70, '4': 1, '5': 14, '6': '.user.Active', '9': 6, '10': 'status', '17': true},
-    {'1': 'created', '3': 80, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 7, '10': 'created', '17': true},
-    {'1': 'updated', '3': 90, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 8, '10': 'updated', '17': true},
-    {'1': 'open', '3': 100, '4': 1, '5': 14, '6': '.user.Visible', '9': 9, '10': 'open', '17': true},
-    {'1': 'admin', '3': 110, '4': 1, '5': 8, '9': 10, '10': 'admin', '17': true},
+    {
+      '1': 'phoneNumber',
+      '3': 50,
+      '4': 1,
+      '5': 9,
+      '9': 4,
+      '10': 'phoneNumber',
+      '17': true
+    },
+    {
+      '1': 'photoURL',
+      '3': 60,
+      '4': 1,
+      '5': 9,
+      '9': 5,
+      '10': 'photoURL',
+      '17': true
+    },
+    {
+      '1': 'status',
+      '3': 70,
+      '4': 1,
+      '5': 14,
+      '6': '.user.Active',
+      '9': 6,
+      '10': 'status',
+      '17': true
+    },
+    {
+      '1': 'created',
+      '3': 80,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 7,
+      '10': 'created',
+      '17': true
+    },
+    {
+      '1': 'updated',
+      '3': 90,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 8,
+      '10': 'updated',
+      '17': true
+    },
+    {
+      '1': 'open',
+      '3': 100,
+      '4': 1,
+      '5': 14,
+      '6': '.user.Visible',
+      '9': 9,
+      '10': 'open',
+      '17': true
+    },
+    {
+      '1': 'admin',
+      '3': 110,
+      '4': 1,
+      '5': 8,
+      '9': 10,
+      '10': 'admin',
+      '17': true
+    },
   ],
   '8': [
     {'1': '_uid'},
@@ -180,7 +250,16 @@ const UserUser$json = {
   '1': 'UserUser',
   '2': [
     {'1': 'uid', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'uid', '17': true},
-    {'1': 'role', '3': 20, '4': 1, '5': 14, '6': '.user.UserRole', '9': 1, '10': 'role', '17': true},
+    {
+      '1': 'role',
+      '3': 20,
+      '4': 1,
+      '5': 14,
+      '6': '.user.UserRole',
+      '9': 1,
+      '10': 'role',
+      '17': true
+    },
   ],
   '8': [
     {'1': '_uid'},
@@ -197,8 +276,25 @@ final $typed_data.Uint8List userUserDescriptor = $convert.base64Decode(
 const Messaging$json = {
   '1': 'Messaging',
   '2': [
-    {'1': 'fcmToken', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'fcmToken', '17': true},
-    {'1': 'timestamp', '3': 20, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 1, '10': 'timestamp', '17': true},
+    {
+      '1': 'fcmToken',
+      '3': 10,
+      '4': 1,
+      '5': 9,
+      '9': 0,
+      '10': 'fcmToken',
+      '17': true
+    },
+    {
+      '1': 'timestamp',
+      '3': 20,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 1,
+      '10': 'timestamp',
+      '17': true
+    },
   ],
   '8': [
     {'1': '_fcmToken'},
@@ -219,10 +315,45 @@ const RoomUser$json = {
     {'1': 'uid', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'uid', '17': true},
     {'1': 'user', '3': 20, '4': 1, '5': 9, '9': 1, '10': 'user', '17': true},
     {'1': 'room', '3': 30, '4': 1, '5': 9, '9': 2, '10': 'room', '17': true},
-    {'1': 'role', '3': 40, '4': 1, '5': 14, '6': '.user.Role', '9': 3, '10': 'role', '17': true},
-    {'1': 'created', '3': 50, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 4, '10': 'created', '17': true},
-    {'1': 'updated', '3': 60, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 5, '10': 'updated', '17': true},
-    {'1': 'subscribed', '3': 70, '4': 1, '5': 8, '9': 6, '10': 'subscribed', '17': true},
+    {
+      '1': 'role',
+      '3': 40,
+      '4': 1,
+      '5': 14,
+      '6': '.user.Role',
+      '9': 3,
+      '10': 'role',
+      '17': true
+    },
+    {
+      '1': 'created',
+      '3': 50,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 4,
+      '10': 'created',
+      '17': true
+    },
+    {
+      '1': 'updated',
+      '3': 60,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 5,
+      '10': 'updated',
+      '17': true
+    },
+    {
+      '1': 'subscribed',
+      '3': 70,
+      '4': 1,
+      '5': 8,
+      '9': 6,
+      '10': 'subscribed',
+      '17': true
+    },
   ],
   '8': [
     {'1': '_uid'},
@@ -251,13 +382,72 @@ const Room$json = {
   '2': [
     {'1': 'uid', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'uid', '17': true},
     {'1': 'nick', '3': 20, '4': 1, '5': 9, '9': 1, '10': 'nick', '17': true},
-    {'1': 'displayName', '3': 30, '4': 1, '5': 9, '9': 2, '10': 'displayName', '17': true},
-    {'1': 'open', '3': 40, '4': 1, '5': 14, '6': '.user.Visible', '9': 3, '10': 'open', '17': true},
-    {'1': 'photoURL', '3': 50, '4': 1, '5': 9, '9': 4, '10': 'photoURL', '17': true},
-    {'1': 'description', '3': 60, '4': 1, '5': 9, '9': 5, '10': 'description', '17': true},
-    {'1': 'created', '3': 70, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 6, '10': 'created', '17': true},
-    {'1': 'updated', '3': 80, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 7, '10': 'updated', '17': true},
-    {'1': 'famous', '3': 90, '4': 1, '5': 8, '9': 8, '10': 'famous', '17': true},
+    {
+      '1': 'displayName',
+      '3': 30,
+      '4': 1,
+      '5': 9,
+      '9': 2,
+      '10': 'displayName',
+      '17': true
+    },
+    {
+      '1': 'open',
+      '3': 40,
+      '4': 1,
+      '5': 14,
+      '6': '.user.Visible',
+      '9': 3,
+      '10': 'open',
+      '17': true
+    },
+    {
+      '1': 'photoURL',
+      '3': 50,
+      '4': 1,
+      '5': 9,
+      '9': 4,
+      '10': 'photoURL',
+      '17': true
+    },
+    {
+      '1': 'description',
+      '3': 60,
+      '4': 1,
+      '5': 9,
+      '9': 5,
+      '10': 'description',
+      '17': true
+    },
+    {
+      '1': 'created',
+      '3': 70,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 6,
+      '10': 'created',
+      '17': true
+    },
+    {
+      '1': 'updated',
+      '3': 80,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 7,
+      '10': 'updated',
+      '17': true
+    },
+    {
+      '1': 'famous',
+      '3': 90,
+      '4': 1,
+      '5': 8,
+      '9': 8,
+      '10': 'famous',
+      '17': true
+    },
   ],
   '8': [
     {'1': '_uid'},
@@ -292,11 +482,36 @@ const Tweet$json = {
     {'1': 'user', '3': 20, '4': 1, '5': 9, '9': 1, '10': 'user', '17': true},
     {'1': 'room', '3': 30, '4': 1, '5': 9, '9': 2, '10': 'room', '17': true},
     {'1': 'path', '3': 40, '4': 1, '5': 9, '9': 3, '10': 'path', '17': true},
-    {'1': 'created', '3': 50, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '9': 4, '10': 'created', '17': true},
-    {'1': 'media_type', '3': 60, '4': 1, '5': 14, '6': '.user.MediaType', '9': 5, '10': 'mediaType', '17': true},
+    {
+      '1': 'created',
+      '3': 50,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '9': 4,
+      '10': 'created',
+      '17': true
+    },
+    {
+      '1': 'media_type',
+      '3': 60,
+      '4': 1,
+      '5': 14,
+      '6': '.user.MediaType',
+      '9': 5,
+      '10': 'mediaType',
+      '17': true
+    },
     {'1': 'text', '3': 70, '4': 1, '5': 9, '9': 6, '10': 'text', '17': true},
     {'1': 'link', '3': 80, '4': 1, '5': 9, '9': 7, '10': 'link', '17': true},
-    {'1': 'gallery', '3': 90, '4': 3, '5': 11, '6': '.user.ImageMetadata', '10': 'gallery'},
+    {
+      '1': 'gallery',
+      '3': 90,
+      '4': 3,
+      '5': 11,
+      '6': '.user.ImageMetadata',
+      '10': 'gallery'
+    },
   ],
   '8': [
     {'1': '_uid'},
@@ -325,12 +540,44 @@ final $typed_data.Uint8List tweetDescriptor = $convert.base64Decode(
 const ImageMetadata$json = {
   '1': 'ImageMetadata',
   '2': [
-    {'1': 'unsplashurl', '3': 10, '4': 1, '5': 9, '9': 0, '10': 'unsplashurl', '17': true},
+    {
+      '1': 'unsplashurl',
+      '3': 10,
+      '4': 1,
+      '5': 9,
+      '9': 0,
+      '10': 'unsplashurl',
+      '17': true
+    },
     {'1': 'path', '3': 20, '4': 1, '5': 9, '9': 1, '10': 'path', '17': true},
-    {'1': 'localUrl', '3': 30, '4': 1, '5': 9, '9': 2, '10': 'localUrl', '17': true},
+    {
+      '1': 'localUrl',
+      '3': 30,
+      '4': 1,
+      '5': 9,
+      '9': 2,
+      '10': 'localUrl',
+      '17': true
+    },
     {'1': 'width', '3': 40, '4': 1, '5': 5, '9': 3, '10': 'width', '17': true},
-    {'1': 'height', '3': 50, '4': 1, '5': 5, '9': 4, '10': 'height', '17': true},
-    {'1': 'caption', '3': 60, '4': 1, '5': 9, '9': 5, '10': 'caption', '17': true},
+    {
+      '1': 'height',
+      '3': 50,
+      '4': 1,
+      '5': 5,
+      '9': 4,
+      '10': 'height',
+      '17': true
+    },
+    {
+      '1': 'caption',
+      '3': 60,
+      '4': 1,
+      '5': 9,
+      '9': 5,
+      '10': 'caption',
+      '17': true
+    },
     {'1': 'type', '3': 70, '4': 1, '5': 9, '9': 6, '10': 'type', '17': true},
   ],
   '8': [
@@ -352,4 +599,3 @@ final $typed_data.Uint8List imageMetadataDescriptor = $convert.base64Decode(
     'EBEh0KB2NhcHRpb24YPCABKAlIBVIHY2FwdGlvbogBARIXCgR0eXBlGEYgASgJSAZSBHR5cGWI'
     'AQFCDgoMX3Vuc3BsYXNodXJsQgcKBV9wYXRoQgsKCV9sb2NhbFVybEIICgZfd2lkdGhCCQoHX2'
     'hlaWdodEIKCghfY2FwdGlvbkIHCgVfdHlwZQ==');
-

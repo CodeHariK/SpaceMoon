@@ -26,8 +26,9 @@ class _QrScannerState extends State<QrScanner>
   @override
   void initState() {
     animCon = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 4000))
-      ..repeat();
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat();
     super.initState();
   }
 
@@ -49,22 +50,18 @@ class _QrScannerState extends State<QrScanner>
         onPressed: () async {
           final scaf = ScaffoldMessenger.of(context);
 
-          final image =
-              await ImagePicker().pickImage(source: ImageSource.gallery);
+          final image = await ImagePicker().pickImage(
+            source: ImageSource.gallery,
+          );
 
           if (image?.path != null) {
             final result = await controller.analyzeImage(image!.path);
             if (mounted && result?.barcodes.isEmpty == true) {
-              scaf.showSnackBar(
-                const SnackBar(content: Text('No Code Found')),
-              );
+              scaf.showSnackBar(const SnackBar(content: Text('No Code Found')));
             }
           }
         },
-        child: const Icon(
-          Icons.photo,
-          semanticLabel: 'GalleryQr',
-        ),
+        child: const Icon(Icons.photo, semanticLabel: 'GalleryQr'),
       ),
       bottomNavigationBar: (barcode == null)
           ? null
@@ -88,10 +85,7 @@ class _QrScannerState extends State<QrScanner>
                         );
                       }
                     },
-                    child: const Icon(
-                      Icons.copy,
-                      semanticLabel: 'Copy',
-                    ),
+                    child: const Icon(Icons.copy, semanticLabel: 'Copy'),
                   ),
                   body: CustomScrollView(
                     controller: scrollController,
@@ -144,7 +138,7 @@ class _QrScannerState extends State<QrScanner>
                       fit: BoxFit.fill,
                       child: Icon(
                         Icons.qr_code_scanner_rounded,
-                        color: context.theme.pri.withAlpha(120),
+                        color: context.cs.primary.withAlpha(120),
                       ),
                     ),
                   ),
@@ -275,10 +269,7 @@ class ScannerErrorWidget extends StatelessWidget {
               padding: EdgeInsets.all(16),
               child: Icon(Icons.error, color: Colors.white),
             ),
-            Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.white),
-            ),
+            Text(errorMessage, style: const TextStyle(color: Colors.white)),
             Text(
               error.errorDetails?.message ?? '',
               style: const TextStyle(color: Colors.white),
@@ -340,7 +331,7 @@ class ScannerOverlay extends CustomPainter {
     //   ..strokeWidth = 4.0; // Adjust the border width as needed
 
     // Calculate the border rectangle with rounded corners
-// Adjust the radius as needed
+    // Adjust the radius as needed
     final borderRect = RRect.fromRectAndCorners(
       scanWindow,
       topLeft: Radius.circular(borderRadius),
@@ -368,10 +359,7 @@ class ScannerOverlay extends CustomPainter {
       text: textSpan,
       textDirection: TextDirection.ltr,
     );
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: 100,
-    );
+    textPainter.layout(minWidth: 0, maxWidth: 100);
     textPainter.paint(
       canvas,
       scanWindow.topCenter + Offset(-textPainter.size.width / 2, -40),

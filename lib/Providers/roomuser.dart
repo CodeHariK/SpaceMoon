@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -9,8 +9,7 @@ import 'package:spacemoon/Providers/room.dart';
 part 'roomuser.g.dart';
 
 extension SuperRoomUser on RoomUser {
-  bool get isUserOrAdmin =>
-      role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
+  bool get isUserOrAdmin => role == Role.ADMIN || role == Role.MODERATOR || role == Role.USER;
   bool get isAdminOrMod => role == Role.ADMIN || role == Role.MODERATOR;
   bool get isRequest => role == Role.REQUEST;
   bool get isAdmin => role == Role.ADMIN;
@@ -53,11 +52,7 @@ Future<RoomUser?> currentRoomUser(Ref ref) async {
 }
 
 @Riverpod(keepAlive: true)
-Future<RoomUser?> getRoomUser(
-  Ref ref, {
-  required String roomId,
-  required String userId,
-}) async {
+Future<RoomUser?> getRoomUser(Ref ref, {required String roomId, required String userId}) async {
   final s = await FirebaseFirestore.instance
       .collection(Const.roomusers.name)
       .where('user', isEqualTo: userId)
@@ -71,11 +66,7 @@ Future<RoomUser?> getRoomUser(
 }
 
 @riverpod
-Stream<UserUser?> getUserUser(
-  Ref ref, {
-  required String me,
-  required String next,
-}) {
+Stream<UserUser?> getUserUser(Ref ref, {required String me, required String next}) {
   final s = FirebaseFirestore.instance
       .doc('${Const.userusers.name}/${me}_$next')
       .snapshots()
@@ -104,9 +95,7 @@ Stream<List<RoomUser?>> getAllRoomUserForUser(Ref ref) {
       .where('user', isEqualTo: user.uid)
       .orderBy(Const.updated.name, descending: true)
       .snapshots()
-      .map(
-        (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
-      );
+      .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
 }
 
 @Riverpod(keepAlive: true)
@@ -119,9 +108,7 @@ Stream<List<RoomUser?>> getAllRoomUsersInRoom(Ref ref) {
       .collection(Const.roomusers.name)
       .where('room', isEqualTo: room.uid)
       .snapshots()
-      .map(
-        (value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList(),
-      );
+      .map((value) => value.docs.map((e) => fromQuerySnap(RoomUser(), e)).toList());
 
   return t;
 }

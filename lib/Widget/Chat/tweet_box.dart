@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/form/form.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/tweets.dart';
@@ -20,18 +19,12 @@ import 'package:moonspace/helper/extensions/regex.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/validator.dart';
 
-// ignore: depend_on_referenced_packages
-import 'package:flutter_chat_types/flutter_chat_types.dart' show PreviewData;
+import 'package:flutter_chat_core/flutter_chat_core.dart' show LinkPreviewData;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class TweetBox extends ConsumerWidget {
-  const TweetBox({
-    super.key,
-    required this.tweet,
-    required this.roomuser,
-    this.isHero = false,
-  });
+  const TweetBox({super.key, required this.tweet, required this.roomuser, this.isHero = false});
 
   final Tweet tweet;
   final RoomUser roomuser;
@@ -43,9 +36,7 @@ class TweetBox extends ConsumerWidget {
     final tweetroomuser = ref
         .watch(getRoomUserProvider(roomId: tweet.room, userId: tweet.user))
         .value;
-    final useruser = ref.watch(
-      getUserUserProvider(me: roomuser.user, next: tweet.user),
-    );
+    final useruser = ref.watch(getUserUserProvider(me: roomuser.user, next: tweet.user));
 
     if (useruser.value?.role == UserRole.BLOCKED || useruser.isLoading) {
       return const SizedBox();
@@ -66,12 +57,8 @@ class TweetBox extends ConsumerWidget {
                 // color: AppTheme.darkness ? AppTheme.seedColor.withAlpha(80) : Color.fromARGB(66, 238, 238, 238),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
-                  bottomLeft: Radius.circular(
-                    ((roomuser.user == tweet.user) ? 20 : 0),
-                  ),
-                  bottomRight: Radius.circular(
-                    (roomuser.user == tweet.user) ? 0 : 20,
-                  ),
+                  bottomLeft: Radius.circular(((roomuser.user == tweet.user) ? 20 : 0)),
+                  bottomRight: Radius.circular((roomuser.user == tweet.user) ? 0 : 20),
                   topRight: const Radius.circular(20),
                 ),
               ),
@@ -88,12 +75,10 @@ class TweetBox extends ConsumerWidget {
                   child: QrBox(codeQrtext: tweet.text),
                 ),
 
-              if (tweet.mediaType == MediaType.GALLERY &&
-                  tweet.gallery.isNotEmpty)
+              if (tweet.mediaType == MediaType.GALLERY && tweet.gallery.isNotEmpty)
                 GalleryBox(tweet: tweet),
 
-              if (tweet.mediaType == MediaType.POST)
-                TextEditorBox(tweet: tweet),
+              if (tweet.mediaType == MediaType.POST) TextEditorBox(tweet: tweet),
 
               if (isWebsite(tweet.text))
                 SizedBox(
@@ -113,8 +98,7 @@ class TweetBox extends ConsumerWidget {
               //       focusedBorder: InputBorder.none,
               //     ),
               //   ),
-              if ((tweet.mediaType == MediaType.TEXT ||
-                      tweet.mediaType == MediaType.QR) &&
+              if ((tweet.mediaType == MediaType.TEXT || tweet.mediaType == MediaType.QR) &&
                   !isURL(tweet.text) /*&& !isHero*/ )
                 Semantics(
                   label: tweet.text,
@@ -132,17 +116,13 @@ class TweetBox extends ConsumerWidget {
                           buttonItems: <ContextMenuButtonItem>[
                             ContextMenuButtonItem(
                               onPressed: () {
-                                editableTextState.copySelection(
-                                  SelectionChangedCause.toolbar,
-                                );
+                                editableTextState.copySelection(SelectionChangedCause.toolbar);
                               },
                               type: ContextMenuButtonType.copy,
                             ),
                             ContextMenuButtonItem(
                               onPressed: () {
-                                editableTextState.selectAll(
-                                  SelectionChangedCause.toolbar,
-                                );
+                                editableTextState.selectAll(SelectionChangedCause.toolbar);
                               },
                               type: ContextMenuButtonType.selectAll,
                             ),
@@ -173,13 +153,9 @@ class TweetBox extends ConsumerWidget {
             label: 'Tweet',
             child: InkWell(
               onTap: () {
-                context.cPush(
-                  ProfilePage(searchuser: tweetuser, showAppbar: true),
-                );
+                context.cPush(ProfilePage(searchuser: tweetuser, showAppbar: true));
               },
-              onLongPress:
-                  (useruser.isLoading ||
-                      useruser.value?.role == UserRole.BLOCKED)
+              onLongPress: (useruser.isLoading || useruser.value?.role == UserRole.BLOCKED)
                   ? null
                   : () => tweetActionSheet(
                       context,
@@ -201,10 +177,7 @@ class TweetBox extends ConsumerWidget {
                       tweetroomuser,
                       useruser.value,
                     ),
-                    icon: const Icon(
-                      Icons.more_horiz,
-                      semanticLabel: 'More options',
-                    ),
+                    icon: const Icon(Icons.more_horiz, semanticLabel: 'More options'),
                   ),
                   if (tweetuser != null)
                     CircleAvatar(
@@ -235,14 +208,8 @@ class TweetBox extends ConsumerWidget {
               ? box
               : Hero(tag: tweet.path, child: box)
         : GestureDetector(
-            onLongPress: () => tweetActionSheet(
-              context,
-              ref,
-              tweet,
-              roomuser,
-              tweetroomuser,
-              useruser.value,
-            ),
+            onLongPress: () =>
+                tweetActionSheet(context, ref, tweet, roomuser, tweetroomuser, useruser.value),
             // onTap: () {
             //   TweetRoute(
             //     chatId: tweet.room,
@@ -275,9 +242,9 @@ void tweetActionSheet(
             Option(value: 'Is not appropriate for community'),
           ],
           child: ListTile(
-            tileColor: context.theme.csErrCon,
-            titleTextStyle: context.ts.c(context.theme.csOnErrCon),
-            iconColor: context.theme.csOnErrCon,
+            tileColor: context.cErrCon,
+            titleTextStyle: context.ts.c(context.cOnErrCon),
+            iconColor: context.cOnErrCon,
             leading: Icon(
               (roomuser.user == tweet.user) ? Icons.delete : Icons.report,
               semanticLabel: 'Report this user',
@@ -298,8 +265,8 @@ void tweetActionSheet(
               const SizedBox(width: 10),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: marioContext.theme.csErrCon,
-                  foregroundColor: marioContext.theme.csOnErrCon,
+                  backgroundColor: marioContext.cErrCon,
+                  foregroundColor: marioContext.cOnErrCon,
                 ),
                 child: const Text('Report'),
                 onPressed: () async {
@@ -327,9 +294,9 @@ void tweetActionSheet(
           ListTile(
             title: const Text('Block User'),
             leading: const Icon(Icons.block),
-            tileColor: context.theme.csErrCon,
-            titleTextStyle: context.ts.c(context.theme.csOnErrCon),
-            iconColor: context.theme.csOnErrCon,
+            tileColor: context.cErrCon,
+            titleTextStyle: context.ts.c(context.cOnErrCon),
+            iconColor: context.cOnErrCon,
             onTap: () async {
               final res = await context.showYesNo(title: 'Block this user');
               if (res) {
@@ -369,9 +336,7 @@ Future<bool> deleteTweet(
 
   if (res) {
     if (report) {
-      await ref
-          .read(tweetsProvider.notifier)
-          .reportTweet(tweet: tweet, reason: reason);
+      await ref.read(tweetsProvider.notifier).reportTweet(tweet: tweet, reason: reason);
     } else {
       await ref.read(tweetsProvider.notifier).deleteTweet(tweet: tweet);
     }
@@ -400,7 +365,7 @@ class LinkPreviewer extends StatefulWidget {
 }
 
 class _LinkPreviewerState extends State<LinkPreviewer> {
-  PreviewData? data;
+  LinkPreviewData? data;
 
   @override
   Widget build(BuildContext context) {
@@ -415,46 +380,43 @@ class _LinkPreviewerState extends State<LinkPreviewer> {
           duration: const Duration(milliseconds: 300),
           child: LinkPreview(
             enableAnimation: true,
-            onPreviewDataFetched: (d) {
+            onLinkPreviewDataFetched: (d) {
               data = d;
               if (context.mounted) {
                 setState(() {});
               }
             },
-            textStyle: context.bl,
-            metadataTextStyle: context.bl,
-            previewData: data,
+            // textStyle: context.bl,
+            // metadataTextStyle: context.bl,
+            // previewData: data,
             text: widget.url,
-            textWidget: Container(
-              height: (250, 500).c + 16,
-              width: (250, 500).c + 16,
-              alignment: Alignment.bottomCenter,
-              child: Text(widget.url),
-            ),
-            width: MediaQuery.of(context).size.width,
-            previewBuilder: (p0, data) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(data.title ?? '', style: context.tm.bold),
-                  Text(data.description ?? ''),
-                  Align(
-                    alignment: Alignment.center,
-                    child: CachedNetworkImage(
-                      imageUrl: data.image?.url ?? '',
-                      fit: BoxFit.cover,
-                      errorListener: (value) {},
-                      errorWidget: (context, url, error) => const SizedBox(),
-                    ),
-                  ),
-                  SelectableText(
-                    data.link ?? '',
-                    style: context.bl.under.c(Colors.red),
-                  ),
-                ],
-              );
-            },
+            // textWidget: Container(
+            //   height: (250, 500).c + 16,
+            //   width: (250, 500).c + 16,
+            //   alignment: Alignment.bottomCenter,
+            //   child: Text(widget.url),
+            // ),
+            // width: MediaQuery.of(context).size.width,
+            // linkPreviewBuilder: (p0, data) {
+            //   return Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       Text(data.title ?? '', style: context.tm.bold),
+            //       Text(data.description ?? ''),
+            //       Align(
+            //         alignment: Alignment.center,
+            //         child: CachedNetworkImage(
+            //           imageUrl: data.image?.url ?? '',
+            //           fit: BoxFit.cover,
+            //           errorListener: (value) {},
+            //           errorWidget: (context, url, error) => const SizedBox(),
+            //         ),
+            //       ),
+            //       SelectableText(data.link ?? '', style: context.bl.under.c(Colors.red)),
+            //     ],
+            //   );
+            // },
           ),
         ),
       ),

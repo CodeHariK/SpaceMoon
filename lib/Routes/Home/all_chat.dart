@@ -5,10 +5,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
 import 'package:moonspace/widgets/async_lock.dart';
 import 'package:moonspace/widgets/animated/animated_counter.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -52,8 +52,7 @@ class AllChatPage extends ConsumerWidget {
                 if (!subscription) AllChatSliverAppBar(),
 
                 //------
-                if (!subscription)
-                  AllChatOpenRoomsSliverScrollRow(openRooms: openRooms),
+                if (!subscription) AllChatOpenRoomsSliverScrollRow(openRooms: openRooms),
 
                 //------
                 allRoomsUsers.when(
@@ -67,17 +66,13 @@ class AllChatPage extends ConsumerWidget {
                         return Consumer(
                           builder: (context, ref, child) {
                             final roomuser = roomUsers[tileIndex] ?? RoomUser();
-                            final room = ref
-                                .watch(getRoomByIdProvider(roomuser.room))
-                                .value;
+                            final room = ref.watch(getRoomByIdProvider(roomuser.room)).value;
 
                             if (room == null) {
                               return const SizedBox.shrink();
                             }
 
-                            final count = ref
-                                .watch(getNewTweetCountProvider(roomuser))
-                                .value;
+                            final count = ref.watch(getNewTweetCountProvider(roomuser)).value;
 
                             final roomName = room.displayName
                                 .replaceAll(user?.displayName ?? '***', '')
@@ -98,9 +93,7 @@ class AllChatPage extends ConsumerWidget {
                     );
                   },
                   error: (error, stackTrace) {
-                    return SliverToBoxAdapter(
-                      child: SelectableText(error.toString()),
-                    );
+                    return SliverToBoxAdapter(child: SelectableText(error.toString()));
                   },
                   loading: () => const SliverToBoxAdapter(child: SizedBox()),
                 ),
@@ -124,9 +117,9 @@ class AllChatPage extends ConsumerWidget {
 
                     if (context.mounted) {
                       if (room == null) {
-                        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                          const SnackBar(content: Text('Chat creation failed')),
-                        );
+                        ScaffoldMessenger.maybeOf(
+                          context,
+                        )?.showSnackBar(const SnackBar(content: Text('Chat creation failed')));
                       } else {
                         ChatInfoRoute(chatId: room.uid).go(context);
                       }
@@ -134,11 +127,7 @@ class AllChatPage extends ConsumerWidget {
                     unlock();
                   },
                   child: loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(),
-                        )
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator())
                       : const Icon(Icons.add, semanticLabel: 'Create new Chat'),
                 );
               },
@@ -208,18 +197,10 @@ class AllChatOpenRoomsSliverScrollRow extends StatelessWidget {
                         width: (120, 160).c,
                         height: (120, 160).c,
                         margin: const EdgeInsets.only(right: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child:
-                            (room?.photoURL == null ||
-                                room?.photoURL.isEmpty == true)
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+                        child: (room?.photoURL == null || room?.photoURL.isEmpty == true)
                             ? Icon(Icons.local_activity_rounded, size: 64)
-                            : FutureSpaceBuilder(
-                                thumbnail: true,
-                                path: room?.photoURL,
-                                radius: 16,
-                              ),
+                            : FutureSpaceBuilder(thumbnail: true, path: room?.photoURL, radius: 16),
                       ),
                     ),
                   ),
@@ -264,17 +245,12 @@ class AllChatRoomTile extends StatelessWidget {
           subtitle: Text(room.nick),
           leading: CircleAvatar(
             radius: 28,
-            child: FutureSpaceBuilder(
-              thumbnail: true,
-              path: room.photoURL,
-              radius: 200,
-            ),
+            child: FutureSpaceBuilder(thumbnail: true, path: room.photoURL, radius: 200),
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (!subscription)
-                Text(room.updated.timeString, style: context.ll),
+              if (!subscription) Text(room.updated.timeString, style: context.ll),
               if (count != 0) const SizedBox(width: 10),
               if (count != 0)
                 AnimatedFlipCounter(
@@ -283,19 +259,15 @@ class AllChatRoomTile extends StatelessWidget {
                   textStyle: context.ll,
                   duration: const Duration(seconds: 1),
                 ),
-              if (roomuser.isRequest || roomuser.isInvite)
-                const SizedBox(width: 10),
-              if (roomuser.isRequest || roomuser.isInvite)
-                const Icon(Icons.pets_rounded),
+              if (roomuser.isRequest || roomuser.isInvite) const SizedBox(width: 10),
+              if (roomuser.isRequest || roomuser.isInvite) const Icon(Icons.pets_rounded),
               if (subscription) const SizedBox(width: 10),
               if (subscription)
                 AsyncLock(
                   builder: (loading, status, lock, open, setStatus) {
                     return Switch(
                       value: roomuser.subscribed,
-                      thumbIcon: const WidgetStatePropertyAll(
-                        Icon(Icons.nights_stay_sharp),
-                      ),
+                      thumbIcon: const WidgetStatePropertyAll(Icon(Icons.nights_stay_sharp)),
                       onChanged: (v) async {
                         lock();
                         if (v) {

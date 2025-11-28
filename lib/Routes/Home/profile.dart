@@ -8,10 +8,10 @@ import 'package:moonspace/form/select.dart';
 import 'package:moonspace/router/router.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/functions.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -23,24 +23,20 @@ import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 
-class ProfileObj {
-  final User? user;
+// class ProfileObj {
+//   final User? user;
 
-  ProfileObj({required this.user});
-}
+//   ProfileObj({required this.user});
+// }
 
-class ProfileRoute extends GoRouteData {
+class ProfileRoute extends GoRouteData with $ProfileRoute {
   final User? $extra;
 
   const ProfileRoute({this.$extra});
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return fadePage(
-      context,
-      state,
-      ProfilePage(searchuser: $extra, showAppbar: false),
-    );
+    return fadePage(context, state, ProfilePage(searchuser: $extra, showAppbar: false));
   }
 }
 
@@ -57,12 +53,8 @@ class ProfilePage extends ConsumerWidget {
     final currentRoomUser = ref.watch(currentUserDataProvider).value;
 
     final useruser =
-        user?.uid != null &&
-            currentRoomUser?.uid != null &&
-            currentRoomUser?.uid != user?.uid
-        ? ref.watch(
-            getUserUserProvider(next: user!.uid, me: currentRoomUser!.uid),
-          )
+        user?.uid != null && currentRoomUser?.uid != null && currentRoomUser?.uid != user?.uid
+        ? ref.watch(getUserUserProvider(next: user!.uid, me: currentRoomUser!.uid))
         : null;
 
     return Scaffold(
@@ -74,10 +66,7 @@ class ProfilePage extends ConsumerWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  ProfileUpdateUserProfilePicture(
-                    user: user,
-                    searchuser: searchuser,
-                  ),
+                  ProfileUpdateUserProfilePicture(user: user, searchuser: searchuser),
 
                   ProfileUpdateUserName(user: user, searchuser: searchuser),
 
@@ -94,10 +83,7 @@ class ProfilePage extends ConsumerWidget {
                   if (user?.phoneNumber.isNotEmpty ?? false)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        'Phone : ${user?.phoneNumber}',
-                        style: context.ts,
-                      ),
+                      title: Text('Phone : ${user?.phoneNumber}', style: context.ts),
                     ),
 
                   //
@@ -124,26 +110,16 @@ class ProfilePage extends ConsumerWidget {
                   // ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'Joined on : ${user?.created.dateString}',
-                      style: context.ts,
-                    ),
+                    title: Text('Joined on : ${user?.created.dateString}', style: context.ts),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'Last seen : ${user?.updated.dateString}',
-                      style: context.ts,
-                    ),
+                    title: Text('Last seen : ${user?.updated.dateString}', style: context.ts),
                   ),
                   if (currentRoomUser != user)
-                    ProfileReportUser(
-                      user: user,
-                      currentRoomUser: currentRoomUser,
-                    ),
+                    ProfileReportUser(user: user, currentRoomUser: currentRoomUser),
 
-                  if (searchuser != null && searchuser != user)
-                    ProfileCreateNewChat(user: user),
+                  if (searchuser != null && searchuser != user) ProfileCreateNewChat(user: user),
 
                   if (searchuser == null) ProfileSignOut(),
 
@@ -163,11 +139,7 @@ class ProfilePage extends ConsumerWidget {
 }
 
 class ProfileUpdateUserProfilePicture extends StatelessWidget {
-  const ProfileUpdateUserProfilePicture({
-    super.key,
-    required this.user,
-    required this.searchuser,
-  });
+  const ProfileUpdateUserProfilePicture({super.key, required this.user, required this.searchuser});
 
   final User? user;
   final User? searchuser;
@@ -180,10 +152,7 @@ class ProfileUpdateUserProfilePicture extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       foregroundDecoration: user?.admin == false
           ? null
-          : BoxDecoration(
-              border: Border.all(width: 10),
-              borderRadius: BorderRadius.circular(300),
-            ),
+          : BoxDecoration(border: Border.all(width: 10), borderRadius: BorderRadius.circular(300)),
       child: Semantics(
         label: 'Update profile picture',
         child: InkWell(
@@ -208,10 +177,7 @@ class ProfileUpdateUserProfilePicture extends StatelessWidget {
               ? Icon(Icons.face_2_outlined, size: (120, 160).c)
               : ClipRRect(
                   borderRadius: BorderRadius.circular(250),
-                  child: FutureSpaceBuilder(
-                    path: user?.photoURL,
-                    thumbnail: true,
-                  ),
+                  child: FutureSpaceBuilder(path: user?.photoURL, thumbnail: true),
                 ),
         ),
       ),
@@ -220,11 +186,7 @@ class ProfileUpdateUserProfilePicture extends StatelessWidget {
 }
 
 class ProfileUpdateUserName extends StatelessWidget {
-  const ProfileUpdateUserName({
-    super.key,
-    required this.user,
-    required this.searchuser,
-  });
+  const ProfileUpdateUserName({super.key, required this.user, required this.searchuser});
 
   final User? user;
   final User? searchuser;
@@ -233,34 +195,32 @@ class ProfileUpdateUserName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: 'Update display name',
-      child: AsyncTextFormField(
-        key: ValueKey('Name ${user?.displayName}'),
-        initialValue: user?.displayName,
-        enabled: searchuser == null,
-        style: context.hm,
-        asyncValidator: (value) async {
-          return value.checkMin(8);
-        },
-        maxLines: 1,
-        showPrefix: false,
-        textInputAction: TextInputAction.done,
-        onSubmit: (con) async =>
-            await callUserUpdate(User(displayName: con.text)),
+      // child: AsyncTextFormField(
+      //   key: ValueKey('Name ${user?.displayName}'),
+      //   valueParser: (value) => value,
+      //   valueFormatter: (value) => value,
+      //   initialValue: user?.displayName,
+      //   enabled: searchuser == null,
+      //   style: context.hm,
+      //   asyncValidator: (value) async {
+      //     return value.checkMin(8);
+      //   },
+      //   maxLines: 1,
+      //   showPrefix: false,
+      //   textInputAction: TextInputAction.done,
+      //   onSubmit: (con) async =>
+      //       await callUserUpdate(User(displayName: con.text)),
 
-        decoration: (AsyncText value, nickCon) => InputDecoration(
-          hintText: 'Name',
-        ).applyDefaults(context.theme.inputDecorationTheme),
-      ),
+      //   decoration: (AsyncTextType value, nickCon) => InputDecoration(
+      //     hintText: 'Name',
+      //   ).applyDefaults(context.theme.inputDecorationTheme),
+      // ),
     );
   }
 }
 
 class ProfileUpdateUserNickName extends StatelessWidget {
-  const ProfileUpdateUserNickName({
-    super.key,
-    required this.user,
-    required this.searchuser,
-  });
+  const ProfileUpdateUserNickName({super.key, required this.user, required this.searchuser});
 
   final User? user;
   final User? searchuser;
@@ -269,39 +229,41 @@ class ProfileUpdateUserNickName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: 'Update Nick name',
-      child: AsyncTextFormField(
-        key: ValueKey('Nick ${user?.nick}'),
-        initialValue: user?.nick,
-        autocorrect: false,
-        enableSuggestions: false,
-        enabled: searchuser == null,
-        style: context.tl,
-        maxLines: 1,
-        asyncValidator: (value) async {
-          if (value.checkMin(8) != null) {
-            return value.checkMin(8);
-          }
-          if (value.checkAlphanumeric() != null) {
-            return value.checkAlphanumeric();
-          }
-          if (user?.nick == value) {
-            return null;
-          }
+      // child: AsyncTextFormField(
+      //   key: ValueKey('Nick ${user?.nick}'),
+      //   valueParser: (value) => value,
+      //   valueFormatter: (value) => value,
+      //   initialValue: user?.nick,
+      //   autocorrect: false,
+      //   enableSuggestions: false,
+      //   enabled: searchuser == null,
+      //   style: context.tl,
+      //   maxLines: 1,
+      //   asyncValidator: (value) async {
+      //     if (value.checkMin(8) != null) {
+      //       return value.checkMin(8);
+      //     }
+      //     if (value.checkAlphanumeric() != null) {
+      //       return value.checkAlphanumeric();
+      //     }
+      //     if (user?.nick == value) {
+      //       return null;
+      //     }
 
-          final count = await countUserByNick(value);
-          if (count != 0) {
-            return 'Not available';
-          }
-          return null;
-        },
-        showPrefix: false,
-        textInputAction: TextInputAction.done,
-        onSubmit: (con) async => await callUserUpdate(User(nick: con.text)),
-        decoration: (AsyncText value, nickCon) => InputDecoration(
-          hintText: 'Nick name',
-          prefix: const Text('Nick name : @'),
-        ).applyDefaults(context.theme.inputDecorationTheme),
-      ),
+      //     final count = await countUserByNick(value);
+      //     if (count != 0) {
+      //       return 'Not available';
+      //     }
+      //     return null;
+      //   },
+      //   showPrefix: false,
+      //   textInputAction: TextInputAction.done,
+      //   onSubmit: (con) async => await callUserUpdate(User(nick: con.text)),
+      //   decoration: (AsyncTextType value, nickCon) => InputDecoration(
+      //     hintText: 'Nick name',
+      //     prefix: const Text('Nick name : @'),
+      //   ).applyDefaults(context.theme.inputDecorationTheme),
+      // ),
     );
   }
 }
@@ -330,11 +292,7 @@ class ProfileUpdateUserUserRole extends StatelessWidget {
       value: useruser?.value?.role ?? UserRole.DONTKNOW,
       onChanged: (value) async {
         if (value != null) {
-          await updateUserUserRole(
-            next: user!.uid,
-            me: currentRoomUser!.uid,
-            role: value,
-          );
+          await updateUserUserRole(next: user!.uid, me: currentRoomUser!.uid, role: value);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -353,11 +311,7 @@ class ProfileUpdateUserUserRole extends StatelessWidget {
 }
 
 class ProfileReportUser extends StatelessWidget {
-  const ProfileReportUser({
-    super.key,
-    required this.user,
-    required this.currentRoomUser,
-  });
+  const ProfileReportUser({super.key, required this.user, required this.currentRoomUser});
 
   final User? user;
   final User? currentRoomUser;
@@ -373,9 +327,9 @@ class ProfileReportUser extends StatelessWidget {
         Option(value: 'Is not appropriate for community'),
       ],
       child: ListTile(
-        tileColor: context.theme.csErrCon,
-        titleTextStyle: context.ts.c(context.theme.csOnErrCon),
-        iconColor: context.theme.csOnErrCon,
+        tileColor: context.cErrCon,
+        titleTextStyle: context.ts.c(context.cOnErrCon),
+        iconColor: context.cOnErrCon,
         leading: const Icon(Icons.report, semanticLabel: 'Report this user'),
         title: const Text('Report this user'),
       ),
@@ -391,8 +345,8 @@ class ProfileReportUser extends StatelessWidget {
           const SizedBox(width: 10),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: marioContext.theme.csErrCon,
-              foregroundColor: marioContext.theme.csOnErrCon,
+              backgroundColor: marioContext.cErrCon,
+              foregroundColor: marioContext.cOnErrCon,
             ),
             child: const Text('Report'),
             onPressed: () async {
@@ -439,9 +393,7 @@ class ProfileCreateNewChat extends StatelessWidget {
             final room = await ref
                 .read(currentRoomProvider.notifier)
                 .createRoom(
-                  room: Room(
-                    displayName: '${me!.displayName} ${user!.displayName}',
-                  ),
+                  room: Room(displayName: '${me!.displayName} ${user!.displayName}'),
                   users: [me.uid, user!.uid],
                 );
             if (room != null && context.mounted) {
@@ -461,14 +413,12 @@ class ProfileSignOut extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      tileColor: context.theme.csSecCon,
-      titleTextStyle: context.ts.c(context.theme.csSec),
-      iconColor: context.theme.csSec,
+      tileColor: context.cSecCon,
+      titleTextStyle: context.ts.c(context.cSec),
+      iconColor: context.cSec,
       leading: const Icon(Icons.logout),
       onTap: () async {
-        final res = await context.showYesNo(
-          title: 'Are you sure you want to sign out?',
-        );
+        final res = await context.showYesNo(title: 'Are you sure you want to sign out?');
         if (res) {
           auth.FirebaseAuth.instance.signOut();
         }
@@ -485,9 +435,9 @@ class ProfileDeleteAccount extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      tileColor: context.theme.csErrCon,
-      titleTextStyle: context.ts.c(context.theme.csOnErrCon),
-      iconColor: context.theme.csOnErrCon,
+      tileColor: context.cErrCon,
+      titleTextStyle: context.ts.c(context.cOnErrCon),
+      iconColor: context.cOnErrCon,
       leading: const Icon(Icons.delete),
       onTap: () async {
         final nav = Navigator.of(context);
@@ -511,10 +461,7 @@ class ProfileDeleteAccount extends StatelessWidget {
 
           if (context.mounted && errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                duration: const Duration(seconds: 10),
-                content: Text(errorMessage!),
-              ),
+              SnackBar(duration: const Duration(seconds: 10), content: Text(errorMessage!)),
             );
           }
         }

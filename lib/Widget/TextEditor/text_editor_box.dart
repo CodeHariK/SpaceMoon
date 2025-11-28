@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated_overlay.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/TextEditor/text_editor.dart';
 
 class TextEditorBox extends ConsumerWidget {
-  const TextEditorBox({
-    super.key,
-    required this.tweet,
-  });
+  const TextEditorBox({super.key, required this.tweet});
 
   final Tweet tweet;
 
@@ -46,11 +43,7 @@ class TextEditorBox extends ConsumerWidget {
             height: (250, 600).c,
             child: Hero(
               tag: '${tweet.hashCode} TextEditor',
-              child: TextEditor(
-                key: ObjectKey(tweet),
-                jsonData: tweet.text,
-                showAppbar: false,
-              ),
+              child: TextEditor(key: ObjectKey(tweet), jsonData: tweet.text, showAppbar: false),
             ),
           ),
         ),
@@ -60,10 +53,7 @@ class TextEditorBox extends ConsumerWidget {
 }
 
 class TextEditorActionButton extends StatelessWidget {
-  const TextEditorActionButton({
-    super.key,
-    required this.ref,
-  });
+  const TextEditorActionButton({super.key, required this.ref});
 
   final WidgetRef ref;
 
@@ -77,21 +67,17 @@ class TextEditorActionButton extends StatelessWidget {
             tag: 'TextEditor',
             child: TextEditor(
               onPopInvoked: (pop, data) async {
-                ref.read(tweetsProvider.notifier).sendTweet(
-                      tweet: Tweet(
-                        text: data,
-                        mediaType: MediaType.POST,
-                      ),
+                ref
+                    .read(tweetsProvider.notifier)
+                    .sendTweet(
+                      tweet: Tweet(text: data, mediaType: MediaType.POST),
                     );
               },
             ),
           ),
         );
       },
-      icon: const Icon(
-        Icons.post_add,
-        semanticLabel: 'post',
-      ),
+      icon: const Icon(Icons.post_add, semanticLabel: 'post'),
     );
   }
 }

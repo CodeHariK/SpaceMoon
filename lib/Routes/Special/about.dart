@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:moonspace/router/router.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:moonspace/painter/sunflower.dart';
@@ -22,9 +23,8 @@ class About {
 
 @TypedGoRoute<AboutRoute>(path: AppRouter.about)
 @immutable
-class AboutRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey =
-      AppRouter.rootNavigatorKey;
+class AboutRoute extends GoRouteData with $AboutRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -41,8 +41,7 @@ class AboutPage extends ConsumerStatefulWidget {
   ConsumerState<AboutPage> createState() => _AboutPageState();
 }
 
-class _AboutPageState extends ConsumerState<AboutPage>
-    with SingleTickerProviderStateMixin {
+class _AboutPageState extends ConsumerState<AboutPage> with SingleTickerProviderStateMixin {
   final duration = const Duration(seconds: 1);
   late final AnimationController animCon;
   DateTime? pressStart;
@@ -82,15 +81,11 @@ class _AboutPageState extends ConsumerState<AboutPage>
                 onPressed: () {
                   widget.onboarded?.call();
                 },
-                child: const Icon(
-                  Icons.chevron_right_rounded,
-                  semanticLabel: 'Continue',
-                ),
+                child: const Icon(Icons.chevron_right_rounded, semanticLabel: 'Continue'),
               ),
         body: GestureDetector(
           onLongPressEnd: (details) {
-            if (DateTime.now().millisecondsSinceEpoch -
-                    pressStart!.millisecondsSinceEpoch <
+            if (DateTime.now().millisecondsSinceEpoch - pressStart!.millisecondsSinceEpoch <
                 duration.inMilliseconds) {
               animCon.reverse();
             }
@@ -105,9 +100,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
             });
           },
           child: CustomPaint(
-            painter: DottedBackgroundPainter(
-              color: AppTheme.isDark ? Colors.white38 : Colors.red,
-            ),
+            painter: DottedBackgroundPainter(color: AppTheme.isDark ? Colors.white38 : Colors.red),
             child: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
@@ -119,9 +112,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
                           child: SizedBox(
                             height: (270, 400).c,
                             child: Image.asset(
-                              widget.onboarded != null
-                                  ? Asset.spaceMoon
-                                  : Asset.sharkrun,
+                              widget.onboarded != null ? Asset.spaceMoon : Asset.sharkrun,
                             ),
                           ),
                         ),
@@ -173,16 +164,12 @@ class _AboutPageState extends ConsumerState<AboutPage>
 
                       if (widget.onboarded == null)
                         FutureBuilder(
-                          future: FirebaseFirestore.instance
-                              .doc('Spacemoon/appinfo')
-                              .get(),
+                          future: FirebaseFirestore.instance.doc('Spacemoon/appinfo').get(),
                           builder: (context, snapshot) {
                             final String googleplay =
-                                snapshot.data?.data()?['googleplay'] ??
-                                SpaceMoon.googleplay;
+                                snapshot.data?.data()?['googleplay'] ?? SpaceMoon.googleplay;
                             final String appstore =
-                                snapshot.data?.data()?['appstore'] ??
-                                SpaceMoon.appstore;
+                                snapshot.data?.data()?['appstore'] ?? SpaceMoon.appstore;
 
                             return ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 400),
@@ -226,15 +213,9 @@ class _AboutPageState extends ConsumerState<AboutPage>
 
                       if (widget.onboarded == null)
                         CustomPaint(
-                          painter: SolarPathPainter(
-                            Size((180, 220).c, (180, 220).c),
-                            Colors.red,
-                          ),
+                          painter: SolarPathPainter(Size((180, 220).c, (180, 220).c), Colors.red),
                           child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
+                            decoration: BoxDecoration(color: Colors.red, shape: BoxShape.circle),
                             width: (180, 220).c,
                             height: (180, 220).c,
                             child: Sunflower(
@@ -246,9 +227,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Image.asset(
-                                        widget.onboarded != null
-                                            ? Asset.sharkrun
-                                            : Asset.spaceMoon,
+                                        widget.onboarded != null ? Asset.sharkrun : Asset.spaceMoon,
                                       ),
                                     );
                                   case 1:
@@ -259,17 +238,13 @@ class _AboutPageState extends ConsumerState<AboutPage>
                                       icon: Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: AppTheme.isDark
-                                              ? Colors.white
-                                              : Colors.black,
+                                          color: AppTheme.isDark ? Colors.white : Colors.black,
                                         ),
                                         padding: const EdgeInsets.all(8),
                                         child: Icon(
                                           Icons.close,
                                           size: 40,
-                                          color: AppTheme.isDark
-                                              ? Colors.black
-                                              : Colors.white,
+                                          color: AppTheme.isDark ? Colors.black : Colors.white,
                                         ),
                                       ),
                                     );
@@ -280,8 +255,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
                             ),
                           ),
                         ),
-                      if (SpaceMoon.debugUi)
-                        Text(SpaceMoon.build, style: context.tl),
+                      if (SpaceMoon.debugUi) Text(SpaceMoon.build, style: context.tl),
                       SizedBox(height: (10, 20).c),
                     ],
                   ),
@@ -315,12 +289,7 @@ class SocialButtons extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.all(4),
-              child: SvgPicture.string(
-                githubSvg,
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-              ),
+              child: SvgPicture.string(githubSvg, width: 48, height: 48, fit: BoxFit.cover),
             ),
           ),
         ),
@@ -336,12 +305,7 @@ class SocialButtons extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: SvgPicture.string(
-                linkedInSvg,
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-              ),
+              child: SvgPicture.string(linkedInSvg, width: 48, height: 48, fit: BoxFit.cover),
             ),
           ),
         ),
@@ -357,12 +321,7 @@ class SocialButtons extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: SvgPicture.string(
-                twitterSvg,
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-              ),
+              child: SvgPicture.string(twitterSvg, width: 48, height: 48, fit: BoxFit.cover),
             ),
           ),
         ),

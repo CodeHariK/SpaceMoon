@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/main.dart';
 
@@ -16,26 +16,26 @@ extension SuperRoom on Room {
         .collection(Const.rooms.name)
         .doc(uid)
         .withConverter(
-      fromFirestore: (snapshot, options) {
-        return fromDocSnap(Room(), snapshot);
-      },
-      toFirestore: (value, options) {
-        return value?.toMap() ?? {};
-      },
-    );
+          fromFirestore: (snapshot, options) {
+            return fromDocSnap(Room(), snapshot);
+          },
+          toFirestore: (value, options) {
+            return value?.toMap() ?? {};
+          },
+        );
   }
 
   CollectionReference<Tweet?>? get tweetCol {
     return FirebaseFirestore.instance
         .collection('${Const.rooms.name}/$uid/${Const.tweets.name}')
         .withConverter(
-      fromFirestore: (snapshot, options) {
-        return fromDocSnap(Tweet(), snapshot);
-      },
-      toFirestore: (value, options) {
-        return value?.toMap() ?? {};
-      },
-    );
+          fromFirestore: (snapshot, options) {
+            return fromDocSnap(Tweet(), snapshot);
+          },
+          toFirestore: (value, options) {
+            return value?.toMap() ?? {};
+          },
+        );
   }
 }
 
@@ -68,8 +68,7 @@ FutureOr<List<Room?>> searchFamousRooms(Ref ref) async {
       .orderBy(Const.updated.name, descending: true)
       .limit(10)
       .get()
-      .then(
-          (value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
+      .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
 
   return rooms;
 }
@@ -79,8 +78,7 @@ Future<List<Room?>> getRoomByNick(String nick) async {
       .collection(Const.rooms.name)
       .where(Const.nick.name, isEqualTo: nick)
       .get()
-      .then(
-          (value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
+      .then((value) => value.docs.map((e) => fromQuerySnap(Room(), e)!).toList());
 
   return rooms;
 }
@@ -137,12 +135,7 @@ class CurrentRoom extends _$CurrentRoom {
     }
     //
     else if (id != null && id != state.value?.uid) {
-      final idDoc = await FirebaseFirestore.instance
-          .collection(
-            Const.rooms.name,
-          )
-          .doc(id)
-          .get();
+      final idDoc = await FirebaseFirestore.instance.collection(Const.rooms.name).doc(id).get();
 
       if (idDoc.exists) {
         state = AsyncValue.data(fromDocSnap(Room(), idDoc));
@@ -163,8 +156,7 @@ class CurrentRoom extends _$CurrentRoom {
 
     if (roomUser != null) {
       try {
-        SpaceMoon.httpCallable('roomuser-updateRoomUserTime')
-            .call(roomUser.toMap());
+        SpaceMoon.httpCallable('roomuser-updateRoomUserTime').call(roomUser.toMap());
       } catch (e) {
         debugPrint('updateRoomUserTime Failed');
       }
@@ -182,18 +174,13 @@ class CurrentRoom extends _$CurrentRoom {
     return;
   }
 
-  Future<Room?> createRoom({
-    required Room room,
-    required List<String> users,
-  }) async {
+  Future<Room?> createRoom({required Room room, required List<String> users}) async {
     try {
-      final roomId = (await SpaceMoon.httpCallable('room-callCreateRoom').call(
-        {
-          'room': room.toMap(),
-          'users': users,
-        },
-      ))
-          .data as String;
+      final roomId =
+          (await SpaceMoon.httpCallable(
+                'room-callCreateRoom',
+              ).call({'room': room.toMap(), 'users': users})).data
+              as String;
 
       return Room(uid: roomId);
     } catch (e) {
@@ -205,8 +192,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> upgradeAccessToRoom(RoomUser user) async {
     try {
-      await SpaceMoon.httpCallable('roomuser-upgradeAccessToRoom')
-          .call(user.toMap());
+      await SpaceMoon.httpCallable('roomuser-upgradeAccessToRoom').call(user.toMap());
     } catch (e) {
       debugPrint('upgradeAccessToRoom Failed');
     }
@@ -223,8 +209,9 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> reportRoom(RoomUser user, Set<String> reason) async {
     try {
-      await SpaceMoon.httpCallable('room-reportRoom').call(
-          user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
+      await SpaceMoon.httpCallable(
+        'room-reportRoom',
+      ).call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
       exitRoom(user);
     } catch (e) {
       debugPrint('reportRoom Failed $e');
@@ -233,8 +220,7 @@ class CurrentRoom extends _$CurrentRoom {
 
   Future<void> deleteRoomUser(RoomUser user) async {
     try {
-      await SpaceMoon.httpCallable('roomuser-deleteRoomUser')
-          .call(user.toMap());
+      await SpaceMoon.httpCallable('roomuser-deleteRoomUser').call(user.toMap());
     } catch (e) {
       debugPrint('deleteRoomUser Failed');
     }

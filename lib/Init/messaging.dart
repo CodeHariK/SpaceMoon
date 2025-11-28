@@ -4,8 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:moonspace/electrify.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Home/Chat/chat_screen.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -38,8 +38,7 @@ Future<void> firebaseMessagingSetup() async {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       dino('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
       dino('User granted provisional permission');
     } else {
       lava('User declined or has not accepted permission');
@@ -86,11 +85,7 @@ Future<void> onBackgroundMessageHandler(RemoteMessage message) async {
 
 enum HandlerType { onMessage, onMessageOpened, background }
 
-Future<void> messageHandler(
-  RemoteMessage message,
-  bool background,
-  HandlerType type,
-) async {
+Future<void> messageHandler(RemoteMessage message, bool background, HandlerType type) async {
   if (background) {
     await Firebase.initializeApp();
   }
@@ -110,8 +105,8 @@ Future<void> messageHandler(
 
     NotificationsPage.tweetStream.add(tweet);
 
-    BuildContext? context = AppRouter.rootNavigatorKey.currentContext;
-    if (context != null && context.mounted) {
+    BuildContext context = Electric.navigatorContext;
+    if (context.mounted) {
       if (type == HandlerType.onMessageOpened) {
         ChatRoute(chatId: tweet.room).push(context);
       }
@@ -119,10 +114,8 @@ Future<void> messageHandler(
       if (type == HandlerType.onMessage) {
         AnimatedSnackbar(
           title: message.notification?.title ?? '',
-          content: tweet.mediaType == MediaType.TEXT
-              ? (message.notification?.body ?? '')
-              : '...',
-        ).show(Electric.context, alignment: const Alignment(0.0, -.8));
+          content: tweet.mediaType == MediaType.TEXT ? (message.notification?.body ?? '') : '...',
+        ).show(Electric.overlayContext, alignment: const Alignment(0.0, -.8));
       }
     }
 

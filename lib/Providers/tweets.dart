@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/main.dart';
@@ -40,17 +40,14 @@ class Tweets extends _$Tweets {
   //   return stream ?? const Stream.empty();
   // }
 
-  FutureOr<String?> sendTweet({
-    required Tweet tweet,
-  }) async {
+  FutureOr<String?> sendTweet({required Tweet tweet}) async {
     final roomuser = ref.watch(currentRoomUserProvider).value;
 
     tweet.room = roomuser!.room;
 
     try {
       // Stopwatch stopwatch = Stopwatch()..start();
-      final res =
-          await SpaceMoon.httpCallable('tweet-sendTweet').call(tweet.toMap());
+      final res = await SpaceMoon.httpCallable('tweet-sendTweet').call(tweet.toMap());
       // stopwatch.stop();
       // print(stopwatch.elapsedMilliseconds);
 
@@ -69,9 +66,7 @@ class Tweets extends _$Tweets {
     }
   }
 
-  FutureOr<void> deleteTweet({
-    required Tweet tweet,
-  }) async {
+  FutureOr<void> deleteTweet({required Tweet tweet}) async {
     try {
       await SpaceMoon.httpCallable('tweet-deleteTweet').call(tweet.toMap());
     } catch (e) {
@@ -79,11 +74,11 @@ class Tweets extends _$Tweets {
     }
   }
 
-  FutureOr<void> reportTweet(
-      {required Tweet tweet, required Set<String> reason}) async {
+  FutureOr<void> reportTweet({required Tweet tweet, required Set<String> reason}) async {
     try {
-      await SpaceMoon.httpCallable('tweet-reportTweet')
-          .call({'tweet': tweet.toMap(), 'reason': reason.toList()});
+      await SpaceMoon.httpCallable(
+        'tweet-reportTweet',
+      ).call({'tweet': tweet.toMap(), 'reason': reason.toList()});
     } catch (e) {
       debugPrint('reportTweet Failed$e');
     }
@@ -94,8 +89,7 @@ class Tweets extends _$Tweets {
 FutureOr<Tweet?> getTweetById(Ref ref, Tweet tweet) async {
   try {
     final tweetDoc = await FirebaseFirestore.instance
-        .doc(
-            '${Const.rooms.name}/${tweet.room}/${Const.tweets.name}/${tweet.uid}')
+        .doc('${Const.rooms.name}/${tweet.room}/${Const.tweets.name}/${tweet.uid}')
         .get();
 
     return fromDocSnap(Tweet(), tweetDoc);
@@ -107,16 +101,14 @@ FutureOr<Tweet?> getTweetById(Ref ref, Tweet tweet) async {
 @riverpod
 Future<int?> getNewTweetCount(Ref ref, RoomUser user) async {
   return await user.tweetCol
-      ?.where(
-        Const.created.name,
-        isGreaterThan: user.updated.isoDate,
-      )
+      ?.where(Const.created.name, isGreaterThan: user.updated.isoDate)
       .count()
       .get()
       .then((value) {
-    return value.count;
-  }).catchError((e, s) {
-    lava(e);
-    return 0;
-  });
+        return value.count;
+      })
+      .catchError((e, s) {
+        lava(e);
+        return 0;
+      });
 }

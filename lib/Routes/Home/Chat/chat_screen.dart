@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moonspace/helper/stream/functions.dart';
+import 'package:moonspace/electrify.dart';
+import 'package:moonspace/helper/stream/debounce.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/async_lock.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
-import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
@@ -26,13 +26,14 @@ import 'package:spacemoon/Widget/Chat/tweet_box.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:spacemoon/main.dart';
 
-class ChatRoute extends GoRouteData {
+// part 'chat_screen.g.dart';
+
+class ChatRoute extends GoRouteData with $ChatRoute {
   final String chatId;
 
   const ChatRoute({required this.chatId});
 
-  static final GlobalKey<NavigatorState> $parentNavigatorKey =
-      AppRouter.rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -52,19 +53,17 @@ class ChatPage extends ConsumerStatefulWidget {
 class _ChatPageState extends ConsumerState<ChatPage> {
   //
   final ItemScrollController itemScrollController = ItemScrollController();
-  final ScrollOffsetController scrollOffsetController =
-      ScrollOffsetController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
-  final ScrollOffsetListener scrollOffsetListener =
-      ScrollOffsetListener.create();
+  final ScrollOffsetController scrollOffsetController = ScrollOffsetController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  final ScrollOffsetListener scrollOffsetListener = ScrollOffsetListener.create();
 
-  late final StreamController<(int? index, bool show)> dateStream =
-      createDebounceFunc(1000, ((int? index, bool show) value) async {
-        if (value.$2) {
-          dateStream.add((value.$1, false));
-        }
-      });
+  late final StreamController<(int? index, bool show)> dateStream = createDebounceFunc(1000, (
+    (int? index, bool show) value,
+  ) async {
+    if (value.$2) {
+      dateStream.add((value.$1, false));
+    }
+  });
 
   @override
   void didUpdateWidget(covariant ChatPage oldWidget) {
@@ -74,10 +73,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   void itemPositionListener() {
-    dateStream.add((
-      itemPositionsListener.itemPositions.value.lastOrNull?.index,
-      true,
-    ));
+    dateStream.add((itemPositionsListener.itemPositions.value.lastOrNull?.index, true));
   }
 
   @override
@@ -152,17 +148,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       );
     }
 
-    Query<Tweet?>? query = room.tweetCol?.orderBy(
-      Const.created.name,
-      descending: true,
-    );
+    Query<Tweet?>? query = room.tweetCol?.orderBy(Const.created.name, descending: true);
 
     if (query == null) {
       return const Error404Page();
     }
 
-    if (meInRoom == null ||
-        meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/ ) {
+    if (meInRoom == null || meInRoom.role == Role.REQUEST /* && room.open != Visible.OPEN*/ ) {
       return Scaffold(
         appBar: AppBar(
           leading: BackButton(
@@ -198,11 +190,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           subtitle: Text(room.nick, maxLines: 1),
           leading: CircleAvatar(
             radius: 24,
-            child: FutureSpaceBuilder(
-              path: room.photoURL,
-              radius: 100,
-              thumbnail: true,
-            ),
+            child: FutureSpaceBuilder(path: room.photoURL, radius: 100, thumbnail: true),
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -210,29 +198,20 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               IconButton(
                 onPressed: () async {
                   final scaf = ScaffoldMessenger.of(context);
-                  final url =
-                      SpaceMoon.domain + GoRouterState.of(context).uri.path;
+                  final url = SpaceMoon.domain + GoRouterState.of(context).uri.path;
                   await Clipboard.setData(ClipboardData(text: url));
                   if (mounted) {
-                    scaf.showSnackBar(
-                      const SnackBar(content: Text('Copied to Clipboard')),
-                    );
+                    scaf.showSnackBar(const SnackBar(content: Text('Copied to Clipboard')));
                   }
                 },
-                icon: const Icon(
-                  Icons.copy_rounded,
-                  semanticLabel: 'Copy chat url',
-                ),
+                icon: const Icon(Icons.copy_rounded, semanticLabel: 'Copy chat url'),
               ),
               if (meInRoom.isUserOrAdmin)
                 IconButton(
                   onPressed: () {
                     context.bSlidePush(SearchPage(room: room));
                   },
-                  icon: const Icon(
-                    Icons.add_circle_outline,
-                    semanticLabel: 'Invite users',
-                  ),
+                  icon: const Icon(Icons.add_circle_outline, semanticLabel: 'Invite users'),
                 ),
             ],
           ),
@@ -253,10 +232,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'error ${allTweetSnap.error}',
-                          style: context.tm,
-                        ),
+                        child: Text('error ${allTweetSnap.error}', style: context.tm),
                       ),
                     );
                   }
@@ -277,8 +253,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           final tweet = doc.data()!;
 
                           if (index > 0 && index < allTweetSnap.docs.length) {
-                            Tweet lastTweet = allTweetSnap.docs[index + 1]
-                                .data()!;
+                            Tweet lastTweet = allTweetSnap.docs[index + 1].data()!;
 
                             final lDate = lastTweet.created.date;
                             final cDate = tweet.created.date;
@@ -295,8 +270,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           return const SizedBox.shrink();
                         },
                         itemBuilder: (context, index) {
-                          if (allTweetSnap.hasMore &&
-                              index + 1 == allTweetSnap.docs.length) {
+                          if (allTweetSnap.hasMore && index + 1 == allTweetSnap.docs.length) {
                             allTweetSnap.fetchMore();
                           }
                           final doc = allTweetSnap.docs[index];
@@ -318,33 +292,20 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                           builder: (context, dateSnapshot) {
                             final value = dateSnapshot.data;
                             final index = value?.$1;
-                            if (index == null ||
-                                allTweetSnap.docs.length <= index) {
+                            if (index == null || allTweetSnap.docs.length <= index) {
                               return const SizedBox();
                             }
                             final show = value!.$2;
-                            final date = allTweetSnap.docs[index]
-                                .data()!
-                                .created
-                                .dateString;
+                            final date = allTweetSnap.docs[index].data()!.created.dateString;
 
                             return TweenAnimationBuilder(
-                              tween: Tween<double>(
-                                begin: show ? 0 : 1,
-                                end: show ? 1 : 0,
-                              ),
+                              tween: Tween<double>(begin: show ? 0 : 1, end: show ? 1 : 0),
                               curve: Curves.linear,
                               duration: const Duration(seconds: 1),
                               builder: (context, value, child) {
-                                return Opacity(
-                                  opacity: clampDouble(value * 5, 0, 1),
-                                  child: child,
-                                );
+                                return Opacity(opacity: clampDouble(value * 5, 0, 1), child: child);
                               },
-                              child: Chip(
-                                padding: EdgeInsets.zero,
-                                label: Text(date),
-                              ),
+                              child: Chip(padding: EdgeInsets.zero, label: Text(date)),
                             );
                           },
                         ),
@@ -366,12 +327,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         return OutlinedButton(
                           onPressed: () async {
                             lock();
-                            await ref
-                                .read(currentRoomProvider.notifier)
-                                .deleteRoomUser(meInRoom);
-                            ref
-                                .read(currentRoomProvider.notifier)
-                                .exitRoom(null);
+                            await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
+                            ref.read(currentRoomProvider.notifier).exitRoom(null);
                             if (context.mounted) {
                               HomeRoute().go(context);
                             }

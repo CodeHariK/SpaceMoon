@@ -1,3 +1,4 @@
+import 'dart:developer' show log;
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -6,12 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:moonspace/helper/extensions/string.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:moonspace/widgets/animated_overlay.dart';
 import 'package:moonspace/widgets/functions.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Chat/qr_scanner.dart';
 import 'package:spacemoon/Widget/Chat/send_box.dart';
@@ -25,10 +25,7 @@ class QrBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final code =
         BarcodeType.values
-            .where(
-              (element) =>
-                  element.name == (codeQrtext.split('||').firstOrNull ?? ''),
-            )
+            .where((element) => element.name == (codeQrtext.split('||').firstOrNull ?? ''))
             .firstOrNull ??
         BarcodeType.QrCode;
     final qrText = codeQrtext.split('||').lastOrNull ?? '';
@@ -48,16 +45,11 @@ class QrBox extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: BarcodeWidget(
                           barcode: code == BarcodeType.QrCode
-                              ? Barcode.qrCode(
-                                  errorCorrectLevel:
-                                      BarcodeQRCorrectionLevel.high,
-                                )
+                              ? Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high)
                               : Barcode.fromType(code),
                           padding: const EdgeInsets.all(16),
                           // margin: EdgeInsets.all(4),
-                          backgroundColor: AppTheme.isDark
-                              ? Colors.black
-                              : Colors.white,
+                          backgroundColor: AppTheme.isDark ? Colors.black : Colors.white,
                           errorBuilder: (context, error) => SizedBox(
                             width: context.mq.w,
                             height: context.mq.w,
@@ -70,15 +62,9 @@ class QrBox extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     color: Colors.black87,
-                                    border: Border.all(
-                                      color: Colors.red,
-                                      width: 2,
-                                    ),
+                                    border: Border.all(color: Colors.red, width: 2),
                                   ),
-                                  child: Text(
-                                    error,
-                                    style: context.hs.c(Colors.white),
-                                  ),
+                                  child: Text(error, style: context.hs.c(Colors.white)),
                                 ),
                               ],
                             ),
@@ -154,32 +140,19 @@ class QrDialog extends HookWidget {
                               value: barcodeType.value,
                               icon: const SizedBox(),
                               borderRadius: 8.br,
-                              dropdownColor: context.theme.csSecCon,
+                              dropdownColor: context.cSecCon,
                               decoration: InputDecoration(
                                 hintText: 'Qr Type',
-                                constraints: const BoxConstraints(
-                                  maxWidth: 200,
-                                ),
+                                constraints: const BoxConstraints(maxWidth: 200),
                                 border: 0.bs.c(Colors.transparent).out.r(8),
-                                enabledBorder: 0.bs
-                                    .c(Colors.transparent)
-                                    .out
-                                    .r(8),
-                                focusedBorder: 0.bs
-                                    .c(Colors.transparent)
-                                    .out
-                                    .r(8),
-                                fillColor: context.theme.csSecCon,
+                                enabledBorder: 0.bs.c(Colors.transparent).out.r(8),
+                                focusedBorder: 0.bs.c(Colors.transparent).out.r(8),
+                                fillColor: context.cSecCon,
                                 contentPadding: const EdgeInsets.all(16),
                                 filled: true,
                               ),
                               items: BarcodeType.values
-                                  .map(
-                                    (e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Text(e.name),
-                                    ),
-                                  )
+                                  .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
                                   .toList(),
                               onChanged: (value) {
                                 if (value != null) {
@@ -192,17 +165,11 @@ class QrDialog extends HookWidget {
                           if (qrtext.value.isNotEmpty)
                             Expanded(
                               child: ListTile(
-                                tileColor: context.theme.csErrCon,
-                                titleTextStyle: context.ts.c(
-                                  context.theme.csOnErrCon,
-                                ),
-                                iconColor: context.theme.csOnErrCon,
-                                leading: const Icon(
-                                  Icons.download,
-                                  semanticLabel: 'Download qr',
-                                ),
-                                onTap: () =>
-                                    saveQr(context, repaintKey, qrtext.value),
+                                tileColor: context.cErrCon,
+                                titleTextStyle: context.ts.c(context.cOnErrCon),
+                                iconColor: context.cOnErrCon,
+                                leading: const Icon(Icons.download, semanticLabel: 'Download qr'),
+                                onTap: () => saveQr(context, repaintKey, qrtext.value),
                                 title: const Text('Download'),
                               ),
                             ),
@@ -216,7 +183,9 @@ class QrDialog extends HookWidget {
                       child: SendBox(
                         roomUser: roomUser,
                         onChanged: (value) {
-                          qrtext.value = value;
+                          if (value != null) {
+                            qrtext.value = value;
+                          }
                         },
                         mediaType: MediaType.QR,
                         onSubmit: (controller) async {},
@@ -237,11 +206,7 @@ class QrDialog extends HookWidget {
   }
 }
 
-Future<void> saveToGallery(
-  Uint8List? pngBytes,
-  BuildContext context,
-  String path,
-) async {
+Future<void> saveToGallery(Uint8List? pngBytes, BuildContext context, String path) async {
   if (pngBytes != null) {
     final saved = await SaverGallery.saveImage(
       pngBytes,
@@ -280,9 +245,7 @@ void saveQr(BuildContext context, GlobalKey repaintKey, String qrtext) async {
   try {
     RenderRepaintBoundary boundary =
         repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-    var image = await boundary.toImage(
-      pixelRatio: 1 + (qrtext.length ~/ 120) / 10,
-    );
+    var image = await boundary.toImage(pixelRatio: 1 + (qrtext.length ~/ 120) / 10);
     var byteData = await image.toByteData(format: ImageByteFormat.png);
     var pngBytes = byteData?.buffer.asUint8List();
 
@@ -290,6 +253,6 @@ void saveQr(BuildContext context, GlobalKey repaintKey, String qrtext) async {
       await saveToGallery(pngBytes, context, 'QrCodes');
     }
   } catch (e) {
-    lava(e);
+    log(e.toString());
   }
 }

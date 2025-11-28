@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 
 Future<(ImageMetadata, XFile)?> selectImageMedia() async {
   try {
@@ -18,12 +18,14 @@ Future<(ImageMetadata, XFile)?> selectImageMedia() async {
     final mime = mediaFiles.mimeType ?? lookupMimeType(mediaFiles.path);
 
     return (
-      ImageMetadata(localUrl: mediaFiles.path, type: mime
-          // blurhash: blurHash.hash,
-          // width: upImg.width,
-          // height: upImg.height,
-          ),
-      mediaFiles
+      ImageMetadata(
+        localUrl: mediaFiles.path,
+        type: mime,
+        // blurhash: blurHash.hash,
+        // width: upImg.width,
+        // height: upImg.height,
+      ),
+      mediaFiles,
     );
   } catch (e) {
     return null;
@@ -33,46 +35,48 @@ Future<(ImageMetadata, XFile)?> selectImageMedia() async {
 Future<List<(ImageMetadata, XFile)>> selectMultiMedia() async {
   try {
     final mediaFiles = await ImagePicker().pickMultipleMedia();
-    final mediasRead = mediaFiles.where((element) {
-      final mime = element.mimeType ?? lookupMimeType(element.path);
-      return isImageVideo(mime ?? '');
-    }).map((e) async {
-      final savepath = e.path;
+    final mediasRead = mediaFiles
+        .where((element) {
+          final mime = element.mimeType ?? lookupMimeType(element.path);
+          return isImageVideo(mime ?? '');
+        })
+        .map((e) async {
+          final savepath = e.path;
 
-      final mime = e.mimeType ?? lookupMimeType(e.path);
+          final mime = e.mimeType ?? lookupMimeType(e.path);
 
-      if ((await e.length()) > 30000000) {
-        return null;
-      }
+          if ((await e.length()) > 30000000) {
+            return null;
+          }
 
-      // final imageBytes = await e.readAsBytes();
-      // final upImg = img.decodeImage(imageBytes);
+          // final imageBytes = await e.readAsBytes();
+          // final upImg = img.decodeImage(imageBytes);
 
-      // final tmpPath = await getTemporaryDirectory();
-      // final savepath = '${tmpPath.path}/${randomString(12)}${path.extension(e.path)}';
-      // await e.saveTo(savepath);
+          // final tmpPath = await getTemporaryDirectory();
+          // final savepath = '${tmpPath.path}/${randomString(12)}${path.extension(e.path)}';
+          // await e.saveTo(savepath);
 
-      // if (upImg == null) return null;
+          // if (upImg == null) return null;
 
-      // final newImg = img.copyResize(
-      //   upImg,
-      //   width: 200,
-      //   maintainAspect: true,
-      // );
+          // final newImg = img.copyResize(
+          //   upImg,
+          //   width: 200,
+          //   maintainAspect: true,
+          // );
 
-      // final blurHash = BlurHash.encode(newImg, numCompX: 3, numCompY: 2);
+          // final blurHash = BlurHash.encode(newImg, numCompX: 3, numCompY: 2);
 
-      return (
-        ImageMetadata(
-          localUrl: savepath,
-          type: mime,
-          // blurhash: blurHash.hash,
-          // width: upImg.width,
-          // height: upImg.height,
-        ),
-        e
-      );
-    });
+          return (
+            ImageMetadata(
+              localUrl: savepath,
+              type: mime,
+              // blurhash: blurHash.hash,
+              // width: upImg.width,
+              // height: upImg.height,
+            ),
+            e,
+          );
+        });
     final medias = await Future.wait(mediasRead);
     return List.from(medias.where((element) => element != null));
   } catch (e) {
@@ -100,21 +104,26 @@ Future<void> uploadFire({
 }) async {
   final mime = file?.mimeType ?? lookupMimeType(meta.localUrl);
   final name =
-      '$imageName${path.extension(meta.localUrl).isNotEmpty ? path.extension(meta.localUrl) : ((mime?.split('/').length ?? 0) > 1) ? mime?.split('/')[1] : ''}';
+      '$imageName${path.extension(meta.localUrl).isNotEmpty
+          ? path.extension(meta.localUrl)
+          : ((mime?.split('/').length ?? 0) > 1)
+          ? mime?.split('/')[1]
+          : ''}';
 
   final metadata = SettableMetadata(
-      contentType: mime,
-      customMetadata: ({
-        // 'name': name,
-        // 'user': user,
-        'path': docPath,
-        'localUrl': meta.localUrl,
-        // 'width': meta.width.toString(),
-        // 'height': meta.height.toString(),
-        if (multipath != null) 'multi': multipath,
-        if (singlepath != null) 'single': singlepath,
-        // 'path': image.path,
-      }));
+    contentType: mime,
+    customMetadata: ({
+      // 'name': name,
+      // 'user': user,
+      'path': docPath,
+      'localUrl': meta.localUrl,
+      // 'width': meta.width.toString(),
+      // 'height': meta.height.toString(),
+      if (multipath != null) 'multi': multipath,
+      if (singlepath != null) 'single': singlepath,
+      // 'path': image.path,
+    }),
+  );
 
   if (isImageVideo(metadata.contentType ?? '')) {
     final ref = FirebaseStorage.instance.ref().child(storagePath).child(name);
@@ -163,26 +172,21 @@ class UploadStatus {
   final String? url;
   final bool running;
 
-  UploadStatus({
-    required this.transferred,
-    this.url,
-    required this.running,
-  });
+  UploadStatus({required this.transferred, this.url, required this.running});
 
   @override
-  String toString() => 'UploadStatus(transferred: $transferred, url: ${url.hashCode}, running: $running)';
+  String toString() =>
+      'UploadStatus(transferred: $transferred, url: ${url.hashCode}, running: $running)';
 }
 
 extension SuperUploadTask on UploadTask {
   Stream<UploadStatus> stream(String localUrl) {
-    return snapshotEvents.map(
-      (event) {
-        return UploadStatus(
-          url: localUrl,
-          transferred: (event.bytesTransferred / event.totalBytes),
-          running: event.state == TaskState.running,
-        );
-      },
-    );
+    return snapshotEvents.map((event) {
+      return UploadStatus(
+        url: localUrl,
+        transferred: (event.bytesTransferred / event.totalBytes),
+        running: event.state == TaskState.running,
+      );
+    });
   }
 }

@@ -11,7 +11,7 @@ import 'package:moonspace/helper/extensions/theme_ext.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:moonspace/widgets/animated_overlay.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Common/shimmer_boxes.dart';
@@ -75,6 +75,8 @@ class _UnsplashPageState extends State<UnsplashPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: AsyncTextFormField(
+                valueParser: (value) => value,
+                valueFormatter: (value) => value,
                 initialValue: query,
                 showPrefix: false,
                 showSubmitSuffix: false,
@@ -83,16 +85,13 @@ class _UnsplashPageState extends State<UnsplashPage> {
                   query = value;
                   page = 1;
                   await fetch();
-                  return null;
                 },
               ),
             ),
           ),
         ),
       ),
-      body: res == null
-          ? null
-          : UnsplashGrid(res: res, roomUser: widget.roomUser),
+      body: res == null ? null : UnsplashGrid(res: res, roomUser: widget.roomUser),
       // body: res == null ? null : UnslashRow(res),
       extendBody: true,
       bottomNavigationBar: SizedBox(height: context.mq.pad.bottom),
@@ -103,10 +102,7 @@ class _UnsplashPageState extends State<UnsplashPage> {
           page += 1;
           fetch();
         },
-        child: const Icon(
-          Icons.replay_outlined,
-          semanticLabel: 'UnsplashPageReload',
-        ),
+        child: const Icon(Icons.replay_outlined, semanticLabel: 'UnsplashPageReload'),
       ),
     );
   }
@@ -225,123 +221,89 @@ class UnsplashGrid extends HookConsumerWidget {
                               Navigator.of(context).push(
                                 PageRouteBuilder(
                                   fullscreenDialog: true,
-                                  pageBuilder:
-                                      (context, animation, secondaryAnimation) {
-                                        return Scaffold(
-                                          floatingActionButton:
-                                              FloatingActionButton(
-                                                heroTag: 'UnsplashGridSend',
-                                                onPressed: () async {
-                                                  await ref
-                                                      .read(
-                                                        tweetsProvider.notifier,
-                                                      )
-                                                      .sendTweet(
-                                                        tweet: Tweet(
-                                                          room: roomUser.room,
-                                                          user: roomUser.user,
-                                                          mediaType:
-                                                              MediaType.GALLERY,
-                                                          gallery: [
-                                                            ImageMetadata(
-                                                              unsplashurl: url,
-                                                              caption: res
-                                                                  .description,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
-                                                  if (context.mounted) {
-                                                    context.pop();
-                                                  }
-                                                },
-                                                child: const Icon(
-                                                  Icons.send,
-                                                  semanticLabel:
-                                                      'UnsplashGridSend',
+                                  pageBuilder: (context, animation, secondaryAnimation) {
+                                    return Scaffold(
+                                      floatingActionButton: FloatingActionButton(
+                                        heroTag: 'UnsplashGridSend',
+                                        onPressed: () async {
+                                          await ref
+                                              .read(tweetsProvider.notifier)
+                                              .sendTweet(
+                                                tweet: Tweet(
+                                                  room: roomUser.room,
+                                                  user: roomUser.user,
+                                                  mediaType: MediaType.GALLERY,
+                                                  gallery: [
+                                                    ImageMetadata(
+                                                      unsplashurl: url,
+                                                      caption: res.description,
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                          if (context.mounted) {
+                                            context.pop();
+                                          }
+                                        },
+                                        child: const Icon(
+                                          Icons.send,
+                                          semanticLabel: 'UnsplashGridSend',
+                                        ),
+                                      ),
+                                      appBar: AppBar(),
+                                      body: Semantics(
+                                        label: 'Image',
+                                        child: Stack(
+                                          children: [
+                                            Hero(
+                                              tag: res.id!,
+                                              child: InteractiveViewer(
+                                                child: CustomCacheImage(
+                                                  imageUrl: url,
+                                                  // blurHash: e.blurHash,
                                                 ),
                                               ),
-                                          appBar: AppBar(),
-                                          body: Semantics(
-                                            label: 'Image',
-                                            child: Stack(
-                                              children: [
-                                                Hero(
-                                                  tag: res.id!,
-                                                  child: InteractiveViewer(
-                                                    child: CustomCacheImage(
-                                                      imageUrl: url,
-                                                      // blurHash: e.blurHash,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: const EdgeInsets.all(
-                                                    8,
-                                                  ),
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      begin:
-                                                          Alignment.topCenter,
-                                                      end: Alignment
-                                                          .bottomCenter,
-                                                      stops: const [0, 1],
-                                                      colors: [
-                                                        (HexColor(
-                                                          res.color ??
-                                                              '#ffffff',
-                                                        )),
-                                                        (HexColor(
-                                                          res.color ??
-                                                              '#ffffff',
-                                                        )).withAlpha(0),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      if (res.description !=
-                                                              null ||
-                                                          (res
-                                                                  .description
-                                                                  ?.isNotEmpty ??
-                                                              false))
-                                                        Text(
-                                                          res.description
-                                                              .toString()
-                                                              .toUpperCase(),
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      if (res.altDescription !=
-                                                              null ||
-                                                          (res
-                                                                  .altDescription
-                                                                  ?.isNotEmpty ??
-                                                              false))
-                                                        Text(
-                                                          res.altDescription
-                                                              .toString()
-                                                              .toUpperCase(),
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
                                             ),
-                                          ),
-                                        );
-                                      },
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                  stops: const [0, 1],
+                                                  colors: [
+                                                    (HexColor(res.color ?? '#ffffff')),
+                                                    (HexColor(res.color ?? '#ffffff')).withAlpha(0),
+                                                  ],
+                                                ),
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  if (res.description != null ||
+                                                      (res.description?.isNotEmpty ?? false))
+                                                    Text(
+                                                      res.description.toString().toUpperCase(),
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  if (res.altDescription != null ||
+                                                      (res.altDescription?.isNotEmpty ?? false))
+                                                    Text(
+                                                      res.altDescription.toString().toUpperCase(),
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
                             },
@@ -358,18 +320,11 @@ class UnsplashGrid extends HookConsumerWidget {
                               ),
                               child: Hero(
                                 tag: res.id!,
-                                child: CustomCacheImage(
-                                  imageUrl: url,
-                                  blurHash: res.blurHash,
-                                ),
+                                child: CustomCacheImage(imageUrl: url, blurHash: res.blurHash),
                               ),
                             ),
                             if (selected.value.contains(res))
-                              const Icon(
-                                Icons.done,
-                                color: Colors.black,
-                                size: 40,
-                              ),
+                              const Icon(Icons.done, color: Colors.black, size: 40),
                           ],
                         ),
                       ),
@@ -405,10 +360,7 @@ class UnsplashGrid extends HookConsumerWidget {
                     context.pop();
                   }
                 },
-                child: const Icon(
-                  Icons.send,
-                  semanticLabel: 'UnsplashGridFloatingActionButton',
-                ),
+                child: const Icon(Icons.send, semanticLabel: 'UnsplashGridFloatingActionButton'),
               ),
             ),
         ],
@@ -439,9 +391,7 @@ class Unsplash {
   Map<String, dynamic> toMap() => {
     "total": total,
     "total_pages": totalPages,
-    "results": results == null
-        ? []
-        : List<dynamic>.from(results!.map((x) => x.toMap())),
+    "results": results == null ? [] : List<dynamic>.from(results!.map((x) => x.toMap())),
   };
 }
 
@@ -499,15 +449,9 @@ class Result {
   factory Result.fromMap(Map<String, dynamic> json) => Result(
     id: json["id"],
     slug: json["slug"],
-    createdAt: json["created_at"] == null
-        ? null
-        : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null
-        ? null
-        : DateTime.parse(json["updated_at"]),
-    promotedAt: json["promoted_at"] == null
-        ? null
-        : DateTime.parse(json["promoted_at"]),
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    promotedAt: json["promoted_at"] == null ? null : DateTime.parse(json["promoted_at"]),
     width: json["width"],
     height: json["height"],
     color: json["color"],
@@ -516,9 +460,7 @@ class Result {
     altDescription: json["alt_description"],
     breadcrumbs: json["breadcrumbs"] == null
         ? []
-        : List<Breadcrumb>.from(
-            json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x)),
-          ),
+        : List<Breadcrumb>.from(json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
     urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
     links: json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
     likes: json["likes"],
@@ -531,9 +473,7 @@ class Result {
         ? null
         : ResultTopicSubmissions.fromMap(json["topic_submissions"]),
     user: json["user"] == null ? null : ResultUser.fromMap(json["user"]),
-    tags: json["tags"] == null
-        ? []
-        : List<Tag>.from(json["tags"]!.map((x) => Tag.fromMap(x))),
+    tags: json["tags"] == null ? [] : List<Tag>.from(json["tags"]!.map((x) => Tag.fromMap(x))),
   );
 
   Map<String, dynamic> toMap() => {
@@ -573,8 +513,7 @@ class Breadcrumb {
 
   Breadcrumb({this.slug, this.title, this.index, this.type});
 
-  factory Breadcrumb.fromJson(String str) =>
-      Breadcrumb.fromMap(json.decode(str));
+  factory Breadcrumb.fromJson(String str) => Breadcrumb.fromMap(json.decode(str));
 
   @override
   String toString() => json.encode(toMap());
@@ -583,9 +522,7 @@ class Breadcrumb {
     slug: json["slug"],
     title: json["title"],
     index: json["index"],
-    type: UnsplashType.values
-        .where((element) => element.name == json["type"])
-        .firstOrNull,
+    type: UnsplashType.values.where((element) => element.name == json["type"]).firstOrNull,
   );
 
   Map<String, dynamic> toMap() => {
@@ -606,8 +543,7 @@ class ResultLinks {
 
   ResultLinks({this.self, this.html, this.download, this.downloadLocation});
 
-  factory ResultLinks.fromJson(String str) =>
-      ResultLinks.fromMap(json.decode(str));
+  factory ResultLinks.fromJson(String str) => ResultLinks.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
@@ -638,18 +574,12 @@ class Tag {
   String toJson() => json.encode(toMap());
 
   factory Tag.fromMap(Map<String, dynamic> json) => Tag(
-    type: UnsplashType.values
-        .where((element) => element.name == json["type"])
-        .firstOrNull,
+    type: UnsplashType.values.where((element) => element.name == json["type"]).firstOrNull,
     title: json["title"],
     source: json["source"] == null ? null : Source.fromMap(json["source"]),
   );
 
-  Map<String, dynamic> toMap() => {
-    "type": type?.name,
-    "title": title,
-    "source": source?.toMap(),
-  };
+  Map<String, dynamic> toMap() => {"type": type?.name, "title": title, "source": source?.toMap()};
 }
 
 class Source {
@@ -676,17 +606,13 @@ class Source {
   String toJson() => json.encode(toMap());
 
   factory Source.fromMap(Map<String, dynamic> json) => Source(
-    ancestry: json["ancestry"] == null
-        ? null
-        : Ancestry.fromMap(json["ancestry"]),
+    ancestry: json["ancestry"] == null ? null : Ancestry.fromMap(json["ancestry"]),
     title: json["title"],
     subtitle: json["subtitle"],
     description: json["description"],
     metaTitle: json["meta_title"],
     metaDescription: json["meta_description"],
-    coverPhoto: json["cover_photo"] == null
-        ? null
-        : CoverPhoto.fromMap(json["cover_photo"]),
+    coverPhoto: json["cover_photo"] == null ? null : CoverPhoto.fromMap(json["cover_photo"]),
   );
 
   Map<String, dynamic> toMap() => {
@@ -713,12 +639,8 @@ class Ancestry {
 
   factory Ancestry.fromMap(Map<String, dynamic> json) => Ancestry(
     type: json["type"] == null ? null : Category.fromMap(json["type"]),
-    category: json["category"] == null
-        ? null
-        : Category.fromMap(json["category"]),
-    subcategory: json["subcategory"] == null
-        ? null
-        : Category.fromMap(json["subcategory"]),
+    category: json["category"] == null ? null : Category.fromMap(json["category"]),
+    subcategory: json["subcategory"] == null ? null : Category.fromMap(json["subcategory"]),
   );
 
   Map<String, dynamic> toMap() => {
@@ -793,23 +715,16 @@ class CoverPhoto {
     this.user,
   });
 
-  factory CoverPhoto.fromJson(String str) =>
-      CoverPhoto.fromMap(json.decode(str));
+  factory CoverPhoto.fromJson(String str) => CoverPhoto.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory CoverPhoto.fromMap(Map<String, dynamic> json) => CoverPhoto(
     id: json["id"],
     slug: json["slug"],
-    createdAt: json["created_at"] == null
-        ? null
-        : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null
-        ? null
-        : DateTime.parse(json["updated_at"]),
-    promotedAt: json["promoted_at"] == null
-        ? null
-        : DateTime.parse(json["promoted_at"]),
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    promotedAt: json["promoted_at"] == null ? null : DateTime.parse(json["promoted_at"]),
     width: json["width"],
     height: json["height"],
     color: json["color"],
@@ -818,9 +733,7 @@ class CoverPhoto {
     altDescription: json["alt_description"],
     breadcrumbs: json["breadcrumbs"] == null
         ? []
-        : List<Breadcrumb>.from(
-            json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x)),
-          ),
+        : List<Breadcrumb>.from(json["breadcrumbs"]!.map((x) => Breadcrumb.fromMap(x))),
     urls: json["urls"] == null ? null : Urls.fromMap(json["urls"]),
     links: json["links"] == null ? null : ResultLinks.fromMap(json["links"]),
     likes: json["likes"],
@@ -883,9 +796,7 @@ class CoverPhotoTopicSubmissions {
         texturesPatterns: json["textures-patterns"] == null
             ? null
             : Wallpapers.fromMap(json["textures-patterns"]),
-        animals: json["animals"] == null
-            ? null
-            : Wallpapers.fromMap(json["animals"]),
+        animals: json["animals"] == null ? null : Wallpapers.fromMap(json["animals"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -900,22 +811,16 @@ class Wallpapers {
 
   Wallpapers({this.status, this.approvedOn});
 
-  factory Wallpapers.fromJson(String str) =>
-      Wallpapers.fromMap(json.decode(str));
+  factory Wallpapers.fromJson(String str) => Wallpapers.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Wallpapers.fromMap(Map<String, dynamic> json) => Wallpapers(
     status: json["status"],
-    approvedOn: json["approved_on"] == null
-        ? null
-        : DateTime.parse(json["approved_on"]),
+    approvedOn: json["approved_on"] == null ? null : DateTime.parse(json["approved_on"]),
   );
 
-  Map<String, dynamic> toMap() => {
-    "status": status,
-    "approved_on": approvedOn?.toIso8601String(),
-  };
+  Map<String, dynamic> toMap() => {"status": status, "approved_on": approvedOn?.toIso8601String()};
 }
 
 class Urls {
@@ -926,14 +831,7 @@ class Urls {
   final String? thumb;
   final String? smallS3;
 
-  Urls({
-    this.raw,
-    this.full,
-    this.regular,
-    this.small,
-    this.thumb,
-    this.smallS3,
-  });
+  Urls({this.raw, this.full, this.regular, this.small, this.thumb, this.smallS3});
 
   factory Urls.fromJson(String str) => Urls.fromMap(json.decode(str));
 
@@ -1001,16 +899,13 @@ class CoverPhotoUser {
     this.social,
   });
 
-  factory CoverPhotoUser.fromJson(String str) =>
-      CoverPhotoUser.fromMap(json.decode(str));
+  factory CoverPhotoUser.fromJson(String str) => CoverPhotoUser.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory CoverPhotoUser.fromMap(Map<String, dynamic> json) => CoverPhotoUser(
     id: json["id"],
-    updatedAt: json["updated_at"] == null
-        ? null
-        : DateTime.parse(json["updated_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
     username: json["username"],
     name: json["name"],
     firstName: json["first_name"],
@@ -1106,22 +1001,14 @@ class ProfileImage {
 
   ProfileImage({this.small, this.medium, this.large});
 
-  factory ProfileImage.fromJson(String str) =>
-      ProfileImage.fromMap(json.decode(str));
+  factory ProfileImage.fromJson(String str) => ProfileImage.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory ProfileImage.fromMap(Map<String, dynamic> json) => ProfileImage(
-    small: json["small"],
-    medium: json["medium"],
-    large: json["large"],
-  );
+  factory ProfileImage.fromMap(Map<String, dynamic> json) =>
+      ProfileImage(small: json["small"], medium: json["medium"], large: json["large"]);
 
-  Map<String, dynamic> toMap() => {
-    "small": small,
-    "medium": medium,
-    "large": large,
-  };
+  Map<String, dynamic> toMap() => {"small": small, "medium": medium, "large": large};
 }
 
 class Social {
@@ -1130,12 +1017,7 @@ class Social {
   final String? twitterUsername;
   final dynamic paypalEmail;
 
-  Social({
-    this.instagramUsername,
-    this.portfolioUrl,
-    this.twitterUsername,
-    this.paypalEmail,
-  });
+  Social({this.instagramUsername, this.portfolioUrl, this.twitterUsername, this.paypalEmail});
 
   factory Social.fromJson(String str) => Social.fromMap(json.decode(str));
 
@@ -1176,24 +1058,13 @@ class ResultTopicSubmissions {
 
   String toJson() => json.encode(toMap());
 
-  factory ResultTopicSubmissions.fromMap(Map<String, dynamic> json) =>
-      ResultTopicSubmissions(
-        experimental: json["experimental"] == null
-            ? null
-            : ArtsCulture.fromMap(json["experimental"]),
-        artsCulture: json["arts-culture"] == null
-            ? null
-            : ArtsCulture.fromMap(json["arts-culture"]),
-        people: json["people"] == null
-            ? null
-            : ArtsCulture.fromMap(json["people"]),
-        technology: json["technology"] == null
-            ? null
-            : ArtsCulture.fromMap(json["technology"]),
-        wallpapers: json["wallpapers"] == null
-            ? null
-            : Wallpapers.fromMap(json["wallpapers"]),
-      );
+  factory ResultTopicSubmissions.fromMap(Map<String, dynamic> json) => ResultTopicSubmissions(
+    experimental: json["experimental"] == null ? null : ArtsCulture.fromMap(json["experimental"]),
+    artsCulture: json["arts-culture"] == null ? null : ArtsCulture.fromMap(json["arts-culture"]),
+    people: json["people"] == null ? null : ArtsCulture.fromMap(json["people"]),
+    technology: json["technology"] == null ? null : ArtsCulture.fromMap(json["technology"]),
+    wallpapers: json["wallpapers"] == null ? null : Wallpapers.fromMap(json["wallpapers"]),
+  );
 
   Map<String, dynamic> toMap() => {
     "experimental": experimental?.toMap(),
@@ -1209,13 +1080,11 @@ class ArtsCulture {
 
   ArtsCulture({this.status});
 
-  factory ArtsCulture.fromJson(String str) =>
-      ArtsCulture.fromMap(json.decode(str));
+  factory ArtsCulture.fromJson(String str) => ArtsCulture.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory ArtsCulture.fromMap(Map<String, dynamic> json) =>
-      ArtsCulture(status: json["status"]);
+  factory ArtsCulture.fromMap(Map<String, dynamic> json) => ArtsCulture(status: json["status"]);
 
   Map<String, dynamic> toMap() => {"status": status};
 }
@@ -1265,16 +1134,13 @@ class ResultUser {
     this.social,
   });
 
-  factory ResultUser.fromJson(String str) =>
-      ResultUser.fromMap(json.decode(str));
+  factory ResultUser.fromJson(String str) => ResultUser.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory ResultUser.fromMap(Map<String, dynamic> json) => ResultUser(
     id: json["id"],
-    updatedAt: json["updated_at"] == null
-        ? null
-        : DateTime.parse(json["updated_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
     username: json["username"],
     name: json["name"],
     firstName: json["first_name"],

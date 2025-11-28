@@ -3,19 +3,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/form/select.dart';
 import 'package:moonspace/helper/extensions/string.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
 import 'package:moonspace/widgets/functions.dart';
 import 'package:moonspace/widgets/async_lock.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
-import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Providers/user_data.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
@@ -24,13 +23,12 @@ import 'package:moonspace/theme.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 import 'package:spacemoon/Widget/Common/fire_image.dart';
 
-class ChatInfoRoute extends GoRouteData {
+class ChatInfoRoute extends GoRouteData with $ChatInfoRoute {
   final String chatId;
 
   const ChatInfoRoute({required this.chatId});
 
-  static final GlobalKey<NavigatorState> $parentNavigatorKey =
-      AppRouter.rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -95,11 +93,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                   context.pop();
                 },
               ),
-              title: Text(
-                room.displayName
-                    .replaceAll(meUser?.displayName ?? '***', '')
-                    .trim(),
-              ),
+              title: Text(room.displayName.replaceAll(meUser?.displayName ?? '***', '').trim()),
               actions: [
                 ReportDialogButton(meInRoom: meInRoom, ref: ref),
 
@@ -108,10 +102,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                     onPressed: () {
                       context.bSlidePush(SearchPage(room: room));
                     },
-                    icon: const Icon(
-                      Icons.add_circle_outline,
-                      semanticLabel: 'Invite Users',
-                    ),
+                    icon: const Icon(Icons.add_circle_outline, semanticLabel: 'Invite Users'),
                   ),
               ],
             ),
@@ -125,32 +116,16 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
 
               SliverList.list(
                 children: [
-                  ChatInfoUpdateRoomName(
-                    room: room,
-                    meInRoom: meInRoom,
-                    ref: ref,
-                  ),
+                  ChatInfoUpdateRoomName(room: room, meInRoom: meInRoom, ref: ref),
 
-                  ChatInfoUpdateRoomNickname(
-                    room: room,
-                    meInRoom: meInRoom,
-                    ref: ref,
-                  ),
+                  ChatInfoUpdateRoomNickname(room: room, meInRoom: meInRoom, ref: ref),
 
-                  ChatInfoUpdateRoomDescription(
-                    room: room,
-                    meInRoom: meInRoom,
-                    ref: ref,
-                  ),
+                  ChatInfoUpdateRoomDescription(room: room, meInRoom: meInRoom, ref: ref),
 
                   const Divider(),
 
                   //
-                  ChatInfoUpdateRoomVisibility(
-                    meInRoom: meInRoom,
-                    room: room,
-                    ref: ref,
-                  ),
+                  ChatInfoUpdateRoomVisibility(meInRoom: meInRoom, room: room, ref: ref),
 
                   const SizedBox(height: 5),
 
@@ -162,10 +137,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
 
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'Created on : ${room.created.dateString}',
-                      style: context.tm,
-                    ),
+                    title: Text('Created on : ${room.created.dateString}', style: context.tm),
                   ),
 
                   ListTile(
@@ -178,8 +150,7 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
 
                   const SizedBox(height: 10),
 
-                  if (meInRoom != null)
-                    ChatInfoLeaveRoom(ref: ref, meInRoom: meInRoom),
+                  if (meInRoom != null) ChatInfoLeaveRoom(ref: ref, meInRoom: meInRoom),
 
                   const SizedBox(height: 4),
 
@@ -187,19 +158,14 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                   if (meInRoom != null && meInRoom.isAdmin)
                     ChatInfoDeleteRoom(meInRoom: meInRoom, ref: ref),
 
-                  if (meInRoom == null &&
-                      room.open.value >= Visible.MODERATED.value)
-                    ChatInfoUpgradeRoomAccess(
-                      ref: ref,
-                      meUser: meUser,
-                      room: room,
-                    ),
+                  if (meInRoom == null && room.open.value >= Visible.MODERATED.value)
+                    ChatInfoUpgradeRoomAccess(ref: ref, meUser: meUser, room: room),
 
                   if (meInRoom?.role == Role.REQUEST)
                     ListTile(
-                      tileColor: context.theme.csSecCon,
-                      titleTextStyle: context.ts.c(context.theme.csSec),
-                      iconColor: context.theme.csSec,
+                      tileColor: context.cSecCon,
+                      titleTextStyle: context.ts.c(context.cSec),
+                      iconColor: context.cSec,
                       title: const Text('Request Sent'),
                     ),
                   const SizedBox(height: 10),
@@ -211,20 +177,13 @@ class _ChatInfoPageState extends ConsumerState<ChatInfoPage> {
                 SliverList.list(
                   children: [
                     const Divider(),
-                    Text(
-                      'Members',
-                      textAlign: TextAlign.center,
-                      style: context.tl,
-                    ),
+                    Text('Members', textAlign: TextAlign.center, style: context.tl),
                   ],
                 ),
 
               //------
               if (meInRoom != null)
-                ChatInfoRoomUsers(
-                  allRoomUsers: allRoomUsers,
-                  meInRoom: meInRoom,
-                ),
+                ChatInfoRoomUsers(allRoomUsers: allRoomUsers, meInRoom: meInRoom),
             ],
           ),
         ),
@@ -255,9 +214,7 @@ class ChatInfoUpgradeRoomAccess extends StatelessWidget {
             lock();
             await ref
                 .read(currentRoomProvider.notifier)
-                .upgradeAccessToRoom(
-                  RoomUser(user: meUser?.uid, room: room.uid),
-                );
+                .upgradeAccessToRoom(RoomUser(user: meUser?.uid, room: room.uid));
 
             ref.invalidate(currentRoomUserProvider);
             open();
@@ -270,11 +227,7 @@ class ChatInfoUpgradeRoomAccess extends StatelessWidget {
 }
 
 class ChatInfoDeleteRoom extends StatelessWidget {
-  const ChatInfoDeleteRoom({
-    super.key,
-    required this.meInRoom,
-    required this.ref,
-  });
+  const ChatInfoDeleteRoom({super.key, required this.meInRoom, required this.ref});
 
   final RoomUser meInRoom;
   final WidgetRef ref;
@@ -295,8 +248,8 @@ class ChatInfoDeleteRoom extends StatelessWidget {
               return FilledButton.icon(
                 icon: const Icon(Icons.delete),
                 style: FilledButton.styleFrom(
-                  backgroundColor: context.theme.csErrCon,
-                  foregroundColor: context.theme.csOnErrCon,
+                  backgroundColor: context.cErrCon,
+                  foregroundColor: context.cOnErrCon,
                 ),
                 onPressed: () async {
                   lock();
@@ -304,9 +257,7 @@ class ChatInfoDeleteRoom extends StatelessWidget {
                     title: 'Are you sure you want to Delete this room?',
                   );
                   if (res == true) {
-                    await ref
-                        .read(currentRoomProvider.notifier)
-                        .deleteRoom(meInRoom);
+                    await ref.read(currentRoomProvider.notifier).deleteRoom(meInRoom);
                     if (context.mounted) {
                       HomeRoute().go(context);
                     }
@@ -314,11 +265,7 @@ class ChatInfoDeleteRoom extends StatelessWidget {
                   open();
                 },
                 label: loading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(),
-                      )
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                     : const Text('Delete Room'),
               );
             },
@@ -331,11 +278,7 @@ class ChatInfoDeleteRoom extends StatelessWidget {
 }
 
 class ChatInfoLeaveRoom extends StatelessWidget {
-  const ChatInfoLeaveRoom({
-    super.key,
-    required this.ref,
-    required this.meInRoom,
-  });
+  const ChatInfoLeaveRoom({super.key, required this.ref, required this.meInRoom});
 
   final WidgetRef ref;
   final RoomUser meInRoom;
@@ -347,18 +290,14 @@ class ChatInfoLeaveRoom extends StatelessWidget {
         return FilledButton.icon(
           icon: const Icon(Icons.logout),
           style: FilledButton.styleFrom(
-            backgroundColor: context.theme.csErrCon,
-            foregroundColor: context.theme.csOnErrCon,
+            backgroundColor: context.cErrCon,
+            foregroundColor: context.cOnErrCon,
           ),
           onPressed: () async {
             lock();
-            final res = await context.showYesNo(
-              title: 'Are you sure you want to Leave this room?',
-            );
+            final res = await context.showYesNo(title: 'Are you sure you want to Leave this room?');
             if (res) {
-              await ref
-                  .read(currentRoomProvider.notifier)
-                  .deleteRoomUser(meInRoom);
+              await ref.read(currentRoomProvider.notifier).deleteRoomUser(meInRoom);
               ref.read(currentRoomProvider.notifier).exitRoom(null);
               if (context.mounted) {
                 HomeRoute().go(context);
@@ -367,11 +306,7 @@ class ChatInfoLeaveRoom extends StatelessWidget {
             open();
           },
           label: loading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(),
-                )
+              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
               : const Text('Leave Room'),
         );
       },
@@ -380,11 +315,7 @@ class ChatInfoLeaveRoom extends StatelessWidget {
 }
 
 class ChatInfoUpdateRoomFamous extends StatelessWidget {
-  const ChatInfoUpdateRoomFamous({
-    super.key,
-    required this.room,
-    required this.ref,
-  });
+  const ChatInfoUpdateRoomFamous({super.key, required this.room, required this.ref});
 
   final Room room;
   final WidgetRef ref;
@@ -398,7 +329,7 @@ class ChatInfoUpdateRoomFamous extends StatelessWidget {
           value: room.famous,
           contentPadding: const EdgeInsets.symmetric(horizontal: 8),
           title: Text('Famous', style: context.ts),
-          tileColor: context.theme.csSecCon,
+          tileColor: context.cSecCon,
           onChanged: (v) async {
             lock();
             await ref
@@ -439,13 +370,13 @@ class ChatInfoUpdateRoomVisibility extends StatelessWidget {
                   .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
                   .toList(),
               borderRadius: 8.br,
-              dropdownColor: context.theme.csSecCon,
+              dropdownColor: context.cSecCon,
               decoration: InputDecoration(
                 constraints: const BoxConstraints(maxWidth: 200),
                 border: 0.bs.c(Colors.transparent).out.r(8),
                 enabledBorder: 0.bs.c(Colors.transparent).out.r(8),
                 focusedBorder: 0.bs.c(Colors.transparent).out.r(8),
-                fillColor: context.theme.csSecCon,
+                fillColor: context.cSecCon,
                 filled: true,
               ),
               onChanged: (value) async {
@@ -479,26 +410,29 @@ class ChatInfoUpdateRoomDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsyncTextFormField(
-      key: ValueKey(room.description),
-      initialValue: room.description,
-      enabled: meInRoom?.isAdmin == true,
-      style: context.ts,
-      maxLines: null,
-      asyncValidator: (value) async {
-        return value.checkMin(8);
-      },
-      showPrefix: false,
-      textInputAction: TextInputAction.done,
-      onSubmit: (con) async {
-        await ref
-            .read(currentRoomProvider.notifier)
-            .updateRoomInfo(Room(uid: room.uid, description: con.text));
-      },
-      decoration: (AsyncText value, nickCon) => InputDecoration(
-        label: const Text('Description'),
-      ).applyDefaults(context.theme.inputDecorationTheme),
-    );
+    return Placeholder();
+    // return AsyncTextFormField(
+    //   key: ValueKey(room.description),
+    //   valueParser: (value) => value,
+    //   valueFormatter: (value) => value,
+    //   initialValue: room.description,
+    //   enabled: meInRoom?.isAdmin == true,
+    //   style: context.ts,
+    //   maxLines: null,
+    //   asyncValidator: (value) async {
+    //     return value.checkMin(8);
+    //   },
+    //   showPrefix: false,
+    //   textInputAction: TextInputAction.done,
+    //   onSubmit: (con) async {
+    //     await ref
+    //         .read(currentRoomProvider.notifier)
+    //         .updateRoomInfo(Room(uid: room.uid, description: con.text));
+    //   },
+    //   decoration: (AsyncTextType value, nickCon) => InputDecoration(
+    //     label: const Text('Description'),
+    //   ).applyDefaults(context.theme.inputDecorationTheme),
+    // );
   }
 }
 
@@ -516,47 +450,50 @@ class ChatInfoUpdateRoomNickname extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsyncTextFormField(
-      key: ValueKey(room.nick),
-      initialValue: room.nick,
-      maxLines: 1,
-      autocorrect: false,
-      enableSuggestions: false,
-      enabled: meInRoom?.isAdmin == true,
-      style: context.tm,
-      asyncValidator: (value) async {
-        if (value.checkMin(8) != null) {
-          return value.checkMin(8);
-        }
-        if (value.checkAlphanumeric() != null) {
-          return value.checkAlphanumeric();
-        }
-        if (room.nick == value) {
-          return null;
-        }
+    return Placeholder();
+    // return AsyncTextFormField(
+    //   key: ValueKey(room.nick),
+    //   valueParser: (value) => value,
+    //   valueFormatter: (value) => value,
+    //   initialValue: room.nick,
+    //   maxLines: 1,
+    //   autocorrect: false,
+    //   enableSuggestions: false,
+    //   enabled: meInRoom?.isAdmin == true,
+    //   style: context.tm,
+    //   asyncValidator: (value) async {
+    //     if (value.checkMin(8) != null) {
+    //       return value.checkMin(8);
+    //     }
+    //     if (value.checkAlphanumeric() != null) {
+    //       return value.checkAlphanumeric();
+    //     }
+    //     if (room.nick == value) {
+    //       return null;
+    //     }
 
-        final r = await countRoomByNick(value);
+    //     final r = await countRoomByNick(value);
 
-        if (r != 0) {
-          return 'Not available';
-        }
-        return null;
-      },
-      showPrefix: false,
-      textInputAction: TextInputAction.done,
-      onSubmit: (con) async {
-        await ref
-            .read(currentRoomProvider.notifier)
-            .updateRoomInfo(Room(uid: room.uid, nick: con.text));
-      },
-      decoration: (AsyncText value, nickCon) => InputDecoration(
-        hintText: '  abc...',
-        prefixIcon: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text('Nickname : #', style: context.tl)],
-        ),
-      ).applyDefaults(context.theme.inputDecorationTheme),
-    );
+    //     if (r != 0) {
+    //       return 'Not available';
+    //     }
+    //     return null;
+    //   },
+    //   showPrefix: false,
+    //   textInputAction: TextInputAction.done,
+    //   onSubmit: (con) async {
+    //     await ref
+    //         .read(currentRoomProvider.notifier)
+    //         .updateRoomInfo(Room(uid: room.uid, nick: con.text));
+    //   },
+    //   decoration: (AsyncTextType value, nickCon) => InputDecoration(
+    //     hintText: '  abc...',
+    //     prefixIcon: Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [Text('Nickname : #', style: context.tl)],
+    //     ),
+    //   ).applyDefaults(context.theme.inputDecorationTheme),
+    // );
   }
 }
 
@@ -576,37 +513,35 @@ class ChatInfoUpdateRoomName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: 'Chat Name',
-      child: AsyncTextFormField(
-        key: ValueKey(room.displayName),
-        initialValue: room.displayName,
-        enabled: meInRoom?.isAdmin == true,
-        style: context.hm,
-        asyncValidator: (value) async {
-          return value.checkMin(8);
-        },
-        maxLines: 1,
-        showPrefix: false,
-        textInputAction: TextInputAction.done,
-        onSubmit: (con) async {
-          await ref
-              .read(currentRoomProvider.notifier)
-              .updateRoomInfo(Room(uid: room.uid, displayName: con.text));
-        },
+      // child: AsyncTextFormField(
+      //   key: ValueKey(room.displayName),
+      //   valueParser: (value) => value,
+      //   valueFormatter: (value) => value,
+      //   initialValue: room.displayName,
+      //   enabled: meInRoom?.isAdmin == true,
+      //   style: context.hm,
+      //   asyncValidator: (value) async {
+      //     return value.checkMin(8);
+      //   },
+      //   maxLines: 1,
+      //   showPrefix: false,
+      //   textInputAction: TextInputAction.done,
+      //   onSubmit: (con) async {
+      //     await ref
+      //         .read(currentRoomProvider.notifier)
+      //         .updateRoomInfo(Room(uid: room.uid, displayName: con.text));
+      //   },
 
-        decoration: (AsyncText value, nickCon) => InputDecoration(
-          hintText: 'Name',
-        ).applyDefaults(context.theme.inputDecorationTheme),
-      ),
+      //   decoration: (AsyncTextType value, nickCon) => InputDecoration(
+      //     hintText: 'Name',
+      //   ).applyDefaults(context.theme.inputDecorationTheme),
+      // ),
     );
   }
 }
 
 class ChatInfoChangeProfilePicture extends StatelessWidget {
-  const ChatInfoChangeProfilePicture({
-    super.key,
-    required this.meInRoom,
-    required this.room,
-  });
+  const ChatInfoChangeProfilePicture({super.key, required this.meInRoom, required this.room});
 
   final RoomUser? meInRoom;
   final Room room;
@@ -643,10 +578,7 @@ class ChatInfoChangeProfilePicture extends StatelessWidget {
                   ? Icon(Icons.face_2_outlined, size: (120, 160).c)
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(250),
-                      child: FutureSpaceBuilder(
-                        path: room.photoURL,
-                        thumbnail: true,
-                      ),
+                      child: FutureSpaceBuilder(path: room.photoURL, thumbnail: true),
                     ),
             ),
           ),
@@ -657,11 +589,7 @@ class ChatInfoChangeProfilePicture extends StatelessWidget {
 }
 
 class ReportDialogButton extends StatelessWidget {
-  const ReportDialogButton({
-    super.key,
-    required this.meInRoom,
-    required this.ref,
-  });
+  const ReportDialogButton({super.key, required this.meInRoom, required this.ref});
 
   final RoomUser? meInRoom;
   final WidgetRef ref;
@@ -676,11 +604,7 @@ class ReportDialogButton extends StatelessWidget {
         Option(value: 'Promotes violence'),
         Option(value: 'Is not appropriate for community'),
       ],
-      child: const Icon(
-        Icons.report,
-        color: Colors.red,
-        semanticLabel: 'Report this chat',
-      ),
+      child: const Icon(Icons.report, color: Colors.red, semanticLabel: 'Report this chat'),
       actions: (marioContext, selection) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -693,8 +617,8 @@ class ReportDialogButton extends StatelessWidget {
           const SizedBox(width: 10),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: marioContext.theme.csErrCon,
-              foregroundColor: marioContext.theme.csOnErrCon,
+              backgroundColor: marioContext.cErrCon,
+              foregroundColor: marioContext.cOnErrCon,
             ),
             child: const Text('Report'),
             onPressed: () async {
@@ -709,9 +633,7 @@ class ReportDialogButton extends StatelessWidget {
                 marioContext.nav.pop();
                 HomeRoute().go(context);
                 if (meInRoom != null) {
-                  await ref
-                      .read(currentRoomProvider.notifier)
-                      .reportRoom(meInRoom!, selection);
+                  await ref.read(currentRoomProvider.notifier).reportRoom(meInRoom!, selection);
                 }
               }
             },
@@ -723,11 +645,7 @@ class ReportDialogButton extends StatelessWidget {
 }
 
 class ChatInfoRoomUsers extends StatelessWidget {
-  const ChatInfoRoomUsers({
-    super.key,
-    required this.allRoomUsers,
-    required this.meInRoom,
-  });
+  const ChatInfoRoomUsers({super.key, required this.allRoomUsers, required this.meInRoom});
 
   final List<RoomUser?> allRoomUsers;
   final RoomUser meInRoom;
@@ -746,20 +664,12 @@ class ChatInfoRoomUsers extends StatelessWidget {
               title: Text(user?.displayName ?? roomUser.user),
               subtitle: Text(roomUser.role.name),
               onTap: () {
-                context.rSlidePush(
-                  ProfilePage(searchuser: user, showAppbar: true),
-                );
+                context.rSlidePush(ProfilePage(searchuser: user, showAppbar: true));
               },
               leading: (user == null)
-                  ? Icon(
-                      roomUser == meInRoom ? Icons.star_border : Icons.circle,
-                    )
+                  ? Icon(roomUser == meInRoom ? Icons.star_border : Icons.circle)
                   : CircleAvatar(
-                      child: FutureSpaceBuilder(
-                        path: user.photoURL,
-                        radius: 100,
-                        thumbnail: true,
-                      ),
+                      child: FutureSpaceBuilder(path: user.photoURL, radius: 100, thumbnail: true),
                     ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -790,11 +700,9 @@ class ChatInfoRoomUsers extends StatelessWidget {
                               ? Icon(
                                   roomUser.isRequest
                                       ? Icons.check
-                                      : (roomUser.isAdmin
-                                            ? Icons.star
-                                            : Icons.star_border),
+                                      : (roomUser.isAdmin ? Icons.star : Icons.star_border),
                                 )
-                              : const CircularProgress(size: 20),
+                              : const CircularProgressIndicator(),
                         );
                       },
                     ),
@@ -813,9 +721,7 @@ class ChatInfoRoomUsers extends StatelessWidget {
                               title: 'Do you want to kickout this user?',
                             );
                             if (res) {
-                              await ref
-                                  .read(currentRoomProvider.notifier)
-                                  .deleteRoomUser(roomUser);
+                              await ref.read(currentRoomProvider.notifier).deleteRoomUser(roomUser);
                             }
                             open();
                             // ref.read(currentRoomProvider.notifier).exitRoom(null);
@@ -826,7 +732,7 @@ class ChatInfoRoomUsers extends StatelessWidget {
                           },
                           icon: !loading
                               ? const Icon(Icons.close)
-                              : const CircularProgress(size: 20),
+                              : const CircularProgressIndicator(),
                         );
                       },
                     ),

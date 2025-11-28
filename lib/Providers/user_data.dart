@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:spacemoon/Providers/auth.dart';
 import 'package:spacemoon/Providers/room.dart';
@@ -17,11 +17,9 @@ Stream<User?> currentUserData(Ref ref) {
     return const Stream.empty();
   }
 
-  return FirebaseFirestore.instance
-      .collection(Const.users.name)
-      .doc(user?.uid)
-      .snapshots()
-      .map((snapshot) {
+  return FirebaseFirestore.instance.collection(Const.users.name).doc(user?.uid).snapshots().map((
+    snapshot,
+  ) {
     final userData = fromDocSnap(User(), snapshot);
 
     // if (userData == null || userData.uid != user?.uid) {
@@ -46,8 +44,7 @@ Future<List<User?>> searchUserByNick(Ref ref) async {
       .collection(Const.users.name)
       .where(Const.nick.name, isEqualTo: nick)
       .get()
-      .then(
-          (value) => value.docs.map((e) => fromQuerySnap(User(), e)!).toList());
+      .then((value) => value.docs.map((e) => fromQuerySnap(User(), e)!).toList());
 
   return users;
 }
@@ -82,8 +79,9 @@ Future<void> callUserUpdate(User user) async {
 
 Future<void> reportUser(User user, Set<String> reason) async {
   try {
-    await SpaceMoon.httpCallable('user-reportUser')
-        .call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
+    await SpaceMoon.httpCallable(
+      'user-reportUser',
+    ).call(user.toMap()?..addEntries([MapEntry('reason', reason.toList())]));
   } catch (e) {
     debugPrint('reportRoom Failed $e');
   }

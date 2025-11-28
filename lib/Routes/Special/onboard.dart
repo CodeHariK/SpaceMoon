@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:moonspace/provider/pref.dart';
 import 'package:spacemoon/Providers/router.dart';
@@ -16,9 +17,8 @@ class Onboard {
 
 @TypedGoRoute<OnboardRoute>(path: AppRouter.onboard)
 @immutable
-class OnboardRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey =
-      AppRouter.rootNavigatorKey;
+class OnboardRoute extends GoRouteData with $OnboardRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {

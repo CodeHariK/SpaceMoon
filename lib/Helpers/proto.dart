@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
+import 'package:moon_debug/helper/debug_functions.dart';
 import 'package:protobuf/protobuf.dart';
-import 'package:spacemoon/Gen/data.pbenum.dart';
-import 'package:spacemoon/Gen/google/protobuf/timestamp.pbserver.dart' as time;
+import 'package:spacemoon/Gen/lib/data.pbenum.dart';
+import 'package:protobuf/well_known_types/google/protobuf/timestamp.pb.dart' as time;
 
 extension TimestampeDateTime on DateTime {
   time.Timestamp get timestamp => time.Timestamp.fromDateTime(this);
@@ -12,10 +12,8 @@ extension TimestampeDateTime on DateTime {
 extension SupetTimeStamp on time.Timestamp {
   DateTime get date => toDateTime().toLocal();
   String get isoDate => toDateTime().toIso8601String();
-  String get timeString =>
-      hasSeconds() ? DateFormat.jm().format(toDateTime().toLocal()) : '';
-  String get dateString =>
-      hasSeconds() ? DateFormat.yMMMd().format(toDateTime().toLocal()) : '';
+  String get timeString => hasSeconds() ? DateFormat.jm().format(toDateTime().toLocal()) : '';
+  String get dateString => hasSeconds() ? DateFormat.yMMMd().format(toDateTime().toLocal()) : '';
 }
 
 extension ProtoParse on GeneratedMessage {
@@ -43,16 +41,14 @@ extension ProtoParse on GeneratedMessage {
   // }
 }
 
-T? fromQuerySnap<T extends GeneratedMessage>(
-    T obj, QueryDocumentSnapshot<Map<String, dynamic>> q) {
+T? fromQuerySnap<T extends GeneratedMessage>(T obj, QueryDocumentSnapshot<Map<String, dynamic>> q) {
   if (!q.exists) return null;
   obj.mergeFromProto3Json(q.data(), ignoreUnknownFields: true);
   obj.mergeFromProto3Json({Const.uid.name: q.id}, ignoreUnknownFields: true);
   return obj;
 }
 
-T? fromDocSnap<T extends GeneratedMessage>(
-    T obj, DocumentSnapshot<Map<String, dynamic>> doc) {
+T? fromDocSnap<T extends GeneratedMessage>(T obj, DocumentSnapshot<Map<String, dynamic>> doc) {
   if (!doc.exists || doc.data() == null) return null;
   obj.mergeFromProto3Json(doc.data(), ignoreUnknownFields: true);
   obj.mergeFromProto3Json({Const.uid.name: doc.id}, ignoreUnknownFields: true);

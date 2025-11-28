@@ -5,20 +5,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:moonspace/router/router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:moonspace/provider/global_theme.dart';
-import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/Routes/Special/about.dart';
 import 'package:spacemoon/Routes/Special/onboard.dart';
 import 'package:spacemoon/main.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:spacemoon/Routes/Home/home.dart';
 
 @immutable
-class SettingsRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey =
-      AppRouter.rootNavigatorKey;
+class SettingsRoute extends GoRouteData with $SettingsRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -66,13 +66,9 @@ class SettingsPage extends ConsumerWidget {
                     leading: const Icon(Icons.chevron_right_rounded),
                     trailing: FilledButton(
                       onPressed: () {
-                        BetterFeedback.of(context).show((
-                          UserFeedback feedback,
-                        ) {
+                        BetterFeedback.of(context).show((UserFeedback feedback) {
                           FirebaseStorage.instance
-                              .ref(
-                                'feedback/${DateTime.now().toIso8601String()}',
-                              )
+                              .ref('feedback/${DateTime.now().toIso8601String()}')
                               .putData(
                                 feedback.screenshot,
                                 SettableMetadata(
@@ -109,27 +105,21 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      canLaunchUrlString(
-                        'https://spacemoonfire.web.app/privacy/policy.html',
-                      );
+                      canLaunchUrlString('https://spacemoonfire.web.app/privacy/policy.html');
                     },
                     title: Text('Privacy Policy', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      canLaunchUrlString(
-                        'https://spacemoonfire.web.app/privacy/support.html',
-                      );
+                      canLaunchUrlString('https://spacemoonfire.web.app/privacy/support.html');
                     },
                     title: Text('Contact Us', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
                   ),
                   CupertinoListTile.notched(
                     onTap: () {
-                      canLaunchUrlString(
-                        'https://spacemoonfire.web.app/privacy/eula.html',
-                      );
+                      canLaunchUrlString('https://spacemoonfire.web.app/privacy/eula.html');
                     },
                     title: Text('End-User License', style: context.tm),
                     leading: const Icon(Icons.chevron_right_rounded),
@@ -158,10 +148,7 @@ class SettingsPage extends ConsumerWidget {
                       onTap: () {
                         FirebaseMessaging.instance.deleteToken();
                       },
-                      title: Text(
-                        'Firebase Messaging Token delete',
-                        style: context.tm,
-                      ),
+                      title: Text('Firebase Messaging Token delete', style: context.tm),
                     ),
                 ],
               ),
@@ -218,9 +205,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Feedback')),
       body: FutureBuilder(
-        future: FirebaseStorage.instance
-            .ref('feedback')
-            .list(const ListOptions(maxResults: 10)),
+        future: FirebaseStorage.instance.ref('feedback').list(const ListOptions(maxResults: 10)),
         builder: (context, snapshot) {
           if (snapshot.data == null) return const SizedBox();
 
@@ -234,9 +219,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 future: item?.getMetadata(),
                 builder: (context, feedbackSnap) {
                   return ListTile(
-                    title: Text(
-                      feedbackSnap.data?.customMetadata?['feedback'] ?? '-',
-                    ),
+                    title: Text(feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
                     subtitle: Text(item?.name ?? '-'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
@@ -252,20 +235,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
                           builder: (context, imgSnap) {
                             return Scaffold(
                               appBar: AppBar(
-                                title: Text(
-                                  feedbackSnap
-                                          .data
-                                          ?.customMetadata?['feedback'] ??
-                                      '-',
-                                ),
+                                title: Text(feedbackSnap.data?.customMetadata?['feedback'] ?? '-'),
                                 actions: [Text(item?.name ?? '-')],
                               ),
                               body: (imgSnap.data == null)
                                   ? const Placeholder()
                                   : PhotoView(
-                                      imageProvider: Image.network(
-                                        imgSnap.data ?? '',
-                                      ).image,
+                                      imageProvider: Image.network(imgSnap.data ?? '').image,
                                     ),
                             );
                           },

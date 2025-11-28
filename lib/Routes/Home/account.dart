@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:spacemoon/Routes/Auth/auth_routes.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User, PhoneAuthProvider, EmailAuthProvider;
@@ -8,8 +9,8 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:spacemoon/Routes/Home/home.dart';
 
 @immutable
-class AccountRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+class AccountRoute extends GoRouteData with $AccountRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
@@ -43,16 +44,11 @@ class AccountPage extends StatelessWidget {
             LoginRoute().pushReplacement(context);
             context.pushReplacement(AppRouter.login);
           }),
-          AuthStateChangeAction<MFARequired>(
-            (context, state) async {
-              await startMFAVerification(
-                resolver: state.resolver,
-                context: context,
-              );
+          AuthStateChangeAction<MFARequired>((context, state) async {
+            await startMFAVerification(resolver: state.resolver, context: context);
 
-              if (context.mounted) AccountRoute().pushReplacement(context);
-            },
-          ),
+            if (context.mounted) AccountRoute().pushReplacement(context);
+          }),
         ],
         actionCodeSettings: ActionCodeSettings(
           url: 'https://spacemoon.shark.run',

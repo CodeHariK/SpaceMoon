@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -35,91 +34,59 @@ class CustomCacheImage extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: CachedNetworkImage(
-          cacheManager: CacheManager(
-            Config(
-              "cache",
-              stalePeriod: const Duration(days: 360),
+        cacheManager: CacheManager(
+          Config("cache", stalePeriod: const Duration(days: 360)),
+        ),
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        errorWidget: (context, url, error) => const SizedBox(),
+        // errorWidget: (context, url, error) => showError
+        //     ? Container(
+        //         color: Colors.white,
+        //         child: Center(
+        //           child: kDebugMode ? Text(error.toString()) : const SizedBox(),
+        //         ),
+        //       )
+        //     : BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
+        // progressIndicatorBuilder: (context, url, DownloadProgress progress) {
+        //   return const Stack(
+        //     children: [
+        //       // BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
+        //       // Center(
+        //       //   child: CircularProgressIndicator(
+        //       //     value: progress.progress ?? 1,
+        //       //   ),
+        //       // ),
+        //     ],
+        //   ).animate(
+        //     onPlay: (controller) {
+        //       controller.repeat();
+        //     },
+        //   ).shimmer(
+        //     delay: 1500.ms,
+        //     duration: 1500.ms,
+        //     curve: Curves.decelerate,
+        //     angle: 1,
+        //   );
+        // },
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: imageProvider,
+              fit: BoxFit.cover,
+              // colorFilter: const ColorFilter.mode(
+              //   Colors.red,
+              //   BlendMode.colorBurn,
+              // ),
             ),
           ),
-          imageUrl: imageUrl,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => const SizedBox(),
-          // errorWidget: (context, url, error) => showError
-          //     ? Container(
-          //         color: Colors.white,
-          //         child: Center(
-          //           child: kDebugMode ? Text(error.toString()) : const SizedBox(),
-          //         ),
-          //       )
-          //     : BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
-          // progressIndicatorBuilder: (context, url, DownloadProgress progress) {
-          //   return const Stack(
-          //     children: [
-          //       // BlurHash(hash: (blurHash != null) ? blurHash! : blurHashes.getHashOne(imageUrl)),
-          //       // Center(
-          //       //   child: CircularProgressIndicator(
-          //       //     value: progress.progress ?? 1,
-          //       //   ),
-          //       // ),
-          //     ],
-          //   ).animate(
-          //     onPlay: (controller) {
-          //       controller.repeat();
-          //     },
-          //   ).shimmer(
-          //     delay: 1500.ms,
-          //     duration: 1500.ms,
-          //     curve: Curves.decelerate,
-          //     angle: 1,
-          //   );
-          // },
-          imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                    // colorFilter: const ColorFilter.mode(
-                    //   Colors.red,
-                    //   BlendMode.colorBurn,
-                    // ),
-                  ),
-                ),
-              )
-          // .animate().scale(
-          //       duration: 300.ms,
-          //       begin: const Offset(1.25, 1.25),
-          //       end: const Offset(1, 1),
-          //     ),
-          ),
+        ),
+        // .animate().scale(
+        //       duration: 300.ms,
+        //       begin: const Offset(1.25, 1.25),
+        //       end: const Offset(1, 1),
+        //     ),
+      ),
     );
-  }
-}
-
-class ShimmerBox extends StatelessWidget {
-  const ShimmerBox({
-    super.key,
-    required this.isLoading,
-    required this.child,
-    required this.loadingChild,
-  });
-
-  final bool isLoading;
-  final Widget child;
-  final Widget loadingChild;
-
-  @override
-  Widget build(BuildContext context) {
-    return isLoading
-        ? loadingChild.animate(
-            onPlay: (controller) {
-              controller.repeat();
-            },
-          ).shimmer(
-            delay: 1500.ms,
-            duration: 1500.ms,
-            curve: Curves.decelerate,
-            angle: 1,
-          )
-        : child;
   }
 }

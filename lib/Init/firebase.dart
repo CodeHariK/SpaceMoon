@@ -1,3 +1,5 @@
+import 'dart:developer' show log;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_core/firebase_core.dart';
@@ -9,7 +11,6 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart' as auth;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
-import 'package:moonspace/helper/validator/debug_functions.dart';
 import 'package:spacemoon/Init/messaging.dart';
 import 'package:spacemoon/firebase_options.dart';
 import 'package:spacemoon/main.dart';
@@ -17,35 +18,28 @@ import 'package:spacemoon/main.dart';
 const spacemoonStorageBucket = 'spacemoonfire.appspot.com';
 
 Future<void> initFirebase() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseAppCheck.instance
       .activate(
-        webProvider:
-            ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
+        webProvider: ReCaptchaV3Provider('6LdFDOQoAAAAAK3MXEtCTWtlHuiVrH3r2c_rOafy'),
         androidProvider: SpaceMoon.debugMode
             ? AndroidProvider.debug
             : AndroidProvider.playIntegrity,
-        appleProvider:
-            SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
+        appleProvider: SpaceMoon.debugMode ? AppleProvider.debug : AppleProvider.appAttest,
       )
-      .onError(
-        (error, stackTrace) => lava(error),
-      );
+      .onError((error, stackTrace) => log(error.toString()));
 
   if (Device.isMobile) {
-    await FirebaseCrashlytics.instance
-        .setCrashlyticsCollectionEnabled(!SpaceMoon.debugMode);
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!SpaceMoon.debugMode);
   }
 
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),
     PhoneAuthProvider(),
     GoogleProvider(
-        clientId:
-            '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com'),
+      clientId: '511540428296-nlvfujnup6d6ef2h3kh05hfkmov6jtqa.apps.googleusercontent.com',
+    ),
     if (Device.isIos || Device.isMacOS) auth.AppleProvider(),
   ]);
 
@@ -59,8 +53,7 @@ Future<void> initFirebase() async {
 Future<void> emulator() async {
   if (SpaceMoon.useEmulator) {
     try {
-      final emulatorHost =
-          Device.isAndroid ? SpaceMoon.computerIp : 'localhost';
+      final emulatorHost = Device.isAndroid ? SpaceMoon.computerIp : 'localhost';
 
       FirebaseFirestore.instance.settings = Settings(
         host: '$emulatorHost:8080',
@@ -73,8 +66,8 @@ Future<void> emulator() async {
       await FirebaseStorage.instance.useStorageEmulator(emulatorHost, 9199);
       FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
     } catch (e, s) {
-      lava(e);
-      lava(s);
+      log(e.toString());
+      log(s.toString());
     }
   }
 }

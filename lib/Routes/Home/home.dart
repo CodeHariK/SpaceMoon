@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/router/router.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:moonspace/router/shell_data.dart';
 import 'package:moonspace/router/tab_shell.dart';
 import 'package:spacemoon/Routes/Home/Chat/Info/chat_info.dart';
@@ -15,7 +16,6 @@ import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Routes/Home/search.dart';
 import 'package:spacemoon/Routes/Home/settings.dart';
 import 'package:spacemoon/Providers/router.dart';
-import 'package:moonspace/theme.dart';
 
 part 'home.g.dart';
 
@@ -72,25 +72,19 @@ class Home {
         ),
         TypedStatefulShellBranch<HomeShellBranchData>(
           routes: <TypedRoute<RouteData>>[
-            TypedGoRoute<SearchRoute>(
-              name: AppRouter.search,
-              path: AppRouter.search,
-            ),
+            TypedGoRoute<SearchRoute>(name: AppRouter.search, path: AppRouter.search),
           ],
         ),
         TypedStatefulShellBranch<HomeShellBranchData>(
           routes: <TypedRoute<RouteData>>[
-            TypedGoRoute<ProfileRoute>(
-              name: AppRouter.profile,
-              path: AppRouter.profile,
-            ),
+            TypedGoRoute<ProfileRoute>(name: AppRouter.profile, path: AppRouter.profile),
           ],
         ),
       ],
     ),
   ],
 )
-class ExitRoute extends GoRouteData {
+class ExitRoute extends GoRouteData with $ExitRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadePage(context, state, const ExitPage(navigator: AllChatPage()));
@@ -98,13 +92,11 @@ class ExitRoute extends GoRouteData {
 
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-    return state.match(AppRouter.root)
-        ? (AppRouter.root + AppRouter.allchat)
-        : null;
+    return state.match(AppRouter.root) ? (AppRouter.root + AppRouter.allchat) : null;
   }
 }
 
-class HomeRoute extends GoRouteData {
+class HomeRoute extends GoRouteData with $HomeRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadePage(context, state, const AllChatPage());
@@ -114,8 +106,7 @@ class HomeRoute extends GoRouteData {
 class HomeShellRoute extends StatefulShellRouteData {
   const HomeShellRoute();
 
-  static final GlobalKey<NavigatorState> $navigatorKey =
-      AppRouter.homeShellNavigatorKey;
+  static final GlobalKey<NavigatorState> $navigatorKey = AppRouter.homeShellNavigatorKey;
 
   @override
   Widget builder(
@@ -133,11 +124,7 @@ class HomeShellRoute extends StatefulShellRouteData {
       locations: [AppRouter.allchat],
       icon: const Icon(Icons.chat_bubble_outline),
     ),
-    ShellData(
-      name: 'Search',
-      locations: [AppRouter.search],
-      icon: const Icon(Icons.search),
-    ),
+    ShellData(name: 'Search', locations: [AppRouter.search], icon: const Icon(Icons.search)),
     // ShellData(
     //     name: 'Notification',
     //     location: ['notification', 'subscription'],
@@ -154,10 +141,7 @@ class HomeShellRoute extends StatefulShellRouteData {
       onPressed: () {
         NotificationsRoute().push(context);
       },
-      icon: const Icon(
-        Icons.notifications_none_outlined,
-        semanticLabel: 'Open notifications',
-      ),
+      icon: const Icon(Icons.notifications_none_outlined, semanticLabel: 'Open notifications'),
     ),
     IconButton(
       onPressed: () {
@@ -177,9 +161,9 @@ class HomeShellRoute extends StatefulShellRouteData {
         return TabShell(
           navigationShell: navigationShell,
           shellData: data,
-          showTabbar: AppTheme.isTab,
+          showTabbar: context.width2,
           showNavigationBar: false,
-          showNavigationRail: !AppTheme.isTab,
+          showNavigationRail: !context.width2,
           actions: actions(context),
           children: children,
         );
@@ -208,9 +192,7 @@ class ExitPage extends StatelessWidget {
       ),
       body: navigator,
       extendBody: true,
-      bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(
-        context: context,
-      ),
+      bottomNavigationBar: HomeShellRoute.data.bottomNavigationBar(context: context),
     );
   }
 }

@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:moonspace/form/async_text_field.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/widgets/animated_dialog.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Providers/tweets.dart';
 import 'package:spacemoon/Routes/Home/TabShell/unsplash.dart';
 import 'package:moonspace/widgets/async_lock.dart';
@@ -26,7 +26,7 @@ class SendBox extends HookConsumerWidget {
   final RoomUser roomUser;
   final MediaType mediaType;
   final String? link;
-  final void Function(String value)? onChanged;
+  final void Function(String? value)? onChanged;
   final Future<void> Function(TextEditingController)? onSubmit;
 
   @override
@@ -39,10 +39,13 @@ class SendBox extends HookConsumerWidget {
         children: [
           Expanded(
             child: AsyncTextFormField(
+              valueParser: (value) => value,
+              valueFormatter: (value) => value,
               asyncValidator: (value) async {
                 return null;
               },
-              onSubmit: onSubmit ??
+              onSubmit:
+                  onSubmit ??
                   (controller) async {
                     sendTweet(context, tweetCon, null, ref, mediaType, link);
                   },
@@ -53,23 +56,16 @@ class SendBox extends HookConsumerWidget {
               onChanged: onChanged,
               scrollPhysics: const ClampingScrollPhysics(),
               buildCounter: mediaType == MediaType.QR
-                  ? ((context,
-                      {required currentLength, required isFocused, maxLength}) {
-                      return Text(
-                          '$currentLength ${currentLength == 1200 ? "Max Length" : ""}');
+                  ? ((context, {required currentLength, required isFocused, maxLength}) {
+                      return Text('$currentLength ${currentLength == 1200 ? "Max Length" : ""}');
                     })
                   : null,
               maxLength: mediaType == MediaType.QR ? 1200 : null,
               showPrefix: false,
               showSubmitSuffix: false,
-              suffix: [
-                if (mediaType != MediaType.QR)
-                  SendActionMenu(roomUser: roomUser),
-              ],
+              suffix: [if (mediaType != MediaType.QR) SendActionMenu(roomUser: roomUser)],
               decoration: (asyncText, textCon) => InputDecoration(
-                hintText: mediaType == MediaType.QR
-                    ? 'Type to generate QR Code'
-                    : 'Type...',
+                hintText: mediaType == MediaType.QR ? 'Type to generate QR Code' : 'Type...',
                 contentPadding: 16.e,
                 prefixIcon: const Icon(Icons.star),
               ),
@@ -77,11 +73,7 @@ class SendBox extends HookConsumerWidget {
           ),
           if (mediaType != MediaType.QR) const SizedBox(width: 10),
           if (mediaType != MediaType.QR)
-            SendButton(
-              tweetCon: tweetCon,
-              mediaType: mediaType,
-              link: link,
-            ),
+            SendButton(tweetCon: tweetCon, mediaType: mediaType, link: link),
         ],
       ),
     );
@@ -89,21 +81,14 @@ class SendBox extends HookConsumerWidget {
 }
 
 class SendActionMenu extends ConsumerWidget {
-  const SendActionMenu({
-    super.key,
-    required this.roomUser,
-  });
+  const SendActionMenu({super.key, required this.roomUser});
 
   final RoomUser roomUser;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
-      icon: const Icon(
-        Icons.add_circle_outline_sharp,
-        size: 20,
-        semanticLabel: 'features',
-      ),
+      icon: const Icon(Icons.add_circle_outline_sharp, size: 20, semanticLabel: 'features'),
       onPressed: () {
         AnimatedDialogBox(
           boxSize: const Size(200, 200),
@@ -116,7 +101,7 @@ class SendActionMenu extends ConsumerWidget {
               QrActionButton(roomUser: roomUser),
               GalleryUploaderButton(ref: ref),
               TextEditorActionButton(ref: ref),
-              UnsplashButton(roomUser: roomUser)
+              UnsplashButton(roomUser: roomUser),
             ],
           ),
         ).show(context);
@@ -126,13 +111,7 @@ class SendActionMenu extends ConsumerWidget {
 }
 
 class SendButton extends ConsumerWidget {
-  const SendButton({
-    super.key,
-    this.text,
-    this.tweetCon,
-    this.mediaType,
-    this.link,
-  });
+  const SendButton({super.key, this.text, this.tweetCon, this.mediaType, this.link});
 
   final TextEditingController? tweetCon;
   final MediaType? mediaType;
@@ -150,10 +129,7 @@ class SendButton extends ConsumerWidget {
           await sendTweet(context, tweetCon, text, ref, mediaType, link);
           open();
         },
-        child: const Icon(
-          Icons.send,
-          semanticLabel: 'Send tweet',
-        ),
+        child: const Icon(Icons.send, semanticLabel: 'Send tweet'),
       ),
     );
   }
@@ -171,12 +147,10 @@ Future<void> sendTweet(
 
   if (sendText.isNotEmpty == true) {
     //
-    await ref.read(tweetsProvider.notifier).sendTweet(
-          tweet: Tweet(
-            text: sendText,
-            mediaType: mediaType,
-            link: link,
-          ),
+    await ref
+        .read(tweetsProvider.notifier)
+        .sendTweet(
+          tweet: Tweet(text: sendText, mediaType: mediaType, link: link),
         );
 
     tweetCon?.clear();

@@ -7,8 +7,7 @@ import 'package:moonspace/router/router.dart';
 import 'package:moonspace/widgets/async_lock.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/helper/validator/checkers.dart';
-import 'package:moonspace/widgets/animated/animated_buttons.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Providers/room.dart';
 import 'package:spacemoon/Providers/roomuser.dart';
 import 'package:spacemoon/Providers/user_data.dart';
@@ -17,7 +16,7 @@ import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/profile.dart';
 import 'package:spacemoon/Static/assets.dart';
 
-class SearchRoute extends GoRouteData {
+class SearchRoute extends GoRouteData with $SearchRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadePage(context, state, const SearchPage());
@@ -25,10 +24,7 @@ class SearchRoute extends GoRouteData {
 }
 
 class SearchPage extends ConsumerWidget {
-  const SearchPage({
-    super.key,
-    this.room,
-  });
+  const SearchPage({super.key, this.room});
 
   final Room? room;
 
@@ -48,35 +44,37 @@ class SearchPage extends ConsumerWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: AsyncTextFormField(
-                  autofocus: true,
-                  decoration: (AsyncText value, controller) =>
-                      const InputDecoration(
-                    hintText: 'abc...',
-                    labelText: 'Find by nickname',
-                  ),
-                  milliseconds: 600,
-                  textInputAction: TextInputAction.done,
-                  asyncValidator: (v) async {
-                    if (v.isEmpty) return null;
-                    if (v.checkMin(8) != null) {
-                      return v.checkMin(8);
-                    }
-                    if (v.checkAlphanumeric() != null) {
-                      return v.checkAlphanumeric();
-                    }
+                // child: AsyncTextFormField(
+                //   valueParser: (value) => value,
+                //   valueFormatter: (value) => value,
+                //   autofocus: true,
+                //   decoration: (AsyncTextType value, controller) =>
+                //       const InputDecoration(
+                //         hintText: 'abc...',
+                //         labelText: 'Find by nickname',
+                //       ),
+                //   milliseconds: 600,
+                //   textInputAction: TextInputAction.done,
+                //   asyncValidator: (v) async {
+                //     if (v.isEmpty) return null;
+                //     if (v.checkMin(8) != null) {
+                //       return v.checkMin(8);
+                //     }
+                //     if (v.checkAlphanumeric() != null) {
+                //       return v.checkAlphanumeric();
+                //     }
 
-                    ref.read(searchTextProvider.notifier).change(v);
-                    await 200.mil.delay();
+                //     ref.read(searchTextProvider.notifier).change(v);
+                //     await 200.mil.delay();
 
-                    return null;
-                  },
-                  showSubmitSuffix: false,
-                  showClear: true,
-                  clearFunc: () {
-                    ref.read(searchTextProvider.notifier).change('');
-                  },
-                ),
+                //     return null;
+                //   },
+                //   showSubmitSuffix: false,
+                //   showClear: true,
+                //   clearFunc: () {
+                //     ref.read(searchTextProvider.notifier).change('');
+                //   },
+                // ),
               ),
               if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)
                 Padding(
@@ -89,13 +87,7 @@ class SearchPage extends ConsumerWidget {
                 ),
               if (searchRooms.isEmpty && searchUsers.isEmpty)
                 Expanded(
-                  child: Center(
-                    child: Lottie.asset(
-                      Asset.lDot,
-                      reverse: false,
-                      repeat: true,
-                    ),
-                  ),
+                  child: Center(child: Lottie.asset(Asset.lDot, reverse: false, repeat: true)),
                 ),
               if (searchRooms.isNotEmpty || searchUsers.isNotEmpty)
                 Expanded(
@@ -107,8 +99,7 @@ class SearchPage extends ConsumerWidget {
                             contentPadding: EdgeInsets.zero,
                             onTap: () {
                               if (context.mounted && searchRoom?.uid != null) {
-                                ChatRoute(chatId: searchRoom!.uid)
-                                    .push(context);
+                                ChatRoute(chatId: searchRoom!.uid).push(context);
                               }
                             },
                             title: Text(searchRoom?.displayName ?? 'Name'),
@@ -117,11 +108,7 @@ class SearchPage extends ConsumerWidget {
                         }),
                       if (searchUsers.isNotEmpty)
                         ...searchUsers.map((searchUser) {
-                          return UserTile(
-                            me: me,
-                            room: room,
-                            searchUser: searchUser,
-                          );
+                          return UserTile(me: me, room: room, searchUser: searchUser);
                         }),
                     ],
                   ),
@@ -135,12 +122,7 @@ class SearchPage extends ConsumerWidget {
 }
 
 class UserTile extends ConsumerWidget {
-  const UserTile({
-    super.key,
-    required this.me,
-    required this.room,
-    required this.searchUser,
-  });
+  const UserTile({super.key, required this.me, required this.room, required this.searchUser});
 
   final User? me;
   final Room? room;
@@ -150,17 +132,12 @@ class UserTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchRoomUser = (room == null || me == null)
         ? null
-        : ref
-            .watch(getRoomUserProvider(roomId: room!.uid, userId: me!.uid))
-            .value;
+        : ref.watch(getRoomUserProvider(roomId: room!.uid, userId: me!.uid)).value;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       onTap: () {
         if (context.mounted && searchUser?.uid != null) {
-          context.rSlidePush(ProfilePage(
-            searchuser: searchUser,
-            showAppbar: true,
-          ));
+          context.rSlidePush(ProfilePage(searchuser: searchUser, showAppbar: true));
         }
       },
       title: Text(searchUser?.displayName ?? 'Name'),
@@ -169,8 +146,7 @@ class UserTile extends ConsumerWidget {
         children: [
           const Text('User'),
           const SizedBox(width: 10),
-          if (searchUser?.uid != me?.uid &&
-              (searchRoomUser != null || room == null))
+          if (searchUser?.uid != me?.uid && (searchRoomUser != null || room == null))
             AsyncLock(
               builder: (loading, status, lock, open, setStatus) {
                 return IconButton.filledTonal(
@@ -179,12 +155,7 @@ class UserTile extends ConsumerWidget {
                     if (room != null) {
                       await ref
                           .read(currentRoomProvider.notifier)
-                          .upgradeAccessToRoom(
-                            RoomUser(
-                              user: searchUser?.uid,
-                              room: room?.uid,
-                            ),
-                          );
+                          .upgradeAccessToRoom(RoomUser(user: searchUser?.uid, room: room?.uid));
                       if (context.mounted) {
                         context.pop();
                       }
@@ -193,14 +164,11 @@ class UserTile extends ConsumerWidget {
                         final room = await ref
                             .read(currentRoomProvider.notifier)
                             .createRoom(
-                          room: Room(
-                              displayName:
-                                  '${me!.displayName} ${searchUser!.displayName}'),
-                          users: [
-                            me!.uid,
-                            searchUser!.uid,
-                          ],
-                        );
+                              room: Room(
+                                displayName: '${me!.displayName} ${searchUser!.displayName}',
+                              ),
+                              users: [me!.uid, searchUser!.uid],
+                            );
                         if (room != null && context.mounted) {
                           ChatRoute(chatId: room.uid).go(context);
                         }
@@ -210,7 +178,7 @@ class UserTile extends ConsumerWidget {
                   },
                   icon: !loading
                       ? const Icon(Icons.add_circle_outline_outlined)
-                      : const CircularProgress(size: 20),
+                      : const CircularProgressIndicator(),
                 );
               },
             ),

@@ -2,8 +2,8 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonspace/electrify.dart';
 import 'package:spacemoon/Static/assets.dart';
-import 'package:spacemoon/Routes/Home/home.dart';
 import 'package:spacemoon/Routes/Home/account.dart';
 import 'package:spacemoon/Providers/router.dart';
 import 'package:spacemoon/main.dart';
@@ -16,8 +16,8 @@ class Auth {
 
 @TypedGoRoute<LoginRoute>(path: AppRouter.login)
 @immutable
-class LoginRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+class LoginRoute extends GoRouteData with $LoginRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
@@ -71,16 +71,11 @@ class LoginRoute extends GoRouteData {
           EmailLinkSignInAction((context) {
             EmailLinkRoute().push(context);
           }),
-          AuthStateChangeAction<MFARequired>(
-            (context, state) async {
-              await startMFAVerification(
-                resolver: state.resolver,
-                context: context,
-              );
+          AuthStateChangeAction<MFARequired>((context, state) async {
+            await startMFAVerification(resolver: state.resolver, context: context);
 
-              if (context.mounted) AccountRoute().pushReplacement(context);
-            },
-          ),
+            if (context.mounted) AccountRoute().pushReplacement(context);
+          }),
           // AuthStateChangeAction((context, AuthState state) {
           //   final user = switch (state) {
           //     SignedIn(user: final user) => user,
@@ -104,8 +99,8 @@ class LoginRoute extends GoRouteData {
 
 @TypedGoRoute<PhoneRoute>(path: AppRouter.phone)
 @immutable
-class PhoneRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+class PhoneRoute extends GoRouteData with $PhoneRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
@@ -113,11 +108,7 @@ class PhoneRoute extends GoRouteData {
       actions: [
         SMSCodeRequestedAction((context, AuthAction? action, Object flowKey, String phone) {
           SmsRoute(
-            $extra: SmsObject(
-              action: action,
-              flowKey: flowKey,
-              phone: phone,
-            ),
+            $extra: SmsObject(action: action, flowKey: flowKey, phone: phone),
           ).pushReplacement(context);
         }),
       ],
@@ -132,17 +123,13 @@ class SmsObject {
   final Object flowKey;
   final String phone;
 
-  SmsObject({
-    required this.action,
-    required this.flowKey,
-    required this.phone,
-  });
+  SmsObject({required this.action, required this.flowKey, required this.phone});
 }
 
 @TypedGoRoute<SmsRoute>(path: AppRouter.sms)
 @immutable
-class SmsRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+class SmsRoute extends GoRouteData with $SmsRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   final SmsObject $extra;
 
@@ -166,8 +153,8 @@ class SmsRoute extends GoRouteData {
 
 @TypedGoRoute<ForgotPasswordRoute>(path: AppRouter.forgotPassword)
 @immutable
-class ForgotPasswordRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+class ForgotPasswordRoute extends GoRouteData with $ForgotPasswordRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   final String? email;
 
@@ -216,8 +203,8 @@ class ForgotPasswordRoute extends GoRouteData {
 
 @TypedGoRoute<EmailLinkRoute>(path: AppRouter.emailLinkSignIn)
 @immutable
-class EmailLinkRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = AppRouter.rootNavigatorKey;
+class EmailLinkRoute extends GoRouteData with $EmailLinkRoute {
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = Electric.electricNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
@@ -236,10 +223,7 @@ class EmailLinkRoute extends GoRouteData {
 
 HeaderBuilder headerImage(String assetName) {
   return (context, constraints, _) {
-    return Container(
-      padding: const EdgeInsets.only(top: 10),
-      child: Image.asset(assetName),
-    );
+    return Container(padding: const EdgeInsets.only(top: 10), child: Image.asset(assetName));
   };
 }
 
@@ -247,11 +231,7 @@ HeaderBuilder headerIcon(IconData icon) {
   return (context, constraints, shrinkOffset) {
     return Padding(
       padding: const EdgeInsets.all(20).copyWith(top: 40),
-      child: Icon(
-        icon,
-        color: Colors.blue,
-        size: constraints.maxWidth / 4 * (1 - shrinkOffset),
-      ),
+      child: Icon(icon, color: Colors.blue, size: constraints.maxWidth / 4 * (1 - shrinkOffset)),
     );
   };
 }
@@ -271,11 +251,7 @@ SideBuilder sideIcon(IconData icon) {
   return (context, constraints) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Icon(
-        icon,
-        color: Colors.blue,
-        size: constraints.maxWidth / 3,
-      ),
+      child: Icon(icon, color: Colors.blue, size: constraints.maxWidth / 3),
     );
   };
 }

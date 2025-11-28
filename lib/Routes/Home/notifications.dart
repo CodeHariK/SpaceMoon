@@ -7,7 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:moonspace/router/router.dart';
 import 'package:moonspace/helper/extensions/theme_ext.dart';
 import 'package:moonspace/painter/dashed_border.dart';
-import 'package:spacemoon/Gen/data.pb.dart';
+import 'package:spacemoon/Gen/lib/data.pb.dart';
 import 'package:spacemoon/Helpers/proto.dart';
 import 'package:moonspace/router/shell_data.dart';
 import 'package:moonspace/router/tab_shell.dart';
@@ -21,14 +21,12 @@ import 'package:spacemoon/Static/assets.dart';
 import 'package:spacemoon/Widget/TextEditor/text_editor.dart';
 import 'package:spacemoon/Widget/Chat/gallery.dart';
 
-final GlobalKey<NavigatorState> notificationShellNavigatorKey =
-    GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> notificationShellNavigatorKey = GlobalKey<NavigatorState>();
 
 class NotificationShell extends StatefulShellRouteData {
   const NotificationShell();
 
-  static final GlobalKey<NavigatorState> $navigatorKey =
-      notificationShellNavigatorKey;
+  static final GlobalKey<NavigatorState> $navigatorKey = notificationShellNavigatorKey;
 
   static List<ShellData> data = [
     ShellData(
@@ -80,14 +78,14 @@ class NotificationShellBranchData extends StatefulShellBranchData {
 //   const SubscriptionShellBranchData();
 // }
 
-class NotificationsRoute extends GoRouteData {
+class NotificationsRoute extends GoRouteData with $NotificationsRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadePage(context, state, const NotificationsPage());
   }
 }
 
-class SubscriptionsRoute extends GoRouteData {
+class SubscriptionsRoute extends GoRouteData with $SubscriptionsRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return fadePage(context, state, const SubscriptionsPage());
@@ -97,12 +95,11 @@ class SubscriptionsRoute extends GoRouteData {
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
 
-  static final StreamController<Tweet> tweetStream =
-      StreamController<Tweet>.broadcast()
-        ..stream.listen((tweet) {
-          //
-          _tweets.add(tweet);
-        });
+  static final StreamController<Tweet> tweetStream = StreamController<Tweet>.broadcast()
+    ..stream.listen((tweet) {
+      //
+      _tweets.add(tweet);
+    });
 
   static final List<Tweet> _tweets = [];
 
@@ -113,9 +110,7 @@ class NotificationsPage extends StatelessWidget {
         stream: tweetStream.stream,
         builder: (context, snapshot) {
           if (_tweets.isEmpty) {
-            return Center(
-              child: Lottie.asset(Asset.lEmpty, reverse: false, repeat: true),
-            );
+            return Center(child: Lottie.asset(Asset.lEmpty, reverse: false, repeat: true));
           }
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -133,11 +128,7 @@ class NotificationsPage extends StatelessWidget {
                     if (tweet == null) return const SizedBox.shrink();
 
                     return Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 8,
-                        left: 4,
-                        right: 4,
-                      ),
+                      padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
                       child: DashedBorderContainer(
                         borderRadius: BorderRadius.circular(12),
                         child: InkWell(
@@ -150,10 +141,7 @@ class NotificationsPage extends StatelessWidget {
                               margin: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 border: Border(
-                                  left: BorderSide(
-                                    width: 6,
-                                    color: Colors.primaries[index % 12],
-                                  ),
+                                  left: BorderSide(width: 6, color: Colors.primaries[index % 12]),
                                 ),
                               ),
                               child: Column(
@@ -165,8 +153,7 @@ class NotificationsPage extends StatelessWidget {
                                         text: room?.displayName ?? '-',
                                         children: [
                                           TextSpan(
-                                            text:
-                                                ' @ ${tweet.created.timeString}',
+                                            text: ' @ ${tweet.created.timeString}',
                                             style: context.ls,
                                           ),
                                         ],
@@ -177,10 +164,7 @@ class NotificationsPage extends StatelessWidget {
                                   if (tweet.mediaType == MediaType.TEXT)
                                     Align(
                                       alignment: Alignment.topLeft,
-                                      child: Text(
-                                        tweet.text,
-                                        style: context.tm,
-                                      ),
+                                      child: Text(tweet.text, style: context.tm),
                                     ),
                                   if (tweet.mediaType == MediaType.POST)
                                     SizedBox(
